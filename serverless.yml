@@ -1,0 +1,28 @@
+service: uyarchiDev
+
+provider:
+  name: muthamizh
+  runtime: nodejs16.x
+  stage: integrations
+  region: ap-south-1
+  environment:
+    JWT_SECRET: thisisasamplesecret
+    JWT_ACCESS_EXPIRATION_MINUTES: 240
+    JWT_REFRESH_EXPIRATION_DAYS: 30
+    JWT_RESET_PASSWORD_EXPIRATION_MINUTES: 10
+    NODE_ENV: development
+    JWT_VERIFY_EMAIL_EXPIRATION_MINUTES: 10
+    MONGODB_URL: mongodb+srv://uyarchi:dev123@uyarchi.8dt00.mongodb.net/UyarchiDev?retryWrites=true&w=majority
+    EMAIL_FROM: muthamizhyadav@gmail.com
+    SMTP_HOST: smtp.gmail.com
+    SMTP_PORT: 465
+    SMTP_USERNAME: muthamizhyadav@gmail.com
+    SMTP_PASSWORD: dramjibzgemvmmsp
+    EMAIL_FROM: muthamizhyadav@gmail.com
+    SECRET_KEY : "8eed9446ef9a22f4f00a550e7fa91d0d23dbb2c4bbf9fe313f23c12e1fbb47d7"
+functions:
+  app:
+    handler: lambda.handler
+    events:
+      - http: ANY /
+      - http: 'ANY {proxy+}'

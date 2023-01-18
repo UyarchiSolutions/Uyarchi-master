@@ -493,8 +493,10 @@ const get_all_streams = async (req) => {
                 streamrequestposts: "$streamrequestposts",
                 adminApprove: 1,
                 tokenGeneration:1,
-                tokenDetails:1
-
+                tokenDetails:1,
+                Duration:1,
+                startTime:1,
+                endTime:1,
             }
         },
 

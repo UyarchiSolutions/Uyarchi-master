@@ -3,5 +3,6 @@ const subHostController = require('../../controllers/subHost.controller');
 const router = express.Router();
 
 router.route('/').post(subHostController.createSubHost).get(subHostController.getActiveSubHosts);
-
+router.route('/send-OTP').post(subHostController.SendOtp);
+router.route('/verify-OTP').post(subHostController.verifyOTP);
 module.exports = router;

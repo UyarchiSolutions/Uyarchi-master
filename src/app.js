@@ -20,7 +20,7 @@ const bodyParser = require("body-parser");
 const routes_v2 = require('./routes/v1/liveStreaming');
 const logger = require('./config/logger');
 const chetModule = require("./services/liveStreaming/chat.service")
-
+const moment=require('moment');
 // app.use(session( { secret:'hello world',
 // store:SessionStore,
 // resave:false,
@@ -36,6 +36,7 @@ let io = socketIO(server);
 
 server.listen(config.port, () => {
   logger.info(`Listening to port ${config.port}`);
+  // console.log(moment(1674035400000).add(40, 'minutes').format('hh:mm:ss a'));
 });
 
 io.sockets.on('connection', async (socket) => {

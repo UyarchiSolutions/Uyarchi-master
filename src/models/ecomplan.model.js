@@ -218,6 +218,9 @@ const streamRequestschema = mongoose.Schema({
   tokenGeneration:{
     type: Boolean,
     default: false,
+  },
+  Duration:{
+    type:Number
   }
 
 });

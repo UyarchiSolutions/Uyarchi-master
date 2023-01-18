@@ -263,7 +263,7 @@ const update_one_stream_two = async (req) => {
     }
     myplan.numberOfStreamused = myplan.numberOfStreamused + 1
     myplan.save();
-    let value = await Streamrequest.findByIdAndUpdate({ _id: req.query.id }, { sepTwo: "Completed", planId: req.body.plan_name }, { new: true })
+    let value = await Streamrequest.findByIdAndUpdate({ _id: req.query.id }, { sepTwo: "Completed", planId: req.body.plan_name,Duration:plan.Duration }, { new: true })
     return value;
 };
 const delete_one_stream = async (req) => {

@@ -221,6 +221,12 @@ const streamRequestschema = mongoose.Schema({
   },
   Duration:{
     type:Number
+  },
+  startTime:{
+    type:Number
+  },
+  endTime:{
+    type:Number
   }
 
 });

@@ -14,7 +14,19 @@ const getActiveSubHosts = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const SendOtp = catchAsync(async (req, res) => {
+  const data = await subHostService.SendOtp(req.body);
+  res.send(data);
+});
+
+const verifyOTP = catchAsync(async (req, res) => {
+  const data = await subHostService.verifyOTP(req.body);
+  res.send(data);
+});
+
 module.exports = {
   createSubHost,
   getActiveSubHosts,
+  SendOtp,
+  verifyOTP,
 };

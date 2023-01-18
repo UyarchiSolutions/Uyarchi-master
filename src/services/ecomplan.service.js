@@ -2,14 +2,14 @@ const httpStatus = require('http-status');
 const { Streamplan, StreamPost, Streamrequest, StreamrequestPost } = require('../models/ecomplan.model');
 const ApiError = require('../utils/ApiError');
 const AWS = require('aws-sdk')
-const Date = require('./Date.serive')
+const Dates = require('./Date.serive')
 const { purchasePlan } = require('../models/purchasePlan.model');
 const { tempTokenModel } = require('../models/liveStreaming/generateToken.model');
 
 const create_Plans = async (req) => {
     console.log(req.body)
     const value = await Streamplan.create(req.body)
-    await Date.create_date(value)
+    await Dates.create_date(value)
     console.log(value);
     return value;
 };
@@ -46,7 +46,7 @@ const delete_one_Plans = async (req) => {
 const create_post = async (req) => {
     console.log(req.userId, "asdas", { ...req.body, ...{ suppierId: req.userId } })
     const value = await StreamPost.create({ ...req.body, ...{ suppierId: req.userId } })
-    await Date.create_date(value)
+    await Dates.create_date(value)
     return value;
 };
 
@@ -136,14 +136,15 @@ const create_stream_one = async (req) => {
     let data=req.body.streamingDate;
     let time=req.body.streamingTime;
    let startTime= new Date(new Date(data+ ' ' + time)).getTime();
+
     const value = await Streamrequest.create({ ...req.body, ...{ suppierId: req.userId, postCount: req.body.post.length ,startTime:startTime} });  
     req.body.post.forEach(async (a) => {
         await StreamPost.findByIdAndUpdate({ _id: a }, { isUsed: true }, { new: true })
         let post = await StreamrequestPost.create({ suppierId: req.userId, streamRequest: value._id, postId: a })
-        await Date.create_date(post)
+        await Dates.create_date(post)
     })
     console.log(value);
-    await Date.create_date(value)
+    await Dates.create_date(value)
     return value;
 };
 

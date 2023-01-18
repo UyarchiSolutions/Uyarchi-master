@@ -17,6 +17,7 @@ const subHostSchema = new mongoose.Schema({
   },
   phoneNumber: {
     type: Number,
+    unique: true,
   },
   role: {
     type: String,

@@ -62,6 +62,7 @@ const generateToken = async (req) => {
   value.save();
   stream.tokenDetails=value._id;
   stream.tokenGeneration=true;
+  stream.endTime=expirationTimestamp * 1000;
   stream.save();
   // let stream = await Streamrequest.findByIdAndUpdate({ _id: streamId }, { tokenDetails: value._id, tokenGeneration: true }, { new: true });
 

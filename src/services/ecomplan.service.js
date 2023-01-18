@@ -133,7 +133,10 @@ const delete_one_Post = async (req) => {
 
 const create_stream_one = async (req) => {
     console.log(req.body)
-    const value = await Streamrequest.create({ ...req.body, ...{ suppierId: req.userId, postCount: req.body.post.length } });
+    let data=req.body.streamingDate;
+    let time=req.body.streamingTime;
+   let startTime= new Date(new Date(data+ ' ' + time)).getTime();
+    const value = await Streamrequest.create({ ...req.body, ...{ suppierId: req.userId, postCount: req.body.post.length ,startTime:startTime} });  
     req.body.post.forEach(async (a) => {
         await StreamPost.findByIdAndUpdate({ _id: a }, { isUsed: true }, { new: true })
         let post = await StreamrequestPost.create({ suppierId: req.userId, streamRequest: value._id, postId: a })
@@ -147,6 +150,7 @@ const create_stream_one = async (req) => {
 
 const create_stream_one_image = async (req) => {
     console.log(req.files, "asdasda")
+    
     // const s3 = new AWS.S3({
     //     accessKeyId: 'AKIA3323XNN7Y2RU77UG',
     //     secretAccessKey: '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',

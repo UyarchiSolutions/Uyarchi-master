@@ -33,7 +33,7 @@ const SendOtp = async (body) => {
 // verify OTP
 
 const verifyOTP = async (body) => {
-  const OTP = await subHostOTP.findOne({ OTP: body.OTP, active: true }).sort({ created: -1 });
+  let OTP = await subHostOTP.findOne({ OTP: body.OTP, active: true }).sort({ created: -1 });
   if (!OTP) {
     throw new ApiError(httpStatus.NOT_FOUND, 'OTP Invalid');
   }

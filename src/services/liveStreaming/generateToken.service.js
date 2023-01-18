@@ -31,7 +31,7 @@ const generateToken = async (req) => {
   const uid = await generateUid();
   const uid_cloud = await generateUid();
   const role = req.body.isPublisher ? Agora.RtcRole.PUBLISHER : Agora.RtcRole.SUBSCRIBER;
-  const moment_curr = moment();
+  const moment_curr = moment(stream.startTime);
   const currentTimestamp = moment_curr.add(stream.Duration, 'minutes');
   const expirationTimestamp =
     new Date(new Date(currentTimestamp.format('YYYY-MM-DD') + ' ' + currentTimestamp.format('HH:mm:ss'))).getTime() / 1000;
@@ -62,7 +62,7 @@ const generateToken = async (req) => {
   value.save();
   stream.tokenDetails=value._id;
   stream.tokenGeneration=true;
-  stream.endTime=expirationTimestamp * 1000;
+  // stream.endTime=expirationTimestamp * 1000;
   stream.save();
   // let stream = await Streamrequest.findByIdAndUpdate({ _id: streamId }, { tokenDetails: value._id, tokenGeneration: true }, { new: true });
 

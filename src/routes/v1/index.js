@@ -110,12 +110,15 @@ const CustomerWallet = require('./customer.wallet.route');
 const shopEnrollmentEnquiryRoute = require('./shopEnrollmentEnquiry.route');
 const EcomPlan = require('./ecomplan.route');
 const purchasePlan = require('./purchasePlan.route');
-
+const subHostRoute = require('./subHost.route');
 const defaultRoutes = [
-  
   {
     path: '/purchaseplan',
     route: purchasePlan,
+  },
+  {
+    path: '/subhost',
+    route: subHostRoute,
   },
   {
     path: '/checkout',
@@ -545,7 +548,6 @@ const defaultRoutes = [
     route: EcomPlan,
   },
 
-  
   // {
   //   path: '/sales',
   //   route: salesApp,

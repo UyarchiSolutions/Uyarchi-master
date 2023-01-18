@@ -72,6 +72,10 @@ const tempToken = mongoose.Schema({
   },
   shopId:{
     type: String,
+  },
+  Duration:{
+    type: Number,
+
   }
 });
 

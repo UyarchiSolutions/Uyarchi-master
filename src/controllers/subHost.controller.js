@@ -9,6 +9,12 @@ const createSubHost = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const getActiveSubHosts = catchAsync(async (req, res) => {
+  const data = await subHostService.getActiveSubHosts();
+  res.send(data);
+});
+
 module.exports = {
   createSubHost,
+  getActiveSubHosts,
 };

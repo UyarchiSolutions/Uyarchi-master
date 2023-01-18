@@ -13,6 +13,12 @@ const createSubHost = async (body) => {
   return values;
 };
 
+const getActiveSubHosts = async () => {
+  let values = await SubHost.find({ active: true });
+  return values;
+};
+
 module.exports = {
   createSubHost,
+  getActiveSubHosts,
 };

@@ -33,8 +33,7 @@ const generateToken = async (req) => {
   const role = req.body.isPublisher ? Agora.RtcRole.PUBLISHER : Agora.RtcRole.SUBSCRIBER;
   const moment_curr = moment(stream.startTime);
   const currentTimestamp = moment_curr.add(stream.Duration, 'minutes');
-  const expirationTimestamp =
-    new Date(new Date(currentTimestamp.format('YYYY-MM-DD') + ' ' + currentTimestamp.format('HH:mm:ss'))).getTime() / 1000;
+  const expirationTimestamp =stream.endTime / 1000;
   let value = await tempTokenModel.create({
     ...req.body,
     ...{

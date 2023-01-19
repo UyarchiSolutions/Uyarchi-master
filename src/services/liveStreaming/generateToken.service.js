@@ -103,7 +103,7 @@ const generateToken_sub_record = async (channel, isPublisher, req) => {
 const generateToken_sub = async (req) => {
   const channel = req.query.id;
   let str = await Streamrequest.findById(channel)
-  let stream = await tempTokenModel.findOne({streamId: channel ,type:"sub"});
+  let stream = await tempTokenModel.findOne({streamId: channel ,type:"sub",hostId:{$ne:null}});
   console.log(stream)
   if (!stream) {
     const uid = await generateUid();

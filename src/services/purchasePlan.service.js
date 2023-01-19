@@ -17,7 +17,7 @@ const create_purchase_plan = async (req) => {
         let collectedstatus = payment.status;
         let plan = await Streamplan.findById(req.body.plan);
         if (collectedstatus == 'captured' && collectedAmount == plan.salesPrice) {
-            let con = await purchasePlan.create({ ...{ planId: req.body.plan, suppierId: req.userId, paidAmount: collectedAmount, paymentStatus: collectedstatus, order_id: payment.order_id ,noOfParticipants: plan.numberOfParticipants, chat: chatNeed, max_post_per_stream: max_post_per_stream,}, ...req.body.PaymentDatails });
+            let con = await purchasePlan.create({ ...{ planId: req.body.plan, suppierId: req.userId, paidAmount: collectedAmount, paymentStatus: collectedstatus, order_id: payment.order_id ,noOfParticipants: plan.numberOfParticipants, chat: plan.chatNeed, max_post_per_stream: max_post_per_stream,}, ...req.body.PaymentDatails });
             await Date.create_date(con)
             return con;
         }

@@ -227,7 +227,18 @@ const streamRequestschema = mongoose.Schema({
   },
   endTime:{
     type:Number
-  }
+  },
+  noOfParticipants:{
+    type:Number
+  },
+  chat:{
+    type:String
+  },
+  max_post_per_stream:{
+    type:Number
+  },
+
+
 
 });
 

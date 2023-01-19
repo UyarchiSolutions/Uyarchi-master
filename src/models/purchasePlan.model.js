@@ -46,10 +46,20 @@ const purchasePlanSchema = mongoose.Schema({
         type: Boolean,
         default: false
     },
-    numberOfStreamused:{
+    numberOfStreamused: {
         type: Number,
-        default:0,
-    }
+        default: 0,
+    },
+    noOfParticipants: {
+        type: Number
+    },
+    chat: {
+        type: String
+    },
+    max_post_per_stream: {
+        type: Number
+    },
+
 });
 
 const purchasePlan = mongoose.model('purchasedPlans', purchasePlanSchema);

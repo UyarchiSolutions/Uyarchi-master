@@ -133,11 +133,11 @@ const delete_one_Post = async (req) => {
 
 const create_stream_one = async (req) => {
     console.log(req.body)
-    let data=req.body.streamingDate;
-    let time=req.body.streamingTime;
-   let startTime= new Date(new Date(data+ ' ' + time)).getTime();
+    let data = req.body.streamingDate;
+    let time = req.body.streamingTime;
+    let startTime = new Date(new Date(data + ' ' + time)).getTime();
 
-    const value = await Streamrequest.create({ ...req.body, ...{ suppierId: req.userId, postCount: req.body.post.length ,startTime:startTime} });  
+    const value = await Streamrequest.create({ ...req.body, ...{ suppierId: req.userId, postCount: req.body.post.length, startTime: startTime } });
     req.body.post.forEach(async (a) => {
         await StreamPost.findByIdAndUpdate({ _id: a }, { isUsed: true }, { new: true })
         let post = await StreamrequestPost.create({ suppierId: req.userId, streamRequest: value._id, postId: a })
@@ -151,7 +151,7 @@ const create_stream_one = async (req) => {
 
 const create_stream_one_image = async (req) => {
     console.log(req.files, "asdasda")
-    
+
     // const s3 = new AWS.S3({
     //     accessKeyId: 'AKIA3323XNN7Y2RU77UG',
     //     secretAccessKey: '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',
@@ -268,10 +268,13 @@ const update_one_stream_two = async (req) => {
     }
     myplan.numberOfStreamused = myplan.numberOfStreamused + 1
     myplan.save();
-    let streamss=await Streamrequest.findById(req.query.id)
-    let datess=new Date().setTime(new Date(streamss.startTime).getTime() + (plan.Duration * 60 * 1000));
-    let value = await Streamrequest.findByIdAndUpdate({ _id: req.query.id }, { sepTwo: "Completed", planId: req.body.plan_name,Duration:plan.Duration,endTime:datess }, { new: true })
+    let streamss = await Streamrequest.findById(req.query.id)
+    let datess = new Date().setTime(new Date(streamss.startTime).getTime() + (plan.Duration * 60 * 1000));
+    let value = await Streamrequest.findByIdAndUpdate({ _id: req.query.id }, { noOfParticipants: plan.noOfParticipants, chat: plan.chat, max_post_per_stream: plan.max_post_per_stream, sepTwo: "Completed", planId: req.body.plan_name, Duration: plan.Duration, endTime: datess }, { new: true })
     return value;
+
+
+
 };
 const delete_one_stream = async (req) => {
     const value = await StreamPost.findByIdAndDelete({ _id: req.query.id, suppierId: req.userId });
@@ -495,11 +498,11 @@ const get_all_streams = async (req) => {
                 planId: 1,
                 streamrequestposts: "$streamrequestposts",
                 adminApprove: 1,
-                tokenGeneration:1,
-                tokenDetails:1,
-                Duration:1,
-                startTime:1,
-                endTime:1,
+                tokenGeneration: 1,
+                tokenDetails: 1,
+                Duration: 1,
+                startTime: 1,
+                endTime: 1,
             }
         },
 
@@ -512,7 +515,7 @@ const get_all_streams = async (req) => {
 
 const go_live_stream_host = async (req) => {
     let value = await Streamrequest.aggregate([
-        { $match: { $and: [{ suppierId: { $eq: req.userId } }, { adminApprove: { $eq: "Approved" } },{_id:{$eq:req.query.id}}] } },
+        { $match: { $and: [{ suppierId: { $eq: req.userId } }, { adminApprove: { $eq: "Approved" } }, { _id: { $eq: req.query.id } }] } },
         {
             $lookup: {
                 from: 'streamrequestposts',
@@ -614,10 +617,10 @@ const go_live_stream_host = async (req) => {
                 planId: 1,
                 streamrequestposts: "$streamrequestposts",
                 adminApprove: 1,
-                temptokens:"$temptokens",
-                Duration:1,
-                startTime:1,
-                endTime:1,
+                temptokens: "$temptokens",
+                Duration: 1,
+                startTime: 1,
+                endTime: 1,
 
             }
         },
@@ -626,7 +629,7 @@ const go_live_stream_host = async (req) => {
     return value;
 };
 
-const get_watch_live_steams= async (req) => {
+const get_watch_live_steams = async (req) => {
     let value = await Streamrequest.aggregate([
         { $match: { $and: [{ adminApprove: { $eq: "Approved" } }] } },
     ]);
@@ -634,7 +637,7 @@ const get_watch_live_steams= async (req) => {
 };
 
 
-const get_watch_live_token= async (req) => {
+const get_watch_live_token = async (req) => {
     let value = await Streamrequest.aggregate([
         { $match: { $and: [{ adminApprove: { $eq: "Approved" } }] } },
     ]);

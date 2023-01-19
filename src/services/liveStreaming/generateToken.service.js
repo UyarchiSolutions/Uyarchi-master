@@ -106,7 +106,6 @@ const generateToken_sub = async (req) => {
   const channel = req.query.id;
   let str = await Streamrequest.findById(channel)
   let stream = await tempTokenModel.findOne({ streamId: channel, type: "sub", hostId: { $ne: null } });
-  console.log(stream)
   if (!stream) {
     const uid = await generateUid();
     const role = false ? Agora.RtcRole.PUBLISHER : Agora.RtcRole.SUBSCRIBER;
@@ -139,7 +138,6 @@ const generateToken_sub = async (req) => {
     stream = value;
 
   }
-  console.log(req.shopId)
   let user =await  Joinusers.findOne({ token: stream._id, shopId: req.shopId })
   if (!user) {
     user = await Joinusers.create({ shopId: req.shopId, token: stream._id });

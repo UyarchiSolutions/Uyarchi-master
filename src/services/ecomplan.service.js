@@ -270,7 +270,7 @@ const update_one_stream_two = async (req) => {
     myplan.save();
     let streamss = await Streamrequest.findById(req.query.id)
     let datess = new Date().setTime(new Date(streamss.startTime).getTime() + (plan.Duration * 60 * 1000));
-    let value = await Streamrequest.findByIdAndUpdate({ _id: req.query.id }, { Duration:myplan.Duration, noOfParticipants: myplan.noOfParticipants, chat: myplan.chat, max_post_per_stream: myplan.max_post_per_stream, sepTwo: "Completed", planId: req.body.plan_name, Duration: plan.Duration, endTime: datess }, { new: true })
+    let value = await Streamrequest.findByIdAndUpdate({ _id: req.query.id }, { Duration: myplan.Duration, noOfParticipants: myplan.noOfParticipants, chat: myplan.chat, max_post_per_stream: myplan.max_post_per_stream, sepTwo: "Completed", planId: req.body.plan_name, Duration: plan.Duration, endTime: datess }, { new: true })
     return value;
 
 
@@ -632,6 +632,23 @@ const go_live_stream_host = async (req) => {
 const get_watch_live_steams = async (req) => {
     let value = await Streamrequest.aggregate([
         { $match: { $and: [{ adminApprove: { $eq: "Approved" } }] } },
+        {
+            $lookup: {
+                from: 'joinedusers',
+                localField: '_id',
+                foreignField: 'streamId',
+                pipeline: [
+                    { $group: { _id: 1, count: { $sum: 1 } } }
+                ],
+                as: 'joinedusers',
+            },
+        },
+        {
+            $unwind: {
+              preserveNullAndEmptyArrays: true,
+              path: '$joinedusers',
+            },
+          },
     ]);
     return value;
 };

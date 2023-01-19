@@ -275,7 +275,8 @@ const agora_acquire = async (req) => {
 const recording_start = async (req) => {
   const resource = req.body.resourceId;
   let token = await tempTokenModel.findById(req.body.id);
-
+console.log(resource)
+console.log(token)
   const mode = 'mix';
   const start = await axios.post(
     `https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/mode/${mode}/start`,

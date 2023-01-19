@@ -645,10 +645,71 @@ const get_watch_live_steams = async (req) => {
         },
         {
             $unwind: {
-              preserveNullAndEmptyArrays: true,
-              path: '$joinedusers',
+                preserveNullAndEmptyArrays: true,
+                path: '$joinedusers',
             },
-          },
+        },
+        {
+            $lookup: {
+                from: 'joinedusers',
+                localField: '_id',
+                foreignField: 'streamId',
+                pipeline: [
+                    { $match: { shopId: req.shopId } },
+                    {
+                        $project: {
+                            _id: 1,
+                            active: { $eq: ["$shopId", req.shopId] }
+                        }
+                    }
+                ],
+                as: 'joinedusers_user',
+            },
+        },
+        {
+            $unwind: {
+                preserveNullAndEmptyArrays: true,
+                path: '$joinedusers_user',
+            },
+        },
+        {
+            $addFields: {
+                alreadyJoined: { $ifNull: ['$joinedusers_user.active', false] },
+            },
+        },
+        {
+            $project: {
+                "_id": 1,
+                "active": 1,
+                "archive": 1,
+                "post": 1,
+                "communicationMode": 1,
+                "sepTwo": 1,
+                "adminApprove": 1,
+                "activelive": 1,
+                "tokenGeneration": 1,
+                "bookingAmount": 1,
+                "streamingDate": 1,
+                "streamingTime": 1,
+                "discription": 1,
+                "streamName": 1,
+                "suppierId": 1,
+                "postCount": 1,
+                "startTime": 1,
+                "DateIso": 1,
+                "created": 1,
+                "Duration": 1,
+                "chat": 1,
+                "endTime": 1,
+                "max_post_per_stream": 1,
+                "noOfParticipants": 1,
+                "planId": 1,
+                "tokenDetails": 1,
+                golive: { $gt: ["$noOfParticipants", "$joinedusers.count"] },
+                joinedusers_user: "$joinedusers_user",
+                alreadyJoined: 1,
+            }
+        }
     ]);
     return value;
 };

@@ -107,7 +107,8 @@ const generateToken_sub = async (req) => {
   let str = await Streamrequest.findById(channel)
   let users = await Joinusers.find({ streamId: channel }).count()
   let stream = await tempTokenModel.findOne({ streamId: channel, type: "sub", hostId: { $ne: null } });
-  if (users > str.noOfParticipants) {
+  console.log(users >str.noOfParticipants)
+  if (users < str.noOfParticipants) {
     if (!stream) {
       const uid = await generateUid();
       const role = false ? Agora.RtcRole.PUBLISHER : Agora.RtcRole.SUBSCRIBER;

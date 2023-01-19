@@ -138,9 +138,9 @@ const generateToken_sub = async (req) => {
     stream = value;
 
   }
-  let user = await Joinusers.findOne({ token: stream._id, shopId: req.shopId, streamId: str._id, hostId: str.tokenDetails })
+  let user = await Joinusers.findOne({ token: stream._id, shopId: req.shopId,  })
   if (!user) {
-    user = await Joinusers.create({ shopId: req.shopId, token: stream._id });
+    user = await Joinusers.create({ shopId: req.shopId, token: stream._id ,streamId:channel, hostId: str.tokenDetails });
     await Dates.create_date(user);
   }
   // return user

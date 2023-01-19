@@ -3,13 +3,15 @@ const ApiError = require('../../utils/ApiError');
 const { RtcTokenBuilder, RtcRole } = require('agora-access-token');
 const Agora = require('agora-access-token');
 const moment = require('moment');
-const { tempTokenModel } = require('../../models/liveStreaming/generateToken.model');
+const { tempTokenModel, Joinusers } = require('../../models/liveStreaming/generateToken.model');
 const axios = require('axios'); //
 const appID = '08bef39e0eb545338b0be104785c2ae1';
 const appCertificate = 'bfb596743d2b4414a1895ac2edb1d1f0';
 const Authorization = `Basic ${Buffer.from(`8f68dcbfe5494cf8acf83d5836a1effc:b222bdfa2a5a4a04afccacb60b1fa2a1`).toString(
   'base64'
 )}`;
+const Dates = require('../Date.serive')
+
 const { Streamplan, StreamPost, Streamrequest, StreamrequestPost } = require('../../models/ecomplan.model');
 
 
@@ -23,7 +25,7 @@ const generateToken = async (req) => {
   let supplierId = req.userId;
   let streamId = req.body.streamId;
   console.log(streamId)
-  let stream= await Streamrequest.findById(streamId)
+  let stream = await Streamrequest.findById(streamId)
   if (!streamId) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
   }
@@ -33,7 +35,7 @@ const generateToken = async (req) => {
   const role = req.body.isPublisher ? Agora.RtcRole.PUBLISHER : Agora.RtcRole.SUBSCRIBER;
   const moment_curr = moment(stream.startTime);
   const currentTimestamp = moment_curr.add(stream.Duration, 'minutes');
-  const expirationTimestamp =stream.endTime / 1000;
+  const expirationTimestamp = stream.endTime / 1000;
   let value = await tempTokenModel.create({
     ...req.body,
     ...{
@@ -46,7 +48,7 @@ const generateToken = async (req) => {
       participents: 3,
       created_num: new Date(new Date(moment().format('YYYY-MM-DD') + ' ' + moment().format('HH:mm:ss'))).getTime(),
       expDate: expirationTimestamp * 1000,
-      Duration:stream.Duration
+      Duration: stream.Duration
     },
   });
   console.log(role);
@@ -59,8 +61,8 @@ const generateToken = async (req) => {
   value.uid_cloud = cloud_recording.value.Uid;
   value.cloud_id = cloud_recording.value._id;
   value.save();
-  stream.tokenDetails=value._id;
-  stream.tokenGeneration=true;
+  stream.tokenDetails = value._id;
+  stream.tokenGeneration = true;
   // stream.endTime=expirationTimestamp * 1000;
   stream.save();
   // let stream = await Streamrequest.findByIdAndUpdate({ _id: streamId }, { tokenDetails: value._id, tokenGeneration: true }, { new: true });
@@ -103,7 +105,7 @@ const generateToken_sub_record = async (channel, isPublisher, req) => {
 const generateToken_sub = async (req) => {
   const channel = req.query.id;
   let str = await Streamrequest.findById(channel)
-  let stream = await tempTokenModel.findOne({streamId: channel ,type:"sub",hostId:{$ne:null}});
+  let stream = await tempTokenModel.findOne({ streamId: channel, type: "sub", hostId: { $ne: null } });
   console.log(stream)
   if (!stream) {
     const uid = await generateUid();
@@ -116,7 +118,7 @@ const generateToken_sub = async (req) => {
     let value = await tempTokenModel.create({
       ...req.body,
       ...{
-        hostId:str.tokenDetails,
+        hostId: str.tokenDetails,
         type: 'sub',
         date: moment().format('YYYY-MM-DD'),
         time: moment().format('HHMMSS'),
@@ -135,8 +137,14 @@ const generateToken_sub = async (req) => {
     value.token = token;
     value.save();
     stream = value;
+
   }
-  return stream;
+  let user = Joinusers.findOne({ token: token._id, shopId: req.shopId })
+  if (user) {
+    let user = await Joinusers.create({ shopId: req.shopId, token: token._id });
+    await Dates.create_date(user);
+  }
+  return { stream, user };
 };
 
 const getHostTokens = async (req) => {
@@ -276,8 +284,8 @@ const agora_acquire = async (req) => {
 const recording_start = async (req) => {
   const resource = req.body.resourceId;
   let token = await tempTokenModel.findById(req.body.id);
-console.log(resource)
-console.log(token)
+  console.log(resource)
+  console.log(token)
   const mode = 'mix';
   const start = await axios.post(
     `https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/mode/${mode}/start`,

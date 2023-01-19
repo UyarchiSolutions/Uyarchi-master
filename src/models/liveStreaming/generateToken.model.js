@@ -52,32 +52,67 @@ const tempToken = mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  cloud_recording:{
+  cloud_recording: {
     type: String,
   },
-  uid_cloud:{
+  uid_cloud: {
     type: String,
   },
-  cloud_id:{
+  cloud_id: {
     type: String,
   },
-  store:{
+  store: {
     type: String,
   },
-  supplierId:{
+  supplierId: {
     type: String,
   },
-  streamId:{
+  streamId: {
     type: String,
   },
-  shopId:{
+  shopId: {
     type: String,
   },
-  Duration:{
+  Duration: {
     type: Number,
 
   }
 });
 
 const tempTokenModel = mongoose.model('tempToken', tempToken);
-module.exports = { tempTokenModel };
+
+
+
+const joinedusers = mongoose.Schema({
+  _id: {
+    type: String,
+    default: v4,
+  },
+  active: {
+    type: Boolean,
+    default: true,
+  },
+  archive: {
+    type: Boolean,
+    default: false,
+  },
+  created: {
+    type: Date
+  },
+  DateIso: {
+    type: Number
+  },
+  token: {
+    type: String,
+  },
+  shopId:{
+    type: String,
+  },
+});
+
+const Joinusers = mongoose.model('joinedusers', joinedusers);
+
+
+
+
+module.exports = { tempTokenModel, Joinusers };

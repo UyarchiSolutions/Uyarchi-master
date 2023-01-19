@@ -108,6 +108,7 @@ const generateToken_sub = async (req) => {
   let users = await Joinusers.find({ streamId: channel }).count()
   let stream = await tempTokenModel.findOne({ streamId: channel, type: "sub", hostId: { $ne: null } });
   console.log(users ,str.noOfParticipants)
+  await get_participents_limit(req)
   if (users < str.noOfParticipants) {
     if (!stream) {
       const uid = await generateUid();
@@ -152,7 +153,6 @@ const generateToken_sub = async (req) => {
   else {
     let user = await Joinusers.findOne({ token: stream._id, shopId: req.shopId, });
     if (!user) {
-      await get_participents_limit(req)
       throw new ApiError(httpStatus.NOT_FOUND, 'Max participants Reached');
     }
     return { stream: stream, user: user };

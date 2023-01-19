@@ -26,7 +26,7 @@ router.post('/chat/room/details', generateToken.chat_rooms);
 router.get('/getsub/token/user', generateToken.get_sub_token);
 
 
-router.route('/getsub/token/single').get(shopverify,generateToken.get_sub_token_single);
+router.route('/getsub/token/single').get(generateToken.get_sub_token_single);
 
 
 module.exports = router;

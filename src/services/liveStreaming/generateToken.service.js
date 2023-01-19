@@ -151,7 +151,7 @@ const generateToken_sub = async (req) => {
   else {
     let user = await Joinusers.findOne({ token: stream._id, shopId: req.shopId, });
     if (!user) {
-      req.io.emit(channel,{refresh:true})
+      await get_participents_limit(req)
       throw new ApiError(httpStatus.NOT_FOUND, 'Max participants Reached');
     }
     return { stream: stream, user: user };
@@ -536,6 +536,19 @@ const get_sub_golive = async (req) => {
   return value[0];
 };
 
+const get_participents_limit= async (req) => {
+     let result= await find_userLimt(req.query.id)
+    req.io.emit(req.query.id,result)
+
+    return result
+};
+const find_userLimt= async (channel) => {
+  const user= await Joinusers.find({streamId:channel}).count()
+  const stream= await Streamrequest.findById(channel)
+  return {userActive:user,noOfParticipants:stream.noOfParticipants};
+};
+
+
 module.exports = {
   generateToken,
   getHostTokens,
@@ -553,5 +566,6 @@ module.exports = {
   gettokenById_host,
   chat_rooms,
   get_sub_token,
-  get_sub_golive
+  get_sub_golive,
+  get_participents_limit
 };

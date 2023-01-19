@@ -144,7 +144,7 @@ const generateToken_sub = async (req) => {
     let user = await Joinusers.create({ shopId: req.shopId, token: stream._id });
     await Dates.create_date(user);
   }
-  return { stream, user };
+  return { stream: stream, user: user };
 };
 
 const getHostTokens = async (req) => {

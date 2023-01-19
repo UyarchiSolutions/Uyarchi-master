@@ -39,6 +39,9 @@ const Groupchat_schema = mongoose.Schema({
     },
     userType:{
         type: String,
+    },
+    joinuser:{
+        type: String,
     }
 
 });

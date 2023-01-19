@@ -1,8 +1,9 @@
 const express = require('express');
 const subHostController = require('../../controllers/subHost.controller');
+const auth = require('../../controllers/supplierAppAuth.controller');
 const router = express.Router();
 
-router.route('/').post(subHostController.createSubHost).get(subHostController.getActiveSubHosts);
+router.route('/').post(auth, subHostController.createSubHost).get(subHostController.getActiveSubHosts);
 router.route('/send-OTP').post(subHostController.SendOtp);
 router.route('/verify-OTP').post(subHostController.verifyOTP);
 router.route('/SetPassword/:number').put(subHostController.SetPassword);

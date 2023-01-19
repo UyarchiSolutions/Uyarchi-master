@@ -5,7 +5,9 @@ const catchAsync = require('../utils/catchAsync');
 const subHostService = require('../services/subHost.service');
 const tokenService = require('../services/token.service');
 const createSubHost = catchAsync(async (req, res) => {
-  const data = await subHostService.createSubHost(req.body);
+  console.log(req.userId);
+  let userId = req.userId;
+  const data = await subHostService.createSubHost(req.body, userId);
   res.send(data);
 });
 

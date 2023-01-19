@@ -15,6 +15,9 @@ const subHostSchema = new mongoose.Schema({
   mail: {
     type: String,
   },
+  createdBy: {
+    type: String,
+  },
   phoneNumber: {
     type: Number,
     unique: true,

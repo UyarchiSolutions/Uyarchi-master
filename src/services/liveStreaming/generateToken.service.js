@@ -427,6 +427,37 @@ const get_sub_golive = async (req) => {
         from: 'temptokens',
         localField: 'token',
         foreignField: '_id',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'temptokens',
+              localField: 'hostId',
+              foreignField: '_id',
+              as: 'active_users',
+            },
+          },
+          { $unwind: "$active_users" },
+          {
+            $project:{
+              active: 1,
+              archived:  1,
+              hostId: 1,
+              type: 1,
+              date:  1,
+              time:  1,
+              created:  1,
+              Uid: 1,
+              chennel: 1,
+              participents:1,
+              created_num:1,
+              expDate:1,
+              token:  1,
+              hostUid: "$active_users.Uid",
+              expDate_host: "$active_users.expDate",
+              active_users:"$active_users"
+            }
+          }
+        ],
         as: 'temptokens',
       },
     },
@@ -447,8 +478,8 @@ const get_sub_golive = async (req) => {
         created_num:  "$temptokens.created_num",
         expDate: "$temptokens.expDate",
         token:  "$temptokens.token",
-        hostUid: "$temptokens.hostUid",
-        expDate_host: "$temptokens.expDate_host",
+        hostUid: "$active_users.Uid",
+        expDate_host: "$active_users.expDate",
         temptokens:"$temptokens"
 
       }

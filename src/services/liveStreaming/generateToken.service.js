@@ -103,7 +103,7 @@ const generateToken_sub_record = async (channel, isPublisher, req) => {
 const generateToken_sub = async (req) => {
   const channel = req.query.id;
   let str = await Streamrequest.findById(channel)
-  let stream = await tempTokenModel.findOne({ shopId: req.shopId, streamId: channel });
+  let stream = await tempTokenModel.findOne({streamId: channel });
   if (!stream) {
     const uid = await generateUid();
     const role = false ? Agora.RtcRole.PUBLISHER : Agora.RtcRole.SUBSCRIBER;

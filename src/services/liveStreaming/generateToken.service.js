@@ -138,7 +138,7 @@ const generateToken_sub = async (req) => {
     stream = value;
 
   }
-  let user =await  Joinusers.findOne({ token: stream._id, shopId: req.shopId })
+  let user = await Joinusers.findOne({ token: stream._id, shopId: req.shopId, streamId: str._id, hostId: str.tokenDetails })
   if (!user) {
     user = await Joinusers.create({ shopId: req.shopId, token: stream._id });
     await Dates.create_date(user);
@@ -421,7 +421,7 @@ const get_sub_token = async (req) => {
 const get_sub_golive = async (req) => {
   console.log(req.query.id)
   let value = await Joinusers.aggregate([
-    { $match: { $and: [{ _id: { $eq: req.query.id } },{ shopId: { $eq: req.shopId } }] } },
+    { $match: { $and: [{ _id: { $eq: req.query.id } }, { shopId: { $eq: req.shopId } }] } },
     {
       $lookup: {
         from: 'temptokens',
@@ -438,23 +438,23 @@ const get_sub_golive = async (req) => {
           },
           { $unwind: "$active_users" },
           {
-            $project:{
+            $project: {
               active: 1,
-              archived:  1,
+              archived: 1,
               hostId: 1,
               type: 1,
-              date:  1,
-              time:  1,
-              created:  1,
+              date: 1,
+              time: 1,
+              created: 1,
               Uid: 1,
               chennel: 1,
-              participents:1,
-              created_num:1,
-              expDate:1,
-              token:  1,
+              participents: 1,
+              created_num: 1,
+              expDate: 1,
+              token: 1,
               hostUid: "$active_users.Uid",
               expDate_host: "$active_users.expDate",
-              active_users:"$active_users"
+              active_users: "$active_users"
             }
           }
         ],
@@ -466,21 +466,21 @@ const get_sub_golive = async (req) => {
       $project: {
         _id: 1,
         active: "$temptokens.active",
-        archived:  "$temptokens.archived",
-        hostId:  "$temptokens.hostId",
-        type:  "$temptokens.type",
-        date:  "$temptokens.date",
-        time:  "$temptokens.time",
-        created:  "$temptokens.created",
-        Uid:  "$temptokens.Uid",
+        archived: "$temptokens.archived",
+        hostId: "$temptokens.hostId",
+        type: "$temptokens.type",
+        date: "$temptokens.date",
+        time: "$temptokens.time",
+        created: "$temptokens.created",
+        Uid: "$temptokens.Uid",
         chennel: "$temptokens.chennel",
         participents: "$temptokens.participents",
-        created_num:  "$temptokens.created_num",
+        created_num: "$temptokens.created_num",
         expDate: "$temptokens.expDate",
-        token:  "$temptokens.token",
+        token: "$temptokens.token",
         hostUid: "$temptokens.hostUid",
         expDate_host: "$temptokens.expDate_host",
-        temptokens:"$temptokens"
+        temptokens: "$temptokens"
 
       }
     }

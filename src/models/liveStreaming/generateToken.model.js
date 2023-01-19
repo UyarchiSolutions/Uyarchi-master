@@ -108,6 +108,13 @@ const joinedusers = mongoose.Schema({
   shopId:{
     type: String,
   },
+  streamId:{
+    type: String,
+  },
+  hostId:{
+    type: String,
+  },
+
 });
 
 const Joinusers = mongoose.model('joinedusers', joinedusers);

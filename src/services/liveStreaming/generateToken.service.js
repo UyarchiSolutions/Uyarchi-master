@@ -464,7 +464,7 @@ const get_sub_golive = async (req) => {
     { $unwind: "$temptokens" },
     {
       $project: {
-        _id: "$temptokens",
+        _id: 1,
         active: "$temptokens.active",
         archived:  "$temptokens.archived",
         hostId:  "$temptokens.hostId",
@@ -478,8 +478,8 @@ const get_sub_golive = async (req) => {
         created_num:  "$temptokens.created_num",
         expDate: "$temptokens.expDate",
         token:  "$temptokens.token",
-        hostUid: "$active_users.hostUid",
-        expDate_host: "$active_users.expDate_host",
+        hostUid: "$temptokens.hostUid",
+        expDate_host: "$temptokens.expDate_host",
         temptokens:"$temptokens"
 
       }

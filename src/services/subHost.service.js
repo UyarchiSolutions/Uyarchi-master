@@ -6,8 +6,8 @@ const TextLocal = require('../config/subHost.TextLocal');
 const subHostOTP = require('../models/saveSubHostOTP.model');
 const bcrypt = require('bcrypt');
 
-const createSubHost = async (body) => {
-  const data = { ...body, ...{ created: moment() } };
+const createSubHost = async (body, userId) => {
+  const data = { ...body, ...{ created: moment(), createdBy: userId } };
   let exist = await SubHost.findOne({ phoneNumber: data.phoneNumber });
   if (exist) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Phone Number Already Exist');
@@ -16,8 +16,8 @@ const createSubHost = async (body) => {
   return values;
 };
 
-const getActiveSubHosts = async () => {
-  let values = await SubHost.find({ active: true });
+const getActiveSubHosts = async (userId) => {
+  let values = await SubHost.find({ active: true, createdBy: userId });
   return values;
 };
 

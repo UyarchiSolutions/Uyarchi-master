@@ -614,7 +614,11 @@ const go_live_stream_host = async (req) => {
                 planId: 1,
                 streamrequestposts: "$streamrequestposts",
                 adminApprove: 1,
-                temptokens:"$temptokens"
+                temptokens:"$temptokens",
+                Duration:1,
+                startTime:1,
+                endTime:1,
+
             }
         },
 

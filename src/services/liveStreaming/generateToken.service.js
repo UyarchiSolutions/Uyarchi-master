@@ -138,9 +138,9 @@ const generateToken_sub = async (req) => {
     stream = value;
 
   }
-  let user = await Joinusers.findOne({ token: stream._id, shopId: req.shopId,  })
+  let user = await Joinusers.findOne({ token: stream._id, shopId: req.shopId, })
   if (!user) {
-    user = await Joinusers.create({ shopId: req.shopId, token: stream._id ,streamId:channel, hostId: str.tokenDetails });
+    user = await Joinusers.create({ shopId: req.shopId, token: stream._id, streamId: channel, hostId: str.tokenDetails });
     await Dates.create_date(user);
   }
   // return user
@@ -463,6 +463,38 @@ const get_sub_golive = async (req) => {
     },
     { $unwind: "$temptokens" },
     {
+      $lookup: {
+        from: 'streamrequests',
+        localField: 'streamId',
+        foreignField: '_id',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'purchasedplans',
+              localField: 'planId',
+              foreignField: '_id',
+              pipeline: [
+                {
+                  $lookup: {
+                    from: 'streamplans',
+                    localField: 'planId',
+                    foreignField: '_id',
+                    as: 'streamplans',
+                  },
+                },
+                { $unwind: "$streamplans" },
+              ],
+              as: 'purchasedplans',
+            },
+          },
+          { $unwind: "$purchasedplans" },
+
+        ],
+        as: 'streamrequests',
+      },
+    },
+    { $unwind: "$streamrequests" },
+    {
       $project: {
         _id: 1,
         active: "$temptokens.active",
@@ -480,7 +512,9 @@ const get_sub_golive = async (req) => {
         token: "$temptokens.token",
         hostUid: "$temptokens.hostUid",
         expDate_host: "$temptokens.expDate_host",
-        temptokens: "$temptokens"
+        temptokens: "$temptokens",
+        // streamrequests: "$streamrequests",
+        chat: "$streamrequests.purchasedplans.streamplans.chatNeed",
 
       }
     }

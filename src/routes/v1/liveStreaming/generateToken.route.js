@@ -28,7 +28,7 @@ router.route('/getsub/token/golive').get(shopverify,generateToken.get_sub_golive
 
 
 router.route('/getsub/token/single').get(shopverify,generateToken.get_sub_token_single);
-router.route('/participents/limit/all').get(shopverify,generateToken.get_participents_limit);
+router.route('/participents/limit/all').get(generateToken.get_participents_limit);
 
 
 module.exports = router;

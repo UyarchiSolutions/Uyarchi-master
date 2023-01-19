@@ -105,47 +105,57 @@ const generateToken_sub_record = async (channel, isPublisher, req) => {
 const generateToken_sub = async (req) => {
   const channel = req.query.id;
   let str = await Streamrequest.findById(channel)
-  // let users = await Joinusers.find({streamId}).count()
+  let users = await Joinusers.find({ streamId: channel }).count()
   let stream = await tempTokenModel.findOne({ streamId: channel, type: "sub", hostId: { $ne: null } });
-  if (!stream) {
-    const uid = await generateUid();
-    const role = false ? Agora.RtcRole.PUBLISHER : Agora.RtcRole.SUBSCRIBER;
+  if (users > str.noOfParticipants) {
+    if (!stream) {
+      const uid = await generateUid();
+      const role = false ? Agora.RtcRole.PUBLISHER : Agora.RtcRole.SUBSCRIBER;
 
-    const moment_curr = moment();
-    const currentTimestamp = moment_curr.add(300, 'minutes');
-    const expirationTimestamp =
-      new Date(new Date(currentTimestamp.format('YYYY-MM-DD') + ' ' + currentTimestamp.format('HH:mm:ss'))).getTime() / 1000;
-    let value = await tempTokenModel.create({
-      ...req.body,
-      ...{
-        hostId: str.tokenDetails,
-        type: 'sub',
-        date: moment().format('YYYY-MM-DD'),
-        time: moment().format('HHMMSS'),
-        created: moment(),
-        Uid: uid,
-        chennel: channel,
-        participents: 3,
-        created_num: new Date(new Date(moment().format('YYYY-MM-DD') + ' ' + moment().format('HH:mm:ss'))).getTime(),
-        expDate: expirationTimestamp * 1000,
-        shopId: req.shopId,
-        streamId: channel,
+      const moment_curr = moment();
+      const currentTimestamp = moment_curr.add(300, 'minutes');
+      const expirationTimestamp =
+        new Date(new Date(currentTimestamp.format('YYYY-MM-DD') + ' ' + currentTimestamp.format('HH:mm:ss'))).getTime() / 1000;
+      let value = await tempTokenModel.create({
+        ...req.body,
+        ...{
+          hostId: str.tokenDetails,
+          type: 'sub',
+          date: moment().format('YYYY-MM-DD'),
+          time: moment().format('HHMMSS'),
+          created: moment(),
+          Uid: uid,
+          chennel: channel,
+          participents: 3,
+          created_num: new Date(new Date(moment().format('YYYY-MM-DD') + ' ' + moment().format('HH:mm:ss'))).getTime(),
+          expDate: expirationTimestamp * 1000,
+          shopId: req.shopId,
+          streamId: channel,
 
-      },
-    });
-    const token = await geenerate_rtc_token(channel, uid, role, expirationTimestamp);
-    value.token = token;
-    value.save();
-    stream = value;
+        },
+      });
+      const token = await geenerate_rtc_token(channel, uid, role, expirationTimestamp);
+      value.token = token;
+      value.save();
+      stream = value;
 
+    }
+    let user = await Joinusers.findOne({ token: stream._id, shopId: req.shopId, })
+    if (!user) {
+      user = await Joinusers.create({ shopId: req.shopId, token: stream._id, streamId: channel, hostId: str.tokenDetails });
+      await Dates.create_date(user);
+    }
+    // return user
+    return { stream: stream, user: user };
   }
-  let user = await Joinusers.findOne({ token: stream._id, shopId: req.shopId, })
-  if (!user) {
-    user = await Joinusers.create({ shopId: req.shopId, token: stream._id, streamId: channel, hostId: str.tokenDetails });
-    await Dates.create_date(user);
+  else {
+    let user = await Joinusers.findOne({ token: stream._id, shopId: req.shopId, });
+    if (!user) {
+      req.io.emit(channel,{refresh:true})
+      throw new ApiError(httpStatus.NOT_FOUND, 'Max participants Reached');
+    }
+    return { stream: stream, user: user };
   }
-  // return user
-  return { stream: stream, user: user };
 };
 
 const getHostTokens = async (req) => {
@@ -494,7 +504,7 @@ const get_sub_golive = async (req) => {
         as: 'streamrequests',
       },
     },
-    { $unwind: "$streamrequests" },  
+    { $unwind: "$streamrequests" },
     {
       $project: {
         _id: 1,

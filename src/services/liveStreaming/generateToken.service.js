@@ -418,6 +418,48 @@ const get_sub_token = async (req) => {
   return value[0];
 };
 
+const get_sub_golive = async (req) => {
+  console.log(req.query.id)
+  let value = await Joinusers.aggregate([
+    { $match: { $and: [{ _id: { $eq: req.query.id } },{ shopId: { $eq: req.shopId } }] } },
+    {
+      $lookup: {
+        from: 'temptokens',
+        localField: 'token',
+        foreignField: '_id',
+        as: 'temptokens',
+      },
+    },
+    { $unwind: "$temptokens" },
+    {
+      $project: {
+        _id: 1,
+        active: "$temptokens.chennel",
+        archived:  "$temptokens.chennel",
+        hostId:  "$temptokens.chennel",
+        type:  "$temptokens.chennel",
+        date:  "$temptokens.chennel",
+        time:  "$temptokens.chennel",
+        created:  "$temptokens.chennel",
+        Uid:  "$temptokens.chennel",
+        chennel: "$temptokens.chennel",
+        participents: "$temptokens.chennel",
+        created_num:  "$temptokens.chennel",
+        expDate: "$temptokens.chennel",
+        token:  "$temptokens.chennel",
+        hostUid: "$active_users.Uid",
+        expDate_host: "$active_users.expDate",
+        temptokens:"$temptokens"
+
+      }
+    }
+  ])
+  if (value.length == 0) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'plan_not_found');
+  }
+  return value[0];
+};
+
 module.exports = {
   generateToken,
   getHostTokens,
@@ -434,5 +476,6 @@ module.exports = {
   generateToken_sub,
   gettokenById_host,
   chat_rooms,
-  get_sub_token
+  get_sub_token,
+  get_sub_golive
 };

@@ -78,6 +78,11 @@ const get_sub_token = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).send(tokens);
 });
 
+const get_sub_golive = catchAsync(async (req, res) => {
+  const tokens = await generateTokenService.get_sub_golive(req);
+  res.status(httpStatus.CREATED).send(tokens);
+});
+
 const get_sub_token_single = catchAsync(async (req, res) => {
   let tokens = await generateTokenService.generateToken_sub(req);
   req.io.emit('subscriberjoined', { user: 'sd' });
@@ -100,5 +105,6 @@ module.exports = {
   gettokenById_host,
   chat_rooms,
   get_sub_token,
-  get_sub_token_single
+  get_sub_token_single,
+  get_sub_golive
 };

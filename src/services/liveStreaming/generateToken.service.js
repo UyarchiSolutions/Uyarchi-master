@@ -277,7 +277,6 @@ const recording_start = async (req) => {
   let token = await tempTokenModel.findById(req.body.id);
 
   const mode = 'mix';
-  try{
   const start = await axios.post(
     `https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/mode/${mode}/start`,
     {
@@ -315,10 +314,6 @@ const recording_start = async (req) => {
     { headers: { Authorization } }
   );
   return start.data;
-  }
-  catch (err) {
-    return err
-  }
 };
 const recording_query = async (req) => {
   console.log(req.body);

@@ -59,6 +59,9 @@ const purchasePlanSchema = mongoose.Schema({
     max_post_per_stream: {
         type: Number
     },
+    Duration: {
+        type: Number
+    },
 
 });
 

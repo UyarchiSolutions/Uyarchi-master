@@ -16,8 +16,8 @@ const createSubHost = async (body, userId) => {
   return values;
 };
 
-const getActiveSubHosts = async () => {
-  let values = await SubHost.find({ active: true });
+const getActiveSubHosts = async (userId) => {
+  let values = await SubHost.find({ active: true, createdBy: userId });
   return values;
 };
 

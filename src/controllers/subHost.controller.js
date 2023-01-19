@@ -12,7 +12,8 @@ const createSubHost = catchAsync(async (req, res) => {
 });
 
 const getActiveSubHosts = catchAsync(async (req, res) => {
-  const data = await subHostService.getActiveSubHosts();
+  let userId = req.userId;
+  const data = await subHostService.getActiveSubHosts(userId);
   res.send(data);
 });
 

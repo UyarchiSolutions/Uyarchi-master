@@ -107,7 +107,7 @@ const generateToken_sub = async (req) => {
   let str = await Streamrequest.findById(channel)
   let users = await Joinusers.find({ streamId: channel }).count()
   let stream = await tempTokenModel.findOne({ streamId: channel, type: "sub", hostId: { $ne: null } });
-  console.log(users >str.noOfParticipants)
+  console.log(users ,str.noOfParticipants)
   if (users < str.noOfParticipants) {
     if (!stream) {
       const uid = await generateUid();
@@ -539,7 +539,7 @@ const get_sub_golive = async (req) => {
 
 const get_participents_limit= async (req) => {
      let result= await find_userLimt(req.query.id)
-    req.io.emit(req.query.id,result)
+    req.io.emit(req.query.id+"_count",result)
 
     return result
 };

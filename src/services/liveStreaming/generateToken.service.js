@@ -546,6 +546,7 @@ const get_sub_golive = async (req) => {
                     "archive": 1,
                     "productId": "$streampost.productId",
                     "productTitle": "$streamposts.products.productTitle",
+                    "image": "$streamposts.products.image",
                     "categoryId": "a7c95af4-abd5-4fe0-b685-fd93bb98f5ec",
                     "quantity": "$streamposts.quantity",
                     "marketPlace": "$streamposts.marketPlace",

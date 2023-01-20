@@ -630,6 +630,7 @@ const go_live_stream_host = async (req) => {
 };
 
 const get_watch_live_steams = async (req) => {
+    req.io.emit("c258cf7e-25ae-41c2-83b9-3020cd15ce54_view",{adsas:"asdas"})
     let value = await Streamrequest.aggregate([
         { $match: { $and: [{ adminApprove: { $eq: "Approved" } }] } },
         {

@@ -107,7 +107,7 @@ const generateToken_sub = async (req) => {
   let str = await Streamrequest.findById(channel)
   let users = await Joinusers.find({ streamId: channel }).count()
   let stream = await tempTokenModel.findOne({ streamId: channel, type: "sub", hostId: { $ne: null } });
-  console.log(users ,str.noOfParticipants)
+  console.log(users, str.noOfParticipants)
   if (users < str.noOfParticipants) {
     if (!stream) {
       const uid = await generateUid();
@@ -508,6 +508,68 @@ const get_sub_golive = async (req) => {
     },
     { $unwind: "$streamrequests" },
     {
+      $lookup: {
+        from: 'streamrequests',
+        localField: 'streamId',
+        foreignField: '_id',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'streamrequestposts',
+              localField: '_id',
+              foreignField: 'streamRequest',
+              pipeline: [
+                {
+                  $lookup: {
+                    from: 'streamposts',
+                    localField: 'postId',
+                    foreignField: '_id',
+                    pipeline: [
+                      {
+                        $lookup: {
+                          from: 'products',
+                          localField: 'productId',
+                          foreignField: '_id',
+                          as: 'products',
+                        },
+                      },
+                      { $unwind: "$products" },
+                    ],
+                    as: 'streamposts',
+                  },
+                },
+                { $unwind: "$streamposts" },
+                {
+                  $project: {
+                    _id: 1,
+                    "active": 1,
+                    "archive": 1,
+                    "productId": "$streampost.productId",
+                    "productTitle": "$streamposts.products.productTitle",
+                    "categoryId": "a7c95af4-abd5-4fe0-b685-fd93bb98f5ec",
+                    "quantity": "$streamposts.quantity",
+                    "marketPlace": "$streamposts.marketPlace",
+                    "offerPrice": "$streamposts.offerPrice",
+                    "postLiveStreamingPirce": "$streamposts.postLiveStreamingPirce",
+                    "validity": "$streamposts.validity",
+                    "minLots": "$streamposts.minLots",
+                    "incrementalLots": "$streamposts.incrementalLots",
+                    "suppierId": 1,
+                    "DateIso": 1,
+                    "created": "2023-01-20T11:46:58.201Z"
+                  }
+                }
+              ],
+              as: 'streamrequestposts',
+            },
+          },
+
+        ],
+        as: 'streamrequests_post',
+      },
+    },
+    { $unwind: "$streamrequests_post" },
+    {
       $project: {
         _id: 1,
         active: "$temptokens.active",
@@ -528,6 +590,8 @@ const get_sub_golive = async (req) => {
         temptokens: "$temptokens",
         streamrequests: "$streamrequests",
         chat: "$streamrequests.purchasedplans.streamplans.chatNeed",
+        streamrequests_post: "$streamrequests_post",
+        streamrequestposts: "$streamrequests_post.streamrequestposts",
 
       }
     }
@@ -538,16 +602,16 @@ const get_sub_golive = async (req) => {
   return value[0];
 };
 
-const get_participents_limit= async (req) => {
-     let result= await find_userLimt(req.query.id)
-    req.io.emit(req.query.id+"_count",result)
+const get_participents_limit = async (req) => {
+  let result = await find_userLimt(req.query.id)
+  req.io.emit(req.query.id + "_count", result)
 
-    return result
+  return result
 };
-const find_userLimt= async (channel) => {
-  const user= await Joinusers.find({streamId:channel}).count()
-  const stream= await Streamrequest.findById(channel)
-  return {userActive:user,noOfParticipants:stream.noOfParticipants};
+const find_userLimt = async (channel) => {
+  const user = await Joinusers.find({ streamId: channel }).count()
+  const stream = await Streamrequest.findById(channel)
+  return { userActive: user, noOfParticipants: stream.noOfParticipants };
 };
 
 

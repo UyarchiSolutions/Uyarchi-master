@@ -135,6 +135,9 @@ const streamPostschema = mongoose.Schema({
   isUsed:{
     type: Boolean,
     default: false,
+  },
+  validityType:{
+    type:String
   }
 });
 

@@ -78,7 +78,7 @@ const generateToken_sub_record = async (channel, isPublisher, req) => {
   const role = isPublisher ? Agora.RtcRole.PUBLISHER : Agora.RtcRole.SUBSCRIBER;
   console.log(role);
   const moment_curr = moment();
-  const currentTimestamp = moment_curr.add(300, 'minutes');
+  const currentTimestamp = moment_curr.add(600, 'minutes');
   const expirationTimestamp =
     new Date(new Date(currentTimestamp.format('YYYY-MM-DD') + ' ' + currentTimestamp.format('HH:mm:ss'))).getTime() / 1000;
   let value = await tempTokenModel.create({
@@ -114,7 +114,7 @@ const generateToken_sub = async (req) => {
       const role = false ? Agora.RtcRole.PUBLISHER : Agora.RtcRole.SUBSCRIBER;
 
       const moment_curr = moment();
-      const currentTimestamp = moment_curr.add(300, 'minutes');
+      const currentTimestamp = moment_curr.add(600, 'minutes');
       const expirationTimestamp =
         new Date(new Date(currentTimestamp.format('YYYY-MM-DD') + ' ' + currentTimestamp.format('HH:mm:ss'))).getTime() / 1000;
       let value = await tempTokenModel.create({

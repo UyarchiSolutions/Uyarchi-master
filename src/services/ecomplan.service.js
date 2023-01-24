@@ -683,9 +683,6 @@ const get_watch_live_steams = async (req) => {
                 from: 'suppliers',
                 localField: 'suppierId',
                 foreignField: '_id',
-                pipeline: [
-                    { $group: { _id: 1, count: { $sum: 1 } } }
-                ],
                 as: 'suppliers',
             },
         },

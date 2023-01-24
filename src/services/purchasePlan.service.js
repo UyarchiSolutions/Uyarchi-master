@@ -60,10 +60,11 @@ const create_purchase_plan_addon = async (req) => {
 const addstream_user_limits = async (req, plan, con) => {
     let stream = await Streamrequest.findById(req.body.streamId);
     let users_limit = await StreamPreRegister.find({ streamId: req.body.streamId, status: "Registered" }).skip(stream.noOfParticipants).limit(plan.numberOfParticipants);
+    console.log(users_limit)
     let count = stream.noOfParticipants;
     users_limit.forEach(async (e) => {
         count++;
-        await StreamPreRegister.findByIdAndUpdate({ eligible: true, streamCount: count }, { new: true })
+        await StreamPreRegister.findByIdAndUpdate({ _id: e._id }, { eligible: true, streamCount: count }, { new: true })
     })
     stream.noOfParticipants = plan.numberOfParticipants + stream.noOfParticipants;
     stream.save();

@@ -8,14 +8,14 @@ const { tempTokenModel } = require('../models/liveStreaming/generateToken.model'
 
 const create_Plans = async (req) => {
     console.log(req.body)
-    const value = await Streamplan.create({...req.body,...{planType: 'normal'}})
+    const value = await Streamplan.create({ ...req.body, ...{ planType: 'normal' } })
     await Dates.create_date(value)
     console.log(value);
     return value;
 };
 const create_Plans_addon = async (req) => {
     console.log(req.body)
-    const value = await Streamplan.create({...req.body,...{planType: 'addon'}})
+    const value = await Streamplan.create({ ...req.body, ...{ planType: 'addon' } })
     await Dates.create_date(value)
     console.log(value);
     return value;
@@ -24,6 +24,7 @@ const create_Plans_addon = async (req) => {
 const get_all_Plans = async (req) => {
     let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
     const value = await Streamplan.aggregate([
+        { $match: { planType: { $ne: "addon" } } },
         { $sort: { DateIso: -1 } },
         { $skip: 10 * page },
         { $limit: 10 },

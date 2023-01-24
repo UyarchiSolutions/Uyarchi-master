@@ -865,7 +865,6 @@ const unregisetr_strean_instrest = async (req) => {
     if (go_next && count != 1) {
         let next = await StreamPreRegister.findOne({ streamId: req.body.streamId, status: "Registered", _id: { $ne: findresult._id } }).sort({ DateIso: 1 }).skip(streamPosition);
         if (next) {
-            next.streamCount = user_postion;
             next.eligible = true;
             next.streamCount = user_postion
             next.save();

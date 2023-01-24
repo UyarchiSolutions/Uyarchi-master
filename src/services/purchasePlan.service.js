@@ -6,7 +6,7 @@ const { purchasePlan } = require('../models/purchasePlan.model');
 const paymentgatway = require('./paymentgatway.service');
 const Date = require('./Date.serive')
 
-const { Streamplan } = require('../models/ecomplan.model');
+const { Streamplan, StreamPost, Streamrequest, StreamrequestPost, StreamPreRegister } = require('../models/ecomplan.model');
 
 const create_purchase_plan = async (req) => {
     let orders;
@@ -17,7 +17,7 @@ const create_purchase_plan = async (req) => {
         let collectedstatus = payment.status;
         let plan = await Streamplan.findById(req.body.plan);
         if (collectedstatus == 'captured' && collectedAmount == plan.salesPrice) {
-            let con = await purchasePlan.create({ ...{ planId: req.body.plan, suppierId: req.userId, paidAmount: collectedAmount, paymentStatus: collectedstatus, order_id: payment.order_id ,noOfParticipants: plan.numberOfParticipants, chat: plan.chatNeed, max_post_per_stream: plan.max_post_per_stream,Duration:plan.Duration}, ...req.body.PaymentDatails });
+            let con = await purchasePlan.create({ ...{ planType: 'normal', planId: req.body.plan, suppierId: req.userId, paidAmount: collectedAmount, paymentStatus: collectedstatus, order_id: payment.order_id, noOfParticipants: plan.numberOfParticipants, chat: plan.chatNeed, max_post_per_stream: plan.max_post_per_stream, Duration: plan.Duration }, ...req.body.PaymentDatails });
             await Date.create_date(con)
             return con;
         }
@@ -32,6 +32,42 @@ const create_purchase_plan = async (req) => {
 
 }
 
+const create_purchase_plan_addon = async (req) => {
+    let orders;
+    if (req.body.PaymentDatails != null) {
+        let payment = await paymentgatway.verifyRazorpay_Amount(req.body.PaymentDatails);
+        console.log(payment)
+        let collectedAmount = payment.amount / 100
+        let collectedstatus = payment.status;
+        let plan = await Streamplan.findById(req.body.plan);
+        if (collectedstatus == 'captured' && collectedAmount == plan.salesPrice) {
+            let con = await purchasePlan.create({ ...{ planType: 'addon', streamId: req.body.streamId, planId: req.body.plan, suppierId: req.userId, paidAmount: collectedAmount, paymentStatus: collectedstatus, order_id: payment.order_id, noOfParticipants: plan.numberOfParticipants }, ...req.body.PaymentDatails });
+            await Date.create_date(con)
+            await addstream_user_limits(req, plan, con)
+            return con;
+        }
+        else {
+            return { error: "Amount Not Match" }
+        }
+    }
+    else {
+        return { error: "order not found" }
+    }
+
+
+}
+
+const addstream_user_limits = async (req, plan, con) => {
+    let stream = await Streamrequest.findById(req.body.streamId);
+    let users_limit = await StreamPreRegister.find({ streamId: req.body.streamId, status: "Registered" }).skip(stream.noOfParticipants).limit(plan.numberOfParticipants);
+    let count = stream.noOfParticipants;
+    users_limit.forEach(async (e) => {
+        count++;
+        await StreamPreRegister.findByIdAndUpdate({ eligible: true, streamCount: count }, { new: true })
+    })
+    stream.noOfParticipants = plan.numberOfParticipants + stream.noOfParticipants;
+    stream.save();
+}
 const get_order_details = async (req) => {
     let order = await purchasePlan.findById(req.query.id);
     if (!order || order.suppierId != req.userId) {
@@ -45,7 +81,7 @@ const get_order_details = async (req) => {
 
 const get_all_my_orders = async (req) => {
     let plan = await purchasePlan.aggregate([
-        {$sort:{DateIso:-1}},
+        { $sort: { DateIso: -1 } },
         { $match: { suppierId: req.userId } },
         {
             $lookup: {
@@ -75,18 +111,19 @@ const get_all_my_orders = async (req) => {
                 razorpay_order_id: 1,
                 razorpay_payment_id: 1,
                 razorpay_signature: 1,
-                Duration:"$streamplans.Duration",
-                commision:"$streamplans.commision",
-                planName:"$streamplans.planName",
-                commition_value:"$streamplans.commition_value",
-                chatNeed:"$streamplans.chatNeed",
-                numberOfParticipants:"$streamplans.numberOfParticipants",
-                numberofStream:"$streamplans.numberofStream",
-                post_expire_days:"$streamplans.post_expire_days",
-                post_expire_hours:"$streamplans.post_expire_hours",
-                post_expire_minutes:"$streamplans.post_expire_minutes",
-                regularPrice:"$streamplans.regularPrice",
-                validityofStream:"$streamplans.validityofStream",
+                Duration: "$streamplans.Duration",
+                commision: "$streamplans.commision",
+                planName: "$streamplans.planName",
+                commition_value: "$streamplans.commition_value",
+                chatNeed: "$streamplans.chatNeed",
+                numberOfParticipants: "$streamplans.numberOfParticipants",
+                numberofStream: "$streamplans.numberofStream",
+                post_expire_days: "$streamplans.post_expire_days",
+                post_expire_hours: "$streamplans.post_expire_hours",
+                post_expire_minutes: "$streamplans.post_expire_minutes",
+                regularPrice: "$streamplans.regularPrice",
+                validityofStream: "$streamplans.validityofStream",
+
             }
         }
 
@@ -98,5 +135,6 @@ const get_all_my_orders = async (req) => {
 module.exports = {
     create_purchase_plan,
     get_order_details,
-    get_all_my_orders
+    get_all_my_orders,
+    create_purchase_plan_addon
 }

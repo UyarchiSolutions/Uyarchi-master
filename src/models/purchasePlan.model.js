@@ -62,6 +62,14 @@ const purchasePlanSchema = mongoose.Schema({
     Duration: {
         type: Number
     },
+    planType:{
+        type: String,
+        default:"normal"
+    },
+    streamId:{
+        type: String,
+    }
+
 
 });
 

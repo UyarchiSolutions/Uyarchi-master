@@ -802,7 +802,7 @@ const regisetr_strean_instrest = async (req) => {
             await Dates.create_date(findresult)
         }
     }
-    single_stream_details(req);
+    await single_stream_details(req);
     return { findresult };
 
 };
@@ -834,18 +834,24 @@ const unregisetr_strean_instrest = async (req) => {
     }
     if (go_next && count != 1) {
         let next = await StreamPreRegister.findOne({ streamId: req.body.streamId, status: "Registered", _id: { $ne: findresult._id } }).sort({ DateIso: 1 }).skip(streamPosition);
-        next.streamCount = user_postion;
-        next.eligible = true;
-        next.streamCount = user_postion
-        next.save();
+        if (next) {
+            next.streamCount = user_postion;
+            next.eligible = true;
+            next.streamCount = user_postion
+            next.save();
+        }
     }
-    single_stream_details(req);
+    await single_stream_details(req);
     return findresult;
 };
 
 const single_stream_details = async (req) => {
-    let count = await StreamPreRegister.find({ streamId: req.body.streamId, status: "Registered" }).count();
-    req.io.emit(req.body.streamId + "_userjoined", { count: count, streamId: req.body.streamId });
+    setTimeout(async () => {
+        let count = await StreamPreRegister.find({ streamId: req.body.streamId, status: "Registered" }).count();
+        console.log(count)
+        req.io.emit(req.body.streamId + "_userjoined", { count: count, streamId: req.body.streamId });
+    }, 300)
+
 }
 
 

@@ -13,6 +13,15 @@ const create_purchase_plan = catchAsync(async (req, res) => {
     res.status(httpStatus.CREATED).send(value);
 });
 
+const create_purchase_plan_addon = catchAsync(async (req, res) => {
+    const value = await purchasePlan.create_purchase_plan_addon(req);
+    if (!value) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Order Not Created');
+    }
+    res.status(httpStatus.CREATED).send(value);
+});
+
+
 const get_order_details = catchAsync(async (req, res) => {
     const value = await purchasePlan.get_order_details(req);
     if (!value) {
@@ -33,5 +42,6 @@ const get_all_my_orders = catchAsync(async (req, res) => {
 module.exports = {
     create_purchase_plan,
     get_order_details,
-    get_all_my_orders
+    get_all_my_orders,
+    create_purchase_plan_addon
 }

@@ -527,7 +527,7 @@ const get_all_streams = async (req) => {
                 startTime: 1,
                 endTime: 1,
                 registeredUsers: 1,
-                noOfParticipants:1
+                noOfParticipants: 1
             }
         },
 
@@ -802,6 +802,7 @@ const regisetr_strean_instrest = async (req) => {
             await Dates.create_date(findresult)
         }
     }
+    single_stream_details(req);
     return { findresult };
 
 };
@@ -838,8 +839,14 @@ const unregisetr_strean_instrest = async (req) => {
         next.streamCount = user_postion
         next.save();
     }
+    single_stream_details(req);
     return findresult;
 };
+
+const single_stream_details = async (req) => {
+    let count = await StreamPreRegister.find({ streamId: req.body.streamId, status: "Registered" }).count();
+    req.io.emit(req.body.streamId + "_userjoined", { count: count, streamId: req.body.streamId });
+}
 
 
 

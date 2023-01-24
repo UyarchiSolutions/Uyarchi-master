@@ -693,6 +693,28 @@ const get_watch_live_steams = async (req) => {
             },
         },
         {
+            $lookup: {
+                from: 'streampreregisters',
+                localField: '_id',
+                foreignField: 'streamId',
+                pipeline: [
+                    { $match: { shopId: req.shopId } },
+                ],
+                as: 'streampreregister',
+            },
+        },
+        {
+            $unwind: {
+                preserveNullAndEmptyArrays: true,
+                path: '$streampreregister',
+            },
+        },
+        {
+            $addFields: {
+                registerStatus: { $ifNull: ['$streampreregister.status', 'Not Registered'] },
+            },
+        },
+        {
             $project: {
                 "_id": 1,
                 "active": 1,
@@ -723,7 +745,8 @@ const get_watch_live_steams = async (req) => {
                 golive: { $gt: ["$noOfParticipants", "$joinedusers.count"] },
                 joinedusers_user: "$joinedusers_user",
                 alreadyJoined: 1,
-                suppliersName:"$suppliers.primaryContactName"
+                suppliersName: "$suppliers.primaryContactName",
+                registerStatus:1
             }
         }
     ]);

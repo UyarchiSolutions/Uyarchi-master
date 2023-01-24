@@ -8,6 +8,10 @@ const create_Plans = catchAsync(async (req, res) => {
   const value = await Ecomserive.create_Plans(req);
   res.send(value);
 });
+const create_Plans_addon= catchAsync(async (req, res) => {
+  const value = await Ecomserive.create_Plans_addon(req);
+  res.send(value);
+});
 const get_all_Plans = catchAsync(async (req, res) => {
   const value = await Ecomserive.get_all_Plans(req);
   res.send(value);
@@ -146,6 +150,7 @@ const unregisetr_strean_instrest= catchAsync(async (req, res) => {
 });
 module.exports = {
   create_Plans,
+  create_Plans_addon,
   get_all_Plans,
   get_one_Plans,
   update_one_Plans,

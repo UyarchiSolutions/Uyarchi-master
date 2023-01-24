@@ -77,6 +77,9 @@ const streamplanschema = mongoose.Schema({
   max_post_per_stream: {
     type: Number,
   },
+  planType: {
+    type: String,
+  },
 });
 
 const Streamplan = mongoose.model('streamplan', streamplanschema);

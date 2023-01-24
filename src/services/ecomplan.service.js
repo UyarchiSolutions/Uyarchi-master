@@ -8,7 +8,14 @@ const { tempTokenModel } = require('../models/liveStreaming/generateToken.model'
 
 const create_Plans = async (req) => {
     console.log(req.body)
-    const value = await Streamplan.create(req.body)
+    const value = await Streamplan.create({...req.body,...{planType: 'normal'}})
+    await Dates.create_date(value)
+    console.log(value);
+    return value;
+};
+const create_Plans_addon = async (req) => {
+    console.log(req.body)
+    const value = await Streamplan.create({...req.body,...{planType: 'addon'}})
     await Dates.create_date(value)
     console.log(value);
     return value;
@@ -861,6 +868,7 @@ const single_stream_details = async (req) => {
 
 module.exports = {
     create_Plans,
+    create_Plans_addon,
     get_all_Plans,
     get_one_Plans,
     update_one_Plans,

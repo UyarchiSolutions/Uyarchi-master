@@ -763,45 +763,57 @@ const get_watch_live_token = async (req) => {
 
 const regisetr_strean_instrest = async (req) => {
     let findresult = await StreamPreRegister.findOne({ shopId: req.shopId, streamId: req.body.streamId });
-    let count = await StreamPreRegister.find({streamId: req.body.streamId, status: "Registered" }).count();
+    let count = await StreamPreRegister.find({ streamId: req.body.streamId, status: "Registered" }).count();
     let participents = await Streamrequest.findById(req.body.streamId);
     if (!findresult) {
-        findresult = await StreamPreRegister.create({ shopId: req.shopId, streamId: req.body.streamId, streamCount: count + 1, eligible: participents.noOfParticipants >= count })
+        findresult = await StreamPreRegister.create({ shopId: req.shopId, streamId: req.body.streamId, streamCount: count + 1, eligible: participents.noOfParticipants > count })
         await Dates.create_date(findresult)
     }
     else {
-        if (findresult.status == 'Registered') {
-            if (participents.noOfParticipants > findresult.streamCount) {
-                console.log("asdjhasdh")
-                let next = await StreamPreRegister.findOne({ status: "Registered",_id:{$ne:findresult._id} }).sort({ DateIso: -1 }).skip(count - 1);
-                next.eligible = true;
-                next.streamCount = findresult.streamCount;
-                next.save();
-            }
-            else{
-                console.log("asdjhasdsdasdasdasdadash")
-            }
-            findresult.streamCount = 0;
-            findresult.eligible = false;
-            findresult.status = 'Unregistered';
-            findresult.save();
-        }
-        else {
+        if (findresult.status != 'Registered') {
             findresult.streamCount = count + 1;
-            findresult.eligible = participents.noOfParticipants >= count;
+            findresult.eligible = participents.noOfParticipants > count;
             findresult.status = 'Registered';
             await Dates.create_date(findresult)
         }
-
     }
     return { findresult };
 
 };
 const unregisetr_strean_instrest = async (req) => {
-    let value = await Streamrequest.aggregate([
-        { $match: { $and: [{ adminApprove: { $eq: "Approved" } }] } },
-    ]);
-    return value;
+    let findresult = await StreamPreRegister.findOne({ shopId: req.shopId, streamId: req.body.streamId });
+    let user_postion = findresult.streamCount;
+    let participents = await Streamrequest.findById(req.body.streamId);
+    let noOfParticipants = participents.noOfParticipants;
+    findresult.streamCount = 0;
+    findresult.eligible = false;
+    findresult.status = 'Unregistered';
+    findresult.save();
+    let count = await StreamPreRegister.find({ streamId: req.body.streamId, status: "Registered" }).count();
+    let streamPosition = 0;
+    let go_next = false;
+    let remaining = noOfParticipants - count;
+    if (remaining > 0) {
+        console.log(remaining, 'if')
+    }
+    else {
+        if (noOfParticipants >= user_postion) {
+            go_next = true;
+            streamPosition = noOfParticipants - 1;
+
+        }
+        else {
+            go_next = false;
+        }
+    }
+    if (go_next && count != 1) {
+        let next = await StreamPreRegister.findOne({ streamId: req.body.streamId, status: "Registered", _id: { $ne: findresult._id } }).sort({ DateIso: 1 }).skip(streamPosition);
+        next.streamCount = user_postion;
+        next.eligible = true;
+        next.streamCount = user_postion
+        next.save();
+    }
+    return findresult;
 };
 
 

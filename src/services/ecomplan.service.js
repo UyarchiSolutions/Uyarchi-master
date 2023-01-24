@@ -480,8 +480,8 @@ const get_all_streams = async (req) => {
         {
             $lookup: {
                 from: 'streampreregisters',
-                localField: 'suppierId',
-                foreignField: '_id',
+                localField: '_id',
+                foreignField: 'streamId',
                 pipeline: [
                     { $match: { status: { $eq: "Registered" } } },
                     { $group: { _id: null, count: { $sum: 1 } } }

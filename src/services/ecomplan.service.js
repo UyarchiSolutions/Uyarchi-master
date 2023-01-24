@@ -771,6 +771,8 @@ const regisetr_strean_instrest = async (req) => {
     else {
         findresult.streamCount = 0;
         findresult.eligible = false;
+        findresult.status = 'Unregistered';
+        
         findresult.save();
     }
     return { findresult };

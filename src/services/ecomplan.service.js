@@ -1,5 +1,5 @@
 const httpStatus = require('http-status');
-const { Streamplan, StreamPost, Streamrequest, StreamrequestPost } = require('../models/ecomplan.model');
+const { Streamplan, StreamPost, Streamrequest, StreamrequestPost, StreamPreRegister } = require('../models/ecomplan.model');
 const ApiError = require('../utils/ApiError');
 const AWS = require('aws-sdk')
 const Dates = require('./Date.serive')
@@ -630,7 +630,7 @@ const go_live_stream_host = async (req) => {
 };
 
 const get_watch_live_steams = async (req) => {
-    req.io.emit("c258cf7e-25ae-41c2-83b9-3020cd15ce54_view",{adsas:"asdas"})
+    req.io.emit("c258cf7e-25ae-41c2-83b9-3020cd15ce54_view", { adsas: "asdas" })
     let value = await Streamrequest.aggregate([
         { $match: { $and: [{ adminApprove: { $eq: "Approved" } }] } },
         {
@@ -679,6 +679,23 @@ const get_watch_live_steams = async (req) => {
             },
         },
         {
+            $lookup: {
+                from: 'suppliers',
+                localField: 'suppierId',
+                foreignField: '_id',
+                pipeline: [
+                    { $group: { _id: 1, count: { $sum: 1 } } }
+                ],
+                as: 'suppliers',
+            },
+        },
+        {
+            $unwind: {
+                preserveNullAndEmptyArrays: true,
+                path: '$suppliers',
+            },
+        },
+        {
             $project: {
                 "_id": 1,
                 "active": 1,
@@ -709,6 +726,7 @@ const get_watch_live_steams = async (req) => {
                 golive: { $gt: ["$noOfParticipants", "$joinedusers.count"] },
                 joinedusers_user: "$joinedusers_user",
                 alreadyJoined: 1,
+                suppliersName:"$suppliers.primaryContactName"
             }
         }
     ]);
@@ -722,6 +740,34 @@ const get_watch_live_token = async (req) => {
     ]);
     return value;
 };
+
+const regisetr_strean_instrest = async (req) => {
+    let findresult = await StreamPreRegister.findOne({ shopId: req.shopId, streamId: req.body.streamId });
+    if (!findresult) {
+        let count = await StreamPreRegister.find({ shopId: req.shopId, streamId: req.body.streamId }).count();
+        findresult = await StreamPreRegister.create({ shopId: req.shopId, streamId: req.body.streamId, streamCount: count + 1 })
+        await Dates.create_date(findresult)
+    }
+    else {
+        findresult.streamCount = 0;
+        findresult.eligible = false;
+        findresult.save();
+    }
+    return { findresult };
+
+};
+const unregisetr_strean_instrest = async (req) => {
+    let value = await Streamrequest.aggregate([
+        { $match: { $and: [{ adminApprove: { $eq: "Approved" } }] } },
+    ]);
+    return value;
+};
+
+
+
+
+
+
 module.exports = {
     create_Plans,
     get_all_Plans,
@@ -751,5 +797,9 @@ module.exports = {
 
     go_live_stream_host,
     get_watch_live_steams,
-    get_watch_live_token
+    get_watch_live_token,
+
+
+    regisetr_strean_instrest,
+    unregisetr_strean_instrest
 };

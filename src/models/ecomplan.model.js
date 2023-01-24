@@ -114,7 +114,7 @@ const streamPostschema = mongoose.Schema({
   },
   validity: {
     type: Number
-  },  DateIso: {
+  }, DateIso: {
     type: Number
   },
   minLots: {
@@ -129,15 +129,15 @@ const streamPostschema = mongoose.Schema({
   categoryId: {
     type: String
   },
-  suppierId:{
-    type:String
+  suppierId: {
+    type: String
   },
-  isUsed:{
+  isUsed: {
     type: Boolean,
     default: false,
   },
-  validityType:{
-    type:String
+  validityType: {
+    type: String
   }
 });
 
@@ -167,78 +167,78 @@ const streamRequestschema = mongoose.Schema({
   quantity: {
     type: Number
   },
-  suppierId:{
-    type:String
+  suppierId: {
+    type: String
   },
-  post:{
-    type:Array
+  post: {
+    type: Array
   },
-  bookingAmount:{
-    type:Number
+  bookingAmount: {
+    type: Number
   },
-  communicationMode:{
-    type:Array
+  communicationMode: {
+    type: Array
   },
-  streamingDate:{
-    type:String
+  streamingDate: {
+    type: String
   },
-  streamingTime:{
-    type:String
+  streamingTime: {
+    type: String
   },
-  image:{
-    type:String
-  }, 
-  video:{
-    type:String
+  image: {
+    type: String
   },
-  postCount:{
-    type:Number
+  video: {
+    type: String
   },
-  sepTwo:{
-    type:String,
-    default:'Pending'
+  postCount: {
+    type: Number
   },
-  planId:{
-    type:String
+  sepTwo: {
+    type: String,
+    default: 'Pending'
   },
-  streamName:{
-    type:String
+  planId: {
+    type: String
   },
-  discription:{
-    type:String
+  streamName: {
+    type: String
   },
-  adminApprove:{
-    type:String,
-    default:"Pending"
+  discription: {
+    type: String
   },
-  tokenDetails:{
-    type:String
+  adminApprove: {
+    type: String,
+    default: "Pending"
   },
-  activelive:{
-    type:String,
-    default:"Pending"
+  tokenDetails: {
+    type: String
   },
-  tokenGeneration:{
+  activelive: {
+    type: String,
+    default: "Pending"
+  },
+  tokenGeneration: {
     type: Boolean,
     default: false,
   },
-  Duration:{
-    type:Number
+  Duration: {
+    type: Number
   },
-  startTime:{
-    type:Number
+  startTime: {
+    type: Number
   },
-  endTime:{
-    type:Number
+  endTime: {
+    type: Number
   },
-  noOfParticipants:{
-    type:Number
+  noOfParticipants: {
+    type: Number
   },
-  chat:{
-    type:String
+  chat: {
+    type: String
   },
-  max_post_per_stream:{
-    type:Number
+  max_post_per_stream: {
+    type: Number
   },
 
 
@@ -273,15 +273,57 @@ const streamRequestschema_post = mongoose.Schema({
   DateIso: {
     type: Number
   },
-  suppierId:{
-    type:String
+  suppierId: {
+    type: String
   },
-  tokenDetails:{
-    type:String
+  tokenDetails: {
+    type: String
   },
 });
 
 const StreamrequestPost = mongoose.model('StreamRequestpost', streamRequestschema_post);
 
-module.exports = { Streamplan,StreamPost,Streamrequest,StreamrequestPost };
+
+
+const streamPreRegister = mongoose.Schema({
+  _id: {
+    type: String,
+    default: v4,
+  },
+  active: {
+    type: Boolean,
+    default: true,
+  },
+  archive: {
+    type: Boolean,
+    default: false,
+  },
+  streamId: {
+    type: String
+  },
+  shopId: {
+    type: String
+  },
+  created: {
+    type: Date
+  },
+  DateIso: {
+    type: Number
+  },
+  status: {
+    type: String,
+    default: "Registered"
+  },
+  streamCount: {
+    type: Number,
+  },
+  eligible: {
+    type: Boolean,
+    default: false,
+  }
+});
+
+const StreamPreRegister = mongoose.model('streampreregister', streamPreRegister);
+
+module.exports = { Streamplan, StreamPost, Streamrequest, StreamrequestPost, StreamPreRegister };
 

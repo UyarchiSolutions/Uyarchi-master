@@ -133,6 +133,17 @@ const get_watch_live_token= catchAsync(async (req, res) => {
   res.send(value);
 });
 
+const regisetr_strean_instrest= catchAsync(async (req, res) => {
+  console.log("sdas")
+  const value = await Ecomserive.regisetr_strean_instrest(req);
+  res.send(value);
+});
+
+const unregisetr_strean_instrest= catchAsync(async (req, res) => {
+  console.log("sdas")
+  const value = await Ecomserive.unregisetr_strean_instrest(req);
+  res.send(value);
+});
 module.exports = {
   create_Plans,
   get_all_Plans,
@@ -164,6 +175,11 @@ module.exports = {
 
   go_live_stream_host,
   get_watch_live_steams,
-  get_watch_live_token
+  get_watch_live_token,
+
+
+  // 
+  regisetr_strean_instrest,
+  unregisetr_strean_instrest
 
 };

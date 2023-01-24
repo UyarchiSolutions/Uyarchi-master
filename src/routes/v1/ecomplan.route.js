@@ -57,5 +57,12 @@ router.route('/getAll/shop/live/stream').get(shopverify,Ecomcontroller.get_watch
 router.route('/watchlive/go/live').get(Ecomcontroller.get_watch_live_token)
 
 
+//live Stream pre register
+
+
+router.route('/pre/register/live').post(shopverify,Ecomcontroller.regisetr_strean_instrest)
+router.route('/pre/unregister/live').post(shopverify,Ecomcontroller.unregisetr_strean_instrest)
+
+
 
 module.exports = router;

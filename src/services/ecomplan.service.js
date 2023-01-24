@@ -532,8 +532,8 @@ const get_all_streams = async (req) => {
         },
 
         { $sort: { DateIso: -1 } },
-        { $skip: 10 * page },
-        { $limit: 10 },
+        // { $skip: 10 * page },
+        // { $limit: 10 },
     ])
     return value;
 };

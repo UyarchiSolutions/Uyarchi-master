@@ -478,6 +478,29 @@ const get_all_streams = async (req) => {
         },
         { $unwind: "$suppliers" },
         {
+            $lookup: {
+                from: 'streampreregisters',
+                localField: 'suppierId',
+                foreignField: '_id',
+                pipeline: [
+                    { $match: { status: { $eq: "Registered" } } },
+                    { $group: { _id: null, count: { $sum: 1 } } }
+                ],
+                as: 'streampreregisters',
+            },
+        },
+        {
+            $unwind: {
+                preserveNullAndEmptyArrays: true,
+                path: '$streampreregisters',
+            },
+        },
+        {
+            $addFields: {
+                registeredUsers: { $ifNull: ['$streampreregisters.count', 0] },
+            },
+        },
+        {
             $project: {
                 _id: 1,
                 supplierName: "$suppliers.primaryContactName",
@@ -503,6 +526,7 @@ const get_all_streams = async (req) => {
                 Duration: 1,
                 startTime: 1,
                 endTime: 1,
+                registeredUsers: 1
             }
         },
 

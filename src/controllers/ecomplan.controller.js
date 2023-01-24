@@ -17,6 +17,11 @@ const get_all_Plans = catchAsync(async (req, res) => {
   res.send(value);
 });
 
+const get_all_Plans_addon= catchAsync(async (req, res) => {
+  const value = await Ecomserive.get_all_Plans_addon(req);
+  res.send(value);
+});
+
 const get_one_Plans = catchAsync(async (req, res) => {
   const value = await Ecomserive.get_one_Plans(req);
   res.send(value);
@@ -152,6 +157,7 @@ module.exports = {
   create_Plans,
   create_Plans_addon,
   get_all_Plans,
+  get_all_Plans_addon,
   get_one_Plans,
   update_one_Plans,
   delete_one_Plans,

@@ -32,6 +32,17 @@ const get_all_Plans = async (req) => {
     return value;
 };
 
+const get_all_Plans_addon= async (req) => {
+    let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
+    const value = await Streamplan.aggregate([
+        { $match: { planType: { $eq: "addon" } } },
+        { $sort: { DateIso: -1 } },
+        { $skip: 10 * page },
+        { $limit: 10 },
+    ])
+    return value;
+};
+
 
 
 const get_one_Plans = async (req) => {

@@ -13,6 +13,7 @@ router.route('/create/plan/addon').post(Ecomcontroller.create_Plans_addon)
 
 
 router.route('/get/all/plan').get(Ecomcontroller.get_all_Plans)
+router.route('/get/all/plan/addon').get(Ecomcontroller.get_all_Plans_addon)
 router.route('/get/one/plan').get(Ecomcontroller.get_one_Plans)
 router.route('/update/one/plan').put(Ecomcontroller.update_one_Plans)
 router.route('/delete/one/plan').delete(Ecomcontroller.delete_one_Plans)

@@ -763,7 +763,7 @@ const get_watch_live_token = async (req) => {
 
 const regisetr_strean_instrest = async (req) => {
     let findresult = await StreamPreRegister.findOne({ shopId: req.shopId, streamId: req.body.streamId });
-    let count = await StreamPreRegister.find({ shopId: req.shopId, streamId: req.body.streamId, status: "Registered" }).count();
+    let count = await StreamPreRegister.find({streamId: req.body.streamId, status: "Registered" }).count();
     let participents = await Streamrequest.findById(req.body.streamId);
     if (!findresult) {
         findresult = await StreamPreRegister.create({ shopId: req.shopId, streamId: req.body.streamId, streamCount: count + 1, eligible: participents.noOfParticipants >= count })
@@ -771,6 +771,16 @@ const regisetr_strean_instrest = async (req) => {
     }
     else {
         if (findresult.status == 'Registered') {
+            if (participents.noOfParticipants > findresult.streamCount) {
+                console.log("asdjhasdh")
+                let next = await StreamPreRegister.findOne({ status: "Registered",_id:{$ne:findresult._id} }).sort({ DateIso: -1 }).skip(count - 1);
+                next.eligible = true;
+                next.streamCount = findresult.streamCount;
+                next.save();
+            }
+            else{
+                console.log("asdjhasdsdasdasdasdadash")
+            }
             findresult.streamCount = 0;
             findresult.eligible = false;
             findresult.status = 'Unregistered';

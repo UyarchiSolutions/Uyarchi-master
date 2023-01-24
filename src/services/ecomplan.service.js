@@ -746,7 +746,7 @@ const get_watch_live_steams = async (req) => {
                 joinedusers_user: "$joinedusers_user",
                 alreadyJoined: 1,
                 suppliersName: "$suppliers.primaryContactName",
-                registerStatus:1
+                registerStatus: 1
             }
         }
     ]);
@@ -763,17 +763,25 @@ const get_watch_live_token = async (req) => {
 
 const regisetr_strean_instrest = async (req) => {
     let findresult = await StreamPreRegister.findOne({ shopId: req.shopId, streamId: req.body.streamId });
+    let count = await StreamPreRegister.find({ shopId: req.shopId, streamId: req.body.streamId, status: "Registered" }).count();
     if (!findresult) {
-        let count = await StreamPreRegister.find({ shopId: req.shopId, streamId: req.body.streamId }).count();
         findresult = await StreamPreRegister.create({ shopId: req.shopId, streamId: req.body.streamId, streamCount: count + 1 })
         await Dates.create_date(findresult)
     }
     else {
-        findresult.streamCount = 0;
-        findresult.eligible = false;
-        findresult.status = 'Unregistered';
-        
-        findresult.save();
+        if (findresult.status == 'Registered') {
+            findresult.streamCount = 0;
+            findresult.eligible = false;
+            findresult.status = 'Unregistered';
+            findresult.save();
+        }
+        else {
+            findresult.streamCount = count + 1;
+            // findresult.eligible = false;
+            findresult.status = 'Registered';
+            await Dates.create_date(findresult)
+        }
+
     }
     return { findresult };
 

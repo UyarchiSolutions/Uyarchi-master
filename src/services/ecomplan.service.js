@@ -24,7 +24,6 @@ const create_Plans_addon = async (req) => {
 const get_all_Plans = async (req) => {
     let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
     const value = await Streamplan.aggregate([
-        { $match: { planType: { $ne: "addon" } } },
         { $sort: { DateIso: -1 } },
         { $skip: 10 * page },
         { $limit: 10 },
@@ -36,6 +35,18 @@ const get_all_Plans_addon= async (req) => {
     let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
     const value = await Streamplan.aggregate([
         { $match: { planType: { $eq: "addon" } } },
+        { $sort: { DateIso: -1 } },
+        { $skip: 10 * page },
+        { $limit: 10 },
+    ])
+    return value;
+};
+
+
+const get_all_Plans_normal= async (req) => {
+    let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
+    const value = await Streamplan.aggregate([
+        { $match: { planType: { $ne: "addon" } } },
         { $sort: { DateIso: -1 } },
         { $skip: 10 * page },
         { $limit: 10 },
@@ -881,6 +892,8 @@ const single_stream_details = async (req) => {
 module.exports = {
     create_Plans,
     create_Plans_addon,
+    get_all_Plans_addon,
+    get_all_Plans_normal,
     get_all_Plans,
     get_one_Plans,
     update_one_Plans,

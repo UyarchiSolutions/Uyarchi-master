@@ -764,8 +764,9 @@ const get_watch_live_token = async (req) => {
 const regisetr_strean_instrest = async (req) => {
     let findresult = await StreamPreRegister.findOne({ shopId: req.shopId, streamId: req.body.streamId });
     let count = await StreamPreRegister.find({ shopId: req.shopId, streamId: req.body.streamId, status: "Registered" }).count();
+    let participents = await Streamrequest.findById(req.body.streamId);
     if (!findresult) {
-        findresult = await StreamPreRegister.create({ shopId: req.shopId, streamId: req.body.streamId, streamCount: count + 1 })
+        findresult = await StreamPreRegister.create({ shopId: req.shopId, streamId: req.body.streamId, streamCount: count + 1, eligible: participents.noOfParticipants >= count })
         await Dates.create_date(findresult)
     }
     else {
@@ -777,7 +778,7 @@ const regisetr_strean_instrest = async (req) => {
         }
         else {
             findresult.streamCount = count + 1;
-            // findresult.eligible = false;
+            findresult.eligible = participents.noOfParticipants >= count;
             findresult.status = 'Registered';
             await Dates.create_date(findresult)
         }

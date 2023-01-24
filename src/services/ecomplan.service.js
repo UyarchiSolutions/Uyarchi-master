@@ -526,7 +526,8 @@ const get_all_streams = async (req) => {
                 Duration: 1,
                 startTime: 1,
                 endTime: 1,
-                registeredUsers: 1
+                registeredUsers: 1,
+                noOfParticipants:1
             }
         },
 

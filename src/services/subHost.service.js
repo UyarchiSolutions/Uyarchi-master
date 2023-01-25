@@ -180,7 +180,7 @@ const get_subhost_tokens = async (req) => {
         from: 'temptokens',
         localField: '_id',
         foreignField: 'streamId',
-        pipeline: [{ $match: { $eq: "host" } }],
+        pipeline: [{ $match: { type: "host" } }],
         as: 'temptokens',
       },
     },

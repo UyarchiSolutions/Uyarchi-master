@@ -243,6 +243,10 @@ const streamRequestschema = mongoose.Schema({
   max_post_per_stream: {
     type: Number
   },
+  goLive: {
+    type: String,
+    default: false,
+  }
 
 
 

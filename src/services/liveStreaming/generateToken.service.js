@@ -13,6 +13,7 @@ const Authorization = `Basic ${Buffer.from(`8f68dcbfe5494cf8acf83d5836a1effc:b22
 const Dates = require('../Date.serive')
 
 const { Streamplan, StreamPost, Streamrequest, StreamrequestPost } = require('../../models/ecomplan.model');
+const { request } = require('express');
 
 
 const generateUid = async (req) => {
@@ -63,10 +64,9 @@ const generateToken = async (req) => {
   value.save();
   stream.tokenDetails = value._id;
   stream.tokenGeneration = true;
-  // stream.endTime=expirationTimestamp * 1000;
+  stream.goLive = true;
   stream.save();
-  // let stream = await Streamrequest.findByIdAndUpdate({ _id: streamId }, { tokenDetails: value._id, tokenGeneration: true }, { new: true });
-
+  req.io.emit(streamId + "_golive", { streamId: streamId, })
   return { uid, token, value, cloud_recording, stream };
 };
 const geenerate_rtc_token = async (chennel, uid, role, expirationTimestamp) => {

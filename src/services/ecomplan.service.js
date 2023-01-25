@@ -249,7 +249,7 @@ const get_one_stream_step_two = async (req) => {
                 localField: 'planId',
                 foreignField: '_id',
                 pipeline: [
-                    { $match: { postType: { $ne: "addon" } } }
+                    { $match: { planType: { $ne: "addon" } } }
                 ],
                 as: 'streamplans',
             },

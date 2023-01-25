@@ -12,7 +12,7 @@ const Authorization = `Basic ${Buffer.from(`bc709eb08f0a438aaae0e7d9962f5ad3:93f
 )}`;
 const Dates = require('../Date.serive')
 
-const { Streamplan, StreamPost, Streamrequest, StreamrequestPost ,StreamPreRegister} = require('../../models/ecomplan.model');
+const { Streamplan, StreamPost, Streamrequest, StreamrequestPost, StreamPreRegister } = require('../../models/ecomplan.model');
 const { request } = require('express');
 
 
@@ -610,7 +610,7 @@ const get_participents_limit = async (req) => {
   return result
 };
 const find_userLimt = async (channel) => {
-  const user = await StreamPreRegister.find({ streamId: channel ,statu}).count()
+  const user = await StreamPreRegister.find({ streamId: channel, status: "Registered" }).count()
   const stream = await Streamrequest.findById(channel)
   return { userActive: user, noOfParticipants: stream.noOfParticipants };
 };

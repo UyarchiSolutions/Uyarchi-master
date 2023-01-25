@@ -38,6 +38,11 @@ const login = catchAsync(async (req, res) => {
   res.send({ data: data, token: tokens });
 });
 
+const get_subhost_tokens = catchAsync(async (req, res) => {
+  const data = await subHostService.get_subhost_tokens(req);
+  res.send(data);
+});
+
 module.exports = {
   createSubHost,
   getActiveSubHosts,
@@ -45,4 +50,5 @@ module.exports = {
   verifyOTP,
   SetPassword,
   login,
+  get_subhost_tokens
 };

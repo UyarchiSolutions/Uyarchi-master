@@ -571,9 +571,9 @@ const get_all_streams = async (req) => {
     return value;
 };
 
-const go_live_stream_host = async (req) => {
+const go_live_stream_host = async (req,userId) => {
     let value = await Streamrequest.aggregate([
-        { $match: { $and: [{ suppierId: { $eq: req.createdBy } }, { adminApprove: { $eq: "Approved" } }, { _id: { $eq: req.query.id } }] } },
+        { $match: { $and: [{ suppierId: { $eq: userId } }, { adminApprove: { $eq: "Approved" } }, { _id: { $eq: req.query.id } }] } },
         {
             $lookup: {
                 from: 'streamrequestposts',
@@ -686,7 +686,6 @@ const go_live_stream_host = async (req) => {
     ])
     return value;
 };
-
 const get_watch_live_steams = async (req) => {
     let value = await Streamrequest.aggregate([
         { $match: { $and: [{ adminApprove: { $eq: "Approved" } }] } },
@@ -810,7 +809,7 @@ const get_watch_live_steams = async (req) => {
                 alreadyJoined: 1,
                 suppliersName: "$suppliers.primaryContactName",
                 registerStatus: 1,
-                eligible: 1
+                eligible:1
             }
         }
     ]);

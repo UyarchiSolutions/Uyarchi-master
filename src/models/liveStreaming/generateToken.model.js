@@ -56,7 +56,7 @@ const tempToken = mongoose.Schema({
     type: String,
   },
   uid_cloud: {
-    type: String,
+    type: Number,
   },
   cloud_id: {
     type: String,

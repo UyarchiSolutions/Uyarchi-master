@@ -240,7 +240,7 @@ const get_one_stream_step_two = async (req) => {
     const myorders = await purchasePlan.aggregate([
         {
             $match: {
-                $and: [{ suppierId: { $eq: req.userId } }, { postType: { $ne: "addon" } }, { active: { $eq: true } }]
+                $and: [{ suppierId: { $eq: req.userId } }, { active: { $eq: true } }]
             }
         },
         {
@@ -248,6 +248,9 @@ const get_one_stream_step_two = async (req) => {
                 from: 'streamplans',
                 localField: 'planId',
                 foreignField: '_id',
+                pipeline: [
+                    { $match: { postType: { $ne: "addon" } } }
+                ],
                 as: 'streamplans',
             },
         },

@@ -8,7 +8,7 @@ const create_Plans = catchAsync(async (req, res) => {
   const value = await Ecomserive.create_Plans(req);
   res.send(value);
 });
-const create_Plans_addon= catchAsync(async (req, res) => {
+const create_Plans_addon = catchAsync(async (req, res) => {
   const value = await Ecomserive.create_Plans_addon(req);
   res.send(value);
 });
@@ -17,11 +17,11 @@ const get_all_Plans = catchAsync(async (req, res) => {
   res.send(value);
 });
 
-const get_all_Plans_addon= catchAsync(async (req, res) => {
+const get_all_Plans_addon = catchAsync(async (req, res) => {
   const value = await Ecomserive.get_all_Plans_addon(req);
   res.send(value);
 });
-const get_all_Plans_normal= catchAsync(async (req, res) => {
+const get_all_Plans_normal = catchAsync(async (req, res) => {
   const value = await Ecomserive.get_all_Plans_normal(req);
   res.send(value);
 });
@@ -68,7 +68,7 @@ const create_stream_one = catchAsync(async (req, res) => {
 const create_stream_one_image = catchAsync(async (req, res) => {
   console.log(req.files)
   // const value = await Ecomserive.create_stream_one_image(req);
-  res.send({mzsd:"sa"});
+  res.send({ mzsd: "sa" });
 });
 
 const create_stream_two = catchAsync(async (req, res) => {
@@ -94,7 +94,7 @@ const update_one_stream = catchAsync(async (req, res) => {
   const value = await Ecomserive.update_one_stream(req);
   res.send(value);
 });
-const update_one_stream_one= catchAsync(async (req, res) => {
+const update_one_stream_one = catchAsync(async (req, res) => {
   const value = await Ecomserive.update_one_stream_one(req);
   res.send(value);
 });
@@ -107,51 +107,57 @@ const delete_one_stream = catchAsync(async (req, res) => {
   res.send(value);
 });
 
-const get_all_admin= catchAsync(async (req, res) => {
+const get_all_admin = catchAsync(async (req, res) => {
   const value = await Ecomserive.get_all_admin(req);
   res.send(value);
 });
-const update_approved= catchAsync(async (req, res) => {
+const update_approved = catchAsync(async (req, res) => {
   const value = await Ecomserive.update_approved(req);
   res.send(value);
 });
-const update_reject= catchAsync(async (req, res) => {
+const update_reject = catchAsync(async (req, res) => {
   const value = await Ecomserive.update_reject(req);
   res.send(value);
 });
 
-const get_all_streams= catchAsync(async (req, res) => {
+const get_all_streams = catchAsync(async (req, res) => {
   console.log("sdas")
   const value = await Ecomserive.get_all_streams(req);
   res.send(value);
 });
 
-const go_live_stream_host= catchAsync(async (req, res) => {
+const go_live_stream_host = catchAsync(async (req, res) => {
+  console.log("sdas")
+  const value = await Ecomserive.go_live_stream_host(req);
+  res.send(value);
+});
+
+const go_live_stream_host_subhost = catchAsync(async (req, res) => {
   console.log("sdas")
   const value = await Ecomserive.go_live_stream_host(req);
   res.send(value);
 });
 
 
-const get_watch_live_steams= catchAsync(async (req, res) => {
+const get_watch_live_steams = catchAsync(async (req, res) => {
   console.log("sdas")
   const value = await Ecomserive.get_watch_live_steams(req);
   res.send(value);
 });
 
-const get_watch_live_token= catchAsync(async (req, res) => {
+const get_watch_live_token = catchAsync(async (req, res) => {
   console.log("sdas")
   const value = await Ecomserive.get_watch_live_token(req);
   res.send(value);
 });
 
-const regisetr_strean_instrest= catchAsync(async (req, res) => {
+const regisetr_strean_instrest = catchAsync(async (req, res) => {
   console.log("sdas")
   const value = await Ecomserive.regisetr_strean_instrest(req);
   res.send(value);
 });
 
-const unregisetr_strean_instrest= catchAsync(async (req, res) => {
+const unregisetr_strean_instrest = catchAsync(async (req, res) => {
   console.log("sdas")
   const value = await Ecomserive.unregisetr_strean_instrest(req);
   res.send(value);
@@ -171,7 +177,7 @@ module.exports = {
   update_one_post,
   delete_one_post,
 
-  
+
   create_stream_one,
   create_stream_two,
   get_all_stream,
@@ -195,6 +201,7 @@ module.exports = {
 
   // 
   regisetr_strean_instrest,
-  unregisetr_strean_instrest
+  unregisetr_strean_instrest,
+  go_live_stream_host_subhost
 
 };

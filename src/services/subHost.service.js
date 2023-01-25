@@ -176,6 +176,20 @@ const get_subhost_tokens = async (req) => {
       },
     },
     {
+      $lookup: {
+        from: 'temptokens',
+        localField: '_id',
+        foreignField: 'streamId',
+        as: 'temptokens',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$temptokens',
+      },
+    },
+    {
       $project: {
         _id: 1,
         supplierName: "$suppliers.primaryContactName",
@@ -202,7 +216,8 @@ const get_subhost_tokens = async (req) => {
         startTime: 1,
         endTime: 1,
         registeredUsers: 1,
-        noOfParticipants: 1
+        noOfParticipants: 1,
+        temptokensId: "$temptokens.cloud_id"
       }
     },
 

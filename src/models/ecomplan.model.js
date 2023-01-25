@@ -244,7 +244,7 @@ const streamRequestschema = mongoose.Schema({
     type: Number
   },
   goLive: {
-    type: String,
+    type: Boolean,
     default: false,
   }
 

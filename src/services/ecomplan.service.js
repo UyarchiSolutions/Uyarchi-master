@@ -573,7 +573,7 @@ const get_all_streams = async (req) => {
 
 const go_live_stream_host = async (req) => {
     let value = await Streamrequest.aggregate([
-        { $match: { $and: [{ suppierId: { $eq: req.userId } }, { adminApprove: { $eq: "Approved" } }, { _id: { $eq: req.query.id } }] } },
+        { $match: { $and: [{ suppierId: { $eq: req.createdBy } }, { adminApprove: { $eq: "Approved" } }, { _id: { $eq: req.query.id } }] } },
         {
             $lookup: {
                 from: 'streamrequestposts',
@@ -810,7 +810,7 @@ const get_watch_live_steams = async (req) => {
                 alreadyJoined: 1,
                 suppliersName: "$suppliers.primaryContactName",
                 registerStatus: 1,
-                eligible:1
+                eligible: 1
             }
         }
     ]);

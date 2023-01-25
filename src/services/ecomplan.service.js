@@ -31,7 +31,7 @@ const get_all_Plans = async (req) => {
     return value;
 };
 
-const get_all_Plans_addon= async (req) => {
+const get_all_Plans_addon = async (req) => {
     let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
     const value = await Streamplan.aggregate([
         { $match: { planType: { $eq: "addon" } } },
@@ -43,7 +43,7 @@ const get_all_Plans_addon= async (req) => {
 };
 
 
-const get_all_Plans_normal= async (req) => {
+const get_all_Plans_normal = async (req) => {
     let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
     const value = await Streamplan.aggregate([
         { $match: { planType: { $ne: "addon" } } },
@@ -240,7 +240,7 @@ const get_one_stream_step_two = async (req) => {
     const myorders = await purchasePlan.aggregate([
         {
             $match: {
-                $and: [{ suppierId: { $eq: req.userId } }, { active: { $eq: true } }]
+                $and: [{ suppierId: { $eq: req.userId } }, { postType: { $ne: "addon" } }, { active: { $eq: true } }]
             }
         },
         {

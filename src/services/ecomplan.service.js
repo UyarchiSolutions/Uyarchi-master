@@ -772,6 +772,11 @@ const get_watch_live_steams = async (req) => {
             },
         },
         {
+            $addFields: {
+                eligible: { $ifNull: ['$streampreregister.eligible', false] },
+            },
+        },
+        {
             $project: {
                 "_id": 1,
                 "active": 1,
@@ -800,11 +805,12 @@ const get_watch_live_steams = async (req) => {
                 "planId": 1,
                 "tokenDetails": 1,
                 golive: { $gt: ["$noOfParticipants", "$joinedusers.count"] },
-                goLive:1,
+                goLive: 1,
                 joinedusers_user: "$joinedusers_user",
                 alreadyJoined: 1,
                 suppliersName: "$suppliers.primaryContactName",
-                registerStatus: 1
+                registerStatus: 1,
+                eligible:1
             }
         }
     ]);

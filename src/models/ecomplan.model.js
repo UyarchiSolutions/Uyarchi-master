@@ -80,6 +80,7 @@ const streamplanschema = mongoose.Schema({
   planType: {
     type: String,
   },
+
 });
 
 const Streamplan = mongoose.model('streamplan', streamplanschema);
@@ -141,7 +142,14 @@ const streamPostschema = mongoose.Schema({
   },
   validityType: {
     type: String
-  }
+  },
+  location: {
+    type: String
+  },
+  discription: {
+    type: String
+  },
+
 });
 
 const StreamPost = mongoose.model('Streampost', streamPostschema);

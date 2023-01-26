@@ -187,8 +187,17 @@ const streamRequestschema = mongoose.Schema({
   bookingAmount: {
     type: Number
   },
+  bookingAmount_contion: {
+    type: String
+  },
   communicationMode: {
     type: Array
+  },
+  primarycommunication: {
+    type: String
+  },
+  secondarycommunication: {
+    type: String
   },
   streamingDate: {
     type: String

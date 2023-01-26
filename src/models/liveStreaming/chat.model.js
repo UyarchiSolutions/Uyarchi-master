@@ -42,6 +42,9 @@ const Groupchat_schema = mongoose.Schema({
     },
     joinuser:{
         type: String,
+    },
+    supplierId:{
+        type: String,
     }
 
 });

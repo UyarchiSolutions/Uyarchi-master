@@ -44,6 +44,12 @@ io.sockets.on('connection', async (socket) => {
     console.log("hello",data)
     await chetModule.chat_room_create(data,io)
   });
+
+  socket.on('groupchatsubhost', async (data) => {
+    console.log("hello",data)
+    await chetModule.chat_room_create_subhost(data,io)
+  });
+
   socket.on('', (msg) => {
     console.log('message: ' + msg);
   });

@@ -134,7 +134,7 @@ const go_live_stream_host = catchAsync(async (req, res) => {
 
 const go_live_stream_host_subhost = catchAsync(async (req, res) => {
   console.log("sdas")
-  const value = await Ecomserive.go_live_stream_host(req,req.createdBy);
+  const value = await Ecomserive.go_live_stream_host_SUBHOST(req,req.createdBy);
   res.send(value);
 });
 

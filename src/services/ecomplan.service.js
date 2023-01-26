@@ -571,7 +571,123 @@ const get_all_streams = async (req) => {
     return value;
 };
 
-const go_live_stream_host = async (req,userId) => {
+const go_live_stream_host = async (req, userId) => {
+    let value = await Streamrequest.aggregate([
+        { $match: { $and: [{ suppierId: { $eq: userId } }, { adminApprove: { $eq: "Approved" } }, { _id: { $eq: req.query.id } }] } },
+        {
+            $lookup: {
+                from: 'streamrequestposts',
+                localField: '_id',
+                foreignField: 'streamRequest',
+                pipeline: [
+                    {
+                        $lookup: {
+                            from: 'streamposts',
+                            localField: 'postId',
+                            foreignField: '_id',
+                            pipeline: [
+                                {
+                                    $lookup: {
+                                        from: 'products',
+                                        localField: 'productId',
+                                        foreignField: '_id',
+                                        as: 'products',
+                                    },
+                                },
+                                { $unwind: "$products" },
+                                {
+                                    $project: {
+                                        _id: 1,
+                                        productTitle: "$products.productTitle",
+                                        productId: 1,
+                                        categoryId: 1,
+                                        quantity: 1,
+                                        marketPlace: 1,
+                                        offerPrice: 1,
+                                        postLiveStreamingPirce: 1,
+                                        validity: 1,
+                                        minLots: 1,
+                                        incrementalLots: 1,
+                                        suppierId: 1,
+                                        DateIso: 1,
+                                        created: 1,
+                                    }
+                                }
+                            ],
+                            as: 'streamposts',
+                        },
+                    },
+                    { $unwind: "$streamposts" },
+                    {
+                        $project: {
+                            _id: 1,
+                            productTitle: "$streamposts.productTitle",
+                            productId: "$streamposts.productId",
+                            quantity: "$streamposts.quantity",
+                            marketPlace: "$streamposts.marketPlace",
+                            offerPrice: "$streamposts.offerPrice",
+                            postLiveStreamingPirce: "$streamposts.postLiveStreamingPirce",
+                            validity: "$streamposts.validity",
+                            minLots: "$streamposts.minLots",
+                            incrementalLots: "$streamposts.incrementalLots",
+                        }
+                    }
+                ],
+                as: 'streamrequestposts',
+            },
+        },
+        {
+            $lookup: {
+                from: 'suppliers',
+                localField: 'suppierId',
+                foreignField: '_id',
+                as: 'suppliers',
+            },
+        },
+        { $unwind: "$suppliers" },
+        {
+            $lookup: {
+                from: 'temptokens',
+                localField: 'tokenDetails',
+                foreignField: '_id',
+                as: 'temptokens',
+            },
+        },
+        { $unwind: "$temptokens" },
+        {
+            $project: {
+                _id: 1,
+                supplierName: "$suppliers.primaryContactName",
+                active: 1,
+                archive: 1,
+                post: 1,
+                communicationMode: 1,
+                sepTwo: 1,
+                bookingAmount: 1,
+                streamingDate: 1,
+                streamingTime: 1,
+                discription: 1,
+                streamName: 1,
+                suppierId: 1,
+                postCount: 1,
+                DateIso: 1,
+                created: 1,
+                planId: 1,
+                streamrequestposts: "$streamrequestposts",
+                adminApprove: 1,
+                temptokens: "$temptokens",
+                Duration: 1,
+                startTime: 1,
+                endTime: 1,
+
+            }
+        },
+
+    ])
+    return value;
+};
+
+const go_live_stream_host_SUBHOST = async (req, userId) => {
     let value = await tempTokenModel.findById(req.query.id)
     return value;
 };
@@ -698,7 +814,7 @@ const get_watch_live_steams = async (req) => {
                 alreadyJoined: 1,
                 suppliersName: "$suppliers.primaryContactName",
                 registerStatus: 1,
-                eligible:1
+                eligible: 1
             }
         }
     ]);
@@ -821,5 +937,6 @@ module.exports = {
 
 
     regisetr_strean_instrest,
-    unregisetr_strean_instrest
+    unregisetr_strean_instrest,
+    go_live_stream_host_SUBHOST
 };

@@ -28,18 +28,17 @@ router.route('/update/one/post').put(supplierAuth, Ecomcontroller.update_one_pos
 router.route('/delete/one/post').delete(supplierAuth, Ecomcontroller.delete_one_post)
 
 
-// const storage = multer.memoryStorage({
-//     destination: function (req, res, callback) {
-//         callback(null, '');
-//     },
+const storage = multer.memoryStorage({
+    destination: function (req, res, callback) {
+        callback(null, '');
+    },
 
-// });
-// const upload = multer({ storage }).single('image');
-
-
+});
+const upload = multer({ storage }).single('teaser');
 // Stream Request APIS
 router.route('/create/stream/one').post(supplierAuth, Ecomcontroller.create_stream_one)
 router.route('/create/stream/one/image').post(ecommulter.single('image'), Ecomcontroller.create_stream_one_image)
+router.route('/create/stream/one/video').post(upload, Ecomcontroller.create_stream_one_video)
 router.route('/create/stream/two').post(supplierAuth, Ecomcontroller.create_stream_two)
 router.route('/get/all/stream').get(supplierAuth, Ecomcontroller.get_all_stream)
 router.route('/get/one/stream').get(supplierAuth, Ecomcontroller.get_one_stream)

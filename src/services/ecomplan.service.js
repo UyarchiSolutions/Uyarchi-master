@@ -180,32 +180,33 @@ const create_stream_one = async (req) => {
 
 
 const create_stream_one_image = async (req) => {
-    console.log(req.files, "asdasda")
-
-    // const s3 = new AWS.S3({
-    //     accessKeyId: 'AKIA3323XNN7Y2RU77UG',
-    //     secretAccessKey: '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',
-    //     region: 'ap-south-1',
-    //   });
-    //   let params = {
-    //     Bucket: 'realestatevideoupload',
-    //     Key: req.file.originalname,
-    //     Body: req.file.buffer,
-    //   };
-    //   s3.upload(params, async (err, data) => {
-    //     if (err) {
-    //         console.log(err)
-    //     }
-    //     // values = await SellerPost.findByIdAndUpdate({ _id: req.params.id }, { videos: data.Location }, { new: true });
-    //     // res.send(params);
-    //     console.log(data)
-    //     return { params };
-
-    //   });
-
-
-    // console.log(req.body)
-    return { message: "deleted" };
+    console.log(req.file, "asdasda")
+    if (req.file != null) {
+        await Streamrequest.findByIdAndUpdate({ _id: req.query.id }, { image: 'images/stream/' + req.file.filename })
+        return { image: 'success' };
+    }
+    return { image: 'faild' };
+};
+const create_stream_one_video = async (req) => {
+    console.log(req.file, "asdasda")
+    const s3 = new AWS.S3({
+        accessKeyId: 'AKIA3323XNN7Y2RU77UG',
+        secretAccessKey: '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',
+        region: 'ap-south-1',
+    });
+    let params = {
+        Bucket: 'realestatevideoupload',
+        Key: req.file.originalname,
+        Body: req.file.buffer,
+    };
+    s3.upload(params, async (err, data) => {
+        if (err) {
+            console.log(err)
+        }
+        await Streamrequest.findByIdAndUpdate({ _id: req.query.id }, { video: data.Location })
+        return { image: 'success' };
+    });
+    return { message: "failed" };
 };
 const create_stream_two = async (req) => {
     const value = await StreamPost.findByIdAndDelete({ _id: req.query.id, suppierId: req.userId });
@@ -923,6 +924,7 @@ module.exports = {
     update_one_stream,
     delete_one_stream,
     create_stream_one_image,
+    create_stream_one_video,
     get_one_stream_step_two,
     update_one_stream_two,
     update_one_stream_one,

@@ -66,9 +66,17 @@ const create_stream_one = catchAsync(async (req, res) => {
 });
 
 const create_stream_one_image = catchAsync(async (req, res) => {
-  console.log(req.files)
-  // const value = await Ecomserive.create_stream_one_image(req);
-  res.send({ mzsd: "sa" });
+  console.log('asdasasas')
+  console.log(req.file)
+  const value = await Ecomserive.create_stream_one_image(req);
+  res.send(value);
+});
+
+const create_stream_one_video = catchAsync(async (req, res) => {
+  console.log('asdasasas')
+  console.log(req.file)
+  const value = await Ecomserive.create_stream_one_video(req);
+  res.send(value);
 });
 
 const create_stream_two = catchAsync(async (req, res) => {
@@ -128,13 +136,13 @@ const get_all_streams = catchAsync(async (req, res) => {
 
 const go_live_stream_host = catchAsync(async (req, res) => {
   console.log("sdas")
-  const value = await Ecomserive.go_live_stream_host(req,req.userId);
+  const value = await Ecomserive.go_live_stream_host(req, req.userId);
   res.send(value);
 });
 
 const go_live_stream_host_subhost = catchAsync(async (req, res) => {
   console.log("sdas")
-  const value = await Ecomserive.go_live_stream_host_SUBHOST(req,req.createdBy);
+  const value = await Ecomserive.go_live_stream_host_SUBHOST(req, req.createdBy);
   res.send(value);
 });
 
@@ -185,6 +193,7 @@ module.exports = {
   update_one_stream,
   delete_one_stream,
   create_stream_one_image,
+  create_stream_one_video,
   get_one_stream_step_two,
   update_one_stream_two,
   update_one_stream_one,

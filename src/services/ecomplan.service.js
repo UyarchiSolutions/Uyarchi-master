@@ -188,7 +188,7 @@ const create_stream_one_image = async (req) => {
     return { image: 'faild' };
 };
 const create_stream_one_video = async (req) => {
-    console.log(req.file, "asdasda")
+    // console.log(req.file, "asdasda")
     const s3 = new AWS.S3({
         accessKeyId: 'AKIA3323XNN7Y2RU77UG',
         secretAccessKey: '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',
@@ -201,7 +201,7 @@ const create_stream_one_video = async (req) => {
     };
     s3.upload(params, async (err, data) => {
         if (err) {
-            console.log(err)
+            // console.log(err)
         }
         await Streamrequest.findByIdAndUpdate({ _id: req.query.id }, { video: data.Location })
         return { image: 'success' };

@@ -199,14 +199,19 @@ const create_stream_one_video = async (req) => {
         Key: req.file.originalname,
         Body: req.file.buffer,
     };
-    s3.upload(params, async (err, data) => {
-        if (err) {
-            // console.log(err)
-        }
-        await Streamrequest.findByIdAndUpdate({ _id: req.query.id }, { video: data.Location })
-        return { image: 'success' };
+    let stream;
+    return new Promise(resolve => {
+        s3.upload(params, async (err, data) => {
+            if (err) {
+                console.log(err)
+            }
+            console.log(data)
+            stream = await Streamrequest.findByIdAndUpdate({ _id: req.query.id }, { video: data.Location })
+            resolve({ video: 'success', stream });
+
+        });
     });
-    return { message: "failed" };
+
 };
 const create_stream_two = async (req) => {
     const value = await StreamPost.findByIdAndDelete({ _id: req.query.id, suppierId: req.userId });

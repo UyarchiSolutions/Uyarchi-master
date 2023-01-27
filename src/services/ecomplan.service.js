@@ -540,6 +540,25 @@ const get_all_streams = async (req) => {
             },
         },
         {
+            $lookup: {
+                from: 'purchasedplans',
+                localField: 'planId',
+                foreignField: '_id',
+                as: 'purchasedplans',
+            },
+        },
+        {
+            $unwind: {
+                preserveNullAndEmptyArrays: true,
+                path: '$purchasedplans',
+            },
+        },
+        {
+            $addFields: {
+                max_post_per_stream: { $ifNull: ['$purchasedplans.max_post_per_stream', 0] },
+            },
+        },
+        {
             $project: {
                 _id: 1,
                 supplierName: "$suppliers.primaryContactName",
@@ -566,7 +585,8 @@ const get_all_streams = async (req) => {
                 startTime: 1,
                 endTime: 1,
                 registeredUsers: 1,
-                noOfParticipants: 1
+                noOfParticipants: 1,
+                max_post_per_stream:1
             }
         },
 

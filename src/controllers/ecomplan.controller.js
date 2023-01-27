@@ -46,7 +46,10 @@ const get_all_post = catchAsync(async (req, res) => {
   const value = await Ecomserive.get_all_Post(req);
   res.send(value);
 });
-
+const get_all_Post_with_page = catchAsync(async (req, res) => {
+  const value = await Ecomserive.get_all_Post_with_page(req);
+  res.send(value);
+});
 const get_one_post = catchAsync(async (req, res) => {
   const value = await Ecomserive.get_one_Post(req);
   res.send(value);
@@ -184,6 +187,7 @@ module.exports = {
   get_one_post,
   update_one_post,
   delete_one_post,
+  get_all_Post_with_page,
 
 
   create_stream_one,

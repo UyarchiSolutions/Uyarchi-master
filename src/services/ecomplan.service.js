@@ -81,6 +81,55 @@ const create_post = async (req) => {
 };
 
 const get_all_Post = async (req) => {
+    const value = await StreamPost.aggregate([
+        { $match: { $and: [{ suppierId: { $eq: req.userId } }, { isUsed: { $eq: false } }] } },
+        {
+            $lookup: {
+                from: 'products',
+                localField: 'productId',
+                foreignField: '_id',
+                as: 'productName',
+            },
+        },
+        {
+            $unwind: '$productName',
+        },
+        {
+            $lookup: {
+                from: 'categories',
+                localField: 'categoryId',
+                foreignField: '_id',
+                as: 'categories',
+            },
+        },
+        {
+            $unwind: '$categories',
+        },
+        {
+            $project: {
+                productId: 1,
+                categoryId: 1,
+                quantity: 1,
+                marketPlace: 1,
+                offerPrice: 1,
+                postLiveStreamingPirce: 1,
+                validity: 1,
+                minLots: 1,
+                incrementalLots: 1,
+                _id: 1,
+                catName: "$categories.categoryName",
+                productName: "$productName.productTitle",
+                created: 1,
+                DateIso: 1
+            }
+        },
+        { $sort: { DateIso: -1 } },
+    ])
+    return value;
+};
+
+
+const get_all_Post_with_page = async (req) => {
     let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
     const value = await StreamPost.aggregate([
         { $match: { $and: [{ suppierId: { $eq: req.userId } }, { isUsed: { $eq: false } }] } },
@@ -984,5 +1033,6 @@ module.exports = {
 
     regisetr_strean_instrest,
     unregisetr_strean_instrest,
-    go_live_stream_host_SUBHOST
+    go_live_stream_host_SUBHOST,
+    get_all_Post_with_page
 };

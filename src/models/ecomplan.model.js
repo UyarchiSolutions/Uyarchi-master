@@ -263,6 +263,12 @@ const streamRequestschema = mongoose.Schema({
   goLive: {
     type: Boolean,
     default: false,
+  },
+  afterStreaming: {
+    type: String,
+    default: false,
+
+
   }
 
 

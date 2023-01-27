@@ -35,7 +35,7 @@ const streamplanschema = mongoose.Schema({
   numberofStream: {
     type: Number,
   },
-  validityofStream: {
+  validityofplan: {
     type: Number,
   },
   additionalDuration: {
@@ -59,13 +59,13 @@ const streamplanschema = mongoose.Schema({
   commition_value: {
     type: Number,
   },
-  post_expire_hours: {
+  stream_expire_hours: {
     type: Number,
   },
-  post_expire_days: {
+  stream_expire_days: {
     type: Number,
   },
-  post_expire_minutes: {
+  stream_expire_minutes: {
     type: Number,
   },
   regularPrice: {

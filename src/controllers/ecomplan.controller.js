@@ -17,6 +17,11 @@ const get_all_Plans = catchAsync(async (req, res) => {
   res.send(value);
 });
 
+const get_all_Plans_pagination = catchAsync(async (req, res) => {
+  const value = await Ecomserive.get_all_Plans_pagination(req);
+  res.send(value);
+});
+
 const get_all_Plans_addon = catchAsync(async (req, res) => {
   const value = await Ecomserive.get_all_Plans_addon(req);
   res.send(value);
@@ -205,6 +210,7 @@ module.exports = {
   update_approved,
   update_reject,
   get_all_streams,
+  get_all_Plans_pagination,
 
 
   go_live_stream_host,

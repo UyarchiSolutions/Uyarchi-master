@@ -27,8 +27,23 @@ const get_all_Plans = async (req) => {
         { $sort: { DateIso: -1 } },
         { $skip: 10 * page },
         { $limit: 10 },
-    ])
+    ]);
+
     return value;
+};
+
+const get_all_Plans_pagination = async (req) => {
+    let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
+    const value = await Streamplan.aggregate([
+        { $sort: { DateIso: -1 } },
+        { $skip: 10 * page },
+        { $limit: 10 },
+    ]);
+    const total = await Streamplan.aggregate([
+        { $sort: { DateIso: -1 } },
+    ]);
+
+    return { value, total: total.length };
 };
 
 const get_all_Plans_addon = async (req) => {
@@ -1012,6 +1027,7 @@ module.exports = {
     create_Plans_addon,
     get_all_Plans_addon,
     get_all_Plans_normal,
+    get_all_Plans_pagination,
     get_all_Plans,
     get_one_Plans,
     update_one_Plans,
@@ -1037,6 +1053,7 @@ module.exports = {
     update_approved,
     update_reject,
     get_all_streams,
+
 
     go_live_stream_host,
     get_watch_live_steams,

@@ -668,10 +668,13 @@ const get_all_streams = async (req) => {
         },
 
         { $sort: { DateIso: -1 } },
-        // { $skip: 10 * page },
-        // { $limit: 10 },
+        { $skip: 10 * page },
+        { $limit: 10 },
     ])
-    return value;
+    const total = await Streamrequest.aggregate([
+        { $match: { $and: [{ suppierId: { $eq: req.userId } }, { adminApprove: { $eq: "Approved" } }] } },
+    ])
+    return { value, total: total.length };
 };
 
 const go_live_stream_host = async (req, userId) => {

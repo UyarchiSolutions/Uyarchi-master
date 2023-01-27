@@ -226,6 +226,25 @@ const get_all_stream = async (req) => {
     const value = await Streamrequest.aggregate([
         { $match: { $and: [{ suppierId: { $eq: req.userId } }] } },
         { $sort: { DateIso: -1 } },
+        {
+            $lookup: {
+                from: 'purchasedplans',
+                localField: 'planId',
+                foreignField: '_id',
+                as: 'purchasedplans',
+            },
+        },
+        {
+            $unwind: {
+                preserveNullAndEmptyArrays: true,
+                path: '$purchasedplans',
+            },
+        },
+        {
+            $addFields: {
+                max_post_per_stream: { $ifNull: ['$purchasedplans.max_post_per_stream', 0] },
+            },
+        },
         { $skip: 10 * page },
         { $limit: 10 },
     ])
@@ -586,7 +605,7 @@ const get_all_streams = async (req) => {
                 endTime: 1,
                 registeredUsers: 1,
                 noOfParticipants: 1,
-                max_post_per_stream:1
+                max_post_per_stream: 1
             }
         },
 

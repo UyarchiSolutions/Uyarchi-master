@@ -303,7 +303,10 @@ const get_all_stream = async (req) => {
         { $skip: 10 * page },
         { $limit: 10 },
     ])
-    return value;
+    const total = await Streamrequest.aggregate([
+        { $match: { $and: [{ suppierId: { $eq: req.userId } }] } },
+    ])
+    return { value, total: total.length };
 };
 const get_one_stream = async (req) => {
 

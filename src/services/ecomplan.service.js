@@ -200,7 +200,6 @@ const get_all_Post_with_page = async (req) => {
                 marketPlace: 1,
                 offerPrice: 1,
                 postLiveStreamingPirce: 1,
-                validity: 1,
                 minLots: 1,
                 incrementalLots: 1,
                 _id: 1,
@@ -209,8 +208,9 @@ const get_all_Post_with_page = async (req) => {
                 created: 1,
                 DateIso: 1,
                 images: 1,
-                video: 1
-
+                video: 1,
+                location: 1,
+                discription: 1
             }
         },
         { $sort: { DateIso: -1 } },

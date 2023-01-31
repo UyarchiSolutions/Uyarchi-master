@@ -14,7 +14,6 @@ const create_Plans = async (req) => {
     return value;
 };
 const create_Plans_addon = async (req) => {
-    console.log(req.body)
     const value = await Streamplan.create({ ...req.body, ...{ planType: 'addon' } })
     await Dates.create_date(value)
     console.log(value);
@@ -90,7 +89,7 @@ const delete_one_Plans = async (req) => {
 
 const create_post = async (req, images) => {
     // console.log(req.userId, "asdas", { ...req.body, ...{ suppierId: req.userId, images: images } })
-    const value = await StreamPost.create({ ...req.body, ...{ suppierId: req.userId ,images: images} })
+    const value = await StreamPost.create({ ...req.body, ...{ suppierId: req.userId, images: images } })
     await Dates.create_date(value)
     return value;
 };
@@ -208,7 +207,10 @@ const get_all_Post_with_page = async (req) => {
                 catName: "$categories.categoryName",
                 productName: "$productName.productTitle",
                 created: 1,
-                DateIso: 1
+                DateIso: 1,
+                image: 1,
+                video: 1
+
             }
         },
         { $sort: { DateIso: -1 } },

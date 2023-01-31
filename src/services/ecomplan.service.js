@@ -208,7 +208,7 @@ const get_all_Post_with_page = async (req) => {
                 productName: "$productName.productTitle",
                 created: 1,
                 DateIso: 1,
-                image: 1,
+                images: 1,
                 video: 1
 
             }

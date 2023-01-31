@@ -75,7 +75,17 @@ const get_one_post = catchAsync(async (req, res) => {
   res.send(value);
 });
 const update_one_post = catchAsync(async (req, res) => {
-  const value = await Ecomserive.update_one_Post(req);
+  let images = [];
+  if (req.files != null && req.files != '' && req.files) {
+    let path = '';
+    path = 'images/';
+    if (req.files.galleryImages != null) {
+      req.files.galleryImages.forEach((e) => {
+        images.push(path + e.filename);
+      });
+    }
+  }
+  const value = await Ecomserive.update_one_Post(req, images);
   res.send(value);
 });
 const delete_one_post = catchAsync(async (req, res) => {

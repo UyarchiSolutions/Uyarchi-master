@@ -80,7 +80,12 @@ const streamplanschema = mongoose.Schema({
   planType: {
     type: String,
   },
-
+  description: {
+    type: String,
+  },
+  planmode: {
+    type: String,
+  },
 });
 
 const Streamplan = mongoose.model('streamplan', streamplanschema);

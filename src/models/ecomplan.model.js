@@ -154,6 +154,12 @@ const streamPostschema = mongoose.Schema({
   discription: {
     type: String
   },
+  images: {
+    type: Array
+  },
+  video: {
+    type: String
+  },
 
 });
 

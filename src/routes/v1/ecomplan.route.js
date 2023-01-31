@@ -7,7 +7,15 @@ const multer = require('multer');
 const ecommulter = require('../../middlewares/ecomstrean')
 const shopverify = require('../../controllers/shoptokenverify.controller');
 const subhostVerify = require('../../controllers/subhostVefify.controller');
+const uploadimage = require('../../middlewares/upload');
 
+const storage = multer.memoryStorage({
+    destination: function (req, res, callback) {
+        callback(null, '');
+    },
+
+});
+const upload = multer({ storage }).single('teaser');
 // plan APIS
 router.route('/create/plan').post(Ecomcontroller.create_Plans)
 router.route('/create/plan/addon').post(Ecomcontroller.create_Plans_addon)
@@ -22,7 +30,8 @@ router.route('/update/one/plan').put(Ecomcontroller.update_one_Plans)
 router.route('/delete/one/plan').delete(Ecomcontroller.delete_one_Plans)
 
 // post APIS
-router.route('/create/post').post(supplierAuth, Ecomcontroller.create_post)
+router.route('/create/post').post(supplierAuth, uploadimage.fields([{ name: 'galleryImages' }]), Ecomcontroller.create_post)
+router.route('/create/post/teaser').post(upload, Ecomcontroller.create_post_teaser)
 router.route('/get/all/post').get(supplierAuth, Ecomcontroller.get_all_post)
 router.route('/get/all/post/pagenation').get(supplierAuth, Ecomcontroller.get_all_Post_with_page)
 
@@ -31,13 +40,6 @@ router.route('/update/one/post').put(supplierAuth, Ecomcontroller.update_one_pos
 router.route('/delete/one/post').delete(supplierAuth, Ecomcontroller.delete_one_post)
 
 
-const storage = multer.memoryStorage({
-    destination: function (req, res, callback) {
-        callback(null, '');
-    },
-
-});
-const upload = multer({ storage }).single('teaser');
 // Stream Request APIS
 router.route('/create/stream/one').post(supplierAuth, Ecomcontroller.create_stream_one)
 router.route('/create/stream/one/image').post(ecommulter.single('image'), Ecomcontroller.create_stream_one_image)

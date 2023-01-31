@@ -88,13 +88,36 @@ const delete_one_Plans = async (req) => {
     return { message: "deleted" };
 };
 
-const create_post = async (req) => {
-    console.log(req.userId, "asdas", { ...req.body, ...{ suppierId: req.userId } })
-    const value = await StreamPost.create({ ...req.body, ...{ suppierId: req.userId } })
+const create_post = async (req, images) => {
+    // console.log(req.userId, "asdas", { ...req.body, ...{ suppierId: req.userId, images: images } })
+    const value = await StreamPost.create({ ...req.body, ...{ suppierId: req.userId ,images: images} })
     await Dates.create_date(value)
     return value;
 };
+const create_teaser_upload = async (req, images) => {
+    const s3 = new AWS.S3({
+        accessKeyId: 'AKIA3323XNN7Y2RU77UG',
+        secretAccessKey: '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',
+        region: 'ap-south-1',
+    });
+    let params = {
+        Bucket: 'realestatevideoupload',
+        Key: req.file.originalname,
+        Body: req.file.buffer,
+    };
+    let stream;
+    return new Promise(resolve => {
+        s3.upload(params, async (err, data) => {
+            if (err) {
+                console.log(err)
+            }
+            console.log(data)
+            stream = await StreamPost.findByIdAndUpdate({ _id: req.query.id }, { video: data.Location })
+            resolve({ video: 'success', stream });
 
+        });
+    });
+}
 const get_all_Post = async (req) => {
     const value = await StreamPost.aggregate([
         { $match: { $and: [{ suppierId: { $eq: req.userId } }, { isUsed: { $eq: false } }] } },
@@ -1037,6 +1060,7 @@ module.exports = {
     get_one_Post,
     update_one_Post,
     delete_one_Post,
+    create_teaser_upload,
 
     create_stream_one,
     create_stream_two,

@@ -44,7 +44,22 @@ const delete_one_Plans = catchAsync(async (req, res) => {
 });
 
 const create_post = catchAsync(async (req, res) => {
-  const value = await Ecomserive.create_post(req);
+  let images = [];
+  if (req.files) {
+    let path = '';
+    path = 'images/';
+    if (req.files.galleryImages != null) {
+      req.files.galleryImages.forEach((e) => {
+        images.push(path + e.filename);
+      });
+    }
+  }
+  console.log(images)
+  const value = await Ecomserive.create_post(req, images);
+  res.send(value);
+});
+const create_post_teaser = catchAsync(async (req, res) => {
+  const value = await Ecomserive.create_teaser_upload(req);
   res.send(value);
 });
 const get_all_post = catchAsync(async (req, res) => {
@@ -193,6 +208,7 @@ module.exports = {
   update_one_post,
   delete_one_post,
   get_all_Post_with_page,
+  create_post_teaser,
 
 
   create_stream_one,

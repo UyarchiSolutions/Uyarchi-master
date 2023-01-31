@@ -230,7 +230,7 @@ const checkApproved = catchAsync(async (req, res) => {
 
 const filter_supplier= catchAsync(async (req, res) => {
   let userId = req.userId;
-  const data = await supplierService.checkApproved(userId);
+  const data = await supplierService.filter_supplier(userId);
   res.send(data);
 });
 

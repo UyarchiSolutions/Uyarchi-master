@@ -228,6 +228,13 @@ const checkApproved = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const filter_supplier= catchAsync(async (req, res) => {
+  let userId = req.userId;
+  const data = await supplierService.checkApproved(userId);
+  res.send(data);
+});
+
+
 
 module.exports = {
   createSupplier,
@@ -266,4 +273,5 @@ module.exports = {
   ValidateMobileNumber,
   already_Customer,
   checkApproved,
+  filter_supplier
 };

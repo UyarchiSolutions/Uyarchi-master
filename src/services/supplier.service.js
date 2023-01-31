@@ -1026,6 +1026,26 @@ const checkApproved = async (id) => {
   return data;
 };
 
+const filter_supplier = async (id) => {
+  const data = await Supplier.aggregate([
+    {
+      $match: {
+        $or: [
+          { primaryContactName: { $regex: key, $options: 'i' } },
+          { secondaryContactNumber: { $regex: key, $options: 'i' } },
+          { primaryContactNumber: { $regex: key, $options: 'i' } },
+          { secondaryContactName: { $regex: key, $options: 'i' } },
+          { tradeName: { $regex: key, $options: 'i' } },
+          { DoorNo: { $regex: key, $options: 'i' } },
+        ]
+      }
+    },
+    {
+      $limit: 10,
+    },
+  ])
+  return data;
+};
 module.exports = {
   createSupplier,
   updateSupplierById,
@@ -1063,4 +1083,5 @@ module.exports = {
   ValidateMobileNumber,
   already_Customer,
   checkApproved,
+  filter_supplier
 };

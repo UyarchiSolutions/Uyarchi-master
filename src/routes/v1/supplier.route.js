@@ -49,4 +49,5 @@ router.route('/getSupplier/WithverifiedUser/:key/:date/:page').get(supplierContr
 router.route('/checkMobile/ExestOrNot/:number').get(supplierController.checkMobileExestOrNot);
 router.route('/UpdateSupplierBy/IdThird/:id').put(supplierupload.array('image'), supplierController.UpdateSupplierByIdThird);
 router.route('/ValidateMobileNumber/:id/:phone').get(supplierController.ValidateMobileNumber);
+router.route('/search/supplier/find').get(supplierController.ValidateMobileNumber);
 module.exports = router;

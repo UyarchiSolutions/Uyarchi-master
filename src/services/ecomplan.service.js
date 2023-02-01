@@ -306,6 +306,20 @@ const create_stream_one = async (req) => {
     return value;
 };
 
+const find_and_update_one = async (req) => {
+    let value = await Streamrequest.findByIdAndUpdate({ _id: req.query.id }, { ...req.body, ...{ post: req } }, { new: true });
+    let post = value.post;
+    req.body.addpost.forEach(async (a) => {
+        await StreamPost.findByIdAndUpdate({ _id: a }, { isUsed: true }, { new: true })
+        let post = await StreamrequestPost.create({ suppierId: req.userId, streamRequest: req.query.id, postId: a })
+        await Dates.create_date(post)
+        post.push(e)
+    })
+    value.post = post
+    value.save();
+    return value;
+};
+
 
 const create_stream_one_image = async (req) => {
     console.log(req.file, "asdasda")
@@ -1264,6 +1278,7 @@ module.exports = {
     create_teaser_upload,
 
     create_stream_one,
+    find_and_update_one,
     create_stream_two,
     get_all_stream,
     get_one_stream,

@@ -99,6 +99,12 @@ const create_stream_one = catchAsync(async (req, res) => {
   res.send(value);
 });
 
+const find_and_update_one= catchAsync(async (req, res) => {
+  const value = await Ecomserive.find_and_update_one(req);
+  res.send(value);
+});
+
+
 const create_stream_one_image = catchAsync(async (req, res) => {
   console.log('asdasasas')
   console.log(req.file)
@@ -236,6 +242,7 @@ module.exports = {
 
 
   create_stream_one,
+  find_and_update_one,
   create_stream_two,
   get_all_stream,
   get_one_stream,

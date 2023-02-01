@@ -291,8 +291,18 @@ const create_stream_one = async (req) => {
         let post = await StreamrequestPost.create({ suppierId: req.userId, streamRequest: value._id, postId: a })
         await Dates.create_date(post)
     })
-    console.log(value);
     await Dates.create_date(value)
+    //step two
+    let myplan = await purchasePlan.findById(req.body.planId);
+    let plan = await Streamplan.findById(req.body.planId);
+    if (myplan.numberOfStreamused + 1 == plan.numberofStream) {
+        myplan.active = false;
+    }
+    myplan.numberOfStreamused = myplan.numberOfStreamused + 1
+    myplan.save();
+    let streamss = await Streamrequest.findById(value._id)
+    let datess = new Date().setTime(new Date(streamss.startTime).getTime() + (plan.Duration * 60 * 1000));
+    await Streamrequest.findByIdAndUpdate({ _id: req.query.id }, { Duration: myplan.Duration, noOfParticipants: myplan.noOfParticipants, chat: myplan.chat, max_post_per_stream: myplan.max_post_per_stream, sepTwo: "Completed", planId: req.body.plan_name, Duration: plan.Duration, endTime: datess }, { new: true })
     return value;
 };
 

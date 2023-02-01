@@ -294,7 +294,7 @@ const create_stream_one = async (req) => {
     await Dates.create_date(value)
     //step two
     let myplan = await purchasePlan.findById(req.body.planId);
-    let plan = await Streamplan.findById(req.body.planId);
+    let plan = await Streamplan.findById(myplan.planId);
     if (myplan.numberOfStreamused + 1 == plan.numberofStream) {
         myplan.active = false;
     }

@@ -34,6 +34,26 @@ const get_all_Plans = async (req) => {
 const get_all_Plans_pagination = async (req) => {
     let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
     const value = await Streamplan.aggregate([
+        {
+            $lookup: {
+                from: 'purchasedplans',
+                localField: '_id',
+                foreignField: 'planId',
+                pipeline: [{ $group: { _id: null, count: { $sum: 1 } } }],
+                as: 'purchasedplans',
+            },
+        },
+        {
+            $unwind: {
+                preserveNullAndEmptyArrays: true,
+                path: '$purchasedplans',
+            },
+        },
+        {
+            $addFields: {
+                no_of_person_used: { $ifNull: ['$purchasedplans.count', 0] },
+            },
+        },
         { $sort: { DateIso: -1 } },
         { $skip: 10 * page },
         { $limit: 10 },

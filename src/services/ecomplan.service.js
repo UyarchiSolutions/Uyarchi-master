@@ -1144,9 +1144,16 @@ const purchase_details = async (req) => {
     ]);
     let total = await purchasePlan.aggregate([
         {
+            $addFields: {
+                date: { $dateToString: { format: "%Y-%m-%d", date: "$created" } },
+            },
+        },
+        {
             $match: {
                 $and: [
-                    { planId: { $eq: planId } }
+                    { planId: { $eq: planId } },
+                    dateMatch,
+                    supplierMatch
                 ]
             }
         },

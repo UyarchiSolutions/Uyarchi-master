@@ -75,8 +75,9 @@ const get_one_post = catchAsync(async (req, res) => {
   res.send(value);
 });
 const update_one_post = catchAsync(async (req, res) => {
+  console.log(req.files)
   let images = [];
-  if (req.files != null && req.files != '' && req.files) {
+  if (req.files) {
     let path = '';
     path = 'images/';
     if (req.files.galleryImages != null) {

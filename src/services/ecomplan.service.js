@@ -1068,8 +1068,8 @@ const purchase_details = async (req) => {
     let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
     let date = req.query.date;
     let supplier = req.query.supplier;
-    dateMatch = { active: { $eq: true } }
-    supplierMatch = { active: { $eq: true } }
+    dateMatch = { active: { $in: [true, false] } }
+    supplierMatch = { active: { $in: [true, false] } }
     if (supplier != null && supplier != 'null' && supplier != '') {
         supplierMatch = { suppierId: { $eq: supplier } }
     }

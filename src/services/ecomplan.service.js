@@ -1135,7 +1135,11 @@ const purchase_details = async (req) => {
                 planValidity: "$streamplans.validityofplan"
             },
         },
-
+        {
+            $addFields: {
+                numberofStream: "$streamplans.numberofStream"
+            },
+        },
         { $skip: 10 * page },
         { $limit: 10 },
     ]);

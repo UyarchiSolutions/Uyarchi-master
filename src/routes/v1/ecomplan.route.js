@@ -76,4 +76,9 @@ router.route('/stream/pre/unregister/live').post(shopverify, Ecomcontroller.unre
 
 
 
+
+// purchase Details
+
+router.route('/purchase/details/pagination').get(Ecomcontroller.purchase_details)
+router.route('/purchase/supplier/list').get(Ecomcontroller.purchase_details_supplier)
 module.exports = router;

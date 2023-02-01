@@ -204,6 +204,19 @@ const unregisetr_strean_instrest = catchAsync(async (req, res) => {
   const value = await Ecomserive.unregisetr_strean_instrest(req);
   res.send(value);
 });
+
+const purchase_details = catchAsync(async (req, res) => {
+  console.log("sdas")
+  const value = await Ecomserive.purchase_details(req);
+  res.send(value);
+});
+
+
+const purchase_details_supplier = catchAsync(async (req, res) => {
+  console.log("sdas")
+  const value = await Ecomserive.purchase_details_supplier(req);
+  res.send(value);
+});
 module.exports = {
   create_Plans,
   create_Plans_addon,
@@ -248,6 +261,11 @@ module.exports = {
   // 
   regisetr_strean_instrest,
   unregisetr_strean_instrest,
-  go_live_stream_host_subhost
+  go_live_stream_host_subhost,
+
+
+
+  purchase_details,
+  purchase_details_supplier
 
 };

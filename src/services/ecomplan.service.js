@@ -1066,9 +1066,151 @@ const single_stream_details = async (req) => {
 }
 
 
+const purchase_details = async (req) => {
+    let planId = req.query.id;
+    let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
+    let date = req.query.date;
+    let supplier = req.query.supplier;
+    dateMatch = { active: { $eq: true } }
+    supplierMatch = { active: { $eq: true } }
+    if (supplier != null && supplier != 'null' && supplier != '') {
+        supplierMatch = { suppierId: { $eq: supplier } }
+    }
+    if (date != null && date != 'null' && date != '') {
+        dateMatch = { date: { $eq: date } }
+    }
+    let plan = await Streamplan.findById(req.query.id)
+    let value = await purchasePlan.aggregate([
+        {
+            $addFields: {
+                date: { $dateToString: { format: "%Y-%m-%d", date: "$created" } },
+            },
+        },
+        {
+            $match: {
+                $and: [
+                    { planId: { $eq: planId } },
+                    dateMatch,
+                    supplierMatch
+                ]
+            }
+        },
+        {
+            $lookup: {
+                from: 'suppliers',
+                localField: 'suppierId',
+                foreignField: '_id',
+                as: 'suppliers',
+            },
+        },
+        {
+            $unwind: {
+                preserveNullAndEmptyArrays: true,
+                path: '$suppliers',
+            },
+        },
+        {
+            $addFields: {
+                primaryContactName: "$suppliers.primaryContactName"
+            },
+        },
+        {
+            $addFields: {
+                primaryContactNumber: "$suppliers.primaryContactNumber"
+            },
+        },
+        {
+            $lookup: {
+                from: 'streamplans',
+                localField: 'planId',
+                foreignField: '_id',
+                as: 'streamplans',
+            },
+        },
+        {
+            $unwind: {
+                preserveNullAndEmptyArrays: true,
+                path: '$streamplans',
+            },
+        },
+        {
+            $addFields: {
+                planValidity: "$streamplans.validityofplan"
+            },
+        },
 
+        { $skip: 10 * page },
+        { $limit: 10 },
+    ]);
+    let total = await purchasePlan.aggregate([
+        {
+            $match: {
+                $and: [
+                    { planId: { $eq: planId } }
+                ]
+            }
+        },
+    ]);
 
+    return { plan, value, total: total.length }
+}
 
+const purchase_details_supplier = async (req) => {
+    let planId = req.query.id;
+    let suplier = await purchasePlan.aggregate([
+        {
+            $match: {
+                $and: [
+                    { planId: { $eq: planId } }
+                ]
+            }
+        },
+        {
+            $lookup: {
+                from: 'suppliers',
+                localField: 'suppierId',
+                foreignField: '_id',
+                as: 'suppliers',
+            },
+        },
+        {
+            $unwind: {
+                preserveNullAndEmptyArrays: true,
+                path: '$suppliers',
+            },
+        },
+        {
+            $addFields: {
+                primaryContactName: "$suppliers.primaryContactName"
+            },
+        },
+        {
+            $addFields: {
+                primaryContactNumber: "$suppliers.primaryContactNumber"
+            },
+        },
+        {
+            $addFields: {
+                supllierId: "$suppliers._id"
+            },
+        },
+        {
+            $group: {
+                _id: { supllierId: "$supllierId", primaryContactName: "$primaryContactName", primaryContactNumber: "$primaryContactNumber" }
+            }
+        },
+        {
+            $project: {
+                _id: "$_id.supllierId",
+                primaryContactName: "$_id.primaryContactName",
+                primaryContactNumber: "$_id.primaryContactNumber"
+            }
+        }
+
+    ]);
+
+    return suplier
+}
 
 module.exports = {
     create_Plans,
@@ -1112,5 +1254,9 @@ module.exports = {
     regisetr_strean_instrest,
     unregisetr_strean_instrest,
     go_live_stream_host_SUBHOST,
-    get_all_Post_with_page
+    get_all_Post_with_page,
+
+
+    purchase_details,
+    purchase_details_supplier
 };

@@ -451,9 +451,6 @@ const update_one_stream_two = async (req) => {
     let datess = new Date().setTime(new Date(streamss.startTime).getTime() + (plan.Duration * 60 * 1000));
     let value = await Streamrequest.findByIdAndUpdate({ _id: req.query.id }, { Duration: myplan.Duration, noOfParticipants: myplan.noOfParticipants, chat: myplan.chat, max_post_per_stream: myplan.max_post_per_stream, sepTwo: "Completed", planId: req.body.plan_name, Duration: plan.Duration, endTime: datess }, { new: true })
     return value;
-
-
-
 };
 const delete_one_stream = async (req) => {
     const value = await StreamPost.findByIdAndDelete({ _id: req.query.id, suppierId: req.userId });

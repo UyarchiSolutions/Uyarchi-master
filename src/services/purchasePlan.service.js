@@ -207,11 +207,53 @@ const get_all_my_orders_normal = async (req) => {
     return { plan, total: total.length };
 }
 
+const get_all_purchasePlans = async (req) => {
+    const myorders = await purchasePlan.aggregate([
+        {
+            $match: {
+                $and: [{ suppierId: { $eq: req.userId } }, { active: { $eq: true } }]
+            }
+        },
+        {
+            $lookup: {
+                from: 'streamplans',
+                localField: 'planId',
+                foreignField: '_id',
+                pipeline: [
+                    { $match: { planType: { $ne: "addon" } } }
+                ],
+                as: 'streamplans',
+            },
+        },
+        {
+            $unwind: '$streamplans',
+        },
+        {
+            $project: {
+                _id: 1,
+                planName: "$streamplans.planName",
+                max_post_per_stream: "$streamplans.max_post_per_stream",
+                numberOfParticipants: "$streamplans.numberOfParticipants",
+                numberofStream: "$streamplans.numberofStream",
+                chatNeed: "$streamplans.chatNeed",
+                commision: "$streamplans.commision",
+                Duration: "$streamplans.Duration",
+                commition_value: "$streamplans.commition_value",
+                numberOfStreamused: 1,
+
+            }
+        },
+    ])
+
+    return myorders;
+}
+
 
 module.exports = {
     create_purchase_plan,
     get_order_details,
     get_all_my_orders,
     create_purchase_plan_addon,
-    get_all_my_orders_normal
+    get_all_my_orders_normal,
+    get_all_purchasePlans
 }

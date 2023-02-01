@@ -42,7 +42,7 @@ router.route('/delete/one/post').delete(supplierAuth, Ecomcontroller.delete_one_
 
 // Stream Request APIS
 router.route('/create/stream/one').post(supplierAuth, Ecomcontroller.create_stream_one)
-router.route('/create/stream/one').put(supplierAuth, Ecomcontroller.create_stream_one)
+router.route('/create/stream/one').put(supplierAuth, Ecomcontroller.find_and_update_one)
 router.route('/create/stream/one/image').post(ecommulter.single('image'), Ecomcontroller.create_stream_one_image)
 router.route('/create/stream/one/video').post(upload, Ecomcontroller.create_stream_one_video)
 router.route('/create/stream/two').post(supplierAuth, Ecomcontroller.create_stream_two)

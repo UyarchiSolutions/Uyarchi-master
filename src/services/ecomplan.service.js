@@ -302,7 +302,7 @@ const create_stream_one = async (req) => {
     myplan.save();
     let streamss = await Streamrequest.findById(value._id)
     let datess = new Date().setTime(new Date(streamss.startTime).getTime() + (plan.Duration * 60 * 1000));
-    await Streamrequest.findByIdAndUpdate({ _id: value._id }, { Duration: myplan.Duration, noOfParticipants: myplan.noOfParticipants, chat: myplan.chat, max_post_per_stream: myplan.max_post_per_stream, sepTwo: "Completed", planId: req.body.plan_name, Duration: plan.Duration, endTime: datess }, { new: true })
+    await Streamrequest.findByIdAndUpdate({ _id: value._id }, { Duration: myplan.Duration, noOfParticipants: myplan.noOfParticipants, chat: myplan.chat, max_post_per_stream: myplan.max_post_per_stream, sepTwo: "Completed", planId: req.body.planId, Duration: plan.Duration, endTime: datess }, { new: true })
     return value;
 };
 
@@ -382,12 +382,28 @@ const get_all_stream = async (req) => {
     return { value, total: total.length };
 };
 const get_one_stream = async (req) => {
-
-    const value = await Streamrequest.findById(req.query.id);
-    if (value.suppierId != req.userId) {
+    let id = req.query.id;
+    const value = await Streamrequest.aggregate([
+        { $match: { $and: [{ _id: { $eq: id } }] } },
+        {
+            $lookup: {
+                from: 'purchasedplans',
+                localField: 'planId',
+                foreignField: '_id',
+                as: 'purchasedplans',
+            },
+        },
+        {
+            $unwind: '$purchasedplans',
+        },
+    ])
+    if (value.length == 0) {
         throw new ApiError(httpStatus.NOT_FOUND, 'Not Found');
     }
-    return value;
+    if (value[0].suppierId != req.userId) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Not Found');
+    }
+    return value[0];
 };
 
 const get_one_stream_step_two = async (req) => {

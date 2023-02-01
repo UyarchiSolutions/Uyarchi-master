@@ -307,15 +307,16 @@ const create_stream_one = async (req) => {
 };
 
 const find_and_update_one = async (req) => {
-    let value = await Streamrequest.findByIdAndUpdate({ _id: req.query.id }, { ...req.body, ...{ post: req } }, { new: true });
+    let value = await Streamrequest.findByIdAndUpdate({ _id: req.query.id }, req.body, { new: true });
     let post = value.post;
     req.body.addpost.forEach(async (a) => {
         await StreamPost.findByIdAndUpdate({ _id: a }, { isUsed: true }, { new: true })
         let post = await StreamrequestPost.create({ suppierId: req.userId, streamRequest: req.query.id, postId: a })
         await Dates.create_date(post)
-        post.push(e)
+        post.push(a)
     })
-    value.post = post
+    value.post = post;
+    value.postCount = post.length;
     value.save();
     return value;
 };

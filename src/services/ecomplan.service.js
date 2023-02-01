@@ -302,7 +302,7 @@ const create_stream_one = async (req) => {
     myplan.save();
     let streamss = await Streamrequest.findById(value._id)
     let datess = new Date().setTime(new Date(streamss.startTime).getTime() + (plan.Duration * 60 * 1000));
-    await Streamrequest.findByIdAndUpdate({ _id: req.query.id }, { Duration: myplan.Duration, noOfParticipants: myplan.noOfParticipants, chat: myplan.chat, max_post_per_stream: myplan.max_post_per_stream, sepTwo: "Completed", planId: req.body.plan_name, Duration: plan.Duration, endTime: datess }, { new: true })
+    await Streamrequest.findByIdAndUpdate({ _id: value._id }, { Duration: myplan.Duration, noOfParticipants: myplan.noOfParticipants, chat: myplan.chat, max_post_per_stream: myplan.max_post_per_stream, sepTwo: "Completed", planId: req.body.plan_name, Duration: plan.Duration, endTime: datess }, { new: true })
     return value;
 };
 

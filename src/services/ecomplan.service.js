@@ -389,6 +389,65 @@ const get_all_stream = async (req) => {
                 max_post_per_stream: { $ifNull: ['$purchasedplans.max_post_per_stream', 0] },
             },
         },
+        {
+            $lookup: {
+                from: 'streamrequestposts',
+                localField: '_id',
+                foreignField: 'streamRequest',
+                pipeline: [
+                    {
+                        $lookup: {
+                            from: 'streamposts',
+                            localField: 'postId',
+                            foreignField: '_id',
+                            pipeline: [
+                                {
+                                    $lookup: {
+                                        from: 'products',
+                                        localField: 'productId',
+                                        foreignField: '_id',
+                                        as: 'products',
+                                    },
+                                },
+                                { $unwind: "$products" }
+
+                            ],
+                            as: 'streamposts',
+                        },
+
+                    },
+                    { $unwind: "$streamposts" },
+                    {
+                        $project: {
+                            _id: 1,
+                            "images": "$streamposts.images",
+                            "productId": "$streamposts.productId",
+                            "categoryId": "$streamposts.categoryId",
+                            "quantity": "$streamposts.quantity",
+                            "marketPlace": "$streamposts.marketPlace",
+                            "offerPrice": "$streamposts.offerPrice",
+                            "postLiveStreamingPirce": "$streamposts.postLiveStreamingPirce",
+                            "minLots": "$streamposts.minLots",
+                            "incrementalLots": "$streamposts.incrementalLots",
+                            "discription": "$streamposts.discription",
+                            "location": "$streamposts.location",
+                            "suppierId": "$streamposts.suppierId",
+                            "DateIso": "$streamposts.DateIso",
+                            "created": "$streamposts.created",
+                            "video": "$streamposts.video",
+                            productTitle: "$streamposts.products.productTitle"
+                        }
+                    },
+                    // {
+                    //     $addFields: {
+                    //         productTitle: '$streamposts.products.productTitle',
+                    //     },
+                    // },
+
+                ],
+                as: 'streamrequestposts',
+            },
+        },
         { $skip: 10 * page },
         { $limit: 10 },
     ])

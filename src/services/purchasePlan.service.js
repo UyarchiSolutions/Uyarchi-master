@@ -17,7 +17,35 @@ const create_purchase_plan = async (req) => {
         let collectedstatus = payment.status;
         let plan = await Streamplan.findById(req.body.plan);
         if (collectedstatus == 'captured' && collectedAmount == plan.salesPrice) {
-            let con = await purchasePlan.create({ ...{ planType: 'normal', planId: req.body.plan, suppierId: req.userId, paidAmount: collectedAmount, paymentStatus: collectedstatus, order_id: payment.order_id, noOfParticipants: plan.numberOfParticipants, chat: plan.chatNeed, max_post_per_stream: plan.max_post_per_stream, Duration: plan.Duration }, ...req.body.PaymentDatails });
+            let datas = {
+                planType: 'normal',
+                planId: req.body.plan,
+                suppierId: req.userId,
+                paidAmount: collectedAmount,
+                paymentStatus: collectedstatus,
+                order_id: payment.order_id,
+                noOfParticipants: plan.numberOfParticipants,
+                chat: plan.chatNeed,
+                max_post_per_stream: plan.max_post_per_stream,
+                Duration: plan.Duration,
+                planName: plan.planName,
+                DurationType: plan.DurationType,
+                numberOfParticipants: plan.numberOfParticipants,
+                numberofStream: plan.numberofStream,
+                validityofplan: plan.validityofplan,
+                noOfParticipantsCost: plan.noOfParticipantsCost,
+                chatNeed: plan.chatNeed,
+                commision: plan.commision,
+                commition_value: plan.commition_value,
+                stream_expire_hours: plan.stream_expire_hours,
+                stream_expire_days: plan.stream_expire_days,
+                stream_expire_minutes: plan.stream_expire_minutes,
+                regularPrice: plan.regularPrice,
+                salesPrice: plan.salesPrice,
+                description: plan.description,
+                planmode: plan.planmode,
+            }
+            let con = await purchasePlan.create({ ...datas, ...req.body.PaymentDatails });
             await Date.create_date(con)
             return con;
         }

@@ -62,14 +62,61 @@ const purchasePlanSchema = mongoose.Schema({
     Duration: {
         type: Number
     },
-    planType:{
+    planType: {
         type: String,
-        default:"normal"
+        default: "normal"
     },
-    streamId:{
+    streamId: {
         type: String,
-    }
-
+    },
+    planName: {
+        type: String,
+    },
+    DurationType: {
+        type: String,
+    },
+    numberOfParticipants: {
+        type: Number,
+    },
+    numberofStream: {
+        type: Number,
+    },
+    validityofplan: {
+        type: Number,
+    },
+    noOfParticipantsCost: {
+        type: Number,
+    },
+    chatNeed: {
+        type: String,
+    },
+    commision: {
+        type: String,
+    },
+    commition_value: {
+        type: Number,
+    },
+    stream_expire_hours: {
+        type: Number,
+    },
+    stream_expire_days: {
+        type: Number,
+    },
+    stream_expire_minutes: {
+        type: Number,
+    },
+    regularPrice: {
+        type: Number,
+    },
+    salesPrice: {
+        type: Number,
+    },
+    description: {
+        type: String,
+    },
+    planmode: {
+        type: String,
+    },
 
 });
 

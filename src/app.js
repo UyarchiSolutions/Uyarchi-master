@@ -20,7 +20,7 @@ const bodyParser = require("body-parser");
 const routes_v2 = require('./routes/v1/liveStreaming');
 const logger = require('./config/logger');
 const chetModule = require("./services/liveStreaming/chat.service")
-const moment=require('moment');
+const moment = require('moment');
 // app.use(session( { secret:'hello world',
 // store:SessionStore,
 // resave:false,
@@ -41,13 +41,16 @@ server.listen(config.port, () => {
 
 io.sockets.on('connection', async (socket) => {
   socket.on('groupchat', async (data) => {
-    console.log("hello",data)
-    await chetModule.chat_room_create(data,io)
+    console.log("hello", data)
+    await chetModule.chat_room_create(data, io)
   });
 
   socket.on('groupchatsubhost', async (data) => {
-    console.log("hello",data)
-    await chetModule.chat_room_create_subhost(data,io)
+    console.log("hello", data)
+    await chetModule.chat_room_create_subhost(data, io)
+  });
+  socket.on('livetraking', async (data) => {
+    io.sockets.emit('livetraking', data);
   });
 
   socket.on('', (msg) => {
@@ -96,7 +99,7 @@ app.use(cookieparser());
 // jwt authentication
 app.use(passport.initialize());
 passport.use('jwt', jwtStrategy)
-;
+  ;
 app.use(bodyParser.urlencoded({
   extended: true
 }));

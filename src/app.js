@@ -50,6 +50,7 @@ io.sockets.on('connection', async (socket) => {
     await chetModule.chat_room_create_subhost(data, io)
   });
   socket.on('livetraking', async (data) => {
+    console.log(data)
     io.sockets.emit('livetraking', data);
   });
 

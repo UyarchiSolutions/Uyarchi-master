@@ -166,49 +166,49 @@ const get_all_my_orders_normal = async (req) => {
     let plan = await purchasePlan.aggregate([
         { $sort: { DateIso: -1 } },
         { $match: { $and: [{ suppierId: req.userId }, { planType: { $eq: 'normal' } }] } },
-        {
-            $lookup: {
-                from: 'streamplans',
-                localField: 'planId',
-                foreignField: '_id',
-                as: 'streamplans',
-            },
-        },
-        {
-            $unwind: {
-                path: '$streamplans',
-                preserveNullAndEmptyArrays: true,
-            },
-        },
-        {
-            $project: {
-                _id: 1,
-                DateIso: 1,
-                active: 1,
-                archived: 1,
-                created: 1,
-                order_id: 1,
-                paidAmount: 1,
-                paymentStatus: 1,
-                planId: 1,
-                razorpay_order_id: 1,
-                razorpay_payment_id: 1,
-                razorpay_signature: 1,
-                Duration: "$streamplans.Duration",
-                commision: "$streamplans.commision",
-                planName: "$streamplans.planName",
-                commition_value: "$streamplans.commition_value",
-                chatNeed: "$streamplans.chatNeed",
-                numberOfParticipants: "$streamplans.numberOfParticipants",
-                numberofStream: "$streamplans.numberofStream",
-                post_expire_days: "$streamplans.post_expire_days",
-                post_expire_hours: "$streamplans.post_expire_hours",
-                post_expire_minutes: "$streamplans.post_expire_minutes",
-                regularPrice: "$streamplans.regularPrice",
-                validityofStream: "$streamplans.validityofStream",
+        // {
+        //     $lookup: {
+        //         from: 'streamplans',
+        //         localField: 'planId',
+        //         foreignField: '_id',
+        //         as: 'streamplans',
+        //     },
+        // },
+        // {
+        //     $unwind: {
+        //         path: '$streamplans',
+        //         preserveNullAndEmptyArrays: true,
+        //     },
+        // },
+        // {
+        //     $project: {
+        //         _id: 1,
+        //         DateIso: 1,
+        //         active: 1,
+        //         archived: 1,
+        //         created: 1,
+        //         order_id: 1,
+        //         paidAmount: 1,
+        //         paymentStatus: 1,
+        //         planId: 1,
+        //         razorpay_order_id: 1,
+        //         razorpay_payment_id: 1,
+        //         razorpay_signature: 1,
+        //         Duration: "$streamplans.Duration",
+        //         commision: "$streamplans.commision",
+        //         planName: "$streamplans.planName",
+        //         commition_value: "$streamplans.commition_value",
+        //         chatNeed: "$streamplans.chatNeed",
+        //         numberOfParticipants: "$streamplans.numberOfParticipants",
+        //         numberofStream: "$streamplans.numberofStream",
+        //         post_expire_days: "$streamplans.post_expire_days",
+        //         post_expire_hours: "$streamplans.post_expire_hours",
+        //         post_expire_minutes: "$streamplans.post_expire_minutes",
+        //         regularPrice: "$streamplans.regularPrice",
+        //         validityofStream: "$streamplans.validityofStream",
 
-            }
-        },
+        //     }
+        // },
         { $skip: 10 * page },
         { $limit: 10 },
 

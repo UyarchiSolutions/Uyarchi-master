@@ -24,8 +24,15 @@ const addTocart = async (req) => {
 
   return value;
 };
+const get_addTocart = async (req) => {
+  let shopId = req.shopId;
+  let streamId = req.query.streamId;
+  let value = await streamingCart.findOne({ shopId: shopId, streamId: streamId })
+  return value;
+};
 
 
 module.exports = {
-  addTocart
+  addTocart,
+  get_addTocart
 };

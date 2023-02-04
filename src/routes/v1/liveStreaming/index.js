@@ -1,6 +1,7 @@
 const express = require('express');
 const generateAuthTokens = require('./generateToken.route');
 const chatModel = require('./chat.route');
+const checkout = require('./checkout.route');
 const docsRoute = require('../docs.route');
 const config = require('../../../config/config');
 
@@ -14,6 +15,10 @@ const defaultRoutes = [
   {
     path: '/chat',
     route: chatModel,
+  },
+  {
+    path: '/checkout',
+    route: checkout,
   },
 ];
 

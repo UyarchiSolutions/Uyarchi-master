@@ -12,6 +12,7 @@ const addTocart = async (req) => {
   let streamId = req.body.streamId;
   let cart = req.body.cart;
   let value = await streamingCart.findOne({ shopId: shopId, streamId: streamId })
+  console.log(value)
   if (!value) {
     value = await streamingCart.create({ cart: cart, shopId: shopId, streamId: streamId })
     await Dates.create_date(value)

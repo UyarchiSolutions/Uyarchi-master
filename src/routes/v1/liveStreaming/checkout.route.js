@@ -9,6 +9,6 @@ const shopverify = require('../../../controllers/shoptokenverify.controller');
 const router = express.Router();
 const checkout = require('../../../controllers/liveStreaming/checkout.controller');
 
-router.route('/add-to-cart').post(checkout.addTocart);
+router.route('/add-to-cart').post(shopverify, checkout.addTocart);
 
 module.exports = router;

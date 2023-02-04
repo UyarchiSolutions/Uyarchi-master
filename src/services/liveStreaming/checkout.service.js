@@ -19,6 +19,7 @@ const addTocart = async (req) => {
   }
   else {
     value.cart = cart;
+    value.save();
   }
 
   return value;

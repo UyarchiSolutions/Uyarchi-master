@@ -42,8 +42,8 @@ const confirmOrder_razerpay = async (shopId, body) => {
     let collectedstatus = payment.status;
     if (collectedstatus == 'captured' && collectedAmount == body.OdrerDetails.Amount) {
       let cart = await streamingCart.findById(streamId);
-      if (!cart || cart.status != 'ordered') {
-        throw new ApiError(httpStatus[404], 'cart not found 🖕');
+      if (!cart || cart.status == 'ordered') {
+        throw new ApiError(httpStatus.NOT_FOUND, 'cart not found 🖕');
       }
       let orders = await addstreaming_order(shopId, body, cart, collectedAmount);
       let paymantss = await add_odrerPayment(shopId, body, orders, payment);

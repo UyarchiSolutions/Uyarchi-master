@@ -545,7 +545,7 @@ const get_sub_golive = async (req) => {
                     _id: 1,
                     "active": 1,
                     "archive": 1,
-                    "productId": "$streampost.productId",
+                    "productId": "$streamposts.productId",
                     "productTitle": "$streamposts.products.productTitle",
                     "image": "$streamposts.products.image",
                     "categoryId": "a7c95af4-abd5-4fe0-b685-fd93bb98f5ec",
@@ -558,7 +558,8 @@ const get_sub_golive = async (req) => {
                     "incrementalLots": "$streamposts.incrementalLots",
                     "suppierId": 1,
                     "DateIso": 1,
-                    "created": "2023-01-20T11:46:58.201Z"
+                    "created": "2023-01-20T11:46:58.201Z",
+
                   }
                 }
               ],

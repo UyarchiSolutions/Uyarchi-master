@@ -35,18 +35,20 @@ const get_addTocart = async (req) => {
 const confirmOrder_cod = async (shopId, body) => {
   let orders;
   let streamId = body.OdrerDetails.cart;
-  let cart = await streamingCart.findById(streamId);
-  if (!cart || cart.status == 'ordered') {
-    throw new ApiError(httpStatus.NOT_FOUND, 'cart not found 🖕');
-  }
-  orders = await addstreaming_order(shopId, body, cart);
-  let paymantss = await add_odrerPayment_cod(shopId, body, orders);
-  cart.cart.forEach(async (e) => {
-    await addstreaming_order_product(shopId, e, orders)
-  });
-  cart.status = "ordered";
-  cart.save();
-  return orders
+  return new Promise(async resolve => {
+    let cart = await streamingCart.findById(streamId);
+    if (!cart || cart.status == 'ordered') {
+      throw new ApiError(httpStatus.NOT_FOUND, 'cart not found 🖕');
+    }
+    orders = await addstreaming_order(shopId, body, cart);
+    let paymantss = await add_odrerPayment_cod(shopId, body, orders);
+    cart.cart.forEach(async (e) => {
+      await addstreaming_order_product(shopId, e, orders)
+    });
+    cart.status = "ordered";
+    cart.save();
+    resolve(orders)
+  })
 
 
 };

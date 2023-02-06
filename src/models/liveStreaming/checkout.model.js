@@ -90,6 +90,9 @@ const streamingOrderschema = mongoose.Schema({
   address: {
     type: String,
   },
+  Amount: {
+    type: Number,
+  }
 });
 
 const streamingOrder = mongoose.model('streamingorder', streamingOrderschema);
@@ -131,7 +134,11 @@ const streamingproductschema = mongoose.Schema({
   shopId: {
     type: String,
 
-  }
+  },
+  streamId: {
+    type: String,
+
+  },
 
 });
 const streamingorderProduct = mongoose.model('streamingorderproduct', streamingproductschema);
@@ -220,6 +227,9 @@ const streamingPaymant = mongoose.Schema({
     type: String,
   },
   shopId: {
+    type: String,
+  },
+  streamId:{
     type: String,
   }
 })

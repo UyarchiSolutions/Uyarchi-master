@@ -31,6 +31,25 @@ const get_addTocart = async (req) => {
   let value = await streamingCart.findOne({ shopId: shopId, streamId: streamId, status: { $ne: 'ordered' } })
   return value;
 };
+
+const confirmOrder_cod = async (shopId, body) => {
+  let orders;
+  let streamId = body.OdrerDetails.cart;
+  let cart = await streamingCart.findById(streamId);
+  if (!cart || cart.status == 'ordered') {
+    throw new ApiError(httpStatus.NOT_FOUND, 'cart not found 🖕');
+  }
+  orders = await addstreaming_order(shopId, body, cart);
+  let paymantss = await add_odrerPayment_cod(shopId, body, orders);
+  cart.cart.forEach(async (e) => {
+    await addstreaming_order_product(shopId, e, orders)
+  });
+  cart.status = "ordered";
+  cart.save();
+  return orders
+
+
+};
 const confirmOrder_razerpay = async (shopId, body) => {
   let orders;
   let streamId = body.OdrerDetails.cart;
@@ -79,6 +98,7 @@ const addstreaming_order = async (shopId, body, cart) => {
   let value = await streamingOrder.create({
     ...{
       orderId: BillId,
+      shopId: shopId
     }, ...body.OdrerDetails
   })
   await Dates.create_date(value)
@@ -94,7 +114,8 @@ const addstreaming_order_product = async (shopId, event, order) => {
     productId: event.productId,
     purchase_quantity: event.cartQTY,
     shopId: shopId,
-    purchase_price: event.offerPrice
+    purchase_price: event.offerPrice,
+    streamId: order.streamId
   })
   await Dates.create_date(value)
   return value;
@@ -119,15 +140,40 @@ const add_odrerPayment = async (shopId, body, orders, payment) => {
     onlinepaymentId: payment.id,
     onlineorderId: payment.order_id,
     paymentTypes: "Online",
-    paymentGatway: "razorpay"
+    paymentGatway: "razorpay",
+    streamId: orderDetails.streamId
+  });
+  await Dates.create_date(value)
+  return value;
+}
+const add_odrerPayment_cod = async (shopId, body, orders) => {
+
+  let orderDetails = body.OdrerDetails
+  let currentDate = moment().format('YYYY-MM-DD');
+  let currenttime = moment().format('HHmmss');
+  let value = await streamingorderPayments.create({
+    shopId: shopId,
+    paidAmt: 0,
+    date: currentDate,
+    time: currenttime,
+    created: moment(),
+    orderId: orders._id,
+    type: 'customer',
+    paymentMethod: "COD",
+    reorder_status: false,
+    paymentTypes: "cod",
+    streamId: orderDetails.streamId
+
   });
   await Dates.create_date(value)
   return value;
 }
 
 
+
 module.exports = {
   addTocart,
   get_addTocart,
-  confirmOrder_razerpay
+  confirmOrder_razerpay,
+  confirmOrder_cod
 };

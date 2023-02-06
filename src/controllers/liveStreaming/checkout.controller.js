@@ -15,8 +15,14 @@ const confirmOrder_razerpay = catchAsync(async (req, res) => {
   const category = await checkout.confirmOrder_razerpay(req.shopId, req.body);
   res.send(category);
 });
+
+const confirmOrder_cod = catchAsync(async (req, res) => {
+  const category = await checkout.confirmOrder_cod(req.shopId, req.body);
+  res.send(category);
+});
 module.exports = {
   addTocart,
   get_addTocart,
-  confirmOrder_razerpay
+  confirmOrder_razerpay,
+  confirmOrder_cod
 };

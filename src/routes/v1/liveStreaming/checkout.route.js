@@ -11,6 +11,7 @@ const checkout = require('../../../controllers/liveStreaming/checkout.controller
 
 router.route('/add-to-cart').post(shopverify, checkout.addTocart);
 router.route('/add-to-cart').get(shopverify, checkout.get_addTocart);
-router.route("/razorpay/success/confirmorder").post(shopverify,checkout.confirmOrder_razerpay)
+router.route("/razorpay/success/confirmorder").post(shopverify, checkout.confirmOrder_razerpay)
+router.route("/success/confirmorder").post(shopverify, checkout.confirmOrder_cod)
 
 module.exports = router;

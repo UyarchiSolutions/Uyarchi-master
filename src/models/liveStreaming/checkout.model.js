@@ -62,7 +62,7 @@ const streamingOrderschema = mongoose.Schema({
   streamId: {
     type: String,
   },
-  cartId: {
+  cart: {
     type: Array,
   },
   shopId: {
@@ -90,23 +90,6 @@ const streamingOrderschema = mongoose.Schema({
   address: {
     type: String,
   },
-  paymantMethod: {
-    type: String,
-  },
-  paidAmount: {
-    type: String,
-  },
-  razorpay_order_id: {
-    type: String,
-  },
-  razorpay_payment_id: {
-    type: String,
-  },
-  razorpay_signature: {
-    type: String,
-  }
-
-
 });
 
 const streamingOrder = mongoose.model('streamingorder', streamingOrderschema);
@@ -140,20 +123,18 @@ const streamingproductschema = mongoose.Schema({
     type: String,
   },
   purchase_price: {
-    type: String,
+    type: Number,
   },
   purchase_quantity: {
-    type: String,
+    type: Number,
   },
-  shopId:{
+  shopId: {
     type: String,
 
   }
 
 });
 const streamingorderProduct = mongoose.model('streamingorderproduct', streamingproductschema);
-
-
 const streamingPaymant = mongoose.Schema({
   _id: {
     type: String,
@@ -236,6 +217,9 @@ const streamingPaymant = mongoose.Schema({
     default: "offline",
   },
   paymentGatway: {
+    type: String,
+  },
+  shopId: {
     type: String,
   }
 })

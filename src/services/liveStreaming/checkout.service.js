@@ -28,7 +28,7 @@ const addTocart = async (req) => {
 const get_addTocart = async (req) => {
   let shopId = req.shopId;
   let streamId = req.query.streamId;
-  let value = await streamingCart.findOne({ shopId: shopId, streamId: streamId })
+  let value = await streamingCart.findOne({ shopId: shopId, streamId: streamId, status: { $ne: 'ordered' } })
   return value;
 };
 
@@ -36,15 +36,17 @@ const get_addTocart = async (req) => {
 const confirmOrder_razerpay = async (shopId, body) => {
   // const
   let orders;
-  let streamId = req.body.card;
+  let streamId = body.OdrerDetails.cart;
+  console.log(body)
+  console.log(streamId)
   if (body.PaymentDatails != null) {
     let payment = await paymentgatway.verifyRazorpay_Amount(body.PaymentDatails);
     let collectedAmount = payment.amount / 100
     let collectedstatus = payment.status;
     if (collectedstatus == 'captured' && collectedAmount == body.OdrerDetails.Amount) {
       let cart = await streamingCart.findById(streamId);
-      if (!cart) {
-        throw new ApiError(httpStatus.NO_CONTENT, 'cart not found 🖕');
+      if (!cart || cart.status != 'ordered') {
+        throw new ApiError(httpStatus[404], 'cart not found 🖕');
       }
       let orders = await addstreaming_order(shopId, body, cart, collectedAmount);
       let paymantss = await add_odrerPayment(shopId, body, orders, payment);
@@ -55,18 +57,11 @@ const confirmOrder_razerpay = async (shopId, body) => {
       cart.save();
       return orders
     }
-
-
   }
-  // console.log(cart)
-  // console.log();
-  // console.log(body)
-  // return orders
 };
 
-const addstreaming_order = async (shopId, body, cart, collectedAmount) => {
+const addstreaming_order = async (shopId, body, cart) => {
   const serverdate = moment().format('YYYY-MM-DD');
-  const servertime = moment().format('HHmmss');
   let Buy = await streamingOrder.find({ date: serverdate }).count();
   let centerdata = '';
   if (Buy < 9) {
@@ -87,25 +82,26 @@ const addstreaming_order = async (shopId, body, cart, collectedAmount) => {
   let value = await streamingOrder.create({
     ...{
       orderId: BillId,
-      paidAmount: body.OdrerDetails.Amount,
-    }, ...body.PaymentDatails, ...body.OdrerDetails
+    }, ...body.OdrerDetails
   })
-
+  await Dates.create_date(value)
   return value;
 
 }
 
 const addstreaming_order_product = async (shopId, event, order) => {
 
-  let value = await streamingOrder.create({
+  let value = await streamingorderProduct.create({
     orderId: order._id,
     postId: event._id,
     productId: event.productId,
     purchase_quantity: event.cartQTY,
     shopId: shopId,
     purchase_price: event.offerPrice
-
   })
+  await Dates.create_date(value)
+  return value;
+
 }
 
 const add_odrerPayment = async (shopId, body, orders, payment) => {
@@ -113,7 +109,7 @@ const add_odrerPayment = async (shopId, body, orders, payment) => {
   let orderDetails = body.OdrerDetails
   let currentDate = moment().format('YYYY-MM-DD');
   let currenttime = moment().format('HHmmss');
-  return await streamingorderPayments.create({
+  let value = await streamingorderPayments.create({
     shopId: shopId,
     paidAmt: orderDetails.Amount,
     date: currentDate,
@@ -128,6 +124,8 @@ const add_odrerPayment = async (shopId, body, orders, payment) => {
     paymentTypes: "Online",
     paymentGatway: "razorpay"
   });
+  await Dates.create_date(value)
+  return value;
 }
 
 

@@ -12,7 +12,7 @@ const addTocart = async (req) => {
   let shopId = req.shopId;
   let streamId = req.body.streamId;
   let cart = req.body.cart;
-  let value = await streamingCart.findOne({ shopId: shopId, streamId: streamId })
+  let value = await streamingCart.findOne({ shopId: shopId, streamId: streamId, status: { $ne: 'ordered' } })
   console.log(value)
   if (!value) {
     value = await streamingCart.create({ cart: cart, shopId: shopId, streamId: streamId })
@@ -31,10 +31,7 @@ const get_addTocart = async (req) => {
   let value = await streamingCart.findOne({ shopId: shopId, streamId: streamId, status: { $ne: 'ordered' } })
   return value;
 };
-
-
 const confirmOrder_razerpay = async (shopId, body) => {
-  // const
   let orders;
   let streamId = body.OdrerDetails.cart;
   console.log(body)

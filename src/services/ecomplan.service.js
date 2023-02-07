@@ -1171,6 +1171,12 @@ const unregisetr_strean_instrest = async (req) => {
         }
     }
     await single_stream_details(req);
+    let update = await StreamPreRegister.find({ streamId: participents._id, eligible: false }).sort({ DateIso: -1 }).limit(participents.noOfParticipants / 2)
+    console.log(update)
+    update.forEach(async (e) => {
+        e.viewstatus = "RAC"
+        e.save()
+    })
     return findresult;
 };
 

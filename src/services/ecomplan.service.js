@@ -1116,14 +1116,12 @@ const regisetr_strean_instrest = async (req) => {
             await Dates.create_date(findresult)
         }
     }
-    let update = await StreamPreRegister.find().limit(10).map(
-        function (doc) {
-            console.log(doc)
-            return doc._id;
-        }
-    );
-    console.log(update,12312)
 
+    let update = await StreamPreRegister.find().sort({ DateIso: -1 }).skip(participents.noOfParticipants).limit(participents.noOfParticipants / 2)
+    update.forEach(async (e) => {
+        e.viewstatus = "RAC"
+        e.save()
+    })
     await single_stream_details(req);
     return { findresult, update };
 
@@ -1135,6 +1133,7 @@ const unregisetr_strean_instrest = async (req) => {
     let noOfParticipants = participents.noOfParticipants;
     findresult.streamCount = 0;
     findresult.eligible = false;
+    findresult.viewstatus = '';
     findresult.status = 'Unregistered';
     findresult.save();
     let count = await StreamPreRegister.find({ streamId: req.body.streamId, status: "Registered" }).count();
@@ -1158,6 +1157,7 @@ const unregisetr_strean_instrest = async (req) => {
         let next = await StreamPreRegister.findOne({ streamId: req.body.streamId, status: "Registered", _id: { $ne: findresult._id } }).sort({ DateIso: 1 }).skip(streamPosition);
         if (next) {
             next.eligible = true;
+            next.viewstatus = 'Confirmed';
             next.streamCount = user_postion
             next.save();
         }

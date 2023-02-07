@@ -1115,7 +1115,7 @@ const regisetr_strean_instrest = async (req) => {
     else {
         if (findresult.status != 'Registered') {
             findresult.streamCount = count + 1;
-            findresult.viewstatus = participents.noOfParticipants > count ? "Confirmed" : "";
+            findresult.viewstatus = participents.noOfParticipants > count ? "Confirmed" : "Waiting";
             findresult.eligible = participents.noOfParticipants > count;
 
             findresult.status = 'Registered';

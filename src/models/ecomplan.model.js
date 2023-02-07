@@ -160,6 +160,9 @@ const streamPostschema = mongoose.Schema({
   video: {
     type: String
   },
+  afterStreaming: {
+    type: String
+  },
 
 });
 
@@ -275,12 +278,10 @@ const streamRequestschema = mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  afterStreaming: {
-    type: String,
-    default: false,
-
-
-  }
+  // afterStreaming: {
+  //   type: String,
+  //   default: false,
+  // }
 
 
 

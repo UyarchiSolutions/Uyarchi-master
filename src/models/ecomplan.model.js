@@ -360,6 +360,9 @@ const streamPreRegister = mongoose.Schema({
   eligible: {
     type: Boolean,
     default: false,
+  },
+  viewstatus: {
+    type: String,
   }
 });
 

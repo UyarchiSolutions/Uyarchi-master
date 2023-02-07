@@ -1109,13 +1109,21 @@ const regisetr_strean_instrest = async (req) => {
     else {
         if (findresult.status != 'Registered') {
             findresult.streamCount = count + 1;
+            findresult.viewstatus = participents.noOfParticipants > count ? "Confirmed" : "";
             findresult.eligible = participents.noOfParticipants > count;
+
             findresult.status = 'Registered';
             await Dates.create_date(findresult)
         }
     }
+    let update = await StreamPreRegister.find().limit(10).map(
+        function (doc) {
+            return doc._id;
+        }
+    );
+
     await single_stream_details(req);
-    return { findresult };
+    return { findresult, update };
 
 };
 const unregisetr_strean_instrest = async (req) => {

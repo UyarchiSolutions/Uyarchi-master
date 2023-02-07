@@ -17,6 +17,9 @@ const create_purchase_plan = async (req) => {
         let collectedstatus = payment.status;
         let plan = await Streamplan.findById(req.body.plan);
         if (collectedstatus == 'captured' && collectedAmount == plan.salesPrice) {
+            var yourDate = new Date();
+            var numberOfDaysToAdd = plan.validityofplan;
+            var date_now = yourDate.setDate(yourDate.getDate() + numberOfDaysToAdd)
             let datas = {
                 planType: 'normal',
                 planId: req.body.plan,
@@ -44,6 +47,7 @@ const create_purchase_plan = async (req) => {
                 salesPrice: plan.salesPrice,
                 description: plan.description,
                 planmode: plan.planmode,
+                expireDate: date_now
             }
             let con = await purchasePlan.create({ ...datas, ...req.body.PaymentDatails });
             await Date.create_date(con)

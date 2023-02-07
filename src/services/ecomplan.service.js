@@ -1121,6 +1121,7 @@ const regisetr_strean_instrest = async (req) => {
             return doc._id;
         }
     );
+    console.log(update,12312)
 
     await single_stream_details(req);
     return { findresult, update };

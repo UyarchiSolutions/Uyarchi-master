@@ -72,6 +72,7 @@ const create_purchase_plan_addon = async (req) => {
             var yourDate = new Date();
             var numberOfDaysToAdd = plan.validityofplan;
             var date_now = yourDate.setDate(yourDate.getDate() + numberOfDaysToAdd)
+            console.log(date_now)
             let con = await purchasePlan.create({ ...{ expireDate: date_now, planType: 'addon', streamId: req.body.streamId, planId: req.body.plan, suppierId: req.userId, paidAmount: collectedAmount, paymentStatus: collectedstatus, order_id: payment.order_id, noOfParticipants: plan.numberOfParticipants }, ...req.body.PaymentDatails });
             await Date.create_date(con)
             await addstream_user_limits(req, plan, con)

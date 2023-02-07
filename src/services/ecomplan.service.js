@@ -1050,6 +1050,11 @@ const get_watch_live_steams = async (req) => {
             },
         },
         {
+            $addFields: {
+                viewstatus: { $ifNull: ['$streampreregister.viewstatus', ''] },
+            },
+        },
+        {
             $project: {
                 "_id": 1,
                 "active": 1,
@@ -1083,7 +1088,8 @@ const get_watch_live_steams = async (req) => {
                 alreadyJoined: 1,
                 suppliersName: "$suppliers.primaryContactName",
                 registerStatus: 1,
-                eligible: 1
+                eligible: 1,
+                viewstatus: 1
             }
         }
     ]);

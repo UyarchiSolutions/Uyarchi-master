@@ -1123,7 +1123,8 @@ const regisetr_strean_instrest = async (req) => {
         }
     }
 
-    let update = await StreamPreRegister.find().sort({ DateIso: -1 }).skip(participents.noOfParticipants).limit(participents.noOfParticipants / 2)
+    let update = await StreamPreRegister.find({ streamId: participents._id }).sort({ DateIso: -1 }).skip(participents.noOfParticipants).limit(participents.noOfParticipants / 2)
+    console.log(update)
     update.forEach(async (e) => {
         e.viewstatus = "RAC"
         e.save()

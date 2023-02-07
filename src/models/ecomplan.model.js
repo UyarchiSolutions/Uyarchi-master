@@ -59,15 +59,6 @@ const streamplanschema = mongoose.Schema({
   commition_value: {
     type: Number,
   },
-  stream_expire_hours: {
-    type: Number,
-  },
-  stream_expire_days: {
-    type: Number,
-  },
-  stream_expire_minutes: {
-    type: Number,
-  },
   regularPrice: {
     type: Number,
   },
@@ -86,6 +77,10 @@ const streamplanschema = mongoose.Schema({
   planmode: {
     type: String,
   },
+  streamvalidity: {
+    type: Number,
+    default: 30
+  }
 });
 
 const Streamplan = mongoose.model('streamplan', streamplanschema);

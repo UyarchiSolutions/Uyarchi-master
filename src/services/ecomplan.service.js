@@ -1115,7 +1115,7 @@ const regisetr_strean_instrest = async (req) => {
     else {
         if (findresult.status != 'Registered') {
             findresult.streamCount = count + 1;
-            findresult.viewstatus = participents.noOfParticipants > count ? "Confirmed" : "Waiting";
+            findresult.viewstatus = participents.noOfParticipants > count ? "Confirmed" : (participents.noOfParticipants + participents.noOfParticipants / 2) > count ? "RAC" : 'Waiting';
             findresult.eligible = participents.noOfParticipants > count;
             findresult.status = 'Registered';
             await Dates.create_date(findresult)
@@ -1124,12 +1124,12 @@ const regisetr_strean_instrest = async (req) => {
 
     await single_stream_details(req);
 
-    let update = await StreamPreRegister.find({ streamId: participents._id, eligible: false }).sort({ DateIso: -1 }).limit(participents.noOfParticipants / 2)
-    console.log(update)
-    update.forEach(async (e) => {
-        e.viewstatus = "RAC"
-        e.save()
-    })
+    // let update = await StreamPreRegister.find({ streamId: participents._id, eligible: false }).sort({ DateIso: -1 }).limit(participents.noOfParticipants / 2)
+    // console.log(update)
+    // update.forEach(async (e) => {
+    //     e.viewstatus = "RAC"
+    //     e.save()
+    // })
 
     return { findresult, update };
 

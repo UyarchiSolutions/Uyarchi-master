@@ -4,7 +4,7 @@ const ApiError = require('../utils/ApiError');
 const moment = require('moment');
 const { purchasePlan } = require('../models/purchasePlan.model');
 const paymentgatway = require('./paymentgatway.service');
-const Date = require('./Date.serive')
+const Dates = require('./Date.serive')
 
 const { Streamplan, StreamPost, Streamrequest, StreamrequestPost, StreamPreRegister } = require('../models/ecomplan.model');
 
@@ -50,7 +50,7 @@ const create_purchase_plan = async (req) => {
                 expireDate: date_now
             }
             let con = await purchasePlan.create({ ...datas, ...req.body.PaymentDatails });
-            await Date.create_date(con)
+            await Dates.create_date(con)
             return con;
         }
         else {
@@ -78,7 +78,7 @@ const create_purchase_plan_addon = async (req) => {
             var date_now = yourDate.setDate(yourDate.getDate() + numberOfDaysToAdd)
             console.log(date_now)
             let con = await purchasePlan.create({ ...{ expireDate: date_now, planType: 'addon', streamId: req.body.streamId, planId: req.body.plan, suppierId: req.userId, paidAmount: collectedAmount, paymentStatus: collectedstatus, order_id: payment.order_id, noOfParticipants: plan.numberOfParticipants }, ...req.body.PaymentDatails });
-            await Date.create_date(con)
+            await Dates.create_date(con)
             await addstream_user_limits(req, plan, con)
             return con;
         }

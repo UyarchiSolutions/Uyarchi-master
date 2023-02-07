@@ -245,10 +245,12 @@ const get_all_my_orders_normal = async (req) => {
 }
 
 const get_all_purchasePlans = async (req) => {
+    var date_now = new Date().getTime()
+    console.log(date_now)
     const myorders = await purchasePlan.aggregate([
         {
             $match: {
-                $and: [{ suppierId: { $eq: req.userId } }, { active: { $eq: true } }]
+                $and: [{ suppierId: { $eq: req.userId } }, { active: { $eq: true } }, { expireDate: { $gt: date_now } }]
             }
         },
         {

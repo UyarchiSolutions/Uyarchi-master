@@ -959,8 +959,10 @@ const go_live_stream_host_SUBHOST = async (req, userId) => {
     return value;
 };
 const get_watch_live_steams = async (req) => {
+
+    var date_now = new Date().getTime()
     let value = await Streamrequest.aggregate([
-        { $match: { $and: [{ adminApprove: { $eq: "Approved" } }] } },
+        { $match: { $and: [{ adminApprove: { $eq: "Approved" } }, { endTime: { $gt: date_now } }] } },
         {
             $lookup: {
                 from: 'joinedusers',

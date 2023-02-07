@@ -1131,7 +1131,7 @@ const regisetr_strean_instrest = async (req) => {
     //     e.save()
     // })
 
-    return { findresult, update };
+    return { findresult };
 
 };
 const unregisetr_strean_instrest = async (req) => {

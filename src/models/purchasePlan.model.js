@@ -117,6 +117,9 @@ const purchasePlanSchema = mongoose.Schema({
     planmode: {
         type: String,
     },
+    expireDate: {
+        type: Number,
+    }
 
 });
 

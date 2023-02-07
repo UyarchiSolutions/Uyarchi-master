@@ -1118,6 +1118,7 @@ const regisetr_strean_instrest = async (req) => {
     }
     let update = await StreamPreRegister.find().limit(10).map(
         function (doc) {
+            console.log(doc)
             return doc._id;
         }
     );

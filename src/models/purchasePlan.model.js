@@ -119,7 +119,11 @@ const purchasePlanSchema = mongoose.Schema({
     },
     expireDate: {
         type: Number,
-    }
+    },
+    streamvalidity: {
+        type: Number,
+        default: 30
+      }
 
 });
 

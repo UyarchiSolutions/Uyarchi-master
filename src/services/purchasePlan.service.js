@@ -47,7 +47,8 @@ const create_purchase_plan = async (req) => {
                 salesPrice: plan.salesPrice,
                 description: plan.description,
                 planmode: plan.planmode,
-                expireDate: date_now
+                expireDate: date_now,
+                streamvalidity: plan.streamvalidity
             }
             let con = await purchasePlan.create({ ...datas, ...req.body.PaymentDatails });
             await Dates.create_date(con)

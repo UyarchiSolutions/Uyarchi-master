@@ -214,6 +214,9 @@ const streamRequestschema = mongoose.Schema({
   streamingTime: {
     type: String
   },
+  streamingDate_time: {
+    type: String
+  },
   image: {
     type: String
   },

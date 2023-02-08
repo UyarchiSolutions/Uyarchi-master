@@ -959,6 +959,27 @@ const go_live_stream_host_SUBHOST = async (req, userId) => {
     let value = await tempTokenModel.findById(req.query.id)
     return value;
 };
+const get_watch_live_steams_admin_watch = async (req) => {
+    var date_now = new Date().getTime()
+    let value = await Streamrequest.aggregate([
+        { $match: { $and: [{ adminApprove: { $eq: "Approved" } }, { endTime: { $gt: date_now } }] } },
+        {
+            $lookup: {
+                from: 'temptokens',
+                localField: '_id',
+                foreignField: 'streamId',
+                pipeline: [{ $match: { $and: [{ type: { $eq: "host" } }] } }],
+                as: 'temptokens',
+            },
+        },
+        {
+            $unwind: '$temptokens',
+        },
+    ]);
+    return value;
+};
+
+
 const get_watch_live_steams = async (req) => {
 
     var date_now = new Date().getTime()
@@ -1429,6 +1450,7 @@ module.exports = {
 
     go_live_stream_host,
     get_watch_live_steams,
+    get_watch_live_steams_admin_watch,
     get_watch_live_token,
 
 

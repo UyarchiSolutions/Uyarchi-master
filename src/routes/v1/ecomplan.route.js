@@ -66,6 +66,7 @@ router.route('/golive/host/view').get(supplierAuth, Ecomcontroller.go_live_strea
 router.route('/golive/subhost/view').get(subhostVerify, Ecomcontroller.go_live_stream_host_subhost)
 
 router.route('/getAll/shop/live/stream').get(shopverify, Ecomcontroller.get_watch_live_steams)
+router.route('/getAll/shop/live/stream/watch/admin').get(Ecomcontroller.get_watch_live_steams_admin_watch)
 router.route('/watchlive/go/live').get(Ecomcontroller.get_watch_live_token)
 
 

@@ -193,6 +193,12 @@ const get_watch_live_steams = catchAsync(async (req, res) => {
   res.send(value);
 });
 
+const get_watch_live_steams_admin_watch = catchAsync(async (req, res) => {
+  console.log("sdas")
+  const value = await Ecomserive.get_watch_live_steams_admin_watch(req);
+  res.send(value);
+});
+
 const get_watch_live_token = catchAsync(async (req, res) => {
   console.log("sdas")
   const value = await Ecomserive.get_watch_live_token(req);
@@ -271,6 +277,7 @@ module.exports = {
 
   go_live_stream_host,
   get_watch_live_steams,
+  get_watch_live_steams_admin_watch,
   get_watch_live_token,
 
 
@@ -286,6 +293,7 @@ module.exports = {
 
 
   purchase_link_plan,
-  purchase_link_plan_get
+  purchase_link_plan_get,
+
 
 };

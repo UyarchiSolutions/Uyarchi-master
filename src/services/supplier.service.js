@@ -1046,6 +1046,19 @@ const filter_supplier = async (id) => {
   ])
   return data;
 };
+
+const get_registered_supplier = async (id) => {
+  const data = await Supplier.aggregate([
+    {
+      $match: {
+        $and: [
+          { password: { $ne: null } },
+        ]
+      }
+    },
+  ])
+  return data;
+};
 module.exports = {
   createSupplier,
   updateSupplierById,
@@ -1083,5 +1096,6 @@ module.exports = {
   ValidateMobileNumber,
   already_Customer,
   checkApproved,
-  filter_supplier
+  filter_supplier,
+  get_registered_supplier
 };

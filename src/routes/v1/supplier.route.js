@@ -50,4 +50,5 @@ router.route('/checkMobile/ExestOrNot/:number').get(supplierController.checkMobi
 router.route('/UpdateSupplierBy/IdThird/:id').put(supplierupload.array('image'), supplierController.UpdateSupplierByIdThird);
 router.route('/ValidateMobileNumber/:id/:phone').get(supplierController.ValidateMobileNumber);
 router.route('/search/supplier/find').get(supplierController.filter_supplier);
+router.route('/getsupplier/register/getall').get(supplierController.get_registered_supplier);
 module.exports = router;

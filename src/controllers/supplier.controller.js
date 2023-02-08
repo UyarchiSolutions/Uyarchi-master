@@ -228,9 +228,16 @@ const checkApproved = catchAsync(async (req, res) => {
   res.send(data);
 });
 
-const filter_supplier= catchAsync(async (req, res) => {
+const filter_supplier = catchAsync(async (req, res) => {
   let userId = req.userId;
   const data = await supplierService.filter_supplier(userId);
+  res.send(data);
+});
+
+
+const get_registered_supplier = catchAsync(async (req, res) => {
+  let userId = req.userId;
+  const data = await supplierService.get_registered_supplier(userId);
   res.send(data);
 });
 
@@ -273,5 +280,6 @@ module.exports = {
   ValidateMobileNumber,
   already_Customer,
   checkApproved,
-  filter_supplier
+  filter_supplier,
+  get_registered_supplier
 };

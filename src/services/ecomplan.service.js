@@ -1365,7 +1365,32 @@ const purchase_link_plan = async (req) => {
 }
 const purchase_link_plan_get = async (req) => {
     const verify = await generateLink.verifyLink(req.query.link)
-    return verify;
+    let value = await streamPlanlink.aggregate([
+        { $match: { $and: [{ _id: { $eq: verify._id } }, { status: { $eq: "created" } }] } },
+        {
+            $lookup: {
+                from: 'suppliers',
+                localField: 'supplier',
+                foreignField: '_id',
+                as: 'suppliers',
+            },
+        },
+        { $unwind: "$suppliers" },
+        {
+            $lookup: {
+                from: 'streamplans',
+                localField: 'plan',
+                foreignField: '_id',
+                as: 'plan_details',
+            },
+        },
+        { $unwind: "$plan_details" }
+    ])
+    if (value.length == 0) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Plan Not Found');
+
+    }
+    return value[0];
 }
 
 module.exports = {

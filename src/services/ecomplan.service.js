@@ -1,11 +1,12 @@
 const httpStatus = require('http-status');
-const { Streamplan, StreamPost, Streamrequest, StreamrequestPost, StreamPreRegister } = require('../models/ecomplan.model');
+const { Streamplan, StreamPost, Streamrequest, StreamrequestPost, StreamPreRegister, streamPlanlink } = require('../models/ecomplan.model');
 const ApiError = require('../utils/ApiError');
 const AWS = require('aws-sdk')
 const Dates = require('./Date.serive')
 const { purchasePlan } = require('../models/purchasePlan.model');
 const { tempTokenModel } = require('../models/liveStreaming/generateToken.model');
-
+const generateLink = require("./liveStreaming/generatelink.service")
+const moment = require('moment')
 const create_Plans = async (req) => {
     console.log(req.body)
     const value = await Streamplan.create({ ...req.body, ...{ planType: 'normal' } })
@@ -1347,6 +1348,26 @@ const purchase_details_supplier = async (req) => {
     return suplier
 }
 
+
+const purchase_link_plan = async (req) => {
+    let expireMinutes = moment().add(req.body.expireMinutes, 'minutes');
+    let value = await streamPlanlink.create({ ...req.body, ...{ expireTime: expireMinutes } })
+    let data = {
+        exp: expireMinutes,
+        supplier: req.body.supplier,
+        plan: req.body.plan,
+        _id: value._id
+    }
+    const link = await generateLink.generateLink(data)
+    value.token = link;
+    await Dates.create_date(value);
+    return value;
+}
+const purchase_link_plan_get = async (req) => {
+    const verify = await generateLink.verifyLink(req.query.link)
+    return verify;
+}
+
 module.exports = {
     create_Plans,
     create_Plans_addon,
@@ -1394,5 +1415,9 @@ module.exports = {
 
 
     purchase_details,
-    purchase_details_supplier
+    purchase_details_supplier,
+
+
+    purchase_link_plan,
+    purchase_link_plan_get
 };

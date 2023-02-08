@@ -368,5 +368,52 @@ const streamPreRegister = mongoose.Schema({
 
 const StreamPreRegister = mongoose.model('streampreregister', streamPreRegister);
 
-module.exports = { Streamplan, StreamPost, Streamrequest, StreamrequestPost, StreamPreRegister };
+
+
+const streamPlanlinkschema = mongoose.Schema({
+  _id: {
+    type: String,
+    default: v4,
+  },
+  active: {
+    type: Boolean,
+    default: true,
+  },
+  archive: {
+    type: Boolean,
+    default: false,
+  },
+  created: {
+    type: Date
+  },
+  DateIso: {
+    type: Number
+  },
+  status: {
+    type: String,
+    default: "created"
+  },
+  supplier: {
+    type: String,
+  },
+  plan: {
+    type: String
+  },
+  expireMinutes: {
+    type: Number
+  },
+  token: {
+    type: String
+  },
+  expireTime: {
+    type: Number
+  },
+
+});
+
+const streamPlanlink = mongoose.model('streamplanlink', streamPlanlinkschema);
+
+
+
+module.exports = { Streamplan, StreamPost, Streamrequest, StreamrequestPost, StreamPreRegister, streamPlanlink };
 

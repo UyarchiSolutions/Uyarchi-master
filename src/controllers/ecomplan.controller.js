@@ -99,7 +99,7 @@ const create_stream_one = catchAsync(async (req, res) => {
   res.send(value);
 });
 
-const find_and_update_one= catchAsync(async (req, res) => {
+const find_and_update_one = catchAsync(async (req, res) => {
   const value = await Ecomserive.find_and_update_one(req);
   res.send(value);
 });
@@ -219,8 +219,17 @@ const purchase_details = catchAsync(async (req, res) => {
 
 
 const purchase_details_supplier = catchAsync(async (req, res) => {
-  console.log("sdas")
   const value = await Ecomserive.purchase_details_supplier(req);
+  res.send(value);
+});
+
+const purchase_link_plan = catchAsync(async (req, res) => {
+  const value = await Ecomserive.purchase_link_plan(req);
+  res.send(value);
+});
+
+const purchase_link_plan_get = catchAsync(async (req, res) => {
+  const value = await Ecomserive.purchase_link_plan_get(req);
   res.send(value);
 });
 module.exports = {
@@ -273,6 +282,10 @@ module.exports = {
 
 
   purchase_details,
-  purchase_details_supplier
+  purchase_details_supplier,
+
+
+  purchase_link_plan,
+  purchase_link_plan_get
 
 };

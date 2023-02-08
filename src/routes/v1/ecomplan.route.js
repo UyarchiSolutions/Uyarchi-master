@@ -82,4 +82,13 @@ router.route('/stream/pre/unregister/live').post(shopverify, Ecomcontroller.unre
 
 router.route('/purchase/details/pagination').get(Ecomcontroller.purchase_details)
 router.route('/purchase/supplier/list').get(Ecomcontroller.purchase_details_supplier)
+
+
+
+// purchase plan links
+
+router.route('/purchase/link/plan').post(Ecomcontroller.purchase_link_plan)
+router.route('/purchase/link/plan').get(Ecomcontroller.purchase_link_plan_get)
+
+
 module.exports = router;

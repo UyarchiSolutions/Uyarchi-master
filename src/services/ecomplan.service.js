@@ -1387,8 +1387,7 @@ const purchase_link_plan_get = async (req) => {
         { $unwind: "$plan_details" }
     ])
     if (value.length == 0) {
-        throw new ApiError(httpStatus.NOT_FOUND, 'Plan Not Found');
-
+        throw new ApiError(httpStatus.NOT_FOUND, 'Plan Already Purchased');
     }
     return value[0];
 }

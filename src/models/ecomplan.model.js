@@ -408,6 +408,9 @@ const streamPlanlinkschema = mongoose.Schema({
   expireTime: {
     type: Number
   },
+  purchaseId: {
+    type: String
+  }
 
 });
 

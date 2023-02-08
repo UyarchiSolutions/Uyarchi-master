@@ -6,9 +6,68 @@ const { purchasePlan } = require('../models/purchasePlan.model');
 const paymentgatway = require('./paymentgatway.service');
 const Dates = require('./Date.serive')
 
-const { Streamplan, StreamPost, Streamrequest, StreamrequestPost, StreamPreRegister } = require('../models/ecomplan.model');
+const { Streamplan, StreamPost, Streamrequest, StreamrequestPost, StreamPreRegister, streamPlanlink } = require('../models/ecomplan.model');
 
 const create_purchase_plan = async (req) => {
+    let orders;
+    if (req.body.PaymentDatails != null) {
+        let payment = await paymentgatway.verifyRazorpay_Amount(req.body.PaymentDatails);
+        let collectedAmount = payment.amount / 100
+        let collectedstatus = payment.status;
+        let links = await streamPlanlink.findById(req.body.link)
+        let plan = await Streamplan.findById(links.plan);
+        if (collectedstatus == 'captured' && collectedAmount == plan.salesPrice) {
+            var yourDate = new Date();
+            var numberOfDaysToAdd = plan.validityofplan;
+            var date_now = yourDate.setDate(yourDate.getDate() + numberOfDaysToAdd)
+            let datas = {
+                planType: 'normal',
+                planId: links.plan,
+                suppierId: links.supplier,
+                paidAmount: collectedAmount,
+                paymentStatus: collectedstatus,
+                order_id: payment.order_id,
+                noOfParticipants: plan.numberOfParticipants,
+                chat: plan.chatNeed,
+                max_post_per_stream: plan.max_post_per_stream,
+                Duration: plan.Duration,
+                planName: plan.planName,
+                DurationType: plan.DurationType,
+                numberOfParticipants: plan.numberOfParticipants,
+                numberofStream: plan.numberofStream,
+                validityofplan: plan.validityofplan,
+                noOfParticipantsCost: plan.noOfParticipantsCost,
+                chatNeed: plan.chatNeed,
+                commision: plan.commision,
+                commition_value: plan.commition_value,
+                stream_expire_hours: plan.stream_expire_hours,
+                stream_expire_days: plan.stream_expire_days,
+                stream_expire_minutes: plan.stream_expire_minutes,
+                regularPrice: plan.regularPrice,
+                salesPrice: plan.salesPrice,
+                description: plan.description,
+                planmode: plan.planmode,
+                expireDate: date_now,
+                streamvalidity: plan.streamvalidity
+            }
+            let con = await purchasePlan.create({ ...datas, ...req.body.PaymentDatails });
+            await Dates.create_date(con)
+            links.purchaseId = con._id;
+            links.status = "Purchased";
+            links.save();
+            return con;
+        }
+        else {
+            return { error: "Amount Not Match" }
+        }
+    }
+    else {
+        return { error: "order not found" }
+    }
+
+
+}
+const create_purchase_plan_private = async (req) => {
     let orders;
     if (req.body.PaymentDatails != null) {
         let payment = await paymentgatway.verifyRazorpay_Amount(req.body.PaymentDatails);
@@ -64,6 +123,7 @@ const create_purchase_plan = async (req) => {
 
 
 }
+
 
 const create_purchase_plan_addon = async (req) => {
     let orders;
@@ -294,5 +354,6 @@ module.exports = {
     get_all_my_orders,
     create_purchase_plan_addon,
     get_all_my_orders_normal,
-    get_all_purchasePlans
+    get_all_purchasePlans,
+    create_purchase_plan_private
 }

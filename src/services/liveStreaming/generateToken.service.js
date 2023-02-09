@@ -69,10 +69,10 @@ const generateToken = async (req) => {
   req.io.emit(streamId + "_golive", { streamId: streamId, })
   return { uid, token, value, cloud_recording, stream };
 };
-const geenerate_rtc_token = async (chennel, uid, role, expirationTimestamp, expire) => {
+const geenerate_rtc_token = async (chennel, uid, role, expirationTimestamp) => {
   return Agora.RtcTokenBuilder.buildTokenWithUid(appID, appCertificate, chennel, uid, role, expirationTimestamp);
 };
-const generateToken_sub_record = async (channel, isPublisher, req, hostIdss) => {
+const generateToken_sub_record = async (channel, isPublisher, req, hostIdss,expire) => {
   const expirationTimeInSeconds = 3600;
   const uid = await generateUid();
   const role = isPublisher ? Agora.RtcRole.PUBLISHER : Agora.RtcRole.SUBSCRIBER;

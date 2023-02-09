@@ -107,9 +107,13 @@ const generateToken_sub = async (req) => {
   const channel = req.query.id;
   let str = await Streamrequest.findById(channel)
   let users = await Joinusers.find({ streamId: channel }).count()
-  let stream = await tempTokenModel.findOne({ streamId: channel, type: "sub", hostId: { $ne: null } });
   console.log(users, str.noOfParticipants)
-  // if (users < str.noOfParticipants) {
+  let user = await Joinusers.findOne({ token: stream._id, shopId: req.shopId, })
+  if (!user) {
+    user = await Joinusers.create({ shopId: req.shopId, token: stream._id, streamId: channel, hostId: str.tokenDetails });
+    await Dates.create_date(user);
+  }
+  let stream = await tempTokenModel.findOne({ streamId: channel, type: "sub", hostId: { $ne: null }, shopId: req.shopId });
   if (!stream) {
     const uid = await generateUid();
     const role = false ? Agora.RtcRole.PUBLISHER : Agora.RtcRole.SUBSCRIBER;
@@ -130,23 +134,20 @@ const generateToken_sub = async (req) => {
         chennel: channel,
         participents: 3,
         created_num: new Date(new Date(moment().format('YYYY-MM-DD') + ' ' + moment().format('HH:mm:ss'))).getTime(),
-        expDate: expirationTimestamp * 1000,
+        expDate: str.endTime,
         shopId: req.shopId,
         streamId: channel,
+        joinedUser: user._id
 
       },
     });
-    const token = await geenerate_rtc_token(channel, uid, role, expirationTimestamp);
+    const token = await geenerate_rtc_token(channel, uid, role, str.endTime / 1000);
     value.token = token;
     value.save();
     stream = value;
 
   }
-  let user = await Joinusers.findOne({ token: stream._id, shopId: req.shopId, })
-  if (!user) {
-    user = await Joinusers.create({ shopId: req.shopId, token: stream._id, streamId: channel, hostId: str.tokenDetails });
-    await Dates.create_date(user);
-  }
+  user.latestedToken = stream._id;
   await get_participents_limit(req)
   // return user
   return { stream: stream, user: user };

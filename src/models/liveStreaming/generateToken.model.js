@@ -76,6 +76,10 @@ const tempToken = mongoose.Schema({
   Duration: {
     type: Number,
 
+  },
+  joinedUser: {
+    type: String,
+
   }
 });
 
@@ -105,15 +109,18 @@ const joinedusers = mongoose.Schema({
   token: {
     type: String,
   },
-  shopId:{
+  shopId: {
     type: String,
   },
-  streamId:{
+  streamId: {
     type: String,
   },
-  hostId:{
+  hostId: {
     type: String,
   },
+  latestedToken: {
+    type: String,
+  }
 
 });
 

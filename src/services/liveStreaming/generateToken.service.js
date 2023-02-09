@@ -72,7 +72,7 @@ const generateToken = async (req) => {
 const geenerate_rtc_token = async (chennel, uid, role, expirationTimestamp) => {
   return Agora.RtcTokenBuilder.buildTokenWithUid(appID, appCertificate, chennel, uid, role, expirationTimestamp);
 };
-const generateToken_sub_record = async (channel, isPublisher, req, hostIdss,expire) => {
+const generateToken_sub_record = async (channel, isPublisher, req, hostIdss, expire) => {
   const expirationTimeInSeconds = 3600;
   const uid = await generateUid();
   const role = isPublisher ? Agora.RtcRole.PUBLISHER : Agora.RtcRole.SUBSCRIBER;
@@ -620,6 +620,11 @@ const find_userLimt = async (channel) => {
   return { userActive: user, noOfParticipants: stream.noOfParticipants };
 };
 
+const remove_host_live = async (req) => {
+  req.io.emit(req.query.id + "admin_action", { remove: true });
+  return { removed: "success" }
+};
+
 
 module.exports = {
   generateToken,
@@ -639,5 +644,6 @@ module.exports = {
   chat_rooms,
   get_sub_token,
   get_sub_golive,
-  get_participents_limit
+  get_participents_limit,
+  remove_host_live
 };

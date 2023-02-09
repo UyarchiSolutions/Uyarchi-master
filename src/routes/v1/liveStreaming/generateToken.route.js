@@ -23,12 +23,16 @@ router.post('/recording/query', generateToken.recording_query);
 router.post('/recording/stop', generateToken.recording_stop);
 router.post('/recording/updateLayout', generateToken.recording_updateLayout);
 router.post('/chat/room/details', generateToken.chat_rooms);
-router.route('/getsub/token/user').get(shopverify,generateToken.get_sub_token);
-router.route('/getsub/token/golive').get(shopverify,generateToken.get_sub_golive);
+router.route('/getsub/token/user').get(shopverify, generateToken.get_sub_token);
+router.route('/getsub/token/golive').get(shopverify, generateToken.get_sub_golive);
 
 
-router.route('/getsub/token/single').get(shopverify,generateToken.get_sub_token_single);
+router.route('/getsub/token/single').get(shopverify, generateToken.get_sub_token_single);
 router.route('/participents/limit/all').get(generateToken.get_participents_limit);
+
+
+router.route('/remove/hostlive/now').get(generateToken.remove_host_live);
+
 
 
 module.exports = router;

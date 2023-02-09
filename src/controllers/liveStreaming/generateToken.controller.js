@@ -89,9 +89,15 @@ const get_sub_token_single = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).send(tokens);
 });
 
-const get_participents_limit= catchAsync(async (req, res) => {
+const get_participents_limit = catchAsync(async (req, res) => {
   let tokens = await generateTokenService.get_participents_limit(req);
   req.io.emit('subscriberjoined', { user: 'sd' });
+  res.status(httpStatus.CREATED).send(tokens);
+});
+
+const remove_host_live = catchAsync(async (req, res) => {
+  let tokens = await generateTokenService.remove_host_live(req);
+  // req.io.emit('subscriberjoined', { user: 'sd' });
   res.status(httpStatus.CREATED).send(tokens);
 });
 module.exports = {
@@ -112,5 +118,6 @@ module.exports = {
   get_sub_token,
   get_sub_token_single,
   get_sub_golive,
-  get_participents_limit
+  get_participents_limit,
+  remove_host_live
 };

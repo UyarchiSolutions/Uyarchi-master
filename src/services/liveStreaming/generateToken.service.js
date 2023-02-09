@@ -108,9 +108,9 @@ const generateToken_sub = async (req) => {
   let str = await Streamrequest.findById(channel)
   let users = await Joinusers.find({ streamId: channel }).count()
   console.log(users, str.noOfParticipants)
-  let user = await Joinusers.findOne({ token: stream._id, shopId: req.shopId, })
+  let user = await Joinusers.findOne({ streamId: channel, shopId: req.shopId, })
   if (!user) {
-    user = await Joinusers.create({ shopId: req.shopId, token: stream._id, streamId: channel, hostId: str.tokenDetails });
+    user = await Joinusers.create({ shopId: req.shopId, streamId: channel, hostId: str.tokenDetails });
     await Dates.create_date(user);
   }
   let stream = await tempTokenModel.findOne({ streamId: channel, type: "sub", hostId: { $ne: null }, shopId: req.shopId });
@@ -148,6 +148,8 @@ const generateToken_sub = async (req) => {
 
   }
   user.latestedToken = stream._id;
+  user.token = stream._id;
+
   await get_participents_limit(req)
   // return user
   return { stream: stream, user: user };

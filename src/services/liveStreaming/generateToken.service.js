@@ -57,7 +57,7 @@ const generateToken = async (req) => {
   value.token = token;
   value.chennel = streamId;
   value.store = value._id.replace(/[^a-zA-Z0-9]/g, '');
-  let cloud_recording = await generateToken_sub_record(streamId, false, req, value);
+  let cloud_recording = await generateToken_sub_record(streamId, false, req, value, expirationTimestamp);
   value.cloud_recording = cloud_recording.value.token;
   value.uid_cloud = cloud_recording.value.Uid;
   value.cloud_id = cloud_recording.value._id;
@@ -69,7 +69,7 @@ const generateToken = async (req) => {
   req.io.emit(streamId + "_golive", { streamId: streamId, })
   return { uid, token, value, cloud_recording, stream };
 };
-const geenerate_rtc_token = async (chennel, uid, role, expirationTimestamp) => {
+const geenerate_rtc_token = async (chennel, uid, role, expirationTimestamp, expire) => {
   return Agora.RtcTokenBuilder.buildTokenWithUid(appID, appCertificate, chennel, uid, role, expirationTimestamp);
 };
 const generateToken_sub_record = async (channel, isPublisher, req, hostIdss) => {
@@ -91,13 +91,13 @@ const generateToken_sub_record = async (channel, isPublisher, req, hostIdss) => 
       chennel: channel,
       participents: 3,
       created_num: new Date(new Date(moment().format('YYYY-MM-DD') + ' ' + moment().format('HH:mm:ss'))).getTime(),
-      expDate: expirationTimestamp * 1000,
+      expDate: expire * 1000,
       type: 'subhost',
       hostId: hostIdss._id
     },
   });
   console.log(role);
-  const token = await geenerate_rtc_token(channel, uid, role, expirationTimestamp);
+  const token = await geenerate_rtc_token(channel, uid, role, expire);
   value.token = token;
   value.save();
   return { uid, token, value };

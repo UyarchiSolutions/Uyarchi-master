@@ -14,7 +14,7 @@ const create_purchase_plan = catchAsync(async (req, res) => {
 });
 
 const create_purchase_plan_private = catchAsync(async (req, res) => {
-    const value = await purchasePlan.create_purchase_plan(req);
+    const value = await purchasePlan.create_purchase_plan_private(req);
     if (!value) {
         throw new ApiError(httpStatus.NOT_FOUND, 'Order Not Created');
     }

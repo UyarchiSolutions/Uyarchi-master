@@ -149,7 +149,7 @@ const generateToken_sub = async (req) => {
   }
   user.latestedToken = stream._id;
   user.token = stream._id;
-
+  user.save();
   await get_participents_limit(req)
   // return user
   return { stream: stream, user: user };
@@ -442,7 +442,7 @@ const get_sub_golive = async (req) => {
     {
       $lookup: {
         from: 'temptokens',
-        localField: 'token',
+        localField: 'latestedToken',
         foreignField: '_id',
         pipeline: [
           {

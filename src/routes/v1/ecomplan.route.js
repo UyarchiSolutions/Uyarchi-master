@@ -91,4 +91,10 @@ router.route('/purchase/link/plan').post(Ecomcontroller.purchase_link_plan)
 router.route('/purchase/link/plan').get(Ecomcontroller.purchase_link_plan_get)
 
 
+// get stream/posts
+
+router.route('/get/stream/post/all').get(Ecomcontroller.get_stream_post)
+
+
+
 module.exports = router;

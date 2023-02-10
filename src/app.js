@@ -49,6 +49,9 @@ io.sockets.on('connection', async (socket) => {
     console.log("hello", data)
     await chetModule.chat_room_create_subhost(data, io)
   });
+  socket.on('groupchathost', async (data) => {
+    await chetModule.chat_room_create_host(data, io)
+  });
   socket.on('livetraking', async (data) => {
     console.log(data)
     io.sockets.emit('livetraking', data);

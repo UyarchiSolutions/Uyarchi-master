@@ -867,6 +867,7 @@ const go_live_stream_host = async (req, userId) => {
                                     $project: {
                                         _id: 1,
                                         productTitle: "$products.productTitle",
+                                        productImage: "$products.image",
                                         productId: 1,
                                         categoryId: 1,
                                         quantity: 1,
@@ -898,6 +899,7 @@ const go_live_stream_host = async (req, userId) => {
                             validity: "$streamposts.validity",
                             minLots: "$streamposts.minLots",
                             incrementalLots: "$streamposts.incrementalLots",
+                            productImage: "$streamposts.productImage"
                         }
                     }
                 ],
@@ -1413,6 +1415,22 @@ const purchase_link_plan_get = async (req) => {
     return value[0];
 }
 
+
+const get_stream_post = async (req) => {
+    let value = await StreamPost.aggregate([
+        {
+            $lookup: {
+                from: 'streamrequestposts',
+                localField: '_id',
+                foreignField: 'postId',
+                pipeline: [{ $match: { $and: [{ streamRequest: { $eq: req.query.id } }] } }],
+                as: 'streamrequestposts',
+            },
+        },
+        { $unwind: "$streamrequestposts" }
+    ])
+    return value[0];
+}
 module.exports = {
     create_Plans,
     create_Plans_addon,

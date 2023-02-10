@@ -13,7 +13,6 @@ const storage = multer.memoryStorage({
     destination: function (req, res, callback) {
         callback(null, '');
     },
-
 });
 const upload = multer({ storage }).single('teaser');
 // plan APIS

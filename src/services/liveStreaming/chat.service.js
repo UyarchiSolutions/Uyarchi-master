@@ -17,7 +17,7 @@ const chat_room_create = async (req, io) => {
   let stream = await Joinusers.findById(req.id)
   let user = await Shop.findById(stream.shopId)
   let data = await Groupchat.create({ ...req, ...{ created: moment(), dateISO: dateIso, userName: user.SName, userType: "buyer", shopId: stream.shopId, joinuser: req.id } })
-  console.log(data)
+  // console.log(data)
   io.sockets.emit(req.channel, data);
 }
 
@@ -46,10 +46,19 @@ const chat_room_create_host = async (req, io) => {
   // console.log(req)
   io.sockets.emit(req.channel, data);
 }
+const change_controls = async (req, io) => {
+  // console.log(req)
+  let token = await Streamrequest.findById(req.channel);
+  token.audio = req.audio
+  token.video = req.video
+  token.save();
+  io.sockets.emit('toggle_controls' + req.channel, token);
 
+}
 module.exports = {
   chat_room_create,
   getoldchats,
   chat_room_create_subhost,
-  chat_room_create_host
+  chat_room_create_host,
+  change_controls
 };

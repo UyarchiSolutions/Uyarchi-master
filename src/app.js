@@ -56,6 +56,11 @@ io.sockets.on('connection', async (socket) => {
     console.log(data)
     io.sockets.emit('livetraking', data);
   });
+  socket.on('toggle_controls', async (data) => {
+    await chetModule.change_controls(data, io)
+  });
+
+
 
   socket.on('', (msg) => {
     console.log('message: ' + msg);

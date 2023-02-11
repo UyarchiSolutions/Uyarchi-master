@@ -280,7 +280,14 @@ const streamRequestschema = mongoose.Schema({
   //   type: String,
   //   default: false,
   // }
-
+  audio: {
+    type: Boolean,
+    default: false,
+  },
+  video: {
+    type: Boolean,
+    default: false,
+  }
 
 
 });

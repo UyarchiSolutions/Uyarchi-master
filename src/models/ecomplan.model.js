@@ -290,6 +290,9 @@ const streamRequestschema = mongoose.Schema({
   video: {
     type: Boolean,
     default: false,
+  },
+  chat_need: {
+    type: String
   }
 
 

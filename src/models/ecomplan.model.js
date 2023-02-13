@@ -82,7 +82,7 @@ const streamplanschema = mongoose.Schema({
     default: 30
   },
   no_of_host: {
-    type: String,
+    type: Number,
   }
 });
 

@@ -293,6 +293,22 @@ const streamRequestschema = mongoose.Schema({
   },
   chat_need: {
     type: String
+  },
+  allot_chat: {
+    type: String
+  },
+  allot_host_1: {
+    type: String
+  },
+  allot_host_2: {
+    type: String
+  },
+  allot_host_3: {
+    type: String
+  },
+  allot: {
+    type: Boolean,
+    default: false,
   }
 
 

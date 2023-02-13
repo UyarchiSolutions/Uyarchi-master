@@ -287,7 +287,7 @@ const create_stream_one = async (req) => {
     const value = await Streamrequest.create({ ...req.body, ...{ suppierId: req.userId, postCount: req.body.post.length, startTime: startTime } });
     req.body.post.forEach(async (a) => {
         await StreamPost.findByIdAndUpdate({ _id: a }, { isUsed: true }, { new: true })
-        let post = await StreamrequestPost.create({ suppierId: req.userId, streamRequest: value._id, postId: a })
+        let post = await StreamrequestPost.create({ allot_host_1: 'My Self', suppierId: req.userId, streamRequest: value._id, postId: a })
         await Dates.create_date(post)
     })
     await Dates.create_date(value)
@@ -1440,7 +1440,7 @@ const get_stream_alert = async (req) => {
     let value = await Streamrequest.aggregate([
         {
             $match: {
-                $and: [{ endTime: { $gt: date_now } }, { adminApprove: { $eq: "Approved" } }, { suppierId: { $eq: req.userId } }]
+                $and: [{ endTime: { $gt: date_now } }, { adminApprove: { $eq: "Approved" } }, { suppierId: { $eq: req.userId } }, { allot: { $ne: true } }]
             }
         },
     ])

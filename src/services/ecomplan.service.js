@@ -350,8 +350,8 @@ const create_stream_one_video = async (req) => {
                     console.log(err)
                 }
                 console.log(data)
-                stream = await Streamrequest.findByIdAndUpdate({ _id: req.query.id }, { video: data.Location })
-                resolve({ video: 'success', stream });
+                stream = await Streamrequest.findByIdAndUpdate({ _id: req.query.id }, { teaser: data.Location })
+                resolve({ teaser: 'success', stream });
 
             });
         });

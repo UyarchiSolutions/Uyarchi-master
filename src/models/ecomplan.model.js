@@ -223,7 +223,7 @@ const streamRequestschema = mongoose.Schema({
   image: {
     type: String
   },
-  video: {
+  teaser: {
     type: String
   },
   postCount: {

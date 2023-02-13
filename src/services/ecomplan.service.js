@@ -1434,6 +1434,19 @@ const get_stream_post = async (req) => {
     ])
     return value[0];
 }
+
+const get_stream_alert = async (req) => {
+    var date_now = new Date().getTime()
+    let value = await Streamrequest.aggregate([
+        {
+            $match: {
+                $and: [{ endTime: { $gt: date_now } }, { adminApprove: { $eq: "Approved" } }, { suppierId: { $eq: req.userId } }]
+            }
+        },
+    ])
+    return value;
+}
+
 module.exports = {
     create_Plans,
     create_Plans_addon,
@@ -1486,5 +1499,9 @@ module.exports = {
 
 
     purchase_link_plan,
-    purchase_link_plan_get
+    purchase_link_plan_get,
+
+    get_stream_post,
+    get_stream_alert
+
 };

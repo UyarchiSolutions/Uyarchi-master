@@ -103,7 +103,8 @@ const create_purchase_plan_private = async (req) => {
                 description: plan.description,
                 planmode: plan.planmode,
                 expireDate: date_now,
-                streamvalidity: plan.streamvalidity
+                streamvalidity: plan.streamvalidity,
+                no_of_host: plan.no_of_host,
             }
             let con = await purchasePlan.create({ ...datas, ...req.body.PaymentDatails });
             await Dates.create_date(con)
@@ -136,7 +137,7 @@ const create_purchase_plan_addon = async (req) => {
             var numberOfDaysToAdd = plan.validityofplan;
             var date_now = yourDate.setDate(yourDate.getDate() + numberOfDaysToAdd)
             console.log(date_now)
-            let con = await purchasePlan.create({ ...{ expireDate: date_now, planType: 'addon', streamId: req.body.streamId, planId: req.body.plan, suppierId: req.userId, paidAmount: collectedAmount, paymentStatus: collectedstatus, order_id: payment.order_id, noOfParticipants: plan.numberOfParticipants }, ...req.body.PaymentDatails });
+            let con = await purchasePlan.create({ ...{ no_of_host: plan.no_of_host, expireDate: date_now, planType: 'addon', streamId: req.body.streamId, planId: req.body.plan, suppierId: req.userId, paidAmount: collectedAmount, paymentStatus: collectedstatus, order_id: payment.order_id, noOfParticipants: plan.numberOfParticipants }, ...req.body.PaymentDatails });
             await Dates.create_date(con)
             await addstream_user_limits(req, plan, con)
             return con;

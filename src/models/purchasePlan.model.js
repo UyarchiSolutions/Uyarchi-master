@@ -123,7 +123,11 @@ const purchasePlanSchema = mongoose.Schema({
     streamvalidity: {
         type: Number,
         default: 30
-      }
+    },
+    no_of_host: {
+        type: Number,
+
+    }
 
 });
 

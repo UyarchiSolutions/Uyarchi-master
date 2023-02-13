@@ -60,16 +60,7 @@ io.sockets.on('connection', async (socket) => {
     await chetModule.change_controls(data, io)
   });
 
-  socket.on('join-room', (roomId, userId) => {
-    socket.join(roomId);
-    socket.broadcast.to(roomId).emit('user-connected', userId);
-    socket.on('disconnect', () => {
-      socket.broadcast.to(roomId).emit('user-disconnected', userId);
-    })
-    socket.on('chat', (content) => {
-      socket.broadcast.to(roomId).emit('new-message', content);
-    })
-  })
+
 
   socket.on('', (msg) => {
     console.log('message: ' + msg);

@@ -681,6 +681,11 @@ const update_reject = async (req) => {
     return value;
 };
 
+const allot_stream_subhost = async (req) => {
+    let value = await Streamrequest.findByIdAndUpdate({ _id: req.query.id }, req.body, { new: true })
+    return value;
+};
+
 
 const get_all_streams = async (req) => {
     let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
@@ -1502,6 +1507,7 @@ module.exports = {
     purchase_link_plan_get,
 
     get_stream_post,
-    get_stream_alert
+    get_stream_alert,
+    allot_stream_subhost
 
 };

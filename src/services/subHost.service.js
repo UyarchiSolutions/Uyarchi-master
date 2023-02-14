@@ -234,11 +234,14 @@ const get_subhost_tokens = async (req) => {
 
 const get_subhost_free = async (req) => {
 
-
-  let value = await SubHost.aggregate([
-    { $match: { $and: [{ createdBy: { $eq: req.userId } }] } },
+  let host = await SubHost.aggregate([
+    { $match: { $and: [{ createdBy: { $eq: req.userId } }, { $or: [{ role: { $eq: "chat/stream" } }, { role: { $eq: "stream" } }] }] } },
   ])
-  return value;
+
+  let chat = await SubHost.aggregate([
+    { $match: { $and: [{ createdBy: { $eq: req.userId } }, { $or: [{ role: { $eq: "chat/stream" } }, { role: { $eq: "chat" } }] }] } },
+  ])
+  return { host, chat };
 }
 
 module.exports = {

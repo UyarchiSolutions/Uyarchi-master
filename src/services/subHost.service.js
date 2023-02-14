@@ -232,6 +232,15 @@ const get_subhost_tokens = async (req) => {
 
 };
 
+const get_subhost_free = async (req) => {
+
+
+  let value = await SubHost.aggregate([
+    { $match: { $and: [{ createdBy: { $eq: req.userId } }] } },
+  ])
+  return value;
+}
+
 module.exports = {
   createSubHost,
   getActiveSubHosts,
@@ -239,5 +248,6 @@ module.exports = {
   verifyOTP,
   SetPassword,
   login,
-  get_subhost_tokens
+  get_subhost_tokens,
+  get_subhost_free
 };

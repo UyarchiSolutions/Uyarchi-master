@@ -9,7 +9,8 @@ router.route('/send-OTP').post(subHostController.SendOtp);
 router.route('/verify-OTP').post(subHostController.verifyOTP);
 router.route('/SetPassword/:number').put(subHostController.SetPassword);
 router.route('/login').post(subHostController.login);
-router.route('/subhost/verify').get(subhostVerify,subHostController.get_subhost_tokens);
+router.route('/subhost/verify').get(subhostVerify, subHostController.get_subhost_tokens);
+router.route('/get/subhost/free').get(auth, subHostController.get_subhost_free);
 
 
 module.exports = router;

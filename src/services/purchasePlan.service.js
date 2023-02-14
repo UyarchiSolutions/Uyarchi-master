@@ -48,7 +48,8 @@ const create_purchase_plan = async (req) => {
                 description: plan.description,
                 planmode: plan.planmode,
                 expireDate: date_now,
-                streamvalidity: plan.streamvalidity
+                streamvalidity: plan.streamvalidity,
+                no_of_host: plan.no_of_host
             }
             let con = await purchasePlan.create({ ...datas, ...req.body.PaymentDatails });
             await Dates.create_date(con)
@@ -338,7 +339,7 @@ const get_all_purchasePlans = async (req) => {
                 commition_value: "$streamplans.commition_value",
                 numberOfStreamused: 1,
                 expireDate: 1,
-                no_of_host:1
+                no_of_host: 1
 
             }
         },

@@ -337,7 +337,8 @@ const get_all_purchasePlans = async (req) => {
                 Duration: "$streamplans.Duration",
                 commition_value: "$streamplans.commition_value",
                 numberOfStreamused: 1,
-                expireDate: 1
+                expireDate: 1,
+                no_of_host:1
 
             }
         },

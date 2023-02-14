@@ -1448,6 +1448,82 @@ const get_stream_alert = async (req) => {
                 $and: [{ endTime: { $gt: date_now } }, { adminApprove: { $eq: "Approved" } }, { suppierId: { $eq: req.userId } }]
             }
         },
+        {
+            $lookup: {
+                from: 'subhosts',
+                localField: 'allot_chat',
+                foreignField: '_id',
+                as: 'allot_chat',
+            },
+        },
+        {
+            $unwind: {
+                preserveNullAndEmptyArrays: true,
+                path: '$allot_chat',
+            },
+        },
+        {
+            $addFields: {
+                allot_chat_name: { $ifNull: ['$allot_chat.Name', null] },
+            },
+        },
+        {
+            $lookup: {
+                from: 'subhosts',
+                localField: 'allot_host_1',
+                foreignField: '_id',
+                as: 'allot_host_1',
+            },
+        },
+        {
+            $unwind: {
+                preserveNullAndEmptyArrays: true,
+                path: '$allot_host_1',
+            },
+        },
+        {
+            $addFields: {
+                allot_host_1_name: { $ifNull: ['$allot_host_1.Name', null] },
+            },
+        },
+        {
+            $lookup: {
+                from: 'subhosts',
+                localField: 'allot_host_2',
+                foreignField: '_id',
+                as: 'allot_host_2',
+            },
+        },
+        {
+            $unwind: {
+                preserveNullAndEmptyArrays: true,
+                path: '$allot_host_2',
+            },
+        },
+        {
+            $addFields: {
+                allot_host_2_name: { $ifNull: ['$allot_host_2.Name', null] },
+            },
+        },
+        {
+            $lookup: {
+                from: 'subhosts',
+                localField: 'allot_host_3',
+                foreignField: '_id',
+                as: 'allot_host_3',
+            },
+        },
+        {
+            $unwind: {
+                preserveNullAndEmptyArrays: true,
+                path: '$allot_host_3',
+            },
+        },
+        {
+            $addFields: {
+                allot_host_3_name: { $ifNull: ['$allot_host_3.Name', null] },
+            },
+        },
     ])
     return value;
 }

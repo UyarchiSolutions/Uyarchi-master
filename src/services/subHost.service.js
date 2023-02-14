@@ -233,13 +233,75 @@ const get_subhost_tokens = async (req) => {
 };
 
 const get_subhost_free = async (req) => {
+  let streamId = req.query.id
+
+  let hostTime = await Streamrequest.findById(req.query.id);
+
 
   let host = await SubHost.aggregate([
     { $match: { $and: [{ createdBy: { $eq: req.userId } }, { $or: [{ role: { $eq: "chat/stream" } }, { role: { $eq: "stream" } }] }] } },
+    {
+      $lookup: {
+        from: 'streamrequests',
+        let: { hostId: '$_id' },
+        pipeline: [
+          {
+            $match: {
+              $expr: { $or: [{ $eq: ["$allot_host_1", "$$hostId"] }, { $eq: ["$allot_host_2", "$$hostId"] }, { $eq: ["$allot_host_3", "$$hostId"] }] },
+              $and: [{ _id: { $ne: streamId } }, { $and: [{ $or: [{ startTime: { $lte: hostTime.startTime } }, { endTime: { $gte: hostTime.startTime } }] }, { $or: [{ startTime: { $lte: hostTime.endTime } }, { endTime: { $gte: hostTime.endTime } }] }] }],
+            }
+          },
+          { $group: { _id: null, count: { $sum: 1 } } }
+
+        ],
+        as: 'streamrequests',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$streamrequests',
+      },
+    },
+    {
+      $addFields: {
+        busy: { $ifNull: ['$streamrequests.count', 0] },
+      },
+    },
+    { $match: { busy: { $eq: 0 } } }
   ])
 
   let chat = await SubHost.aggregate([
     { $match: { $and: [{ createdBy: { $eq: req.userId } }, { $or: [{ role: { $eq: "chat/stream" } }, { role: { $eq: "chat" } }] }] } },
+    {
+      $lookup: {
+        from: 'streamrequests',
+        let: { hostId: '$_id' },
+        pipeline: [
+          {
+            $match: {
+              $expr: { $or: [{ $eq: ["$allot_host_1", "$$hostId"] }, { $eq: ["$allot_host_2", "$$hostId"] }, { $eq: ["$allot_host_3", "$$hostId"] }] },
+              $and: [{ _id: { $ne: streamId } }, { $and: [{ $or: [{ startTime: { $lte: hostTime.startTime } }, { endTime: { $gte: hostTime.startTime } }] }, { $or: [{ startTime: { $lte: hostTime.endTime } }, { endTime: { $gte: hostTime.endTime } }] }] }],
+            }
+          },
+          { $group: { _id: null, count: { $sum: 1 } } }
+
+        ],
+        as: 'streamrequests',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$streamrequests',
+      },
+    },
+    {
+      $addFields: {
+        busy: { $ifNull: ['$streamrequests.count', 0] },
+      },
+    },
+    { $match: { busy: { $eq: 0 } } }
   ])
   return { host, chat };
 }

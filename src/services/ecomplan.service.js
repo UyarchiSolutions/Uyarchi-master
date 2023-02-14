@@ -1453,18 +1453,18 @@ const get_stream_alert = async (req) => {
                 from: 'subhosts',
                 localField: 'allot_chat',
                 foreignField: '_id',
-                as: 'allot_chat',
+                as: 'allot_chat_lookup',
             },
         },
         {
             $unwind: {
                 preserveNullAndEmptyArrays: true,
-                path: '$allot_chat',
+                path: '$allot_chat_lookup',
             },
         },
         {
             $addFields: {
-                allot_chat_name: { $ifNull: ['$allot_chat.Name', null] },
+                allot_chat_name: { $ifNull: ['$allot_chat_lookup.Name', null] },
             },
         },
         {
@@ -1472,18 +1472,18 @@ const get_stream_alert = async (req) => {
                 from: 'subhosts',
                 localField: 'allot_host_1',
                 foreignField: '_id',
-                as: 'allot_host_1',
+                as: 'allot_host_1_lookup',
             },
         },
         {
             $unwind: {
                 preserveNullAndEmptyArrays: true,
-                path: '$allot_host_1',
+                path: '$allot_host_1_lookup',
             },
         },
         {
             $addFields: {
-                allot_host_1_name: { $ifNull: ['$allot_host_1.Name', null] },
+                allot_host_1_name: { $ifNull: ['$allot_host_1_lookup.Name', null] },
             },
         },
         {
@@ -1491,18 +1491,18 @@ const get_stream_alert = async (req) => {
                 from: 'subhosts',
                 localField: 'allot_host_2',
                 foreignField: '_id',
-                as: 'allot_host_2',
+                as: 'allot_host_2_lookup',
             },
         },
         {
             $unwind: {
                 preserveNullAndEmptyArrays: true,
-                path: '$allot_host_2',
+                path: '$allot_host_2_lookup',
             },
         },
         {
             $addFields: {
-                allot_host_2_name: { $ifNull: ['$allot_host_2.Name', null] },
+                allot_host_2_name: { $ifNull: ['$allot_host_2_lookup.Name', null] },
             },
         },
         {
@@ -1510,18 +1510,18 @@ const get_stream_alert = async (req) => {
                 from: 'subhosts',
                 localField: 'allot_host_3',
                 foreignField: '_id',
-                as: 'allot_host_3',
+                as: 'allot_host_3_lookup',
             },
         },
         {
             $unwind: {
                 preserveNullAndEmptyArrays: true,
-                path: '$allot_host_3',
+                path: '$allot_host_3_lookup',
             },
         },
         {
             $addFields: {
-                allot_host_3_name: { $ifNull: ['$allot_host_3.Name', null] },
+                allot_host_3_name: { $ifNull: ['$allot_host_3_lookup.Name', null] },
             },
         },
     ])

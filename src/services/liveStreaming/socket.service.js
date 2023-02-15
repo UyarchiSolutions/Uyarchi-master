@@ -20,7 +20,7 @@ const startStop_post = async (req, io) => {
   // let data = await Groupchat.create({ ...req, ...{ created: moment(), dateISO: dateIso, userName: user.SName, userType: "buyer", shopId: stream.shopId, joinuser: req.id } })
   // // console.log(data)
 
-  let post = await StreamPost.findById(req._id);
+  let post = await StreamPost.findById(req.streampostsId);
   if (req.start) {
     post.streamStart = new Date().getTime();
   }
@@ -69,6 +69,8 @@ const startStop_post = async (req, io) => {
                     suppierId: 1,
                     DateIso: 1,
                     created: 1,
+                    streamStart: 1,
+                    streamEnd: 1
                   }
                 }
               ],

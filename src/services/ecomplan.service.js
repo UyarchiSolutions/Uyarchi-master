@@ -983,7 +983,6 @@ const go_live_stream_host = async (req, userId) => {
                 Duration: 1,
                 startTime: 1,
                 endTime: 1,
-                streamrequestposts_start: streamrequestposts_start,
                 streamPending: 1
 
             }

@@ -189,6 +189,13 @@ const go_live_stream_host = catchAsync(async (req, res) => {
   res.send(value);
 });
 
+const get_subhost_token = catchAsync(async (req, res) => {
+  console.log("sdas")
+  const value = await Ecomserive.get_subhost_token(req, req.subhostId);
+  res.send(value);
+});
+
+
 const go_live_stream_host_subhost = catchAsync(async (req, res) => {
   console.log("sdas")
   const value = await Ecomserive.go_live_stream_host_SUBHOST(req, req.createdBy);
@@ -290,6 +297,7 @@ module.exports = {
   update_approved,
   update_reject,
   get_all_streams,
+  get_subhost_token,
   get_subhost_streams,
   get_all_Plans_pagination,
   allot_stream_subhost,

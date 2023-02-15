@@ -1166,6 +1166,167 @@ const go_live_stream_host = async (req, userId) => {
     return value;
 };
 
+const get_subhost_token = async (req, userId) => {
+    let value = await Streamrequest.aggregate([
+        { $match: { $and: [{ suppierId: { $eq: userId } }, { adminApprove: { $eq: "Approved" } }, { _id: { $eq: req.query.id } }] } },
+        {
+            $lookup: {
+                from: 'streamrequestposts',
+                localField: '_id',
+                foreignField: 'streamRequest',
+                pipeline: [
+                    {
+                        $lookup: {
+                            from: 'streamposts',
+                            localField: 'postId',
+                            foreignField: '_id',
+                            pipeline: [
+                                {
+                                    $lookup: {
+                                        from: 'products',
+                                        localField: 'productId',
+                                        foreignField: '_id',
+                                        as: 'products',
+                                    },
+                                },
+                                { $unwind: "$products" },
+                                {
+                                    $project: {
+                                        _id: 1,
+                                        productTitle: "$products.productTitle",
+                                        productImage: "$products.image",
+                                        productId: 1,
+                                        categoryId: 1,
+                                        quantity: 1,
+                                        marketPlace: 1,
+                                        offerPrice: 1,
+                                        postLiveStreamingPirce: 1,
+                                        validity: 1,
+                                        minLots: 1,
+                                        incrementalLots: 1,
+                                        suppierId: 1,
+                                        DateIso: 1,
+                                        created: 1,
+                                        streamStart: 1,
+                                        streamEnd: 1
+                                    }
+                                }
+                            ],
+                            as: 'streamposts',
+                        },
+                    },
+                    { $unwind: "$streamposts" },
+                    {
+                        $project: {
+                            _id: 1,
+                            productTitle: "$streamposts.productTitle",
+                            productId: "$streamposts.productId",
+                            quantity: "$streamposts.quantity",
+                            marketPlace: "$streamposts.marketPlace",
+                            offerPrice: "$streamposts.offerPrice",
+                            postLiveStreamingPirce: "$streamposts.postLiveStreamingPirce",
+                            validity: "$streamposts.validity",
+                            minLots: "$streamposts.minLots",
+                            incrementalLots: "$streamposts.incrementalLots",
+                            productImage: "$streamposts.productImage",
+                            streamStart: "$streamposts.streamStart",
+                            streamEnd: "$streamposts.streamEnd",
+                            streampostsId: "$streamposts._id"
+                        }
+                    }
+                ],
+                as: 'streamrequestposts',
+            },
+        },
+        {
+            $lookup: {
+                from: 'suppliers',
+                localField: 'suppierId',
+                foreignField: '_id',
+                as: 'suppliers',
+            },
+        },
+        { $unwind: "$suppliers" },
+        {
+            $lookup: {
+                from: 'temptokens',
+                localField: '_id',
+                foreignField: 'streamId',
+                pipeline: [
+                    { $match: { $and: [{ supplierId: { $eq: userId } }] } }
+                ],
+                as: 'temptokens',
+            },
+        },
+        { $unwind: "$temptokens" },
+        {
+            $lookup: {
+                from: 'streamrequestposts',
+                localField: '_id',
+                foreignField: 'streamRequest',
+                pipeline: [
+                    {
+                        $lookup: {
+                            from: 'streamposts',
+                            localField: 'postId',
+                            foreignField: '_id',
+                            pipeline: [
+                                { $match: { $and: [{ streamStart: { $ne: null } }, { streamEnd: { $eq: null } }] } },
+                            ],
+                            as: 'streamposts',
+                        }
+                    },
+                    { $unwind: "$streamposts" },
+                    { $group: { _id: null, count: { $sum: 1 } } }
+                ],
+                as: 'streamrequestposts_start',
+            },
+        },
+        {
+            $unwind: {
+                preserveNullAndEmptyArrays: true,
+                path: '$streamrequestposts_start',
+            },
+        },
+        {
+            $addFields: {
+                streamPending: { $ifNull: ['$streamrequestposts_start.count', false] },
+            },
+        },
+        {
+            $project: {
+                _id: 1,
+                supplierName: "$suppliers.primaryContactName",
+                active: 1,
+                archive: 1,
+                post: 1,
+                communicationMode: 1,
+                sepTwo: 1,
+                bookingAmount: 1,
+                streamingDate: 1,
+                streamingTime: 1,
+                discription: 1,
+                streamName: 1,
+                suppierId: 1,
+                postCount: 1,
+                DateIso: 1,
+                created: 1,
+                planId: 1,
+                streamrequestposts: "$streamrequestposts",
+                adminApprove: 1,
+                temptokens: "$temptokens",
+                Duration: 1,
+                startTime: 1,
+                endTime: 1,
+                streamPending: 1
+
+            }
+        },
+
+    ])
+    return value;
+};
+
 const go_live_stream_host_SUBHOST = async (req, userId) => {
     let value = await tempTokenModel.findById(req.query.id)
     return value;
@@ -1762,6 +1923,7 @@ module.exports = {
     update_approved,
     update_reject,
     get_all_streams,
+    get_subhost_token,
     get_subhost_streams,
 
 

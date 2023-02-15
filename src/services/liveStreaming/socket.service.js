@@ -19,7 +19,17 @@ const startStop_post = async (req, io) => {
   // let user = await Shop.findById(stream.shopId)
   // let data = await Groupchat.create({ ...req, ...{ created: moment(), dateISO: dateIso, userName: user.SName, userType: "buyer", shopId: stream.shopId, joinuser: req.id } })
   // // console.log(data)
-  // io.sockets.emit(req.channel, data);
+
+  let post = await StreamPost.findById(req._id);
+  if (req.start) {
+    post.streamStart = new Date().getTime();
+  }
+  if (req.end) {
+    post.streamEnd = new Date().getTime();
+  }
+  post.save();
+  io.sockets.emit(req.streamId + "postStart", post);
+
 }
 
 module.exports = {

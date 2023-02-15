@@ -910,6 +910,7 @@ const go_live_stream_host = async (req, userId) => {
                             productImage: "$streamposts.productImage",
                             streamStart: "$streamposts.streamStart",
                             streamEnd: "$streamposts.streamEnd",
+                            streampostsId:"$streamposts._id"
                         }
                     }
                 ],

@@ -1168,7 +1168,7 @@ const go_live_stream_host = async (req, userId) => {
 
 const get_subhost_token = async (req, userId) => {
     let value = await Streamrequest.aggregate([
-        { $match: { $and: [{ suppierId: { $eq: userId } }, { adminApprove: { $eq: "Approved" } }, { _id: { $eq: req.query.id } }] } },
+        { $match: { $and: [{ $or: [{ allot_host_1: { $eq: userId } }, { allot_host_2: { $eq: userId } }, { allot_host_3: { $eq: userId } }] }, { adminApprove: { $eq: "Approved" } }, { _id: { $eq: req.query.id } }] } },
         {
             $lookup: {
                 from: 'streamrequestposts',
@@ -1258,7 +1258,7 @@ const get_subhost_token = async (req, userId) => {
                 as: 'temptokens',
             },
         },
-        // { $unwind: "$temptokens" },
+        { $unwind: "$temptokens" },
         {
             $lookup: {
                 from: 'streamrequestposts',

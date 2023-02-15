@@ -629,32 +629,36 @@ const create_subhost_token = async (req) => {
   let streamId = req.body.streamId;
   console.log(streamId)
   let stream = await Streamrequest.findById(streamId)
-  if (!streamId) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
+  let value = await tempTokenModel.findOne({ streamId: stream._id, supplierId: supplierId });
+  if (!value) {
+    if (!streamId) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
+    }
+    const uid = await generateUid();
+    const expirationTimestamp = stream.endTime / 1000;
+    value = await tempTokenModel.create({
+      ...req.body,
+      ...{
+        date: moment().format('YYYY-MM-DD'),
+        time: moment().format('HHMMSS'),
+        supplierId: supplierId,
+        streamId: streamId,
+        created: moment(),
+        Uid: uid,
+        created_num: new Date(new Date(moment().format('YYYY-MM-DD') + ' ' + moment().format('HH:mm:ss'))).getTime(),
+        expDate: expirationTimestamp * 1000,
+        Duration: stream.Duration,
+        type: 'subhost',
+      },
+    });
+    const token = await geenerate_rtc_token(streamId, uid, Agora.RtcRole.PUBLISHER, expirationTimestamp);
+    value.token = token;
+    value.chennel = streamId;
+    value.store = value._id.replace(/[^a-zA-Z0-9]/g, '');
+    value.save();
   }
-  const uid = await generateUid();
-  const expirationTimestamp = stream.endTime / 1000;
-  let value = await tempTokenModel.create({
-    ...req.body,
-    ...{
-      date: moment().format('YYYY-MM-DD'),
-      time: moment().format('HHMMSS'),
-      supplierId: supplierId,
-      streamId: streamId,
-      created: moment(),
-      Uid: uid,
-      created_num: new Date(new Date(moment().format('YYYY-MM-DD') + ' ' + moment().format('HH:mm:ss'))).getTime(),
-      expDate: expirationTimestamp * 1000,
-      Duration: stream.Duration,
-      type: 'subhost',
-    },
-  });
-  const token = await geenerate_rtc_token(streamId, uid, Agora.RtcRole.PUBLISHER, expirationTimestamp);
-  value.token = token;
-  value.chennel = streamId;
-  value.store = value._id.replace(/[^a-zA-Z0-9]/g, '');
-  value.save();
-  return { uid, token, value, stream };
+
+  return value;
 };
 
 module.exports = {

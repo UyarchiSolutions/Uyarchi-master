@@ -5,6 +5,7 @@ const authController = require('../../../controllers/auth.controller');
 const auth = require('../../../middlewares/auth');
 const supplierAuth = require('../../../controllers/supplier.authorizations');
 const shopverify = require('../../../controllers/shoptokenverify.controller');
+const subhostVerify = require('../../../controllers/subhostVefify.controller');
 
 const router = express.Router();
 const generateToken = require('../../../controllers/liveStreaming/generateToken.controller');
@@ -33,6 +34,7 @@ router.route('/participents/limit/all').get(generateToken.get_participents_limit
 
 router.route('/remove/hostlive/now').get(generateToken.remove_host_live);
 
+router.route('/create/subhost/token').post(subhostVerify, generateToken.create_subhost_token);
 
 
 module.exports = router;

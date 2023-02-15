@@ -100,6 +100,11 @@ const remove_host_live = catchAsync(async (req, res) => {
   // req.io.emit('subscriberjoined', { user: 'sd' });
   res.status(httpStatus.CREATED).send(tokens);
 });
+const create_subhost_token = catchAsync(async (req, res) => {
+  let tokens = await generateTokenService.create_subhost_token(req);
+  // req.io.emit('subscriberjoined', { user: 'sd' });
+  res.status(httpStatus.CREATED).send(tokens);
+});
 module.exports = {
   generateToken,
   getHostTokens,
@@ -119,5 +124,6 @@ module.exports = {
   get_sub_token_single,
   get_sub_golive,
   get_participents_limit,
-  remove_host_live
+  remove_host_live,
+  create_subhost_token
 };

@@ -657,7 +657,6 @@ const create_subhost_token = async (req) => {
   return { uid, token, value, stream };
 };
 
-
 module.exports = {
   generateToken,
   getHostTokens,

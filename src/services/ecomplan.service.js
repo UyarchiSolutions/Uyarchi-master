@@ -912,7 +912,7 @@ const go_live_stream_host = async (req, userId) => {
                             productImage: "$streamposts.productImage",
                             streamStart: "$streamposts.streamStart",
                             streamEnd: "$streamposts.streamEnd",
-                            streampostsId:"$streamposts._id"
+                            streampostsId: "$streamposts._id"
                         }
                     }
                 ],
@@ -944,7 +944,18 @@ const go_live_stream_host = async (req, userId) => {
                 localField: '_id',
                 foreignField: 'streamRequest',
                 pipeline: [
-                    { $match: { $and: [{ streamStart: { $ne: null } }, { streamEnd: { $eq: null } }] } },
+                    {
+                        $lookup: {
+                            from: 'streamposts',
+                            localField: 'postId',
+                            foreignField: '_id',
+                            pipeline: [
+                                { $match: { $and: [{ streamStart: { $ne: null } }, { streamEnd: { $eq: null } }] } },
+                            ],
+                            as: 'streamposts',
+                        }
+                    },
+                    { $unwind: "$streamposts" },
                     { $group: { _id: null, count: { $sum: 1 } } }
                 ],
                 as: 'streamrequestposts_start',

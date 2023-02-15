@@ -847,6 +847,166 @@ const get_all_streams = async (req) => {
     return { value, total: total.length };
 };
 
+const get_subhost_streams = async (req) => {
+    let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
+    console.log(req.subhostId)
+    const value = await Streamrequest.aggregate([
+        { $match: { $and: [{ $or: [{ allot_host_1: { $eq: req.subhostId } }, { allot_host_2: { $eq: req.subhostId } }, { allot_host_3: { $eq: req.subhostId } }] }, { adminApprove: { $eq: "Approved" } }] } },
+        {
+            $lookup: {
+                from: 'streamrequestposts',
+                localField: '_id',
+                foreignField: 'streamRequest',
+                pipeline: [
+                    {
+                        $lookup: {
+                            from: 'streamposts',
+                            localField: 'postId',
+                            foreignField: '_id',
+                            pipeline: [
+                                {
+                                    $lookup: {
+                                        from: 'products',
+                                        localField: 'productId',
+                                        foreignField: '_id',
+                                        as: 'products',
+                                    },
+                                },
+                                { $unwind: "$products" },
+                                {
+                                    $project: {
+                                        _id: 1,
+                                        productTitle: "$products.productTitle",
+                                        productId: 1,
+                                        categoryId: 1,
+                                        quantity: 1,
+                                        marketPlace: 1,
+                                        offerPrice: 1,
+                                        postLiveStreamingPirce: 1,
+                                        validity: 1,
+                                        minLots: 1,
+                                        incrementalLots: 1,
+                                        suppierId: 1,
+                                        DateIso: 1,
+                                        created: 1,
+                                    }
+                                }
+                            ],
+                            as: 'streamposts',
+                        },
+                    },
+                    { $unwind: "$streamposts" },
+                    {
+                        $project: {
+                            _id: 1,
+                            productTitle: "$streamposts.productTitle",
+                            productId: "$streamposts.productId",
+                            quantity: "$streamposts.quantity",
+                            marketPlace: "$streamposts.marketPlace",
+                            offerPrice: "$streamposts.offerPrice",
+                            postLiveStreamingPirce: "$streamposts.postLiveStreamingPirce",
+                            validity: "$streamposts.validity",
+                            minLots: "$streamposts.minLots",
+                            incrementalLots: "$streamposts.incrementalLots",
+                        }
+                    }
+                ],
+                as: 'streamrequestposts',
+            },
+        },
+        {
+            $lookup: {
+                from: 'suppliers',
+                localField: 'suppierId',
+                foreignField: '_id',
+                as: 'suppliers',
+            },
+        },
+        { $unwind: "$suppliers" },
+        {
+            $lookup: {
+                from: 'streampreregisters',
+                localField: '_id',
+                foreignField: 'streamId',
+                pipeline: [
+                    { $match: { status: { $eq: "Registered" } } },
+                    { $group: { _id: null, count: { $sum: 1 } } }
+                ],
+                as: 'streampreregisters',
+            },
+        },
+        {
+            $unwind: {
+                preserveNullAndEmptyArrays: true,
+                path: '$streampreregisters',
+            },
+        },
+        {
+            $addFields: {
+                registeredUsers: { $ifNull: ['$streampreregisters.count', 0] },
+            },
+        },
+        {
+            $lookup: {
+                from: 'purchasedplans',
+                localField: 'planId',
+                foreignField: '_id',
+                as: 'purchasedplans',
+            },
+        },
+        {
+            $unwind: {
+                preserveNullAndEmptyArrays: true,
+                path: '$purchasedplans',
+            },
+        },
+        {
+            $addFields: {
+                max_post_per_stream: { $ifNull: ['$purchasedplans.max_post_per_stream', 0] },
+            },
+        },
+        {
+            $project: {
+                _id: 1,
+                supplierName: "$suppliers.primaryContactName",
+                active: 1,
+                archive: 1,
+                post: 1,
+                communicationMode: 1,
+                sepTwo: 1,
+                bookingAmount: 1,
+                streamingDate: 1,
+                streamingTime: 1,
+                discription: 1,
+                streamName: 1,
+                suppierId: 1,
+                postCount: 1,
+                DateIso: 1,
+                created: 1,
+                planId: 1,
+                streamrequestposts: "$streamrequestposts",
+                adminApprove: 1,
+                tokenGeneration: 1,
+                tokenDetails: 1,
+                Duration: 1,
+                startTime: 1,
+                endTime: 1,
+                registeredUsers: 1,
+                noOfParticipants: 1,
+                max_post_per_stream: 1
+            }
+        },
+
+        { $sort: { DateIso: -1 } },
+        { $skip: 10 * page },
+        { $limit: 10 },
+    ])
+    const total = await Streamrequest.aggregate([
+        { $match: { $and: [{ suppierId: { $eq: req.userId } }, { adminApprove: { $eq: "Approved" } }] } },
+    ])
+    return { value, total: total.length };
+};
+
 const go_live_stream_host = async (req, userId) => {
     let value = await Streamrequest.aggregate([
         { $match: { $and: [{ suppierId: { $eq: userId } }, { adminApprove: { $eq: "Approved" } }, { _id: { $eq: req.query.id } }] } },
@@ -1602,6 +1762,7 @@ module.exports = {
     update_approved,
     update_reject,
     get_all_streams,
+    get_subhost_streams,
 
 
     go_live_stream_host,

@@ -22,12 +22,15 @@ const startStop_post = async (req, io) => {
 
   let post = await StreamPost.findById(req.streampostsId);
   if (req.start) {
-    post.streamStart = new Date().getTime();
+    let streamStart = new Date().getTime();
+    await StreamPost.findByIdAndUpdate({ _id: req.streampostsId }, { streamStart: streamStart }, { new: true });
   }
   if (req.end) {
-    post.streamEnd = new Date().getTime();
+    let streamEnd = new Date().getTime();
+    await StreamPost.findByIdAndUpdate({ _id: req.streampostsId }, { streamEnd: streamEnd }, { new: true });
+
   }
-  post.save();
+  // post.save();
 
   let value = await Streamrequest.aggregate([
     { $match: { $and: [{ adminApprove: { $eq: "Approved" } }, { _id: { $eq: req.streamId } }] } },
@@ -174,6 +177,7 @@ const startStop_post = async (req, io) => {
     },
 
   ])
+  console.log(value, post)
   io.sockets.emit(req.streamId + "postStart", { post, value });
 
 }

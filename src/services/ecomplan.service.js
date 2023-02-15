@@ -934,6 +934,30 @@ const go_live_stream_host = async (req, userId) => {
             },
         },
         { $unwind: "$temptokens" },
+
+        {
+            $lookup: {
+                from: 'streamrequestposts',
+                localField: '_id',
+                foreignField: 'streamRequest',
+                pipeline: [
+                    { $match: { $and: [{ streamStart: { $ne: null } }, { streamEnd: { $eq: null } }] } },
+                    { $group: { _id: null, count: { $sum: 1 } } }
+                ],
+                as: 'streamrequestposts_start',
+            },
+        },
+        {
+            $unwind: {
+                preserveNullAndEmptyArrays: true,
+                path: '$streamrequestposts_start',
+            },
+        },
+        {
+            $addFields: {
+                streamPending: { $ifNull: ['$streamrequestposts_start.count', false] },
+            },
+        },
         {
             $project: {
                 _id: 1,
@@ -959,6 +983,8 @@ const go_live_stream_host = async (req, userId) => {
                 Duration: 1,
                 startTime: 1,
                 endTime: 1,
+                streamrequestposts_start: streamrequestposts_start,
+                streamPending: 1
 
             }
         },

@@ -20,6 +20,7 @@ const bodyParser = require("body-parser");
 const routes_v2 = require('./routes/v1/liveStreaming');
 const logger = require('./config/logger');
 const chetModule = require("./services/liveStreaming/chat.service")
+const socketService = require("./services/liveStreaming/socket.service")
 const moment = require('moment');
 // app.use(session( { secret:'hello world',
 // store:SessionStore,
@@ -60,8 +61,9 @@ io.sockets.on('connection', async (socket) => {
     await chetModule.change_controls(data, io)
   });
 
-
-
+  socket.on('post_start_end', async (data) => {
+    await socketService.startStop_post(data, io)
+  });
   socket.on('', (msg) => {
     console.log('message: ' + msg);
   });

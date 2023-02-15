@@ -161,7 +161,12 @@ const streamPostschema = mongoose.Schema({
   afterStreaming: {
     type: String
   },
-
+  streamStart: {
+    type: Number
+  },
+  streamEnd: {
+    type: Number
+  }
 });
 
 const StreamPost = mongoose.model('Streampost', streamPostschema);

@@ -907,7 +907,9 @@ const go_live_stream_host = async (req, userId) => {
                             validity: "$streamposts.validity",
                             minLots: "$streamposts.minLots",
                             incrementalLots: "$streamposts.incrementalLots",
-                            productImage: "$streamposts.productImage"
+                            productImage: "$streamposts.productImage",
+                            streamStart: "$streamposts.streamStart",
+                            streamEnd: "$streamposts.streamEnd",
                         }
                     }
                 ],

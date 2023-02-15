@@ -888,6 +888,8 @@ const go_live_stream_host = async (req, userId) => {
                                         suppierId: 1,
                                         DateIso: 1,
                                         created: 1,
+                                        streamStart: 1,
+                                        streamEnd: 1
                                     }
                                 }
                             ],

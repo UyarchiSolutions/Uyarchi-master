@@ -64,6 +64,9 @@ io.sockets.on('connection', async (socket) => {
   socket.on('post_start_end', async (data) => {
     await socketService.startStop_post(data, io)
   });
+  socket.on('leave_subhost', async (data) => {
+    await socketService.leave_subhost(data, io)
+  });
   socket.on('', (msg) => {
     console.log('message: ' + msg);
   });

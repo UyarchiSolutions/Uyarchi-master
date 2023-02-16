@@ -10,7 +10,9 @@ const Supplier = require('../../models/supplier.model');
 
 const { tempTokenModel, Joinusers } = require('../../models/liveStreaming/generateToken.model');
 
-
+const leave_subhost = async (req, io) => {
+  io.sockets.emit(req.streamId + req.uid, req);
+}
 const startStop_post = async (req, io) => {
   console.log(req)
   // // console.log(req)
@@ -30,6 +32,7 @@ const startStop_post = async (req, io) => {
     await StreamPost.findByIdAndUpdate({ _id: req.streampostsId }, { streamEnd: streamEnd }, { new: true });
 
   }
+
   // post.save();
 
   let value = await Streamrequest.aggregate([
@@ -183,5 +186,6 @@ const startStop_post = async (req, io) => {
 }
 
 module.exports = {
-  startStop_post
+  startStop_post,
+  leave_subhost
 };

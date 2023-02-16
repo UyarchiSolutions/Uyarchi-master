@@ -1160,7 +1160,6 @@ const go_live_stream_host = async (req, userId) => {
                 streamPending: 1,
                 primaryHost: { $eq: ["$allot_host_1", 'my self'] },
                 chatPermistion: { $eq: ["$allot_chat", 'my self'] }
-
             }
         },
 
@@ -1320,7 +1319,9 @@ const get_subhost_token = async (req, userId) => {
                 Duration: 1,
                 startTime: 1,
                 endTime: 1,
-                streamPending: 1
+                streamPending: 1,
+                primaryHost: { $eq: ["$allot_host_1", userId] },
+                chatPermistion: { $eq: ["$allot_chat", userId] }
 
             }
         },

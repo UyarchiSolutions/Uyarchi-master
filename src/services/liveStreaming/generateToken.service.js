@@ -5,9 +5,9 @@ const Agora = require('agora-access-token');
 const moment = require('moment');
 const { tempTokenModel, Joinusers } = require('../../models/liveStreaming/generateToken.model');
 const axios = require('axios'); //
-const appID = '89d14c182a7047f9a80bb3d4f26c42f4';
-const appCertificate = '6f0bf1aadfb34e50b9cac392307157c8';
-const Authorization = `Basic ${Buffer.from(`bc709eb08f0a438aaae0e7d9962f5ad3:93ff83ec1ab544bc97b0de84706c428f`).toString(
+const appID = '1ba2592b16b74f3497e232e1b01f66b0';
+const appCertificate = '8ae85f97802448c2a47b98715ff90ffb';
+const Authorization = `Basic ${Buffer.from(`61b817e750214d58ba9d8148e7c89a1b:88401de254b2436a9da15b2f872937de`).toString(
   'base64'
 )}`;
 const Dates = require('../Date.serive')

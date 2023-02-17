@@ -79,7 +79,7 @@ const getProductAndSupplierDetails = async (page) => {
         localField: '_id',
         foreignField: 'supplierid',
         pipeline: [
-          { $match: { confirmcallstatus: 'Accepted', StockReceived: 'Pending', showWhs: true, SuddenStatus: 'Approve' } },
+          { $match: { $and: [{ confirmcallstatus: { $eq: 'Accepted' } }, { StockReceived: { $eq: 'Pending' } }, { showWhs: { $eq: true } }, { $or: [{ SuddenStatus: { $eq: 'Approve' } }, { SuddenStatus: { $eq: 'Approved' } }] }] } },
           { $group: { _id: null, myCount: { $sum: 1 } } },
         ],
         as: 'CallstatusData',

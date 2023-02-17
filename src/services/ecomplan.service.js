@@ -839,7 +839,7 @@ const get_all_streams = async (req) => {
                 noOfParticipants: 1,
                 max_post_per_stream: 1,
                 status: 1,
-                hostingPermissions: { $or: [{ $eq: ["$allot_host_1", req.userId] }, { $eq: ["$allot_host_2", req.userId] }, { $eq: ["$allot_host_3", req.userId] }] }
+                hostingPermissions: { $or: [{ $eq: ["$allot_host_1", 'my self'] }, { $eq: ["$allot_host_2", 'my self'] }, { $eq: ["$allot_host_3", 'my self'] }] }
             }
         },
 

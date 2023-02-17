@@ -687,7 +687,7 @@ const allot_stream_subhost = async (req) => {
 };
 
 const cancel_stream = async (req) => {
-    let value = await Streamrequest.findByIdAndUpdate({ _id: req.body.id }, { status: "Canceled" }, { new: true })
+    let value = await Streamrequest.findByIdAndUpdate({ _id: req.body.id }, { status: "Cancelled" }, { new: true })
     return value;
 };
 

@@ -4636,7 +4636,7 @@ const getall_ordered_shops = async (query) => {
   }
 
   let values = await ShopOrderClone.aggregate([
-    { $sort: { created: -1 } },
+    { $sort: { created: 1 } },
     { $match: { $and: [statusMatch, deliveryType, timeSlot, deliveryMode, dateMacth] } },
     {
       $lookup: {

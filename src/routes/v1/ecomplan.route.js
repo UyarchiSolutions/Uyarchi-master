@@ -59,6 +59,7 @@ router.route('/my/approved/streams').get(supplierAuth, Ecomcontroller.get_all_st
 router.route('/subhost/assign/streams').get(subhostVerify, Ecomcontroller.get_subhost_streams)
 router.route('/allot/stream/subhost').put(supplierAuth, Ecomcontroller.allot_stream_subhost)
 router.route('/cancel/stream').put(supplierAuth, Ecomcontroller.cancel_stream)
+router.route('/cancel/stream/admin').put( Ecomcontroller.cancel_stream)
 
 
 // live Stream APIS

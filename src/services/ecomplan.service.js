@@ -1819,7 +1819,7 @@ const get_stream_alert = async (req) => {
     let value = await Streamrequest.aggregate([
         {
             $match: {
-                $and: [{ endTime: { $gt: date_now } }, { adminApprove: { $eq: "Approved" } }, { suppierId: { $eq: req.userId } }]
+                $and: [{ endTime: { $gt: date_now } }, { adminApprove: { $eq: "Approved" } }, { suppierId: { $eq: req.userId } }, { status: { $ne: "Cancelled" } }]
             }
         },
         {

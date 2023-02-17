@@ -271,6 +271,10 @@ const get_stream_alert = catchAsync(async (req, res) => {
   const value = await Ecomserive.get_stream_alert(req);
   res.send(value);
 });
+const get_cancel_stream = catchAsync(async (req, res) => {
+  const value = await Ecomserive.get_cancel_stream(req);
+  res.send(value);
+});
 module.exports = {
   create_Plans,
   create_Plans_addon,
@@ -334,6 +338,7 @@ module.exports = {
 
 
   get_stream_post,
-  get_stream_alert
+  get_stream_alert,
+  get_cancel_stream
 
 };

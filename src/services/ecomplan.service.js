@@ -837,7 +837,8 @@ const get_all_streams = async (req) => {
                 endTime: 1,
                 registeredUsers: 1,
                 noOfParticipants: 1,
-                max_post_per_stream: 1
+                max_post_per_stream: 1,
+                status: 1
             }
         },
 
@@ -997,7 +998,8 @@ const get_subhost_streams = async (req) => {
                 endTime: 1,
                 registeredUsers: 1,
                 noOfParticipants: 1,
-                max_post_per_stream: 1
+                max_post_per_stream: 1,
+                status: 1
             }
         },
 
@@ -1490,7 +1492,8 @@ const get_watch_live_steams = async (req) => {
                 suppliersName: "$suppliers.primaryContactName",
                 registerStatus: 1,
                 eligible: 1,
-                viewstatus: 1
+                viewstatus: 1,
+                status: 1
             }
         }
     ]);

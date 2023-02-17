@@ -1505,8 +1505,10 @@ const regisetr_strean_instrest = async (req) => {
     let findresult = await StreamPreRegister.findOne({ shopId: req.shopId, streamId: req.body.streamId });
     let count = await StreamPreRegister.find({ streamId: req.body.streamId, status: "Registered" }).count();
     let participents = await Streamrequest.findById(req.body.streamId);
+    // console.log(count, 231231, participents.noOfParticipants > count, participents.noOfParticipants)
     if (!findresult) {
         findresult = await StreamPreRegister.create({ shopId: req.shopId, streamId: req.body.streamId, streamCount: count + 1, eligible: participents.noOfParticipants > count })
+        findresult.viewstatus = participents.noOfParticipants > count ? "Confirmed" : (participents.noOfParticipants + participents.noOfParticipants / 2) > count ? "RAC" : 'Waiting';
         await Dates.create_date(findresult)
     }
     else {

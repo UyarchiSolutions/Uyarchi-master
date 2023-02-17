@@ -137,6 +137,9 @@ const create_purchase_plan_addon = async (req) => {
             var yourDate = new Date();
             var numberOfDaysToAdd = plan.validityofplan;
             var date_now = yourDate.setDate(yourDate.getDate() + numberOfDaysToAdd)
+            if (date_now == null) {
+                date_now = yourDate.getTime();
+            }
             console.log(date_now)
             let con = await purchasePlan.create({ ...{ no_of_host: plan.no_of_host, expireDate: date_now, planType: 'addon', streamId: req.body.streamId, planId: req.body.plan, suppierId: req.userId, paidAmount: collectedAmount, paymentStatus: collectedstatus, order_id: payment.order_id, noOfParticipants: plan.numberOfParticipants }, ...req.body.PaymentDatails });
             await Dates.create_date(con)

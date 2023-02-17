@@ -164,7 +164,7 @@ const addstream_user_limits = async (req, plan, con) => {
     let count = stream.noOfParticipants;
     users_limit.forEach(async (e) => {
         count++;
-        await StreamPreRegister.findByIdAndUpdate({ _id: e._id }, { eligible: true, streamCount: count }, { new: true })
+        await StreamPreRegister.findByIdAndUpdate({ _id: e._id }, { eligible: true, streamCount: count, viewstatus: "Confirmed" }, { new: true })
     })
     stream.noOfParticipants = plan.numberOfParticipants + stream.noOfParticipants;
     stream.save();

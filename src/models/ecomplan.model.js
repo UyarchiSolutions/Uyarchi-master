@@ -314,6 +314,9 @@ const streamRequestschema = mongoose.Schema({
   allot: {
     type: Boolean,
     default: false,
+  },
+  status: {
+    type: String
   }
 
 

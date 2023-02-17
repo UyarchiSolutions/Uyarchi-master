@@ -183,6 +183,14 @@ const allot_stream_subhost = catchAsync(async (req, res) => {
   const value = await Ecomserive.allot_stream_subhost(req);
   res.send(value);
 });
+
+const cancel_stream = catchAsync(async (req, res) => {
+  console.log("sdas")
+  const value = await Ecomserive.cancel_stream(req);
+  res.send(value);
+});
+
+
 const go_live_stream_host = catchAsync(async (req, res) => {
   console.log("sdas")
   const value = await Ecomserive.go_live_stream_host(req, req.userId);
@@ -301,6 +309,7 @@ module.exports = {
   get_subhost_streams,
   get_all_Plans_pagination,
   allot_stream_subhost,
+  cancel_stream,
 
 
   go_live_stream_host,

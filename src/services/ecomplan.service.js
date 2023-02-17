@@ -686,6 +686,10 @@ const allot_stream_subhost = async (req) => {
     return value;
 };
 
+const cancel_stream = async (req) => {
+    let value = await Streamrequest.findByIdAndUpdate({ _id: req.body.id }, { status: "Canceled" }, { new: true })
+    return value;
+};
 
 const get_all_streams = async (req) => {
     let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
@@ -1930,6 +1934,7 @@ module.exports = {
     get_all_streams,
     get_subhost_token,
     get_subhost_streams,
+    cancel_stream,
 
 
     go_live_stream_host,

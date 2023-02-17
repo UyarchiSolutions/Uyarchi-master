@@ -30,7 +30,7 @@ const createCallStatus = async (callStatusBody) => {
   // if (disable) {
   //   throw new ApiError(httpStatus.NOT_FOUND, 'User Disable');
   // }
-  let values = { ...callStatusBody, ...{SuddenCreatedBy:"By Admin", date: serverdate, time: servertime, created: moment(), OrderId: BillId } };
+  let values = { ...callStatusBody, ...{ SuddenCreatedBy: "By Admin", date: serverdate, time: servertime, created: moment(), OrderId: BillId } };
   return CallStatus.create(values);
 };
 
@@ -63,7 +63,7 @@ const createCallStatus_suppierApp = async (userId, callStatusBody) => {
     ...callStatusBody,
     ...{ supplierid: userId, date: serverdate, time: servertime, created: moment(), OrderId: BillId },
   };
-  
+
   return CallStatus.create(values);
 };
 
@@ -154,7 +154,7 @@ const getDataWithSupplierId = async (id, page, search, date) => {
           { supplierid: { $eq: id } },
           { StockReceived: { $eq: 'Pending' } },
           { confirmcallstatus: { $eq: 'Accepted' } },
-          { SuddenStatus: { $eq: 'Approved' } },
+          { $or: [{ SuddenStatus: { $eq: 'Approve' } }, { SuddenStatus: { $eq: 'Approved' } }] },
         ],
       },
     },

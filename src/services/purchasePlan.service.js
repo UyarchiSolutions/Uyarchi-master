@@ -137,7 +137,7 @@ const create_purchase_plan_addon = async (req) => {
             var yourDate = new Date();
             var numberOfDaysToAdd = plan.validityofplan;
             var date_now = yourDate.setDate(yourDate.getDate() + numberOfDaysToAdd)
-            if (date_now == null) {
+            if (plan.planType === 'addon') {
                 date_now = yourDate.getTime();
             }
             console.log(date_now)

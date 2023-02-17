@@ -5075,7 +5075,7 @@ const get_approved_orders = async (query) => {
   let lossTime = moment().format('H');
   // console.log( moment().format("H"))
   let values = await ShopOrderClone.aggregate([
-    { $sort: { created: -1 } },
+    { $sort: { created: 1 } },
     { $match: { $and: [statusMatch, deliveryType, timeSlot, deliveryMode, dateMacth] } },
     {
       $lookup: {

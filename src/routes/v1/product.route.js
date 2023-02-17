@@ -81,7 +81,7 @@ router.route('/pagination/product/:id').get(productController.productPaginationF
 router.route('/product/filter/:date').get(productController.productDateTimeFilter);
 router.route('/prod/:id/:date').get(productController.aggregationWithProductId);
 router.route('/dealProduct/supplier/:id').get(productController.productDealingWithsupplier);
-router.route('/getAll/Trends/:wardId/:street/:shoptype/:page').get(productController.getAllTrends);
+router.route('/getAll/Trends/:wardId/:street/:page').get(productController.getAllTrends);
 router.route('/trendsCounts/:productId/:date/:wardId/:street').get(productController.gettrendsCount);
 
 // cost price calculation

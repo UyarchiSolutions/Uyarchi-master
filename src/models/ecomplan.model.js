@@ -168,7 +168,7 @@ const streamPostschema = mongoose.Schema({
     type: Number
   },
   bookingAmount: {
-    type: Number
+    type: String
   }
 });
 

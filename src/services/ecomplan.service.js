@@ -232,7 +232,8 @@ const get_all_Post_with_page = async (req) => {
                 video: 1,
                 location: 1,
                 discription: 1,
-                bookingAmount: 1
+                bookingAmount: 1,
+                afterStreaming:1
             }
         },
         { $sort: { DateIso: -1 } },

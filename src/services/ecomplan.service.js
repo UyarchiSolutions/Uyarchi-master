@@ -1329,7 +1329,9 @@ const get_subhost_token = async (req, userId) => {
                 endTime: 1,
                 streamPending: 1,
                 primaryHost: { $eq: ["$allot_host_1", userId] },
-                chatPermistion: { $eq: ["$allot_chat", userId] }
+                chatPermistion: { $eq: ["$allot_chat", userId] },
+                chat_need: 1
+
 
             }
         },

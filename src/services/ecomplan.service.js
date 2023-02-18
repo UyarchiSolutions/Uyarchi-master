@@ -2070,6 +2070,7 @@ const get_cancel_stream = async (req) => {
 
 const create_slab = async (req) => {
     let value = await Slab.create(req.body)
+    await Dates.create_date(value)
     return value;
 }
 const get_by_slab = async (req) => {

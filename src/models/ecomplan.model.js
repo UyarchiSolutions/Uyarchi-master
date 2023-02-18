@@ -166,6 +166,9 @@ const streamPostschema = mongoose.Schema({
   },
   streamEnd: {
     type: Number
+  },
+  bookingAmount: {
+    type: Number
   }
 });
 
@@ -200,12 +203,6 @@ const streamRequestschema = mongoose.Schema({
   },
   post: {
     type: Array
-  },
-  bookingAmount: {
-    type: Number
-  },
-  bookingAmount_contion: {
-    type: String
   },
   communicationMode: {
     type: Array

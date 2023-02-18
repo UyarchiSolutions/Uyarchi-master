@@ -597,6 +597,7 @@ const get_sub_golive = async (req) => {
         chat: "$streamrequests.purchasedplans.streamplans.chatNeed",
         streamrequests_post: "$streamrequests_post",
         streamrequestposts: "$streamrequests_post.streamrequestposts",
+        chat_need: "$streamrequests.chat_need"
 
       }
     }

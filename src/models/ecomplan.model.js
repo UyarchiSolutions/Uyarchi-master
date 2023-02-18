@@ -487,7 +487,7 @@ const Slabschema = mongoose.Schema({
     type: Number
 
   },
-  slabpersentage: {
+  slabPercentage: {
     type: Number
 
   },

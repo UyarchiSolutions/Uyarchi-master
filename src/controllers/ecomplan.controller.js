@@ -275,6 +275,23 @@ const get_cancel_stream = catchAsync(async (req, res) => {
   const value = await Ecomserive.get_cancel_stream(req);
   res.send(value);
 });
+
+const create_slab = catchAsync(async (req, res) => {
+  const value = await Ecomserive.create_slab(req);
+  res.send(value);
+});
+
+const get_by_slab = catchAsync(async (req, res) => {
+  const value = await Ecomserive.get_by_slab(req);
+  res.send(value);
+});
+
+const update_slab = catchAsync(async (req, res) => {
+  const value = await Ecomserive.update_slab(req);
+  res.send(value);
+});
+
+
 module.exports = {
   create_Plans,
   create_Plans_addon,
@@ -339,6 +356,12 @@ module.exports = {
 
   get_stream_post,
   get_stream_alert,
-  get_cancel_stream
+  get_cancel_stream,
+
+
+
+  create_slab,
+  get_by_slab,
+  update_slab
 
 };

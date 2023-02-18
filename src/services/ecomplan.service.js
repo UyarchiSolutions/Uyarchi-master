@@ -1,5 +1,5 @@
 const httpStatus = require('http-status');
-const { Streamplan, StreamPost, Streamrequest, StreamrequestPost, StreamPreRegister, streamPlanlink } = require('../models/ecomplan.model');
+const { Streamplan, StreamPost, Streamrequest, StreamrequestPost, StreamPreRegister, streamPlanlink, Slab } = require('../models/ecomplan.model');
 const ApiError = require('../utils/ApiError');
 const AWS = require('aws-sdk')
 const Dates = require('./Date.serive')
@@ -2068,6 +2068,19 @@ const get_cancel_stream = async (req) => {
 };
 
 
+const create_slab = async (req) => {
+    let value = await Slab.create(req.body)
+    return value;
+}
+const get_by_slab = async (req) => {
+    let value = await Slab.findById(req.query.id);
+    return value;
+}
+const update_slab = async (req) => {
+    let value = await Slab.findByIdAndUpdate({ _id: req.query.id }, req.body, { new: true });
+    return value;
+}
+
 module.exports = {
     create_Plans,
     create_Plans_addon,
@@ -2128,6 +2141,11 @@ module.exports = {
     get_stream_post,
     get_stream_alert,
     allot_stream_subhost,
-    get_cancel_stream
+    get_cancel_stream,
+
+
+    create_slab,
+    get_by_slab,
+    update_slab
 
 };

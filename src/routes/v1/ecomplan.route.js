@@ -59,7 +59,7 @@ router.route('/my/approved/streams').get(supplierAuth, Ecomcontroller.get_all_st
 router.route('/subhost/assign/streams').get(subhostVerify, Ecomcontroller.get_subhost_streams)
 router.route('/allot/stream/subhost').put(supplierAuth, Ecomcontroller.allot_stream_subhost)
 router.route('/cancel/stream').put(supplierAuth, Ecomcontroller.cancel_stream)
-router.route('/cancel/stream/admin').put( Ecomcontroller.cancel_stream)
+router.route('/cancel/stream/admin').put(Ecomcontroller.cancel_stream)
 
 
 // live Stream APIS
@@ -102,6 +102,10 @@ router.route('/get/stream/post/all').get(Ecomcontroller.get_stream_post)
 
 router.route('/get/stream/all/alert').get(supplierAuth, Ecomcontroller.get_stream_alert)
 router.route('/get/stream/cancel/admin').get(Ecomcontroller.get_cancel_stream)
+
+
+// manage slab
+router.route('/slab/create').post(Ecomcontroller.create_slab).get(Ecomcontroller.get_by_slab).put(Ecomcontroller.update_slab)
 
 
 

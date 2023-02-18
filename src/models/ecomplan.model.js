@@ -455,5 +455,48 @@ const streamPlanlink = mongoose.model('streamplanlink', streamPlanlinkschema);
 
 
 
-module.exports = { Streamplan, StreamPost, Streamrequest, StreamrequestPost, StreamPreRegister, streamPlanlink };
+
+const Slabschema = mongoose.Schema({
+  _id: {
+    type: String,
+    default: v4,
+  },
+  active: {
+    type: Boolean,
+    default: true,
+  },
+  archive: {
+    type: Boolean,
+    default: false,
+  },
+  created: {
+    type: Date
+  },
+  DateIso: {
+    type: Number
+  },
+  status: {
+    type: String,
+    default: "created"
+  },
+  formAmount: {
+    type: Number
+
+  },
+  endAmount: {
+    type: Number
+
+  },
+  slabpersentage: {
+    type: Number
+
+  },
+
+});
+
+const Slab = mongoose.model('slabdetails', Slabschema);
+
+
+
+module.exports = { Streamplan, StreamPost, Streamrequest, StreamrequestPost, StreamPreRegister, streamPlanlink, Slab };
 

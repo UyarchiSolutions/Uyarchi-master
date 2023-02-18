@@ -2076,6 +2076,17 @@ const get_by_slab = async (req) => {
     let value = await Slab.findById(req.query.id);
     return value;
 }
+
+const getallslab = async (req) => {
+    let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
+    const value = await Slab.aggregate([
+        { $sort: { DateIso: -1 } },
+        { $skip: 10 * page },
+        { $limit: 10 },
+    ]);
+
+    return value;
+}
 const update_slab = async (req) => {
     let value = await Slab.findByIdAndUpdate({ _id: req.query.id }, req.body, { new: true });
     return value;
@@ -2146,6 +2157,7 @@ module.exports = {
 
     create_slab,
     get_by_slab,
-    update_slab
+    update_slab,
+    getallslab
 
 };

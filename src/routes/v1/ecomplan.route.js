@@ -106,7 +106,7 @@ router.route('/get/stream/cancel/admin').get(Ecomcontroller.get_cancel_stream)
 
 // manage slab
 router.route('/slab/create').post(Ecomcontroller.create_slab).get(Ecomcontroller.get_by_slab).put(Ecomcontroller.update_slab)
-
+router.route('/slab/getall').get(Ecomcontroller.getallslab)
 
 
 module.exports = router;

@@ -286,6 +286,12 @@ const get_by_slab = catchAsync(async (req, res) => {
   res.send(value);
 });
 
+const getallslab = catchAsync(async (req, res) => {
+  const value = await Ecomserive.getallslab(req);
+  res.send(value);
+});
+
+
 const update_slab = catchAsync(async (req, res) => {
   const value = await Ecomserive.update_slab(req);
   res.send(value);
@@ -362,6 +368,7 @@ module.exports = {
 
   create_slab,
   get_by_slab,
-  update_slab
+  update_slab,
+  getallslab
 
 };

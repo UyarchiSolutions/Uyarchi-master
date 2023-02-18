@@ -558,6 +558,7 @@ const get_sub_golive = async (req) => {
                     "validity": "$streamposts.validity",
                     "minLots": "$streamposts.minLots",
                     "incrementalLots": "$streamposts.incrementalLots",
+                    bookingAmount: "$streamposts.bookingAmount",
                     "suppierId": 1,
                     "DateIso": 1,
                     "created": "2023-01-20T11:46:58.201Z",

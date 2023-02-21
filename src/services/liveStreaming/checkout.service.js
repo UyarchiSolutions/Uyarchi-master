@@ -143,7 +143,9 @@ const add_odrerPayment = async (shopId, body, orders, payment) => {
     onlineorderId: payment.order_id,
     paymentTypes: "Online",
     paymentGatway: "razorpay",
-    streamId: orderDetails.streamId
+    streamId: orderDetails.streamId,
+    bookingtype: orderDetails.bookingtype,
+    totalAmount: orderDetails.totalAmount,
   });
   await Dates.create_date(value)
   return value;

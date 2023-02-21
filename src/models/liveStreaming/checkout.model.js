@@ -240,7 +240,14 @@ const streamingPaymant = mongoose.Schema({
   },
   streamId: {
     type: String,
-  }
+  },
+  bookingtype: {
+    type: String,
+  },
+  totalAmount: {
+    type: Number,
+  },
+
 })
 const streamingorderPayments = mongoose.model('streamingorderpayment', streamingPaymant);
 

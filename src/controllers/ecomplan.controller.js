@@ -276,6 +276,30 @@ const get_cancel_stream = catchAsync(async (req, res) => {
   res.send(value);
 });
 
+const get_completed_stream = catchAsync(async (req, res) => {
+  let value;
+  let status = req.query.status;
+  if (status == 'upcomming') {
+    value = await Ecomserive.get_completed_stream_upcommming(req);
+  }
+  if (status == 'live') {
+    value = await Ecomserive.get_completed_stream_live(req);
+  }
+  if (status == 'completed') {
+    value = await Ecomserive.get_completed_stream_completed(req);
+  }
+  if (status == 'expired') {
+    value = await Ecomserive.get_completed_stream_expired(req);
+  }
+  if (status == 'removed') {
+    value = await Ecomserive.get_completed_stream_removed(req);
+  }
+  if (status == 'cancelled') {
+    value = await Ecomserive.get_completed_stream_cancelled(req);
+  }
+  res.send(value);
+});
+
 const create_slab = catchAsync(async (req, res) => {
   const value = await Ecomserive.create_slab(req);
   res.send(value);
@@ -337,6 +361,7 @@ module.exports = {
   get_all_Plans_pagination,
   allot_stream_subhost,
   cancel_stream,
+  get_completed_stream,
 
 
   go_live_stream_host,

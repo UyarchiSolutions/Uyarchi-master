@@ -3857,6 +3857,7 @@ module.exports = {
     get_completed_stream_completed,
     get_completed_stream_expired,
     get_completed_stream_removed,
-    get_completed_stream_cancelled
+    get_completed_stream_cancelled,
+    get_completed_stream_byid
 
 };

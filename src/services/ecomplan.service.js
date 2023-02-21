@@ -2224,6 +2224,82 @@ const get_completed_stream_upcommming = async (req) => {
             },
         },
         {
+            $lookup: {
+                from: 'subhosts',
+                localField: 'allot_chat',
+                foreignField: '_id',
+                as: 'allot_chat_lookup',
+            },
+        },
+        {
+            $unwind: {
+                preserveNullAndEmptyArrays: true,
+                path: '$allot_chat_lookup',
+            },
+        },
+        {
+            $addFields: {
+                allot_chat_name: { $ifNull: ['$allot_chat_lookup.Name', null] },
+            },
+        },
+        {
+            $lookup: {
+                from: 'subhosts',
+                localField: 'allot_host_1',
+                foreignField: '_id',
+                as: 'allot_host_1_lookup',
+            },
+        },
+        {
+            $unwind: {
+                preserveNullAndEmptyArrays: true,
+                path: '$allot_host_1_lookup',
+            },
+        },
+        {
+            $addFields: {
+                allot_host_1_name: { $ifNull: ['$allot_host_1_lookup.Name', null] },
+            },
+        },
+        {
+            $lookup: {
+                from: 'subhosts',
+                localField: 'allot_host_2',
+                foreignField: '_id',
+                as: 'allot_host_2_lookup',
+            },
+        },
+        {
+            $unwind: {
+                preserveNullAndEmptyArrays: true,
+                path: '$allot_host_2_lookup',
+            },
+        },
+        {
+            $addFields: {
+                allot_host_2_name: { $ifNull: ['$allot_host_2_lookup.Name', null] },
+            },
+        },
+        {
+            $lookup: {
+                from: 'subhosts',
+                localField: 'allot_host_3',
+                foreignField: '_id',
+                as: 'allot_host_3_lookup',
+            },
+        },
+        {
+            $unwind: {
+                preserveNullAndEmptyArrays: true,
+                path: '$allot_host_3_lookup',
+            },
+        },
+        {
+            $addFields: {
+                allot_host_3_name: { $ifNull: ['$allot_host_3_lookup.Name', null] },
+            },
+        },
+        {
             $project: {
                 _id: 1,
                 supplierName: "$suppliers.primaryContactName",
@@ -2252,7 +2328,11 @@ const get_completed_stream_upcommming = async (req) => {
                 registeredUsers: 1,
                 noOfParticipants: 1,
                 max_post_per_stream: 1,
-                status: 1
+                status: 1,
+                allot_chat_name: 1,
+                allot_host_1_name: 1,
+                allot_host_2_name: 1,
+                allot_host_3_name: 1,
             }
         },
 

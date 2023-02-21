@@ -2300,6 +2300,17 @@ const get_completed_stream_upcommming = async (req) => {
             },
         },
         {
+            $lookup: {
+                from: 'purchasedplans',
+                localField: 'planId',
+                foreignField: '_id',
+                as: 'purchasedplans',
+            },
+        },
+        {
+            $unwind: '$purchasedplans',
+        },
+        {
             $project: {
                 _id: 1,
                 supplierName: "$suppliers.primaryContactName",
@@ -2333,9 +2344,9 @@ const get_completed_stream_upcommming = async (req) => {
                 allot_host_1_name: 1,
                 allot_host_2_name: 1,
                 allot_host_3_name: 1,
+                no_of_host: "$purchasedplans.no_of_host"
             }
         },
-
         { $sort: { DateIso: -1 } },
         { $skip: 10 * page },
         { $limit: 10 },
@@ -2551,6 +2562,17 @@ const get_completed_stream_live = async (req) => {
             },
         },
         {
+            $lookup: {
+                from: 'purchasedplans',
+                localField: 'planId',
+                foreignField: '_id',
+                as: 'purchasedplans',
+            },
+        },
+        {
+            $unwind: '$purchasedplans',
+        },
+        {
             $project: {
                 _id: 1,
                 supplierName: "$suppliers.primaryContactName",
@@ -2584,9 +2606,9 @@ const get_completed_stream_live = async (req) => {
                 allot_host_1_name: 1,
                 allot_host_2_name: 1,
                 allot_host_3_name: 1,
+                no_of_host: "$purchasedplans.no_of_host"
             }
         },
-
         { $sort: { DateIso: -1 } },
         { $skip: 10 * page },
         { $limit: 10 },
@@ -2802,6 +2824,17 @@ const get_completed_stream_completed = async (req) => {
             },
         },
         {
+            $lookup: {
+                from: 'purchasedplans',
+                localField: 'planId',
+                foreignField: '_id',
+                as: 'purchasedplans',
+            },
+        },
+        {
+            $unwind: '$purchasedplans',
+        },
+        {
             $project: {
                 _id: 1,
                 supplierName: "$suppliers.primaryContactName",
@@ -2835,9 +2868,9 @@ const get_completed_stream_completed = async (req) => {
                 allot_host_1_name: 1,
                 allot_host_2_name: 1,
                 allot_host_3_name: 1,
+                no_of_host: "$purchasedplans.no_of_host"
             }
         },
-
 
         { $sort: { DateIso: -1 } },
         { $skip: 10 * page },
@@ -3057,6 +3090,17 @@ const get_completed_stream_expired = async (req) => {
             },
         },
         {
+            $lookup: {
+                from: 'purchasedplans',
+                localField: 'planId',
+                foreignField: '_id',
+                as: 'purchasedplans',
+            },
+        },
+        {
+            $unwind: '$purchasedplans',
+        },
+        {
             $project: {
                 _id: 1,
                 supplierName: "$suppliers.primaryContactName",
@@ -3090,9 +3134,9 @@ const get_completed_stream_expired = async (req) => {
                 allot_host_1_name: 1,
                 allot_host_2_name: 1,
                 allot_host_3_name: 1,
+                no_of_host: "$purchasedplans.no_of_host"
             }
         },
-
 
         { $sort: { DateIso: -1 } },
         { $skip: 10 * page },
@@ -3318,6 +3362,17 @@ const get_completed_stream_cancelled = async (req) => {
             },
         },
         {
+            $lookup: {
+                from: 'purchasedplans',
+                localField: 'planId',
+                foreignField: '_id',
+                as: 'purchasedplans',
+            },
+        },
+        {
+            $unwind: '$purchasedplans',
+        },
+        {
             $project: {
                 _id: 1,
                 supplierName: "$suppliers.primaryContactName",
@@ -3351,6 +3406,7 @@ const get_completed_stream_cancelled = async (req) => {
                 allot_host_1_name: 1,
                 allot_host_2_name: 1,
                 allot_host_3_name: 1,
+                no_of_host: "$purchasedplans.no_of_host"
             }
         },
 

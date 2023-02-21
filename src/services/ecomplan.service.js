@@ -2344,7 +2344,11 @@ const get_completed_stream_upcommming = async (req) => {
                 allot_host_1_name: 1,
                 allot_host_2_name: 1,
                 allot_host_3_name: 1,
-                no_of_host: "$purchasedplans.no_of_host"
+                no_of_host: "$purchasedplans.no_of_host",
+                allot_host_1: 1,
+                allot_host_2: 1,
+                allot_host_3: 1,
+                allot_chat: 1,
             }
         },
         { $sort: { DateIso: -1 } },
@@ -2606,7 +2610,11 @@ const get_completed_stream_live = async (req) => {
                 allot_host_1_name: 1,
                 allot_host_2_name: 1,
                 allot_host_3_name: 1,
-                no_of_host: "$purchasedplans.no_of_host"
+                no_of_host: "$purchasedplans.no_of_host",
+                allot_host_1:1,
+                allot_host_2:1,
+                allot_host_3:1,
+                allot_chat:1,
             }
         },
         { $sort: { DateIso: -1 } },
@@ -2868,7 +2876,11 @@ const get_completed_stream_completed = async (req) => {
                 allot_host_1_name: 1,
                 allot_host_2_name: 1,
                 allot_host_3_name: 1,
-                no_of_host: "$purchasedplans.no_of_host"
+                no_of_host: "$purchasedplans.no_of_host",
+                allot_host_1:1,
+                allot_host_2:1,
+                allot_host_3:1,
+                allot_chat:1,
             }
         },
 
@@ -3134,7 +3146,11 @@ const get_completed_stream_expired = async (req) => {
                 allot_host_1_name: 1,
                 allot_host_2_name: 1,
                 allot_host_3_name: 1,
-                no_of_host: "$purchasedplans.no_of_host"
+                no_of_host: "$purchasedplans.no_of_host",
+                allot_host_1:1,
+                allot_host_2:1,
+                allot_host_3:1,
+                allot_chat:1,
             }
         },
 
@@ -3406,7 +3422,11 @@ const get_completed_stream_cancelled = async (req) => {
                 allot_host_1_name: 1,
                 allot_host_2_name: 1,
                 allot_host_3_name: 1,
-                no_of_host: "$purchasedplans.no_of_host"
+                no_of_host: "$purchasedplans.no_of_host",
+                allot_host_1:1,
+                allot_host_2:1,
+                allot_host_3:1,
+                allot_chat:1,
             }
         },
 

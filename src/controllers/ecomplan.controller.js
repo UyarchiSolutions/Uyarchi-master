@@ -300,6 +300,10 @@ const get_completed_stream = catchAsync(async (req, res) => {
   res.send(value);
 });
 
+const get_completed_stream_byid = catchAsync(async (req, res) => {
+  const value = await Ecomserive.get_completed_stream_byid(req);
+  res.send(value);
+});
 const create_slab = catchAsync(async (req, res) => {
   const value = await Ecomserive.create_slab(req);
   res.send(value);
@@ -362,6 +366,7 @@ module.exports = {
   allot_stream_subhost,
   cancel_stream,
   get_completed_stream,
+  get_completed_stream_byid,
 
 
   go_live_stream_host,

@@ -67,7 +67,29 @@ const get_all_post = catchAsync(async (req, res) => {
   res.send(value);
 });
 const get_all_Post_with_page = catchAsync(async (req, res) => {
-  const value = await Ecomserive.get_all_Post_with_page(req);
+  let status = req.query.status;
+  let value;
+  if (status == 'assigned' || status == 'active') {
+    value = await Ecomserive.get_all_Post_with_page(req);
+  }
+  if (status == 'live') {
+    value = await Ecomserive.get_all_Post_with_page_live(req);
+
+  }
+  if (status == 'completed') {
+    value = await Ecomserive.get_all_Post_with_page_completed(req);
+
+  }
+  if (status == 'exhausted') {
+    value = await Ecomserive.get_all_Post_with_page_exhausted(req);
+
+  }
+  if (status == 'removed') {
+    value = await Ecomserive.get_all_Post_with_page_removed(req);
+
+  }
+
+
   res.send(value);
 });
 const get_one_post = catchAsync(async (req, res) => {
@@ -367,6 +389,7 @@ module.exports = {
   cancel_stream,
   get_completed_stream,
   get_completed_stream_byid,
+
 
 
   go_live_stream_host,

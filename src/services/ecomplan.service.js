@@ -187,7 +187,7 @@ const get_all_Post = async (req) => {
 };
 
 
-const get_all_Post_with_page = async (req) => {
+const get_all_Post_with_page_live = async (req) => {
     let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
     var date_now = new Date().getTime();
     let filterdate = req.query.date;
@@ -244,6 +244,297 @@ const get_all_Post_with_page = async (req) => {
                 discription: 1,
                 bookingAmount: 1,
                 afterStreaming: 1
+            }
+        },
+        { $sort: { DateIso: -1 } },
+        { $skip: 10 * page },
+        { $limit: 10 },
+    ])
+    const total = await StreamPost.aggregate([
+        { $match: { $and: [{ suppierId: { $eq: req.userId } }, { isUsed: { $eq: false } }] } },
+        { $sort: { DateIso: -1 } },
+    ])
+    return { value, total: total.length };
+};
+
+
+const get_all_Post_with_page_completed = async (req) => {
+    let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
+    var date_now = new Date().getTime();
+    let filterdate = req.query.date;
+    dateMatch = { active: true }
+    if (filterdate != null && filterdate != '' && filterdate != 'null') {
+        let date = filterdate.split(",");
+        if (date.length == 2) {
+            dateMatch = { $and: [{ streamingDate: { $gte: date[0] } }, { streamingDate: { $lte: date[1] } }] }
+        }
+        // console.log(date, dateMatch)
+    }
+    const value = await StreamPost.aggregate([
+        { $match: { $and: [{ suppierId: { $eq: req.userId } }] } },
+        {
+            $lookup: {
+                from: 'products',
+                localField: 'productId',
+                foreignField: '_id',
+                as: 'productName',
+            },
+        },
+        {
+            $unwind: '$productName',
+        },
+        {
+            $lookup: {
+                from: 'categories',
+                localField: 'categoryId',
+                foreignField: '_id',
+                as: 'categories',
+            },
+        },
+        {
+            $unwind: '$categories',
+        },
+        {
+            $project: {
+                productId: 1,
+                categoryId: 1,
+                quantity: 1,
+                marketPlace: 1,
+                offerPrice: 1,
+                postLiveStreamingPirce: 1,
+                minLots: 1,
+                incrementalLots: 1,
+                _id: 1,
+                catName: "$categories.categoryName",
+                productName: "$productName.productTitle",
+                created: 1,
+                DateIso: 1,
+                images: 1,
+                video: 1,
+                location: 1,
+                discription: 1,
+                bookingAmount: 1,
+                afterStreaming: 1
+            }
+        },
+        { $sort: { DateIso: -1 } },
+        { $skip: 10 * page },
+        { $limit: 10 },
+    ])
+    const total = await StreamPost.aggregate([
+        { $match: { $and: [{ suppierId: { $eq: req.userId } }, { isUsed: { $eq: false } }] } },
+        { $sort: { DateIso: -1 } },
+    ])
+    return { value, total: total.length };
+};
+
+
+const get_all_Post_with_page_exhausted = async (req) => {
+    let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
+    var date_now = new Date().getTime();
+    let filterdate = req.query.date;
+    dateMatch = { active: true }
+    if (filterdate != null && filterdate != '' && filterdate != 'null') {
+        let date = filterdate.split(",");
+        if (date.length == 2) {
+            dateMatch = { $and: [{ streamingDate: { $gte: date[0] } }, { streamingDate: { $lte: date[1] } }] }
+        }
+        // console.log(date, dateMatch)
+    }
+    const value = await StreamPost.aggregate([
+        { $match: { $and: [{ suppierId: { $eq: req.userId } }] } },
+        {
+            $lookup: {
+                from: 'products',
+                localField: 'productId',
+                foreignField: '_id',
+                as: 'productName',
+            },
+        },
+        {
+            $unwind: '$productName',
+        },
+        {
+            $lookup: {
+                from: 'categories',
+                localField: 'categoryId',
+                foreignField: '_id',
+                as: 'categories',
+            },
+        },
+        {
+            $unwind: '$categories',
+        },
+        {
+            $project: {
+                productId: 1,
+                categoryId: 1,
+                quantity: 1,
+                marketPlace: 1,
+                offerPrice: 1,
+                postLiveStreamingPirce: 1,
+                minLots: 1,
+                incrementalLots: 1,
+                _id: 1,
+                catName: "$categories.categoryName",
+                productName: "$productName.productTitle",
+                created: 1,
+                DateIso: 1,
+                images: 1,
+                video: 1,
+                location: 1,
+                discription: 1,
+                bookingAmount: 1,
+                afterStreaming: 1
+            }
+        },
+        { $sort: { DateIso: -1 } },
+        { $skip: 10 * page },
+        { $limit: 10 },
+    ])
+    const total = await StreamPost.aggregate([
+        { $match: { $and: [{ suppierId: { $eq: req.userId } }, { isUsed: { $eq: false } }] } },
+        { $sort: { DateIso: -1 } },
+    ])
+    return { value, total: total.length };
+};
+
+
+const get_all_Post_with_page_removed = async (req) => {
+    let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
+    var date_now = new Date().getTime();
+    let filterdate = req.query.date;
+    dateMatch = { active: true }
+    if (filterdate != null && filterdate != '' && filterdate != 'null') {
+        let date = filterdate.split(",");
+        if (date.length == 2) {
+            dateMatch = { $and: [{ streamingDate: { $gte: date[0] } }, { streamingDate: { $lte: date[1] } }] }
+        }
+        // console.log(date, dateMatch)
+    }
+    const value = await StreamPost.aggregate([
+        { $match: { $and: [{ suppierId: { $eq: req.userId } }] } },
+        {
+            $lookup: {
+                from: 'products',
+                localField: 'productId',
+                foreignField: '_id',
+                as: 'productName',
+            },
+        },
+        {
+            $unwind: '$productName',
+        },
+        {
+            $lookup: {
+                from: 'categories',
+                localField: 'categoryId',
+                foreignField: '_id',
+                as: 'categories',
+            },
+        },
+        {
+            $unwind: '$categories',
+        },
+        {
+            $project: {
+                productId: 1,
+                categoryId: 1,
+                quantity: 1,
+                marketPlace: 1,
+                offerPrice: 1,
+                postLiveStreamingPirce: 1,
+                minLots: 1,
+                incrementalLots: 1,
+                _id: 1,
+                catName: "$categories.categoryName",
+                productName: "$productName.productTitle",
+                created: 1,
+                DateIso: 1,
+                images: 1,
+                video: 1,
+                location: 1,
+                discription: 1,
+                bookingAmount: 1,
+                afterStreaming: 1
+            }
+        },
+        { $sort: { DateIso: -1 } },
+        { $skip: 10 * page },
+        { $limit: 10 },
+    ])
+    const total = await StreamPost.aggregate([
+        { $match: { $and: [{ suppierId: { $eq: req.userId } }, { isUsed: { $eq: false } }] } },
+        { $sort: { DateIso: -1 } },
+    ])
+    return { value, total: total.length };
+};
+
+
+
+
+
+const get_all_Post_with_page = async (req) => {
+    let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
+    var date_now = new Date().getTime();
+    let filterdate = req.query.date;
+    dateMatch = { active: true }
+    if (filterdate != null && filterdate != '' && filterdate != 'null') {
+        let date = filterdate.split(",");
+        if (date.length == 2) {
+            dateMatch = { $and: [{ streamingDate: { $gte: date[0] } }, { streamingDate: { $lte: date[1] } }] }
+        }
+        // console.log(date, dateMatch)
+    }
+    const value = await StreamPost.aggregate([
+        { $match: { $and: [{ suppierId: { $eq: req.userId } }] } },
+        {
+            $lookup: {
+                from: 'products',
+                localField: 'productId',
+                foreignField: '_id',
+                as: 'productName',
+            },
+        },
+        {
+            $unwind: '$productName',
+        },
+        {
+            $lookup: {
+                from: 'categories',
+                localField: 'categoryId',
+                foreignField: '_id',
+                as: 'categories',
+            },
+        },
+        {
+            $unwind: '$categories',
+        },
+        {
+            $project: {
+                productId: 1,
+                categoryId: 1,
+                quantity: 1,
+                marketPlace: 1,
+                offerPrice: 1,
+                postLiveStreamingPirce: 1,
+                minLots: 1,
+                incrementalLots: 1,
+                _id: 1,
+                catName: "$categories.categoryName",
+                productName: "$productName.productTitle",
+                created: 1,
+                DateIso: 1,
+                images: 1,
+                video: 1,
+                location: 1,
+                discription: 1,
+                bookingAmount: 1,
+                afterStreaming: 1,
+                status: 1,
+                streamStart: 1,
+                streamEnd: 1
+
             }
         },
         { $sort: { DateIso: -1 } },
@@ -3830,6 +4121,10 @@ module.exports = {
     get_subhost_token,
     get_subhost_streams,
     cancel_stream,
+    get_all_Post_with_page_live,
+    get_all_Post_with_page_completed,
+    get_all_Post_with_page_exhausted,
+    get_all_Post_with_page_removed,
 
 
     go_live_stream_host,

@@ -126,6 +126,12 @@ const production_supplier_token_cloudrecording = catchAsync(async (req, res) => 
   res.status(httpStatus.CREATED).send(tokens);
 });
 
+const production_supplier_token_watchamin = catchAsync(async (req, res) => {
+  let tokens = await generateTokenService.production_supplier_token_watchamin(req);
+  res.status(httpStatus.CREATED).send(tokens);
+});
+
+
 module.exports = {
   generateToken,
   getHostTokens,
@@ -149,5 +155,6 @@ module.exports = {
   create_subhost_token,
   create_raice_token,
   production_supplier_token,
-  production_supplier_token_cloudrecording
+  production_supplier_token_cloudrecording,
+  production_supplier_token_watchamin
 };

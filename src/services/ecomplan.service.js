@@ -1830,8 +1830,11 @@ const go_live_stream_host = async (req, userId) => {
         {
             $lookup: {
                 from: 'temptokens',
-                localField: 'tokenDetails',
-                foreignField: '_id',
+                localField: '_id',
+                foreignField: 'streamId',
+                pipeline: [
+                    { $match: { $and: [{ supplierId: { $eq: userId } }] } },
+                ],
                 as: 'temptokens',
             },
         },
@@ -1904,7 +1907,10 @@ const go_live_stream_host = async (req, userId) => {
         },
 
     ])
-    return value;
+    if (value.length == 0) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Stream Not Found');
+    }
+    return value[0];
 };
 
 const get_subhost_token = async (req, userId) => {

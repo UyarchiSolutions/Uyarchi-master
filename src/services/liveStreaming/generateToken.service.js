@@ -280,12 +280,12 @@ const agora_acquire = async (req) => {
   let token = await tempTokenModel.findById(req.body.id);
   console.log(token)
   console.log(token.chennel);
-  console.log(token.cloud_recording);
+  console.log(token.Uid);
   const acquire = await axios.post(
     `https://api.agora.io/v1/apps/${appID}/cloud_recording/acquire`,
     {
       cname: token.chennel,
-      uid: token.uid_cloud,
+      uid: token.Uid.toString(),
       clientRequest: {
         resourceExpiredHour: 24,
         scene: 0,
@@ -293,14 +293,15 @@ const agora_acquire = async (req) => {
     },
     { headers: { Authorization } }
   );
-  console.log(acquire.data);
-
+  token.resourceId = acquire.data.resourceId;
+  token.recoredStart = "acquire";
+  token.save();
   return acquire.data;
 };
 
 const recording_start = async (req) => {
-  const resource = req.body.resourceId;
   let token = await tempTokenModel.findById(req.body.id);
+  const resource = token.resourceId;
   console.log(resource)
   console.log(token)
   const mode = 'mix';
@@ -308,9 +309,9 @@ const recording_start = async (req) => {
     `https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/mode/${mode}/start`,
     {
       cname: token.chennel,
-      uid: token.uid_cloud,
+      uid: token.Uid.toString(),
       clientRequest: {
-        token: token.cloud_recording,
+        token: token.token,
         recordingConfig: {
           maxIdleTime: 30,
           streamTypes: 2,
@@ -340,30 +341,39 @@ const recording_start = async (req) => {
     },
     { headers: { Authorization } }
   );
+  token.resourceId = start.data.resourceId;
+  token.sid = start.data.sid;
+  token.recoredStart = "start";
+  token.save();
   return start.data;
 };
 const recording_query = async (req) => {
   console.log(req.body);
-  const resource = req.body.resourceId;
-  const sid = req.body.sid;
+  let token = await tempTokenModel.findById(req.body.id);
+  const resource = token.resourceId;
+  const sid = token.sid;
   const mode = 'mix';
   console.log(`https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/query`);
   const query = await axios.get(
     `https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/query`,
     { headers: { Authorization } }
   );
+  token.videoLink = query.data.serverResponse.fileList;
+  token.recoredStart = "query";
+  token.save();
   return query.data;
 };
 const recording_stop = async (req) => {
-  const resource = req.body.resourceId;
-  const sid = req.body.sid;
+
   const mode = 'mix';
   let token = await tempTokenModel.findById(req.body.id);
+  const resource = token.resourceId;
+  const sid = token.sid;
   const stop = await axios.post(
     `https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/stop`,
     {
       cname: token.chennel,
-      uid: token.uid_cloud,
+      uid: token.Uid.toString(),
       clientRequest: {},
     },
     {
@@ -372,6 +382,8 @@ const recording_stop = async (req) => {
       },
     }
   );
+  token.recoredStart = "stop";
+  token.save();
   return stop.data;
 };
 const recording_updateLayout = async (req) => {
@@ -748,7 +760,7 @@ const production_supplier_token_cloudrecording = async (req) => {
   if (!stream) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
   }
-  value = await tempTokenModel.findOne({ chennel: streamId, type: 'CloudRecording', });
+  value = await tempTokenModel.findOne({ chennel: streamId, type: 'CloudRecording', recoredStart: { $ne: "stop" } });
   if (!value) {
     const uid = await generateUid();
     const role = Agora.RtcRole.SUBSCRIBER;
@@ -768,10 +780,43 @@ const production_supplier_token_cloudrecording = async (req) => {
     });
     const token = await geenerate_rtc_token(stream._id, uid, role, expirationTimestamp);
     value.token = token;
+    value.store = value._id.replace(/[^a-zA-Z0-9]/g, '');
     value.save();
   }
   return value
 }
+
+const production_supplier_token_watchamin = async (req) => {
+  let streamId = req.body.streamId;
+  let stream = await Streamrequest.findById(streamId)
+  if (!stream) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
+  }
+  value = await tempTokenModel.findOne({ chennel: streamId, type: 'adminwatch', });
+  if (!value) {
+    const uid = await generateUid();
+    const role = Agora.RtcRole.SUBSCRIBER;
+    const expirationTimestamp = stream.endTime / 1000;
+    value = await tempTokenModel.create({
+      ...req.body,
+      ...{
+        date: moment().format('YYYY-MM-DD'),
+        time: moment().format('HHMMSS'),
+        created: moment(),
+        Uid: uid,
+        chennel: stream._id,
+        created_num: new Date(new Date(moment().format('YYYY-MM-DD') + ' ' + moment().format('HH:mm:ss'))).getTime(),
+        expDate: expirationTimestamp * 1000,
+        type: 'adminwatch',
+      },
+    });
+    const token = await geenerate_rtc_token(stream._id, uid, role, expirationTimestamp);
+    value.token = token;
+    value.save();
+  }
+  return value
+}
+
 
 module.exports = {
   generateToken,
@@ -796,5 +841,6 @@ module.exports = {
   create_subhost_token,
   create_raice_token,
   production_supplier_token,
-  production_supplier_token_cloudrecording
+  production_supplier_token_cloudrecording,
+  production_supplier_token_watchamin
 };

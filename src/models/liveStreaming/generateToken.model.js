@@ -80,6 +80,23 @@ const tempToken = mongoose.Schema({
   joinedUser: {
     type: String,
 
+  },
+  resourceId: {
+    type: String,
+  },
+  sid: {
+    type: String,
+  },
+  isUsed: {
+    type: Boolean,
+    default: false,
+  },
+  videoLink: {
+    type: String,
+  },
+  recoredStart: {
+    type: String,
+    default: "Pending"
   }
 });
 

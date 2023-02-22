@@ -37,6 +37,7 @@ router.route('/get/all/post/pagenation').get(supplierAuth, Ecomcontroller.get_al
 router.route('/get/one/post').get(supplierAuth, Ecomcontroller.get_one_post)
 router.route('/update/one/post').put(supplierAuth, uploadimage.fields([{ name: 'galleryImages' }]), Ecomcontroller.update_one_post)
 router.route('/delete/one/post').delete(supplierAuth, Ecomcontroller.delete_one_post)
+router.route('/remove/one/post').put(supplierAuth, Ecomcontroller.remove_one_post)
 
 
 // Stream Request APIS

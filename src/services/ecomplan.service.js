@@ -929,7 +929,10 @@ const delete_one_Post = async (req) => {
     }
     return { message: "deleted" };
 };
-
+const remove_one_post = async (req) => {
+    const value = await StreamPost.findByIdAndUpdate({ _id: req.query.id, suppierId: req.userId }, { status: "Removed" }, { new: true });
+    return { message: "Removed" };
+};
 
 
 
@@ -4456,6 +4459,7 @@ module.exports = {
     get_one_Post,
     update_one_Post,
     delete_one_Post,
+    remove_one_post,
     create_teaser_upload,
 
     create_stream_one,

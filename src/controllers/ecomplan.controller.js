@@ -71,7 +71,7 @@ const get_all_Post_with_page = catchAsync(async (req, res) => {
   let value;
   if (status == 'Active' || status == 'Cancelled') {
 
-    value = await Ecomserive.get_all_Post_with_page(req,status);
+    value = await Ecomserive.get_all_Post_with_page(req, status);
   }
   if (status == 'assigned') {
     value = await Ecomserive.get_all_Post_with_page_assigned(req);
@@ -120,6 +120,12 @@ const delete_one_post = catchAsync(async (req, res) => {
   const value = await Ecomserive.delete_one_Post(req);
   res.send(value);
 });
+
+const remove_one_post = catchAsync(async (req, res) => {
+  const value = await Ecomserive.remove_one_post(req);
+  res.send(value);
+});
+
 
 const create_stream_one = catchAsync(async (req, res) => {
   const value = await Ecomserive.create_stream_one(req);
@@ -367,6 +373,7 @@ module.exports = {
   get_one_post,
   update_one_post,
   delete_one_post,
+  remove_one_post,
   get_all_Post_with_page,
   create_post_teaser,
 

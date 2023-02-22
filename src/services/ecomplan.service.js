@@ -589,6 +589,41 @@ const get_all_Post_with_page_removed = async (req) => {
             $unwind: '$categories',
         },
         {
+            $lookup: {
+                from: 'streamrequestposts',
+                localField: '_id',
+                foreignField: 'postId',
+                pipeline: [
+                    {
+                        $lookup: {
+                            from: 'streamrequests',
+                            localField: 'streamRequest',
+                            foreignField: '_id',
+                            pipeline: [
+                                { $match: { $or: [{ startTime: { $gte: date_now } }] } }
+                            ],
+                            as: 'streamrequests',
+                        },
+                    },
+                    {
+                        $unwind: '$streamrequests',
+                    },
+                    {
+                        $project: {
+                            _id: 1,
+                            streamName: "$streamrequests.streamName",
+                            streamingDate: "$streamrequests.streamingDate",
+                            streamingTime: "$streamrequests.streamingTime",
+                        }
+                    }
+                ],
+                as: 'streamrequestposts',
+            },
+        },
+        {
+            $unwind: '$streamrequestposts',
+        },
+        {
             $project: {
                 productId: 1,
                 categoryId: 1,
@@ -608,7 +643,13 @@ const get_all_Post_with_page_removed = async (req) => {
                 location: 1,
                 discription: 1,
                 bookingAmount: 1,
-                afterStreaming: 1
+                afterStreaming: 1,
+                status: 1,
+                streamStart: 1,
+                streamEnd: 1,
+                streamName: "$streamrequestposts.streamName",
+                streamingDate: "$streamrequestposts.streamingDate",
+                streamingTime: "$streamrequestposts.streamingTime"
             }
         },
         { $sort: { DateIso: -1 } },
@@ -617,6 +658,41 @@ const get_all_Post_with_page_removed = async (req) => {
     ])
     const total = await StreamPost.aggregate([
         { $match: { $and: [dateMatch, { suppierId: { $eq: req.userId } }, { status: { $eq: "Removed" } }] } },
+        {
+            $lookup: {
+                from: 'streamrequestposts',
+                localField: '_id',
+                foreignField: 'postId',
+                pipeline: [
+                    {
+                        $lookup: {
+                            from: 'streamrequests',
+                            localField: 'streamRequest',
+                            foreignField: '_id',
+                            pipeline: [
+                                { $match: { $or: [{ startTime: { $gte: date_now } }] } }
+                            ],
+                            as: 'streamrequests',
+                        },
+                    },
+                    {
+                        $unwind: '$streamrequests',
+                    },
+                    {
+                        $project: {
+                            _id: 1,
+                            streamName: "$streamrequests.streamName",
+                            streamingDate: "$streamrequests.streamingDate",
+                            streamingTime: "$streamrequests.streamingTime",
+                        }
+                    }
+                ],
+                as: 'streamrequestposts',
+            },
+        },
+        {
+            $unwind: '$streamrequestposts',
+        },
         { $sort: { DateIso: -1 } },
     ])
     return { value, total: total.length };

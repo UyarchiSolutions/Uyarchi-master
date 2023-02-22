@@ -111,6 +111,21 @@ const create_raice_token = catchAsync(async (req, res) => {
   // req.io.emit('subscriberjoined', { user: 'sd' });
   res.status(httpStatus.CREATED).send(tokens);
 });
+
+
+
+// production
+const production_supplier_token = catchAsync(async (req, res) => {
+  let tokens = await generateTokenService.production_supplier_token(req);
+  // req.io.emit('subscriberjoined', { user: 'sd' });
+  res.status(httpStatus.CREATED).send(tokens);
+});
+
+const production_supplier_token_cloudrecording = catchAsync(async (req, res) => {
+  let tokens = await generateTokenService.production_supplier_token_cloudrecording(req);
+  res.status(httpStatus.CREATED).send(tokens);
+});
+
 module.exports = {
   generateToken,
   getHostTokens,
@@ -132,5 +147,7 @@ module.exports = {
   get_participents_limit,
   remove_host_live,
   create_subhost_token,
-  create_raice_token
+  create_raice_token,
+  production_supplier_token,
+  production_supplier_token_cloudrecording
 };

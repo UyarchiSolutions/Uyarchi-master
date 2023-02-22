@@ -699,6 +699,78 @@ const create_raice_token = async (req) => {
   return value;
 };
 
+
+const production_supplier_token = async (req) => {
+  let supplierId = req.userId;
+  let streamId = req.body.streamId;
+  let stream = await Streamrequest.findById(streamId)
+  if (!stream) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
+  }
+  value = await tempTokenModel.findOne({ supplierId: supplierId, chennel: streamId });
+  console.log(value)
+  if (!value) {
+    const uid = await generateUid();
+    const role = req.body.isPublisher ? Agora.RtcRole.PUBLISHER : Agora.RtcRole.SUBSCRIBER;
+    const expirationTimestamp = stream.endTime / 1000;
+    value = await tempTokenModel.create({
+      ...req.body,
+      ...{
+        date: moment().format('YYYY-MM-DD'),
+        time: moment().format('HHMMSS'),
+        supplierId: supplierId,
+        streamId: streamId,
+        created: moment(),
+        Uid: uid,
+        created_num: new Date(new Date(moment().format('YYYY-MM-DD') + ' ' + moment().format('HH:mm:ss'))).getTime(),
+        expDate: expirationTimestamp * 1000,
+        Duration: stream.Durationm,
+        type: "Supplier"
+      },
+    });
+    const token = await geenerate_rtc_token(streamId, uid, role, expirationTimestamp);
+    value.token = token;
+    value.chennel = streamId;
+    value.save();
+    stream.tokenGeneration = true;
+    stream.goLive = true;
+    stream.save();
+  }
+  req.io.emit(streamId + "_golive", { streamId: streamId, })
+  return value;
+};
+
+const production_supplier_token_cloudrecording = async () => {
+  let streamId = req.body.streamId;
+  let stream = await Streamrequest.findById(streamId)
+  if (!stream) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
+  }
+  value = await tempTokenModel.findOne({ chennel: streamId, type: 'CloudRecording', });
+  if (!value) {
+    const uid = await generateUid();
+    const role = Agora.RtcRole.SUBSCRIBER;
+    const expirationTimestamp = stream.endTime / 1000;
+    value = await tempTokenModel.create({
+      ...req.body,
+      ...{
+        date: moment().format('YYYY-MM-DD'),
+        time: moment().format('HHMMSS'),
+        created: moment(),
+        Uid: uid,
+        chennel: stream._id,
+        created_num: new Date(new Date(moment().format('YYYY-MM-DD') + ' ' + moment().format('HH:mm:ss'))).getTime(),
+        expDate: expirationTimestamp * 1000,
+        type: 'CloudRecording',
+      },
+    });
+    const token = await geenerate_rtc_token(stream._id, uid, role, expirationTimestamp);
+    value.token = token;
+    value.save();
+  }
+  return value
+}
+
 module.exports = {
   generateToken,
   getHostTokens,
@@ -720,5 +792,7 @@ module.exports = {
   get_participents_limit,
   remove_host_live,
   create_subhost_token,
-  create_raice_token
+  create_raice_token,
+  production_supplier_token,
+  production_supplier_token_cloudrecording
 };

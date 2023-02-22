@@ -38,4 +38,7 @@ router.route('/create/subhost/token').post(subhostVerify, generateToken.create_s
 router.route('/create/raice/your/token').post(generateToken.create_raice_token);
 
 
+router.route('/production/livestream/generateToken/supplier').post(supplierAuth, generateToken.production_supplier_token);
+router.route('/production/livestream/generateToken/supplier/cloudrecording').post(supplierAuth, generateToken.production_supplier_token_cloudrecording);
+
 module.exports = router;

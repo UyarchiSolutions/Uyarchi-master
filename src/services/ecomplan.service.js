@@ -189,6 +189,16 @@ const get_all_Post = async (req) => {
 
 const get_all_Post_with_page = async (req) => {
     let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
+    var date_now = new Date().getTime();
+    let filterdate = req.query.date;
+    dateMatch = { active: true }
+    if (filterdate != null && filterdate != '' && filterdate != 'null') {
+        let date = filterdate.split(",");
+        if (date.length == 2) {
+            dateMatch = { $and: [{ streamingDate: { $gte: date[0] } }, { streamingDate: { $lte: date[1] } }] }
+        }
+        // console.log(date, dateMatch)
+    }
     const value = await StreamPost.aggregate([
         { $match: { $and: [{ suppierId: { $eq: req.userId } }] } },
         {

@@ -169,6 +169,10 @@ const streamPostschema = mongoose.Schema({
   },
   bookingAmount: {
     type: String
+  },
+  status: {
+    type: String,
+    default:"Active"
   }
 });
 

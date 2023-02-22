@@ -190,7 +190,7 @@ const get_all_Post = async (req) => {
 const get_all_Post_with_page = async (req) => {
     let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
     const value = await StreamPost.aggregate([
-        { $match: { $and: [{ suppierId: { $eq: req.userId } }, { isUsed: { $eq: false } }] } },
+        { $match: { $and: [{ suppierId: { $eq: req.userId } }] } },
         {
             $lookup: {
                 from: 'products',

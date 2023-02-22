@@ -200,7 +200,8 @@ const get_all_Post_with_page_live = async (req) => {
         // console.log(date, dateMatch)
     }
     const value = await StreamPost.aggregate([
-        { $match: { $and: [{ suppierId: { $eq: req.userId } }] } },
+        { $sort: { DateIso: 1 } },
+        { $match: { $and: [dateMatch, { suppierId: { $eq: req.userId } }, { status: { $eq: "Assigned" } }] } },
         {
             $lookup: {
                 from: 'products',
@@ -224,6 +225,41 @@ const get_all_Post_with_page_live = async (req) => {
             $unwind: '$categories',
         },
         {
+            $lookup: {
+                from: 'streamrequestposts',
+                localField: '_id',
+                foreignField: 'postId',
+                pipeline: [
+                    {
+                        $lookup: {
+                            from: 'streamrequests',
+                            localField: 'streamRequest',
+                            foreignField: '_id',
+                            pipeline: [
+                                { $match: { $and: [{ startTime: { $lte: date_now } }, { endTime: { $gte: date_now } }] } }
+                            ],
+                            as: 'streamrequests',
+                        },
+                    },
+                    {
+                        $unwind: '$streamrequests',
+                    },
+                    {
+                        $project: {
+                            _id: 1,
+                            streamName: "$streamrequests.streamName",
+                            streamingDate: "$streamrequests.streamingDate",
+                            streamingTime: "$streamrequests.streamingTime",
+                        }
+                    }
+                ],
+                as: 'streamrequestposts',
+            },
+        },
+        {
+            $unwind: '$streamrequestposts',
+        },
+        {
             $project: {
                 productId: 1,
                 categoryId: 1,
@@ -243,16 +279,56 @@ const get_all_Post_with_page_live = async (req) => {
                 location: 1,
                 discription: 1,
                 bookingAmount: 1,
-                afterStreaming: 1
+                afterStreaming: 1,
+                status: 1,
+                streamStart: 1,
+                streamEnd: 1,
+                streamName: "$streamrequestposts.streamName",
+                streamingDate: "$streamrequestposts.streamingDate",
+                streamingTime: "$streamrequestposts.streamingTime"
             }
         },
-        { $sort: { DateIso: -1 } },
         { $skip: 10 * page },
         { $limit: 10 },
     ])
     const total = await StreamPost.aggregate([
+        { $sort: { DateIso: 1 } },
         { $match: { $and: [{ suppierId: { $eq: req.userId } }, { isUsed: { $eq: false } }] } },
-        { $sort: { DateIso: -1 } },
+        {
+            $lookup: {
+                from: 'streamrequestposts',
+                localField: '_id',
+                foreignField: 'postId',
+                pipeline: [
+                    {
+                        $lookup: {
+                            from: 'streamrequests',
+                            localField: 'streamRequest',
+                            foreignField: '_id',
+                            pipeline: [
+                                { $match: { $and: [{ startTime: { $lte: date_now } }, { endTime: { $gte: date_now } }] } }
+                            ],
+                            as: 'streamrequests',
+                        },
+                    },
+                    {
+                        $unwind: '$streamrequests',
+                    },
+                    {
+                        $project: {
+                            _id: 1,
+                            streamName: "$streamrequests.streamName",
+                            streamingDate: "$streamrequests.streamingDate",
+                            streamingTime: "$streamrequests.streamingTime",
+                        }
+                    }
+                ],
+                as: 'streamrequestposts',
+            },
+        },
+        {
+            $unwind: '$streamrequestposts',
+        },
     ])
     return { value, total: total.length };
 };
@@ -605,6 +681,9 @@ const get_all_Post_with_page_assigned = async (req) => {
                             from: 'streamrequests',
                             localField: 'streamRequest',
                             foreignField: '_id',
+                            pipeline: [
+                                { $match: { $or: [{ startTime: { $gte: date_now } }] } }
+                            ],
                             as: 'streamrequests',
                         },
                     },
@@ -661,6 +740,41 @@ const get_all_Post_with_page_assigned = async (req) => {
     ])
     const total = await StreamPost.aggregate([
         { $match: { $and: [dateMatch, { suppierId: { $eq: req.userId } }, { status: { $eq: "Assigned" } }] } },
+        {
+            $lookup: {
+                from: 'streamrequestposts',
+                localField: '_id',
+                foreignField: 'postId',
+                pipeline: [
+                    {
+                        $lookup: {
+                            from: 'streamrequests',
+                            localField: 'streamRequest',
+                            foreignField: '_id',
+                            pipeline: [
+                                { $match: { $or: [{ startTime: { $gte: date_now } }] } }
+                            ],
+                            as: 'streamrequests',
+                        },
+                    },
+                    {
+                        $unwind: '$streamrequests',
+                    },
+                    {
+                        $project: {
+                            _id: 1,
+                            streamName: "$streamrequests.streamName",
+                            streamingDate: "$streamrequests.streamingDate",
+                            streamingTime: "$streamrequests.streamingTime",
+                        }
+                    }
+                ],
+                as: 'streamrequestposts',
+            },
+        },
+        {
+            $unwind: '$streamrequestposts',
+        },
         { $sort: { DateIso: -1 } },
     ])
     return { value, total: total.length };

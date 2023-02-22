@@ -347,7 +347,8 @@ const get_all_Post_with_page_completed = async (req) => {
         // console.log(date, dateMatch)
     }
     const value = await StreamPost.aggregate([
-        { $match: { $and: [{ suppierId: { $eq: req.userId } }] } },
+        { $sort: { DateIso: 1 } },
+        { $match: { $and: [dateMatch, { suppierId: { $eq: req.userId } }, { status: { $eq: "Assigned" } }] } },
         {
             $lookup: {
                 from: 'products',
@@ -371,6 +372,41 @@ const get_all_Post_with_page_completed = async (req) => {
             $unwind: '$categories',
         },
         {
+            $lookup: {
+                from: 'streamrequestposts',
+                localField: '_id',
+                foreignField: 'postId',
+                pipeline: [
+                    {
+                        $lookup: {
+                            from: 'streamrequests',
+                            localField: 'streamRequest',
+                            foreignField: '_id',
+                            pipeline: [
+                                { $match: { $and: [{ endTime: { $lte: date_now } }] } }
+                            ],
+                            as: 'streamrequests',
+                        },
+                    },
+                    {
+                        $unwind: '$streamrequests',
+                    },
+                    {
+                        $project: {
+                            _id: 1,
+                            streamName: "$streamrequests.streamName",
+                            streamingDate: "$streamrequests.streamingDate",
+                            streamingTime: "$streamrequests.streamingTime",
+                        }
+                    }
+                ],
+                as: 'streamrequestposts',
+            },
+        },
+        {
+            $unwind: '$streamrequestposts',
+        },
+        {
             $project: {
                 productId: 1,
                 categoryId: 1,
@@ -390,15 +426,55 @@ const get_all_Post_with_page_completed = async (req) => {
                 location: 1,
                 discription: 1,
                 bookingAmount: 1,
-                afterStreaming: 1
+                afterStreaming: 1,
+                status: 1,
+                streamStart: 1,
+                streamEnd: 1,
+                streamName: "$streamrequestposts.streamName",
+                streamingDate: "$streamrequestposts.streamingDate",
+                streamingTime: "$streamrequestposts.streamingTime"
             }
         },
-        { $sort: { DateIso: -1 } },
         { $skip: 10 * page },
         { $limit: 10 },
     ])
     const total = await StreamPost.aggregate([
         { $match: { $and: [{ suppierId: { $eq: req.userId } }, { isUsed: { $eq: false } }] } },
+        {
+            $lookup: {
+                from: 'streamrequestposts',
+                localField: '_id',
+                foreignField: 'postId',
+                pipeline: [
+                    {
+                        $lookup: {
+                            from: 'streamrequests',
+                            localField: 'streamRequest',
+                            foreignField: '_id',
+                            pipeline: [
+                                { $match: { $and: [{ endTime: { $lte: date_now } }] } }
+                            ],
+                            as: 'streamrequests',
+                        },
+                    },
+                    {
+                        $unwind: '$streamrequests',
+                    },
+                    {
+                        $project: {
+                            _id: 1,
+                            streamName: "$streamrequests.streamName",
+                            streamingDate: "$streamrequests.streamingDate",
+                            streamingTime: "$streamrequests.streamingTime",
+                        }
+                    }
+                ],
+                as: 'streamrequestposts',
+            },
+        },
+        {
+            $unwind: '$streamrequestposts',
+        },
         { $sort: { DateIso: -1 } },
     ])
     return { value, total: total.length };
@@ -550,7 +626,7 @@ const get_all_Post_with_page_removed = async (req) => {
 
 
 
-const get_all_Post_with_page = async (req) => {
+const get_all_Post_with_page = async (req, status) => {
     console.log("asda")
     let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
     var date_now = new Date().getTime();
@@ -573,7 +649,7 @@ const get_all_Post_with_page = async (req) => {
 
         //     }
         // },
-        { $match: { $and: [dateMatch, { suppierId: { $eq: req.userId } }, { status: { $eq: "Active" } }] } },
+        { $match: { $and: [dateMatch, { suppierId: { $eq: req.userId } }, { status: { $eq: status } }] } },
         {
             $lookup: {
                 from: 'products',
@@ -628,7 +704,7 @@ const get_all_Post_with_page = async (req) => {
         { $limit: 10 },
     ])
     const total = await StreamPost.aggregate([
-        { $match: { $and: [dateMatch, { suppierId: { $eq: req.userId } }, { status: { $eq: "Active" } }] } },
+        { $match: { $and: [dateMatch, { suppierId: { $eq: req.userId } }, { status: { $eq: status } }] } },
         { $sort: { DateIso: -1 } },
     ])
     return { value, total: total.length };
@@ -1222,7 +1298,11 @@ const allot_stream_subhost = async (req) => {
 };
 
 const cancel_stream = async (req) => {
-    let value = await Streamrequest.findByIdAndUpdate({ _id: req.body.id }, { status: "Cancelled" }, { new: true })
+    let value = await Streamrequest.findByIdAndUpdate({ _id: req.body.id }, { status: "Cancelled" }, { new: true });
+    let assginStream = await StreamrequestPost.find({ streamRequest: req.body.id });
+    assginStream.forEach(async (a) => {
+        await StreamPost.findByIdAndUpdate({ _id: a.postId }, { status: "Cancelled" }, { new: true });
+    })
     return value;
 };
 

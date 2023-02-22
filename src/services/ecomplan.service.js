@@ -673,6 +673,47 @@ const get_all_Post_with_page = async (req, status) => {
             $unwind: '$categories',
         },
         {
+            $lookup: {
+                from: 'streamrequestposts',
+                localField: '_id',
+                foreignField: 'postId',
+                pipeline: [
+                    {
+                        $lookup: {
+                            from: 'streamrequests',
+                            localField: 'streamRequest',
+                            foreignField: '_id',
+                            pipeline: [
+                                { $match: { $or: [{ startTime: { $gte: date_now } }] } }
+                            ],
+                            as: 'streamrequests',
+                        },
+                    },
+                    {
+                        $unwind: {
+                            preserveNullAndEmptyArrays: true,
+                            path: '$streamrequests',
+                        },
+                    },
+                    {
+                        $project: {
+                            _id: 1,
+                            streamName: "$streamrequests.streamName",
+                            streamingDate: "$streamrequests.streamingDate",
+                            streamingTime: "$streamrequests.streamingTime",
+                        }
+                    }
+                ],
+                as: 'streamrequestposts',
+            },
+        },
+        {
+            $unwind: {
+                preserveNullAndEmptyArrays: true,
+                path: '$streamrequestposts',
+            },
+        },
+        {
             $project: {
                 productId: 1,
                 categoryId: 1,
@@ -696,6 +737,9 @@ const get_all_Post_with_page = async (req, status) => {
                 status: 1,
                 streamStart: 1,
                 streamEnd: 1,
+                streamName: "$streamrequestposts.streamName",
+                streamingDate: "$streamrequestposts.streamingDate",
+                streamingTime: "$streamrequestposts.streamingTime"
 
             }
         },

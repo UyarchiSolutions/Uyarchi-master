@@ -475,6 +475,7 @@ const get_all_Post_with_page_removed = async (req) => {
 
 
 const get_all_Post_with_page = async (req) => {
+    console.log("asda")
     let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
     var date_now = new Date().getTime();
     let filterdate = req.query.date;
@@ -484,10 +485,12 @@ const get_all_Post_with_page = async (req) => {
         if (date.length == 2) {
             dateMatch = { $and: [{ DateIso: { $gte: date[0] } }, { DateIso: { $lte: date[1] } }] }
         }
-        // console.log(date, dateMatch)
+        console.log(date, dateMatch)
     }
+    console.log(dateMatch)
+
     const value = await StreamPost.aggregate([
-        { $match: { $and: [dateMatch, { suppierId: { $eq: req.userId } }, { status: { $eq: "active" } }] } },
+        { $match: { $and: [dateMatch, { suppierId: { $eq: req.userId } }, { status: { $eq: "Active" } }] } },
         {
             $lookup: {
                 from: 'products',
@@ -542,7 +545,7 @@ const get_all_Post_with_page = async (req) => {
         { $limit: 10 },
     ])
     const total = await StreamPost.aggregate([
-        { $match: { $and: [dateMatch, { suppierId: { $eq: req.userId } }, { status: { $eq: "active" } }] } },
+        { $match: { $and: [dateMatch, { suppierId: { $eq: req.userId } }, { status: { $eq: "Active" } }] } },
         { $sort: { DateIso: -1 } },
     ])
     return { value, total: total.length };
@@ -561,7 +564,7 @@ const get_all_Post_with_page_assigned = async (req) => {
         // console.log(date, dateMatch)
     }
     const value = await StreamPost.aggregate([
-        { $match: { $and: [dateMatch, { suppierId: { $eq: req.userId } }, { status: { $eq: "assigned" } }] } },
+        { $match: { $and: [dateMatch, { suppierId: { $eq: req.userId } }, { status: { $eq: "Assigned" } }] } },
         {
             $lookup: {
                 from: 'products',
@@ -616,7 +619,7 @@ const get_all_Post_with_page_assigned = async (req) => {
         { $limit: 10 },
     ])
     const total = await StreamPost.aggregate([
-        { $match: { $and: [dateMatch, { suppierId: { $eq: req.userId } }, { status: { $eq: "assigned" } }] } },
+        { $match: { $and: [dateMatch, { suppierId: { $eq: req.userId } }, { status: { $eq: "Assigned" } }] } },
         { $sort: { DateIso: -1 } },
     ])
     return { value, total: total.length };
@@ -663,7 +666,7 @@ const create_stream_one = async (req) => {
 
     const value = await Streamrequest.create({ ...req.body, ...{ suppierId: req.userId, postCount: req.body.post.length, startTime: startTime } });
     req.body.post.forEach(async (a) => {
-        await StreamPost.findByIdAndUpdate({ _id: a }, { isUsed: true, status: "assigned" }, { new: true })
+        await StreamPost.findByIdAndUpdate({ _id: a }, { isUsed: true, status: "Assigned" }, { new: true })
         let post = await StreamrequestPost.create({ suppierId: req.userId, streamRequest: value._id, postId: a })
         await Dates.create_date(post)
     })

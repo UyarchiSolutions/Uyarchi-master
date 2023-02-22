@@ -482,12 +482,12 @@ const get_all_Post_with_page = async (req) => {
     if (filterdate != null && filterdate != '' && filterdate != 'null') {
         let date = filterdate.split(",");
         if (date.length == 2) {
-            dateMatch = { $and: [{ streamingDate: { $gte: date[0] } }, { streamingDate: { $lte: date[1] } }] }
+            dateMatch = { $and: [{ DateIso: { $gte: date[0] } }, { DateIso: { $lte: date[1] } }] }
         }
         // console.log(date, dateMatch)
     }
     const value = await StreamPost.aggregate([
-        { $match: { $and: [{ suppierId: { $eq: req.userId } }] } },
+        { $match: { $and: [dateMatch, { suppierId: { $eq: req.userId } }, { status: { $eq: "active" } }] } },
         {
             $lookup: {
                 from: 'products',
@@ -542,7 +542,81 @@ const get_all_Post_with_page = async (req) => {
         { $limit: 10 },
     ])
     const total = await StreamPost.aggregate([
-        { $match: { $and: [{ suppierId: { $eq: req.userId } }, { isUsed: { $eq: false } }] } },
+        { $match: { $and: [dateMatch, { suppierId: { $eq: req.userId } }, { status: { $eq: "active" } }] } },
+        { $sort: { DateIso: -1 } },
+    ])
+    return { value, total: total.length };
+};
+
+const get_all_Post_with_page_assigned = async (req) => {
+    let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
+    var date_now = new Date().getTime();
+    let filterdate = req.query.date;
+    dateMatch = { active: true }
+    if (filterdate != null && filterdate != '' && filterdate != 'null') {
+        let date = filterdate.split(",");
+        if (date.length == 2) {
+            dateMatch = { $and: [{ streamingDate: { $gte: date[0] } }, { streamingDate: { $lte: date[1] } }] }
+        }
+        // console.log(date, dateMatch)
+    }
+    const value = await StreamPost.aggregate([
+        { $match: { $and: [dateMatch, { suppierId: { $eq: req.userId } }, { status: { $eq: "assigned" } }] } },
+        {
+            $lookup: {
+                from: 'products',
+                localField: 'productId',
+                foreignField: '_id',
+                as: 'productName',
+            },
+        },
+        {
+            $unwind: '$productName',
+        },
+        {
+            $lookup: {
+                from: 'categories',
+                localField: 'categoryId',
+                foreignField: '_id',
+                as: 'categories',
+            },
+        },
+        {
+            $unwind: '$categories',
+        },
+        {
+            $project: {
+                productId: 1,
+                categoryId: 1,
+                quantity: 1,
+                marketPlace: 1,
+                offerPrice: 1,
+                postLiveStreamingPirce: 1,
+                minLots: 1,
+                incrementalLots: 1,
+                _id: 1,
+                catName: "$categories.categoryName",
+                productName: "$productName.productTitle",
+                created: 1,
+                DateIso: 1,
+                images: 1,
+                video: 1,
+                location: 1,
+                discription: 1,
+                bookingAmount: 1,
+                afterStreaming: 1,
+                status: 1,
+                streamStart: 1,
+                streamEnd: 1
+
+            }
+        },
+        { $sort: { DateIso: -1 } },
+        { $skip: 10 * page },
+        { $limit: 10 },
+    ])
+    const total = await StreamPost.aggregate([
+        { $match: { $and: [dateMatch, { suppierId: { $eq: req.userId } }, { status: { $eq: "assigned" } }] } },
         { $sort: { DateIso: -1 } },
     ])
     return { value, total: total.length };
@@ -589,7 +663,7 @@ const create_stream_one = async (req) => {
 
     const value = await Streamrequest.create({ ...req.body, ...{ suppierId: req.userId, postCount: req.body.post.length, startTime: startTime } });
     req.body.post.forEach(async (a) => {
-        await StreamPost.findByIdAndUpdate({ _id: a }, { isUsed: true }, { new: true })
+        await StreamPost.findByIdAndUpdate({ _id: a }, { isUsed: true, status: "assigned" }, { new: true })
         let post = await StreamrequestPost.create({ suppierId: req.userId, streamRequest: value._id, postId: a })
         await Dates.create_date(post)
     })
@@ -4125,6 +4199,7 @@ module.exports = {
     get_all_Post_with_page_completed,
     get_all_Post_with_page_exhausted,
     get_all_Post_with_page_removed,
+    get_all_Post_with_page_assigned,
 
 
     go_live_stream_host,

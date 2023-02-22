@@ -69,8 +69,12 @@ const get_all_post = catchAsync(async (req, res) => {
 const get_all_Post_with_page = catchAsync(async (req, res) => {
   let status = req.query.status;
   let value;
-  if (status == 'assigned' || status == 'active') {
+  if (status == 'active') {
     value = await Ecomserive.get_all_Post_with_page(req);
+  }
+  if (status == 'assigned') {
+    value = await Ecomserive.get_all_Post_with_page_assigned(req);
+
   }
   if (status == 'live') {
     value = await Ecomserive.get_all_Post_with_page_live(req);

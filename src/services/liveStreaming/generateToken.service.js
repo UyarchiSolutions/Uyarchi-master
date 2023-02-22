@@ -657,10 +657,12 @@ const create_subhost_token = async (req) => {
     const token = await geenerate_rtc_token(streamId, uid, Agora.RtcRole.PUBLISHER, expirationTimestamp);
     value.token = token;
     value.chennel = streamId;
-    value.store = value._id.replace(/[^a-zA-Z0-9]/g, '');
     value.save();
+    stream.tokenGeneration = true;
+    stream.goLive = true;
+    stream.save();
   }
-
+  req.io.emit(streamId + "_golive", { streamId: streamId, });
   return value;
 };
 
@@ -740,7 +742,7 @@ const production_supplier_token = async (req) => {
   return value;
 };
 
-const production_supplier_token_cloudrecording = async () => {
+const production_supplier_token_cloudrecording = async (req) => {
   let streamId = req.body.streamId;
   let stream = await Streamrequest.findById(streamId)
   if (!stream) {

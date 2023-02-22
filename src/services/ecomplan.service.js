@@ -565,7 +565,7 @@ const get_all_Post_with_page_removed = async (req) => {
         // console.log(date, dateMatch)
     }
     const value = await StreamPost.aggregate([
-        { $match: { $and: [{ suppierId: { $eq: req.userId } }] } },
+        { $match: { $and: [dateMatch, { suppierId: { $eq: req.userId } }, { status: { $eq: "Removed" } }] } },
         {
             $lookup: {
                 from: 'products',
@@ -616,7 +616,7 @@ const get_all_Post_with_page_removed = async (req) => {
         { $limit: 10 },
     ])
     const total = await StreamPost.aggregate([
-        { $match: { $and: [{ suppierId: { $eq: req.userId } }, { isUsed: { $eq: false } }] } },
+        { $match: { $and: [dateMatch, { suppierId: { $eq: req.userId } }, { status: { $eq: "Removed" } }] } },
         { $sort: { DateIso: -1 } },
     ])
     return { value, total: total.length };

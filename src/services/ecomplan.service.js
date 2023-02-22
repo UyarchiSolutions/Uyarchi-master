@@ -599,9 +599,6 @@ const get_all_Post_with_page_removed = async (req) => {
                             from: 'streamrequests',
                             localField: 'streamRequest',
                             foreignField: '_id',
-                            pipeline: [
-                                { $match: { $or: [{ startTime: { $gte: date_now } }] } }
-                            ],
                             as: 'streamrequests',
                         },
                     },
@@ -669,9 +666,6 @@ const get_all_Post_with_page_removed = async (req) => {
                             from: 'streamrequests',
                             localField: 'streamRequest',
                             foreignField: '_id',
-                            pipeline: [
-                                { $match: { $or: [{ startTime: { $gte: date_now } }] } }
-                            ],
                             as: 'streamrequests',
                         },
                     },

@@ -56,7 +56,7 @@ const generateToken = async (req) => {
   value.token = token;
   value.chennel = streamId;
   value.store = value._id.replace(/[^a-zA-Z0-9]/g, '');
-  let cloud_recording = await generateToken_sub_record(streamId, false, req, value, expirationTimestamp);
+  let cloud_recording = await generateToken_sub_record(streamId, Agora.RtcRole.SUBSCRIBER, req, value, expirationTimestamp);
   value.cloud_recording = cloud_recording.value.token;
   value.uid_cloud = cloud_recording.value.Uid;
   value.cloud_id = cloud_recording.value._id;
@@ -278,6 +278,7 @@ const participents_limit = async (req) => {
 
 const agora_acquire = async (req) => {
   let token = await tempTokenModel.findById(req.body.id);
+  console.log(token)
   console.log(token.chennel);
   console.log(token.cloud_recording);
   const acquire = await axios.post(

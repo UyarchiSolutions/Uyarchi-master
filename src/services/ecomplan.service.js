@@ -427,7 +427,7 @@ const get_all_Post_with_page_completed = async (req) => {
                 discription: 1,
                 bookingAmount: 1,
                 afterStreaming: 1,
-                status: 1,
+                status: "Completed",
                 streamStart: 1,
                 streamEnd: 1,
                 streamName: "$streamrequestposts.streamName",

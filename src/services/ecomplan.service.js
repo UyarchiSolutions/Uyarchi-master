@@ -195,7 +195,7 @@ const get_all_Post_with_page_live = async (req) => {
     if (filterdate != null && filterdate != '' && filterdate != 'null') {
         let date = filterdate.split(",");
         if (date.length == 2) {
-            dateMatch = { $and: [{ streamingDate: { $gte: date[0] } }, { streamingDate: { $lte: date[1] } }] }
+            dateMatch = { $and: [{ DateIso: { $gte: new Date(date[0]).getTime() } }, { DateIso: { $lte: new Date(date[1]).getTime() } }] }
         }
         // console.log(date, dateMatch)
     }
@@ -266,7 +266,7 @@ const get_all_Post_with_page_completed = async (req) => {
     if (filterdate != null && filterdate != '' && filterdate != 'null') {
         let date = filterdate.split(",");
         if (date.length == 2) {
-            dateMatch = { $and: [{ streamingDate: { $gte: date[0] } }, { streamingDate: { $lte: date[1] } }] }
+            dateMatch = { $and: [{ DateIso: { $gte: new Date(date[0]).getTime() } }, { DateIso: { $lte: new Date(date[1]).getTime() } }] }
         }
         // console.log(date, dateMatch)
     }
@@ -337,7 +337,7 @@ const get_all_Post_with_page_exhausted = async (req) => {
     if (filterdate != null && filterdate != '' && filterdate != 'null') {
         let date = filterdate.split(",");
         if (date.length == 2) {
-            dateMatch = { $and: [{ streamingDate: { $gte: date[0] } }, { streamingDate: { $lte: date[1] } }] }
+            dateMatch = { $and: [{ DateIso: { $gte: new Date(date[0]).getTime() } }, { DateIso: { $lte: new Date(date[1]).getTime() } }] }
         }
         // console.log(date, dateMatch)
     }
@@ -408,7 +408,7 @@ const get_all_Post_with_page_removed = async (req) => {
     if (filterdate != null && filterdate != '' && filterdate != 'null') {
         let date = filterdate.split(",");
         if (date.length == 2) {
-            dateMatch = { $and: [{ streamingDate: { $gte: date[0] } }, { streamingDate: { $lte: date[1] } }] }
+            dateMatch = { $and: [{ DateIso: { $gte: new Date(date[0]).getTime() } }, { DateIso: { $lte: new Date(date[1]).getTime() } }] }
         }
         // console.log(date, dateMatch)
     }
@@ -483,13 +483,20 @@ const get_all_Post_with_page = async (req) => {
     if (filterdate != null && filterdate != '' && filterdate != 'null') {
         let date = filterdate.split(",");
         if (date.length == 2) {
-            dateMatch = { $and: [{ DateIso: { $gte: date[0] } }, { DateIso: { $lte: date[1] } }] }
+            console.log()
+            dateMatch = { $and: [{ DateIso: { $gte: new Date(date[0]).getTime() } }, { DateIso: { $lte: new Date(date[1]).getTime() } }] }
         }
         console.log(date, dateMatch)
     }
     console.log(dateMatch)
 
     const value = await StreamPost.aggregate([
+        // {
+        //     $addFields: {
+        //         date: { $dateToString: { format: "%Y-%m-%d", date: "$DateIso" } }
+
+        //     }
+        // },
         { $match: { $and: [dateMatch, { suppierId: { $eq: req.userId } }, { status: { $eq: "Active" } }] } },
         {
             $lookup: {
@@ -536,7 +543,7 @@ const get_all_Post_with_page = async (req) => {
                 afterStreaming: 1,
                 status: 1,
                 streamStart: 1,
-                streamEnd: 1
+                streamEnd: 1,
 
             }
         },
@@ -559,7 +566,7 @@ const get_all_Post_with_page_assigned = async (req) => {
     if (filterdate != null && filterdate != '' && filterdate != 'null') {
         let date = filterdate.split(",");
         if (date.length == 2) {
-            dateMatch = { $and: [{ streamingDate: { $gte: date[0] } }, { streamingDate: { $lte: date[1] } }] }
+            dateMatch = { $and: [{ DateIso: { $gte: new Date(date[0]).getTime() } }, { DateIso: { $lte: new Date(date[1]).getTime() } }] }
         }
         // console.log(date, dateMatch)
     }

@@ -830,7 +830,7 @@ const get_stream_complete_videos = async (req) => {
         pipeline: [
           {
             $match: {
-              $and: [{ type: { $eq: "CloudRecording" } }, { recoredStart: { $eq: "stop" } }],
+              $and: [{ type: { $eq: "CloudRecording" } }, { $or: [{ recoredStart: { $eq: "stop" } }, { recoredStart: { $eq: "query" } }] }],
             },
           },
         ],

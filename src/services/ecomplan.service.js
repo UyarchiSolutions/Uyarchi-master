@@ -2111,9 +2111,37 @@ const get_watch_live_steams_admin_watch = async (req) => {
 
 const get_watch_live_steams = async (req) => {
     let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
+    let statusFilter = { active: false };
+    let status = req.query.status;
     var date_now = new Date().getTime()
+    let type = req.query.type;
+    let registeredFilter = { registerStatus: { $in: ['Not Registered', 'Unregistered'] } }
+    if (status == 'upcoming') {
+        statusFilter = { startTime: { $gt: date_now } }
+    }
+    if (status == 'live') {
+        statusFilter = { $and: [{ startTime: { $lt: date_now } }, { endTime: { $gt: date_now } }] }
+
+    }
+    if (status == 'completed') {
+        var today = new Date();
+        var date_now_com = new Date(new Date().setDate(today.getDate() - 30)).getTime();
+        statusFilter = { $and: [{ startTime: { $lt: date_now } }, { startTime: { $gt: date_now_com } }] }
+    }
+    if (type == 'registered') {
+        registeredFilter = { registerStatus: { $eq: 'Registered' } }
+
+    }
+    let filterdate = req.query.date;
+    dateMatch = { active: true }
+    if (filterdate != null && filterdate != '' && filterdate != 'null') {
+        let date = filterdate.split(",");
+        if (date.length == 2) {
+            dateMatch = { $and: [{ streamingDate: { $gte: date[0] } }, { streamingDate: { $lte: date[1] } }] }
+        }
+    }
     let value = await Streamrequest.aggregate([
-        { $match: { $and: [{ adminApprove: { $eq: "Approved" } }, { endTime: { $gt: date_now } }] } },
+        { $match: { $and: [statusFilter, dateMatch, { adminApprove: { $eq: "Approved" } }, { endTime: { $gt: date_now } }] } },
         {
             $lookup: {
                 from: 'joinedusers',
@@ -2205,6 +2233,7 @@ const get_watch_live_steams = async (req) => {
                 viewstatus: { $ifNull: ['$streampreregister.viewstatus', ''] },
             },
         },
+        { $match: { $and: [registeredFilter] } },
         {
             $project: {
                 "_id": 1,

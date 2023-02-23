@@ -131,6 +131,10 @@ const production_supplier_token_watchamin = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).send(tokens);
 });
 
+const get_stream_complete_videos = catchAsync(async (req, res) => {
+  let tokens = await generateTokenService.get_stream_complete_videos(req);
+  res.status(httpStatus.CREATED).send(tokens);
+});
 
 module.exports = {
   generateToken,
@@ -156,5 +160,6 @@ module.exports = {
   create_raice_token,
   production_supplier_token,
   production_supplier_token_cloudrecording,
-  production_supplier_token_watchamin
+  production_supplier_token_watchamin,
+  get_stream_complete_videos
 };

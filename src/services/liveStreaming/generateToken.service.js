@@ -818,6 +818,33 @@ const production_supplier_token_watchamin = async (req) => {
 }
 
 
+const get_stream_complete_videos = async (req) => {
+  let streamId = req.query.id;
+  let value = await Streamrequest.aggregate([
+    { $match: { $and: [{ _id: { $eq: streamId } }] } },
+    {
+      $lookup: {
+        from: 'temptokens',
+        localField: '_id',
+        foreignField: 'streamId',
+        pipeline: [
+          {
+            $match: {
+              $and: [{ type: { $eq: "CloudRecording" } }, { recoredStart: { $eq: "stop" } }],
+            },
+          },
+        ],
+        as: 'temptokens',
+      },
+    },
+  ])
+  if (value.length == 0) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
+  }
+  return value[0];
+
+}
+
 module.exports = {
   generateToken,
   getHostTokens,
@@ -842,5 +869,6 @@ module.exports = {
   create_raice_token,
   production_supplier_token,
   production_supplier_token_cloudrecording,
-  production_supplier_token_watchamin
+  production_supplier_token_watchamin,
+  get_stream_complete_videos
 };

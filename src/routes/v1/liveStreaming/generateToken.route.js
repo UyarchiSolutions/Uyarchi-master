@@ -41,5 +41,6 @@ router.route('/create/raice/your/token').post(generateToken.create_raice_token);
 router.route('/production/livestream/generateToken/supplier').post(supplierAuth, generateToken.production_supplier_token);
 router.route('/production/livestream/generateToken/supplier/cloudrecording').post(generateToken.production_supplier_token_cloudrecording);
 router.route('/production/livestream/generateToken/watchamin').post(generateToken.production_supplier_token_watchamin);
+router.route('/get/live/stream/videos').post(generateToken.get_stream_complete_videos);
 
 module.exports = router;

@@ -1572,7 +1572,12 @@ const get_all_streams = async (req) => {
                 max_post_per_stream: 1,
                 status: 1,
                 hostingPermissions: { $or: [{ $eq: ["$allot_host_1", 'my self'] }, { $eq: ["$allot_host_2", 'my self'] }, { $eq: ["$allot_host_3", 'my self'] }] },
-                no_of_host: "$purchasedplans.no_of_host"
+                no_of_host: "$purchasedplans.no_of_host",
+                chat_need: 1,
+                allot_chat: 1,
+                allot_host_1: 1,
+                allot_host_2: 1,
+                allot_host_3: 1,
             }
         },
 

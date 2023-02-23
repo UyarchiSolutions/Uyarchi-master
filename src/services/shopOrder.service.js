@@ -5028,9 +5028,14 @@ const get_order_counts_ordered = async (status, deliverytype, timeslot, delivery
 };
 
 const get_approved_orders = async (query) => {
-  //console.log(query);
-  let pincode = { $and: [{ Pincode: { $eq: parseInt(query.pincode) } }, { Wardid: { $eq: query.wardId } }] };
-  //console.log(pincode);
+  let pincode = { $and: [{ active: { $eq: true } }] };
+  if (query.pincode != null && query.pincode != '' && query.pincode != 'null') {
+    console.log('asdas')
+    var result = query.pincode.split(',').map(function (x) {
+      return parseInt(x, 10);
+    });
+    pincode = { $and: [{ Pincode: { $in: result } }] };
+  }
 
   let page = query.page == null || query.page == '' || query.page == 'null' ? 0 : query.page;
   let statusMatch = {

@@ -2125,8 +2125,8 @@ const get_watch_live_steams = async (req) => {
     }
     if (status == 'completed') {
         var today = new Date();
-        var date_now_com = new Date(new Date().setDate(today.getDate() - 30)).getTime();
-        statusFilter = { $and: [{ startTime: { $lt: date_now } }, { startTime: { $gt: date_now_com } }] }
+        var date_now_com = new Date(new Date().setDate(today.getDate() + 30)).getTime();
+        statusFilter = { $and: [{ endTime: { $lt: date_now } }, { startTime: { $lt: date_now_com } }] }
     }
     if (type == 'registered') {
         registeredFilter = { registerStatus: { $eq: 'Registered' } }
@@ -2141,7 +2141,7 @@ const get_watch_live_steams = async (req) => {
         }
     }
     let value = await Streamrequest.aggregate([
-        { $match: { $and: [statusFilter, dateMatch, { adminApprove: { $eq: "Approved" } }, { endTime: { $gt: date_now } }] } },
+        { $match: { $and: [statusFilter, dateMatch, { adminApprove: { $eq: "Approved" } }] } },
         {
             $lookup: {
                 from: 'joinedusers',
@@ -3995,7 +3995,7 @@ const get_completed_stream_completed = async (req) => {
 const get_completed_stream_expired = async (req) => {
     let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
     var today = new Date();
-    var date_now = new Date(new Date().setDate(today.getDate() - 30)).getTime();
+    var date_now = new Date(new Date().setDate(today.getDate() + 30)).getTime();
     let filterdate = req.query.date;
     dateMatch = { active: true }
     if (filterdate != null && filterdate != '' && filterdate != 'null') {
@@ -4287,7 +4287,7 @@ const get_completed_stream_cancelled = async (req) => {
 
     let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
     var today = new Date();
-    var date_now = new Date(new Date().setDate(today.getDate() - 30)).getTime();
+    var date_now = new Date(new Date().setDate(today.getDate() + 30)).getTime();
     let filterdate = req.query.date;
     dateMatch = { active: true }
     if (filterdate != null && filterdate != '' && filterdate != 'null') {

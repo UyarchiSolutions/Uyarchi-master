@@ -841,6 +841,7 @@ const get_stream_complete_videos = async (req) => {
   if (value.length == 0) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
   }
+
   return value[0];
 
 }

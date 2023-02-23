@@ -4788,7 +4788,7 @@ const getall_ordered_shops = async (query) => {
         time_of_delivery: 1,
         paidAmount: '$orderpayments.amount',
         subtotal: '$productData.price',
-        productData:"$productData"
+        productData: "$productData"
       },
     },
     { $skip: 10 * page },
@@ -5781,7 +5781,7 @@ const get_ward_by_orders = async (query) => {
     },
     {
       $group: {
-        _id: { Pincode: '$Pincode', ward: '$ward', zone: '$zone', wardID: '$wardID' },
+        _id: { Pincode: '$Pincode' },
         OrderCount: { $sum: 1 },
       },
     },
@@ -5789,9 +5789,6 @@ const get_ward_by_orders = async (query) => {
       $project: {
         _id: '',
         Pincode: '$_id.Pincode',
-        ward: '$_id.ward',
-        zone: '$_id.zone',
-        wardID: '$_id.wardID',
         OrderCount: 1,
       },
     },
@@ -6173,7 +6170,7 @@ const order_process_to_return = async (query) => {
 
 const order_issue_return = async () => {
   let orders = await ShopOrderClone.aggregate([
-    { $match: { $and: [{ issueStatus: { $eq: "Approved" } },{issueAssign:{$ne:"Assigned"}}] } },
+    { $match: { $and: [{ issueStatus: { $eq: "Approved" } }, { issueAssign: { $ne: "Assigned" } }] } },
     {
       $lookup: {
         from: 'b2bshopclones',
@@ -6203,7 +6200,7 @@ const order_issue_return = async () => {
     },
 
     { $group: { _id: { shop: "$shopId", Slat: "$Slat", Slong: "$Slong", SName: "$SName" } } },
-    { $project: { _id: "$_id.shop" ,Slat: "$_id.Slat" ,Slong: "$_id.Slong" ,SName: "$_id.SName" } }
+    { $project: { _id: "$_id.shop", Slat: "$_id.Slat", Slong: "$_id.Slong", SName: "$_id.SName" } }
   ]);
   return orders;
 

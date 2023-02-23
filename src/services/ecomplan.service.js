@@ -2110,7 +2110,7 @@ const get_watch_live_steams_admin_watch = async (req) => {
 
 
 const get_watch_live_steams = async (req) => {
-
+    let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
     var date_now = new Date().getTime()
     let value = await Streamrequest.aggregate([
         { $match: { $and: [{ adminApprove: { $eq: "Approved" } }, { endTime: { $gt: date_now } }] } },
@@ -2242,6 +2242,22 @@ const get_watch_live_steams = async (req) => {
                 eligible: 1,
                 viewstatus: 1,
                 status: 1
+            }
+        },
+        { $skip: 10 * page },
+        { $limit: 10 },
+        {
+            $group: {
+                _id: { date: "$streamingDate" },
+                list: { $push: "$$ROOT" },
+                count: { $sum: 1 }
+            }
+        },
+        {
+            $project: {
+                _id: "",
+                date: "$_id.date",
+                list: 1
             }
         }
     ]);

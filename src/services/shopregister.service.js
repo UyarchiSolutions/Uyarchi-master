@@ -1061,7 +1061,7 @@ const get_raiseproduct = async (shopId, product, body) => {
     issuediscription: body.discription,
     issuequantity: body.issuequantity,
     issueDate: moment(),
-    image:body.image
+    image: body.image,
   };
   let values = await ProductorderClone.findByIdAndUpdate({ _id: orderId.id }, obj, { new: true });
   await ShopOrderClone.findByIdAndUpdate(
@@ -1296,6 +1296,15 @@ const getmyorder_byId = async (shopId, query) => {
   return value[0];
 };
 
+const imageUpload_For_Issues = async (id, body) => {
+  let values = await ProductorderClone.findById(id);
+  if (!values) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Product Order Not Found');
+  }
+  values = await ProductorderClone.findByIdAndUpdate({ _id: id }, body, { new: true });
+  return values;
+};
+
 const cancelorder_byshop = async (shopId, query) => {
   // return { hello: true }
   let page = query.page == null || query.page == '' || query.page == 'null' ? 0 : query.page;
@@ -1464,4 +1473,5 @@ module.exports = {
   cancelorder_byshop,
   cancelbyorder,
   forget_password,
+  imageUpload_For_Issues,
 };

@@ -293,7 +293,7 @@ const get_all_Post_with_page_live = async (req) => {
     ])
     const total = await StreamPost.aggregate([
         { $sort: { DateIso: 1 } },
-        { $match: { $and: [{ suppierId: { $eq: req.userId } }, { isUsed: { $eq: false } }] } },
+        { $match: { $and: [dateMatch, { suppierId: { $eq: req.userId } }, { status: { $eq: "Assigned" } }] } },
         {
             $lookup: {
                 from: 'streamrequestposts',
@@ -439,7 +439,29 @@ const get_all_Post_with_page_completed = async (req) => {
         { $limit: 10 },
     ])
     const total = await StreamPost.aggregate([
-        { $match: { $and: [{ suppierId: { $eq: req.userId } }, { isUsed: { $eq: false } }] } },
+        { $match: { $and: [dateMatch, { suppierId: { $eq: req.userId } }, { status: { $eq: "Assigned" } }] } },
+        {
+            $lookup: {
+                from: 'products',
+                localField: 'productId',
+                foreignField: '_id',
+                as: 'productName',
+            },
+        },
+        {
+            $unwind: '$productName',
+        },
+        {
+            $lookup: {
+                from: 'categories',
+                localField: 'categoryId',
+                foreignField: '_id',
+                as: 'categories',
+            },
+        },
+        {
+            $unwind: '$categories',
+        },
         {
             $lookup: {
                 from: 'streamrequestposts',
@@ -475,7 +497,6 @@ const get_all_Post_with_page_completed = async (req) => {
         {
             $unwind: '$streamrequestposts',
         },
-        { $sort: { DateIso: -1 } },
     ])
     return { value, total: total.length };
 };
@@ -3063,6 +3084,7 @@ const get_completed_stream_buyer = async (req) => {
                                         suppierId: 1,
                                         DateIso: 1,
                                         created: 1,
+                                        bookingAmount:1,
                                     }
                                 }
                             ],
@@ -3084,6 +3106,7 @@ const get_completed_stream_buyer = async (req) => {
                             incrementalLots: "$streamposts.incrementalLots",
                             postLiveStreamingPirce: "$streamposts.postLiveStreamingPirce",
                             image: "$streamposts.image",
+                            bookingAmount:"$streamposts.bookingAmount"
 
                         }
                     }
@@ -3112,7 +3135,9 @@ const get_completed_stream_buyer = async (req) => {
                         },
                     },
                 ],
-                as: 'temptokens',
+                as: 'temptokens', 
+
+                
             },
         },
         {

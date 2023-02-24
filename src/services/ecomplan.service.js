@@ -2116,6 +2116,7 @@ const get_watch_live_steams = async (req) => {
     var date_now = new Date().getTime()
     let type = req.query.type;
     let registeredFilter = { registerStatus: { $in: ['Not Registered', 'Unregistered'] } }
+    let completedHide = { active: true }
     if (status == 'upcoming') {
         statusFilter = { startTime: { $gt: date_now } }
     }
@@ -2127,6 +2128,7 @@ const get_watch_live_steams = async (req) => {
         var today = new Date();
         var date_now_com = new Date(new Date().setDate(today.getDate() + 30)).getTime();
         statusFilter = { $and: [{ endTime: { $lt: date_now } }, { startTime: { $lt: date_now_com } }] }
+        completedHide = { streamrequestposts_count: { $ne: 0 } }
     }
     if (type == 'registered') {
         registeredFilter = { registerStatus: { $eq: 'Registered' } }
@@ -2271,9 +2273,10 @@ const get_watch_live_steams = async (req) => {
         },
         {
             $addFields: {
-                streamrequestposts_count: { $ifNull: ['$streamrequestposts_count.count', ''] },
+                streamrequestposts_count: { $ifNull: ['$streamrequestposts_count.count', 0] },
             },
         },
+        { $match: { $and: [completedHide] } },
         {
             $project: {
                 "_id": 1,

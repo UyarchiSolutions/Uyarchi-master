@@ -49,15 +49,16 @@ const VehicleSchema = mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  kgsValue:{
+  kgsValue: {
     type: Number,
     default: 0,
-  }
+  },
+  extendedKg: {
+    type: String,
+  },
 });
 
 const Vehicle = mongoose.model('Vehicle', VehicleSchema);
-
-
 
 const assignDriveSchema = mongoose.Schema({
   _id: {
@@ -68,7 +69,7 @@ const assignDriveSchema = mongoose.Schema({
     type: String,
   },
   group: {
-    type: Array
+    type: Array,
   },
   driverID: {
     type: String,
@@ -87,7 +88,7 @@ const assignDriveSchema = mongoose.Schema({
   },
   status: {
     type: String,
-    default: "Pending"
+    default: 'Pending',
   },
   active: {
     type: Boolean,
@@ -99,13 +100,10 @@ const assignDriveSchema = mongoose.Schema({
   },
   groupID: {
     type: String,
-  }
+  },
 });
 
 const AssignDriver = mongoose.model('assignDrive', assignDriveSchema);
-
-
-
 
 const assignDriveSchemachild = mongoose.Schema({
   _id: {
@@ -113,7 +111,7 @@ const assignDriveSchemachild = mongoose.Schema({
     default: v4,
   },
   groupID: {
-    type: String
+    type: String,
   },
   assignGroupId: {
     type: String,
@@ -129,7 +127,7 @@ const assignDriveSchemachild = mongoose.Schema({
   },
   status: {
     type: String,
-    default: "Pending"
+    default: 'Pending',
   },
   active: {
     type: Boolean,
@@ -142,6 +140,5 @@ const assignDriveSchemachild = mongoose.Schema({
 });
 
 const AssignDrivechild = mongoose.model('assignDrivehistory', assignDriveSchemachild);
-
 
 module.exports = { Vehicle, AssignDriver, AssignDrivechild };

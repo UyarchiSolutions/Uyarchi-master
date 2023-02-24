@@ -7,7 +7,15 @@ const { response } = require('express');
 
 // create New Vehicle for DeliveryExecutive
 const createVehicle = async (body) => {
-  const values = { ...body, ...{ created: moment(), date: moment().format('YYYY-MM-DD'), time: moment().format('HH:mm') ,kgsValue:body.tonne_Capacity*1000} };
+  const values = {
+    ...body,
+    ...{
+      created: moment(),
+      date: moment().format('YYYY-MM-DD'),
+      time: moment().format('HH:mm'),
+      kgsValue: body.tonne_Capacity * 1000,
+    },
+  };
   let create = await Vehicle.create(values);
   return create;
 };
@@ -56,9 +64,10 @@ const getAll_Vehicle_Details = async () => {
         created: 1,
         date: 1,
         time: 1,
-        kgsValue:1,
+        kgsValue: 1,
         // wardadmingroups: '$wardadmingroups',
-        wardadmingroups: { $size: '$wardadmingroups' }
+        wardadmingroups: { $size: '$wardadmingroups' },
+        extendedKg: 1,
       },
     },
     { $match: { wardadmingroups: { $eq: 0 } } },

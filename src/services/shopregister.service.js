@@ -1054,6 +1054,26 @@ const get_raiseproduct = async (shopId, product, body) => {
   if (shopOrder.length == 0) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Order Not Found');
   }
+  let today = moment().format('YYYY-MM-DD');
+  let issues = await ProductorderClone.find({ issueDate_Time: today }).count();
+  let issue = '';
+  if (issues < 9) {
+    issue = '00000';
+  }
+  if (issues < 99 && issues >= 9) {
+    issue = '0000';
+  }
+  if (issues < 999 && issues >= 99) {
+    issue = '000';
+  }
+  if (issues < 9999 && issues >= 999) {
+    issue = '00';
+  }
+  if (issues < 99999 && issues >= 9999) {
+    issue = '0';
+  }
+  let totalcount = issues + 1;
+  let issueId = issue + totalcount;
   let obj = {
     issueraised: true,
     issuetype: body.type,
@@ -1063,6 +1083,7 @@ const get_raiseproduct = async (shopId, product, body) => {
     issueDate: moment(),
     issueDate_Time: moment().format('YYYY-MM-DD'),
     image: body.image,
+    issueId: issueId,
   };
   // issueId
   let values = await ProductorderClone.findByIdAndUpdate({ _id: orderId.id }, obj, { new: true });

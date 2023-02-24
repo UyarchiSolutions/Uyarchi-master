@@ -310,6 +310,15 @@ const drivergroups = async (query) => {
   return driver[0];
 };
 
+const updateVehicle_Details = async (id, body) => {
+  let values = await Vehicle.findById(id);
+  if (!values) {
+    throw new ApiError(httpStatus.NOT_EXTENDED, 'Vehicle Not found');
+  }
+  values = await Vehicle.findByIdAndUpdate({ _id: id }, body, { new: true });
+  return values;
+};
+
 module.exports = {
   createVehicle,
   getVehicle,
@@ -318,4 +327,5 @@ module.exports = {
   assigndriverVehile,
   getallassigngroups,
   drivergroups,
+  updateVehicle_Details,
 };

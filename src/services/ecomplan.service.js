@@ -3059,7 +3059,6 @@ const get_completed_stream_byid = async (req) => {
             },
         },
         { $unwind: "$streamrequests" },
-
         {
             $lookup: {
                 from: 'streampreregisters',
@@ -3244,7 +3243,7 @@ const get_completed_stream_byid = async (req) => {
                 allot_host_3: 1,
                 allot_chat: 1,
                 temptokens: "$temptokens",
-                streamrequests:"$streamrequests"
+                streamrequests: "$streamrequests"
             }
         },
     ])

@@ -465,7 +465,7 @@ const get_sub_golive = async (req) => {
               as: 'active_users',
             },
           },
-          { $unwind: "$active_users" },
+          // { $unwind: "$active_users" },
           {
             $project: {
               active: 1,
@@ -481,9 +481,9 @@ const get_sub_golive = async (req) => {
               created_num: 1,
               expDate: 1,
               token: 1,
-              hostUid: "$active_users.Uid",
-              expDate_host: "$active_users.expDate",
-              active_users: "$active_users"
+              // hostUid: "$active_users.Uid",
+              // expDate_host: "$active_users.expDate",
+              // active_users: "$active_users"
             }
           }
         ],

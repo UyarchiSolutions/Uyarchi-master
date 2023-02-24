@@ -2264,6 +2264,12 @@ const get_watch_live_steams = async (req) => {
             },
         },
         {
+            $unwind: {
+                preserveNullAndEmptyArrays: true,
+                path: '$streamrequestposts_count',
+            },
+        },
+        {
             $addFields: {
                 streamrequestposts_count: { $ifNull: ['$streamrequestposts_count.count', ''] },
             },

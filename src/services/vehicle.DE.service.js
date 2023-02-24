@@ -324,7 +324,7 @@ const updateVehicle_Details = async (id, body) => {
 const getVehicleById = async (id) => {
   let values = await Vehicle.findById(id);
   if (!values) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'vehicle Not Found');
+    throw new ApiError(httpStatus.NOT_FOUND, 'Vehicle Not Found');
   }
   return values;
 };

@@ -355,7 +355,7 @@ const ShopOrderClonePriceSchema = new mongoose.Schema({
   },
   issueAssign: {
     type: String,
-  }
+  },
 });
 
 ShopOrderClonePriceSchema.plugin(toJSON);
@@ -423,11 +423,23 @@ const productorderCloneSchema = new mongoose.Schema({
   GST_Number: {
     type: Number,
   },
+  videos: {
+    type: Array,
+  },
   HSN_Code: {
+    type: String,
+  },
+  issueDate_Time: {
     type: String,
   },
   packtypeId: {
     type: String,
+  },
+  issueId: {
+    type: String,
+  },
+  image: {
+    type: Array,
   },
   unit: {
     type: String,
@@ -511,7 +523,7 @@ const productorderCloneSchema = new mongoose.Schema({
   issueStatus: {
     type: String,
     default: 'Pending',
-  }
+  },
 });
 
 productorderCloneSchema.plugin(toJSON);

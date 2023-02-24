@@ -112,4 +112,7 @@ router.route('/slab/create').post(Ecomcontroller.create_slab).get(Ecomcontroller
 router.route('/slab/getall').get(Ecomcontroller.getallslab)
 
 
+
+
+
 module.exports = router;

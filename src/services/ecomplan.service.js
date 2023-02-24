@@ -3052,6 +3052,16 @@ const get_completed_stream_byid = async (req) => {
         { $unwind: "$suppliers" },
         {
             $lookup: {
+                from: 'streamrequests',
+                localField: '_id',
+                foreignField: '_id',
+                as: 'streamrequests',
+            },
+        },
+        { $unwind: "$streamrequests" },
+
+        {
+            $lookup: {
                 from: 'streampreregisters',
                 localField: '_id',
                 foreignField: 'streamId',
@@ -3233,7 +3243,8 @@ const get_completed_stream_byid = async (req) => {
                 allot_host_2: 1,
                 allot_host_3: 1,
                 allot_chat: 1,
-                temptokens: "$temptokens"
+                temptokens: "$temptokens",
+                streamrequests:"$streamrequests"
             }
         },
     ])

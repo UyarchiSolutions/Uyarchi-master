@@ -3130,8 +3130,10 @@ const get_completed_stream_buyer = async (req) => {
             }
         },
     ])
-
-    return { value };
+    if (value.length == 0) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Not Found');
+    }
+    return value[0];
 }
 const get_completed_stream_byid = async (req) => {
     const value = await Streamrequest.aggregate([

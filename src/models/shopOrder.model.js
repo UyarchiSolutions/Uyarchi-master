@@ -429,7 +429,13 @@ const productorderCloneSchema = new mongoose.Schema({
   HSN_Code: {
     type: String,
   },
+  issueDate_Time: {
+    type: String,
+  },
   packtypeId: {
+    type: String,
+  },
+  issueId: {
     type: String,
   },
   image: {

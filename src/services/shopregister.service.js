@@ -1061,8 +1061,10 @@ const get_raiseproduct = async (shopId, product, body) => {
     issuediscription: body.discription,
     issuequantity: body.issuequantity,
     issueDate: moment(),
+    issueDate_Time: moment().format('YYYY-MM-DD'),
     image: body.image,
   };
+  // issueId
   let values = await ProductorderClone.findByIdAndUpdate({ _id: orderId.id }, obj, { new: true });
   await ShopOrderClone.findByIdAndUpdate(
     { _id: shopOrder[0]._id },

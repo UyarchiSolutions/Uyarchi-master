@@ -115,7 +115,7 @@ const generateToken_sub = async (req) => {
   let stream = await tempTokenModel.findOne({ streamId: channel, type: "sub", hostId: { $ne: null }, shopId: req.shopId });
   if (!stream) {
     const uid = await generateUid();
-    const role = false ? Agora.RtcRole.PUBLISHER : Agora.RtcRole.SUBSCRIBER;
+    const role = Agora.RtcRole.SUBSCRIBER;
 
     const moment_curr = moment();
     const currentTimestamp = moment_curr.add(600, 'minutes');
@@ -465,7 +465,7 @@ const get_sub_golive = async (req) => {
               as: 'active_users',
             },
           },
-          { $unwind: "$active_users" },
+          // { $unwind: "$active_users" },
           {
             $project: {
               active: 1,
@@ -481,9 +481,9 @@ const get_sub_golive = async (req) => {
               created_num: 1,
               expDate: 1,
               token: 1,
-              hostUid: "$active_users.Uid",
-              expDate_host: "$active_users.expDate",
-              active_users: "$active_users"
+              // hostUid: "$active_users.Uid",
+              // expDate_host: "$active_users.expDate",
+              // active_users: "$active_users"
             }
           }
         ],
@@ -582,7 +582,6 @@ const get_sub_golive = async (req) => {
               as: 'streamrequestposts',
             },
           },
-
         ],
         as: 'streamrequests_post',
       },

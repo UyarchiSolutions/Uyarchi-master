@@ -2235,6 +2235,40 @@ const get_watch_live_steams = async (req) => {
         },
         { $match: { $and: [registeredFilter] } },
         {
+            $lookup: {
+                from: 'streamrequestposts',
+                localField: '_id',
+                foreignField: 'streamRequest',
+                pipeline: [
+                    {
+                        $lookup: {
+                            from: 'streamposts',
+                            localField: 'postId',
+                            foreignField: '_id',
+                            pipeline: [
+                                { $match: { $and: [{ afterStreaming: { $eq: "yes" } }] } },
+                            ],
+                            as: 'streamposts',
+                        },
+                    },
+                    { $unwind: "$streamposts" },
+                    {
+                        $group: {
+                            _id: null,
+                            count: { $sum: 1 }
+                        }
+                    }
+
+                ],
+                as: 'streamrequestposts_count',
+            },
+        },
+        {
+            $addFields: {
+                streamrequestposts_count: { $ifNull: ['$streamrequestposts_count.count', ''] },
+            },
+        },
+        {
             $project: {
                 "_id": 1,
                 "active": 1,
@@ -2270,7 +2304,8 @@ const get_watch_live_steams = async (req) => {
                 registerStatus: 1,
                 eligible: 1,
                 viewstatus: 1,
-                status: 1
+                status: 1,
+                streamrequestposts_count: 1,
             }
         },
         { $skip: 10 * page },
@@ -2975,6 +3010,119 @@ const getallslab = async (req) => {
 const update_slab = async (req) => {
     let value = await Slab.findByIdAndUpdate({ _id: req.query.id }, req.body, { new: true });
     return value;
+}
+
+const get_completed_stream_buyer = async (req) => {
+    const value = await Streamrequest.aggregate([
+        { $match: { $and: [{ _id: { $eq: req.query.id } }] } },
+        {
+            $lookup: {
+                from: 'streamrequestposts',
+                localField: '_id',
+                foreignField: 'streamRequest',
+                pipeline: [
+                    {
+                        $lookup: {
+                            from: 'streamposts',
+                            localField: 'postId',
+                            foreignField: '_id',
+                            pipeline: [
+                                { $match: { $and: [{ afterStreaming: { $eq: "yes" } }] } },
+                                {
+                                    $lookup: {
+                                        from: 'products',
+                                        localField: 'productId',
+                                        foreignField: '_id',
+                                        as: 'products',
+                                    },
+                                },
+                                { $unwind: "$products" },
+                                {
+                                    $project: {
+                                        _id: 1,
+                                        productTitle: "$products.productTitle",
+                                        productId: 1,
+                                        categoryId: 1,
+                                        quantity: 1,
+                                        marketPlace: 1,
+                                        offerPrice: 1,
+                                        postLiveStreamingPirce: 1,
+                                        validity: 1,
+                                        minLots: 1,
+                                        incrementalLots: 1,
+                                        suppierId: 1,
+                                        DateIso: 1,
+                                        created: 1,
+                                    }
+                                }
+                            ],
+                            as: 'streamposts',
+                        },
+                    },
+                    { $unwind: "$streamposts" },
+                    {
+                        $project: {
+                            _id: 1,
+                            productTitle: "$streamposts.productTitle",
+                            productId: "$streamposts.productId",
+                            quantity: "$streamposts.quantity",
+                            marketPlace: "$streamposts.marketPlace",
+                            offerPrice: "$streamposts.offerPrice",
+                            postLiveStreamingPirce: "$streamposts.postLiveStreamingPirce",
+                            validity: "$streamposts.validity",
+                            minLots: "$streamposts.minLots",
+                            incrementalLots: "$streamposts.incrementalLots",
+                        }
+                    }
+                ],
+                as: 'streamrequestposts',
+            },
+        },
+        {
+            $lookup: {
+                from: 'suppliers',
+                localField: 'suppierId',
+                foreignField: '_id',
+                as: 'suppliers',
+            },
+        },
+        { $unwind: "$suppliers" },
+        {
+            $project: {
+                _id: 1,
+                supplierName: "$suppliers.primaryContactName",
+                active: 1,
+                archive: 1,
+                post: 1,
+                communicationMode: 1,
+                sepTwo: 1,
+                bookingAmount: 1,
+                streamingDate: 1,
+                streamingTime: 1,
+                discription: 1,
+                streamName: 1,
+                suppierId: 1,
+                postCount: 1,
+                DateIso: 1,
+                created: 1,
+                planId: 1,
+                streamrequestposts: "$streamrequestposts",
+                adminApprove: 1,
+                tokenGeneration: 1,
+                tokenDetails: 1,
+                Duration: 1,
+                startTime: 1,
+                endTime: 1,
+                registeredUsers: 1,
+                noOfParticipants: 1,
+                max_post_per_stream: 1,
+                status: 1,
+                streamrequestposts_count: "$streamrequestposts_count"
+            }
+        },
+    ])
+
+    return { value };
 }
 const get_completed_stream_byid = async (req) => {
     const value = await Streamrequest.aggregate([
@@ -4756,6 +4904,7 @@ module.exports = {
     get_completed_stream_expired,
     get_completed_stream_removed,
     get_completed_stream_cancelled,
-    get_completed_stream_byid
+    get_completed_stream_byid,
+    get_completed_stream_buyer
 
 };

@@ -3050,6 +3050,7 @@ const get_completed_stream_buyer = async (req) => {
                                     $project: {
                                         _id: 1,
                                         productTitle: "$products.productTitle",
+                                        image: "$products.image",
                                         productId: 1,
                                         categoryId: 1,
                                         quantity: 1,
@@ -3081,7 +3082,9 @@ const get_completed_stream_buyer = async (req) => {
                             validity: "$streamposts.validity",
                             minLots: "$streamposts.minLots",
                             incrementalLots: "$streamposts.incrementalLots",
-                            postLiveStreamingPirce: "$streamposts.postLiveStreamingPirce"
+                            postLiveStreamingPirce: "$streamposts.postLiveStreamingPirce",
+                            image: "$streamposts.image",
+
                         }
                     }
                 ],

@@ -145,6 +145,11 @@ const imageUpload_For_Issues = catchAsync(async (req, res) => {
   res.send(shop);
 });
 
+const getIssuedProduct = catchAsync(async (req, res) => {
+  const data = await registerShop.getIssuedProduct(req.params.id);
+  res.send(data);
+});
+
 module.exports = {
   register_shop,
   verify_otp,
@@ -167,4 +172,5 @@ module.exports = {
   cancelbyorder,
   forget_password,
   imageUpload_For_Issues,
+  getIssuedProduct,
 };

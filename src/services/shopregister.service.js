@@ -19,14 +19,11 @@ const register_shop = async (body) => {
   if (!shop) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Shop-Already-registered');
   }
-  await OTP.updateMany({ mobileNumber: mobileNumber,active:true},{$set:{active:false}})
+  await OTP.updateMany({ mobileNumber: mobileNumber, active: true }, { $set: { active: false } });
   const otp = await sentOTP(mobileNumber, shop);
   console.log(otp);
   return { message: 'Otp Send Successfull' };
 };
-
-
-
 
 const forget_password = async (body) => {
   const mobileNumber = body.mobile;
@@ -38,7 +35,7 @@ const forget_password = async (body) => {
   if (!shop) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Shop-Not-registered');
   }
-  await OTP.updateMany({ mobileNumber: mobileNumber,active:true},{$set:{active:false}})
+  await OTP.updateMany({ mobileNumber: mobileNumber, active: true }, { $set: { active: false } });
   const otp = await sentOTP(mobileNumber, shop);
   console.log(otp);
   return { message: 'Otp Send Successfull' };
@@ -50,7 +47,7 @@ const verify_otp = async (body) => {
     mobileNumber: mobileNumber,
     OTP: otp,
     create: { $gte: moment(new Date().getTime() - 15 * 60 * 1000) },
-    active:true
+    active: true,
   });
   if (!findOTP) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Invalid OTP');
@@ -145,23 +142,22 @@ const get_myDetails = async (req) => {
         date: 1,
         filterDate: 1,
         historydate: 1,
-        kyc_status : 1,
+        kyc_status: 1,
         mobile: 1,
-        password  : 1,
+        password: 1,
         photoCapture: 1,
         purchaseQTy: 1,
         registered: 1,
-        salesManStatus : 1,
+        salesManStatus: 1,
         sortdate: 1,
-        sorttime : 1,
+        sorttime: 1,
         status: 1,
-        time : 1,
+        time: 1,
         shop: 1,
         _id: 1,
-        shopTypename:"$shoplists.shopList"
-
-      }
-    }
+        shopTypename: '$shoplists.shopList',
+      },
+    },
   ]);
   if (shop.length == 0) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Shop Not Registered');
@@ -264,7 +260,7 @@ const get_myorder = async (req, query) => {
         time: 1,
         created: 1,
         timeslot: 1,
-        orderreviews: "$orderreviews"
+        orderreviews: '$orderreviews',
       },
     },
     { $skip: 10 * page },
@@ -800,20 +796,18 @@ const get_orderamount = async (shopId, body) => {
   return order;
 };
 
-
-
 const get_raiseonissue = async (shopId) => {
   let last24h = moment().subtract(24, 'h').toDate();
   const value = await ShopOrderClone.aggregate([
     {
-      $sort: { created: -1 }
+      $sort: { created: -1 },
     },
     {
       $match: {
         shopId: { $eq: shopId },
-        status: { $eq: "Delivered" },
+        status: { $eq: 'Delivered' },
         delivered_date: { $gte: last24h },
-      }
+      },
     },
     {
       $project: {
@@ -825,16 +819,13 @@ const get_raiseonissue = async (shopId) => {
         time: 1,
         time_of_delivery: 1,
         delivered_date: 1,
-        order_issues:1,
-        issueStatus:1
-      }
-    }
-
-  ])
+        order_issues: 1,
+        issueStatus: 1,
+      },
+    },
+  ]);
   return value;
 };
-
-
 
 const get_raiseorder_issue = async (shopId, orderId) => {
   let last24h = moment().subtract(24, 'h').toDate();
@@ -842,10 +833,10 @@ const get_raiseorder_issue = async (shopId, orderId) => {
     {
       $match: {
         shopId: { $eq: shopId },
-        status: { $eq: "Delivered" },
+        status: { $eq: 'Delivered' },
         delivered_date: { $gte: last24h },
-        _id: orderId
-      }
+        _id: orderId,
+      },
     },
     {
       $lookup: {
@@ -911,20 +902,16 @@ const get_raiseorder_issue = async (shopId, orderId) => {
         created: 1,
         delivered_date: 1,
         reason: 1,
-        product: "$productOrderdata",
-        issueStatus:1
-      }
-    }
-  ])
+        product: '$productOrderdata',
+        issueStatus: 1,
+      },
+    },
+  ]);
   if (shopOrder.length == 0) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Order Not Found');
   }
   return shopOrder[0];
 };
-
-
-
-
 
 const get_my_issue_byorder = async (shopId, orderId) => {
   let last24h = moment().subtract(24, 'h').toDate();
@@ -932,11 +919,10 @@ const get_my_issue_byorder = async (shopId, orderId) => {
     {
       $match: {
         shopId: { $eq: shopId },
-        status: { $eq: "Delivered" },
+        status: { $eq: 'Delivered' },
         _id: orderId,
-        raiseissue: true
-
-      }
+        raiseissue: true,
+      },
     },
     {
       $lookup: {
@@ -945,7 +931,7 @@ const get_my_issue_byorder = async (shopId, orderId) => {
         foreignField: 'orderId',
         pipeline: [
           {
-            $match: { issueraised: { $eq: true } }
+            $match: { issueraised: { $eq: true } },
           },
           {
             $lookup: {
@@ -1005,11 +991,11 @@ const get_my_issue_byorder = async (shopId, orderId) => {
         created: 1,
         delivered_date: 1,
         reason: 1,
-        product: "$productOrderdata",
+        product: '$productOrderdata',
         issueDate: 1,
-      }
-    }
-  ])
+      },
+    },
+  ]);
   if (shopOrder.length == 0) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Order Not Found');
   }
@@ -1023,15 +1009,15 @@ const get_raiseproduct = async (shopId, product, body) => {
   if (!orderId) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Product Not Found');
   }
-  console.log(orderId.id)
+  console.log(orderId.id);
   let shopOrder = await ShopOrderClone.aggregate([
     {
       $match: {
         shopId: { $eq: shopId },
-        status: { $eq: "Delivered" },
+        status: { $eq: 'Delivered' },
         delivered_date: { $gte: last24h },
-        _id: orderId.orderId
-      }
+        _id: orderId.orderId,
+      },
     },
     {
       $lookup: {
@@ -1062,8 +1048,8 @@ const get_raiseproduct = async (shopId, product, body) => {
     {
       $project: {
         status: 1,
-      }
-    }
+      },
+    },
   ]);
   if (shopOrder.length == 0) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Order Not Found');
@@ -1074,26 +1060,30 @@ const get_raiseproduct = async (shopId, product, body) => {
     issue: body.issue,
     issuediscription: body.discription,
     issuequantity: body.issuequantity,
-    issueDate: moment()
-  }
-  let values = await ProductorderClone.findByIdAndUpdate({ _id: orderId.id }, obj, { new: true })
-  await ShopOrderClone.findByIdAndUpdate({ _id: shopOrder[0]._id }, { raiseissue: true, issueDate: moment() }, { new: true })
+    issueDate: moment(),
+    image:body.image
+  };
+  let values = await ProductorderClone.findByIdAndUpdate({ _id: orderId.id }, obj, { new: true });
+  await ShopOrderClone.findByIdAndUpdate(
+    { _id: shopOrder[0]._id },
+    { raiseissue: true, issueDate: moment() },
+    { new: true }
+  );
   return values;
-}
-
+};
 
 const get_myissues = async (shopId) => {
   let last24h = moment().subtract(24, 'h').toDate();
   const value = await ShopOrderClone.aggregate([
     {
-      $sort: { created: -1 }
+      $sort: { created: -1 },
     },
     {
       $match: {
         shopId: { $eq: shopId },
         // status: { $eq: "Delivered" },
-        raiseissue: { $eq: true }
-      }
+        raiseissue: { $eq: true },
+      },
     },
     {
       $project: {
@@ -1104,14 +1094,12 @@ const get_myissues = async (shopId) => {
         date: 1,
         time: 1,
         time_of_delivery: 1,
-        delivered_date: 1
-      }
-    }
-
-  ])
+        delivered_date: 1,
+      },
+    },
+  ]);
   return value;
 };
-
 
 const getmyorder_byId = async (shopId, query) => {
   const value = await ShopOrderClone.aggregate([
@@ -1278,7 +1266,7 @@ const getmyorder_byId = async (shopId, query) => {
     {
       $project: {
         _id: 1,
-        product: "$productOrderdata",
+        product: '$productOrderdata',
         status: 1,
         time_of_delivery: 1,
         Payment: 1,
@@ -1287,21 +1275,23 @@ const getmyorder_byId = async (shopId, query) => {
         created: 1,
         OrderId: 1,
         customerBillId: 1,
-        subtotal: { $round: "$productData.price" },
+        subtotal: { $round: '$productData.price' },
         paidamount: {
           $sum: ['$orderpayments.amount', '$reorderamount'],
         },
         pendingAmount: {
-          $subtract: [{ $round: "$productData.price" }, {
-            $sum: ['$orderpayments.amount', '$reorderamount'],
-          }]
-        }
-      }
-    }
-  ])
+          $subtract: [
+            { $round: '$productData.price' },
+            {
+              $sum: ['$orderpayments.amount', '$reorderamount'],
+            },
+          ],
+        },
+      },
+    },
+  ]);
   if (value.length == 0) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Order Not Found');
-
   }
   return value[0];
 };
@@ -1309,7 +1299,7 @@ const getmyorder_byId = async (shopId, query) => {
 const cancelorder_byshop = async (shopId, query) => {
   // return { hello: true }
   let page = query.page == null || query.page == '' || query.page == 'null' ? 0 : query.page;
-  console.log(page)
+  console.log(page);
   const value = await ShopOrderClone.aggregate([
     { $match: { $and: [{ shopId: { $eq: shopId } }, { status: { $in: ['ordered', 'Acknowledged'] } }] } },
     {
@@ -1358,7 +1348,7 @@ const cancelorder_byshop = async (shopId, query) => {
     },
     {
       $project: {
-        productOrderdata: "$productOrderdata",
+        productOrderdata: '$productOrderdata',
         _id: 1,
         status: 1,
         productStatus: 1,
@@ -1388,7 +1378,7 @@ const cancelorder_byshop = async (shopId, query) => {
         time: 1,
         created: 1,
         timeslot: 1,
-      }
+      },
     },
     { $skip: 10 * page },
     { $limit: 10 },
@@ -1440,18 +1430,18 @@ const cancelorder_byshop = async (shopId, query) => {
       },
     },
   ]);
-  return { value: value, total: total.length }
-}
+  return { value: value, total: total.length };
+};
 
 const cancelbyorder = async (shopId, query) => {
   let shoporder = await ShopOrderClone.findById(query.id);
-  console.log(shoporder)
+  console.log(shoporder);
   if (shoporder.shopId != shopId) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Shop Order Not Found');
   }
-  shoporder = await ShopOrderClone.findByIdAndUpdate({ _id: query.id }, { status: "Cancelled" }, { new: true })
-  return { message: "success" };
-}
+  shoporder = await ShopOrderClone.findByIdAndUpdate({ _id: query.id }, { status: 'Cancelled' }, { new: true });
+  return { message: 'success' };
+};
 
 module.exports = {
   register_shop,
@@ -1473,5 +1463,5 @@ module.exports = {
   getmyorder_byId,
   cancelorder_byshop,
   cancelbyorder,
-  forget_password
+  forget_password,
 };

@@ -4,6 +4,8 @@ const moment = require('moment');
 const catchAsync = require('../utils/catchAsync');
 const registerShop = require('../services/shopregister.service');
 const tokenService = require('../services/token.service');
+const AWS = require('aws-sdk');
+const { ShopOrder, ProductorderSchema, ShopOrderClone, ProductorderClone } = require('../models/shopOrder.model');
 
 const register_shop = catchAsync(async (req, res) => {
   const shop = await registerShop.register_shop(req.body);
@@ -78,7 +80,37 @@ const get_my_issue_byorder = catchAsync(async (req, res) => {
 });
 
 const get_raiseproduct = catchAsync(async (req, res) => {
-  const shop = await registerShop.get_raiseproduct(req.shopId, req.params.id, req.body);
+  let shop = await registerShop.get_raiseproduct(req.shopId, req.params.id, req.body);
+  const s3 = new AWS.S3({
+    accessKeyId: 'AKIA3323XNN7Y2RU77UG',
+    secretAccessKey: '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',
+    region: 'ap-south-1',
+  });
+  let Data = [];
+  req.files.forEach((e) => {
+    let params = {
+      Bucket: 'realestatevideoupload',
+      Key: e.originalname,
+      Body: e.buffer,
+    };
+    s3.upload(params, async (err, data) => {
+      if (err) {
+        res.status(500).send(err);
+      } else {
+        Data.push(data);
+        if (Data.length === req.files.length) {
+          await ProductorderClone.findByIdAndUpdate({ _id: req.params.id }, { $set: { videos: [] } }, { new: true });
+          Data.forEach(async (e) => {
+            await ProductorderClone.findByIdAndUpdate(
+              { _id: req.params.id },
+              { $push: { videos: e.Location } },
+              { new: true }
+            );
+          });
+        }
+      }
+    });
+  });
   res.status(httpStatus.CREATED).send(shop);
 });
 
@@ -102,7 +134,6 @@ const cancelbyorder = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).send(shop);
 });
 
-
 module.exports = {
   register_shop,
   verify_otp,
@@ -123,5 +154,5 @@ module.exports = {
   getmyorder_byId,
   cancelorder_byshop,
   cancelbyorder,
-  forget_password
+  forget_password,
 };

@@ -2275,20 +2275,20 @@ const get_watch_live_steams = async (req) => {
         },
         { $skip: 10 * page },
         { $limit: 10 },
-        // {
-        //     $group: {
-        //         _id: { date: "$streamingDate" },
-        //         list: { $push: "$$ROOT" },
-        //         count: { $sum: 1 }
-        //     }
-        // },
-        // {
-        //     $project: {
-        //         _id: "",
-        //         date: "$_id.date",
-        //         list: 1
-        //     }
-        // }
+        {
+            $group: {
+                _id: { date: "$streamingDate" },
+                list: { $push: "$$ROOT" },
+                count: { $sum: 1 }
+            }
+        },
+        {
+            $project: {
+                _id: "",
+                date: "$_id.date",
+                list: 1
+            }
+        }
     ]);
     return value;
 };

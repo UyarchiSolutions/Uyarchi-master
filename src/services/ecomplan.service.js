@@ -3098,6 +3098,21 @@ const get_completed_stream_buyer = async (req) => {
         },
         { $unwind: "$suppliers" },
         {
+            $lookup: {
+                from: 'temptokens',
+                localField: '_id',
+                foreignField: 'streamId',
+                pipeline: [
+                    {
+                        $match: {
+                            $and: [{ type: { $eq: "CloudRecording" } }, { $or: [{ recoredStart: { $eq: "stop" } }, { recoredStart: { $eq: "query" } }] }],
+                        },
+                    },
+                ],
+                as: 'temptokens',
+            },
+        },
+        {
             $project: {
                 _id: 1,
                 supplierName: "$suppliers.primaryContactName",
@@ -3127,7 +3142,8 @@ const get_completed_stream_buyer = async (req) => {
                 noOfParticipants: 1,
                 max_post_per_stream: 1,
                 status: 1,
-                streamrequestposts_count: "$streamrequestposts_count"
+                streamrequestposts_count: "$streamrequestposts_count",
+                temptokens: "$temptokens"
             }
         },
     ])

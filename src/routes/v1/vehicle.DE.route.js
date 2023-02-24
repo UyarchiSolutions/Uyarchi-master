@@ -16,6 +16,7 @@ router.route('/assign/driver/group').post(vehicleController.assigndriverVehile);
 router.route('/getall/assign/driver/group').get(vehicleController.getallassigngroups);
 router.route('/drivergroups/byid').get(vehicleController.drivergroups);
 router.route('/updateVehicle/:id').put(vehicleController.updateVehicle_Details);
+router.route('/getVehicleById/:id').get(vehicleController.getVehicleById);
 
 // exports
 module.exports = router;

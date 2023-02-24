@@ -63,6 +63,11 @@ const updateVehicle_Details = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const getVehicleById = catchAsync(async (req, res) => {
+  const data = await VehicleService.getVehicleById(req.params.id);
+  res.send(data);
+});
+
 module.exports = {
   createVehicle,
   getVehicle,
@@ -72,4 +77,5 @@ module.exports = {
   getallassigngroups,
   drivergroups,
   updateVehicle_Details,
+  getVehicleById,
 };

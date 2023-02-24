@@ -105,11 +105,15 @@ router.route('/get/stream/all/alert').get(supplierAuth, Ecomcontroller.get_strea
 router.route('/get/stream/cancel/admin').get(Ecomcontroller.get_cancel_stream)
 router.route('/get/admin/completed/stream').get(Ecomcontroller.get_completed_stream)
 router.route('/get/admin/completed/stream/byid').get(Ecomcontroller.get_completed_stream_byid)
+router.route('/get/buyer/completed/stream/byid').get(Ecomcontroller.get_completed_stream_buyer)
 
 
 // manage slab
 router.route('/slab/create').post(Ecomcontroller.create_slab).get(Ecomcontroller.get_by_slab).put(Ecomcontroller.update_slab)
 router.route('/slab/getall').get(Ecomcontroller.getallslab)
+
+
+
 
 
 module.exports = router;

@@ -1475,6 +1475,74 @@ const cancelbyorder = async (shopId, query) => {
   return { message: 'success' };
 };
 
+const getIssuedProduct = async (id) => {
+  let values = await ProductorderClone.aggregate([
+    {
+      $match: {
+        _id: id,
+      },
+    },
+    {
+      $lookup: {
+        from: 'products',
+        localField: 'productid',
+        foreignField: '_id',
+        as: 'products',
+      },
+    },
+    {
+      $unwind: '$products',
+    },
+    {
+      $lookup: {
+        from: 'shoporderclones',
+        localField: 'orderId',
+        foreignField: '_id',
+        as: 'shoporderclones',
+      },
+    },
+    {
+      $unwind: '$shoporderclones',
+    },
+    {
+      $project:{
+        _id:1,
+        preOrderClose:1,
+        active:1,
+        status:1,
+        issueraised:1,
+        issueStatus:1,
+        orderId:'$shoporderclones.OrderId',
+        productid:1,
+        quantity:1,
+        priceperkg:1,
+        GST_Number:1,
+        HSN_Code:1,
+        productpacktypeId:1,
+        packKg:1,
+        unit:1,
+        time:1,
+        customerId:1,
+        finalQuantity:1,
+        finalPricePerKg:1,
+        created:1,
+        issue:1,
+        issueDate:1,
+        issuediscription:1,
+        issuequantity:1,
+        issuetype:1,
+        videos:1,
+        image:1,
+        product:'$products.productTitle',
+      }
+    }
+  ]);
+  if (!values) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Issue Not Found');
+  }
+  return values[0];
+};
+
 module.exports = {
   register_shop,
   verify_otp,
@@ -1497,4 +1565,5 @@ module.exports = {
   cancelbyorder,
   forget_password,
   imageUpload_For_Issues,
+  getIssuedProduct,
 };

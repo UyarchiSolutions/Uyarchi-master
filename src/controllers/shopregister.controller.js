@@ -136,8 +136,7 @@ const cancelbyorder = catchAsync(async (req, res) => {
 
 const imageUpload_For_Issues = catchAsync(async (req, res) => {
   const shop = await registerShop.imageUpload_For_Issues(req.params.id, req.body);
-  console.log(req.files,req.files.length,34534534, req.body)
-  if (req.files.length !=0) {
+  if (req.files.length != 0) {
     let images = [];
     req.files.forEach(function (files, index, arr) {
       images.push('images/issue/' + files.filename);

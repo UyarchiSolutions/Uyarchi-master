@@ -1545,6 +1545,126 @@ const getIssuedProduct = async (id) => {
   return values[0];
 };
 
+// fetch issued orders
+
+const getissuedOrders = async (page) => {
+  let values = await ProductorderClone.aggregate([
+    {
+      $match: { issueraised: true },
+    },
+    {
+      $lookup: {
+        from: 'shoporderclones',
+        localField: 'orderId',
+        foreignField: '_id',
+        as: 'shoporderclones',
+      },
+    },
+    {
+      $unwind: '$shoporderclones',
+    },
+    {
+      $lookup: {
+        from: 'products',
+        localField: 'productid',
+        foreignField: '_id',
+        as: 'products',
+      },
+    },
+    {
+      $unwind: '$products',
+    },
+    {
+      $project: {
+        _id: 1,
+        preOrderClose: 1,
+        active: 1,
+        status: 1,
+        issueraised: 1,
+        issueStatus: 1,
+        orderId: 1,
+        productid: 1,
+        quantity: 1,
+        priceperkg: 1,
+        GST_Number: 1,
+        packKg: 1,
+        unit: 1,
+        finalQuantity: 1,
+        finalPricePerKg: 1,
+        issue: 1,
+        issueDate: 1,
+        issuediscription: 1,
+        issuequantity: 1,
+        issueId: 1,
+        issueDate_Time: 1,
+        Order: '$shoporderclones.OrderId',
+        Product: '$products.productTitle',
+      },
+    },
+    {
+      $skip: 10 * page,
+    },
+    {
+      $limit: 10,
+    },
+  ]);
+  let total = await ProductorderClone.aggregate([
+    {
+      $match: { issueraised: true },
+    },
+    {
+      $lookup: {
+        from: 'shoporderclones',
+        localField: 'orderId',
+        foreignField: '_id',
+        as: 'shoporderclones',
+      },
+    },
+    {
+      $unwind: '$shoporderclones',
+    },
+    {
+      $lookup: {
+        from: 'products',
+        localField: 'productid',
+        foreignField: '_id',
+        as: 'products',
+      },
+    },
+    {
+      $unwind: '$products',
+    },
+    {
+      $project: {
+        _id: 1,
+        preOrderClose: 1,
+        active: 1,
+        status: 1,
+        issueraised: 1,
+        issueStatus: 1,
+        orderId: 1,
+        productid: 1,
+        quantity: 1,
+        priceperkg: 1,
+        GST_Number: 1,
+        packKg: 1,
+        unit: 1,
+        finalQuantity: 1,
+        finalPricePerKg: 1,
+        issue: 1,
+        issueDate: 1,
+        issuediscription: 1,
+        issuequantity: 1,
+        issueId: 1,
+        issueDate_Time: 1,
+        Order: '$shoporderclones.OrderId',
+        Product: '$products.productTitle',
+      },
+    },
+  ]);
+  return { values: values, total: total.length };
+};
+
 module.exports = {
   register_shop,
   verify_otp,
@@ -1568,4 +1688,5 @@ module.exports = {
   forget_password,
   imageUpload_For_Issues,
   getIssuedProduct,
+  getissuedOrders,
 };

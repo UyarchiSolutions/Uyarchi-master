@@ -150,6 +150,11 @@ const getIssuedProduct = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const getissuedOrders = catchAsync(async (req, res) => {
+  const data = await registerShop.getissuedOrders(req.params.page);
+  res.send(data);
+});
+
 module.exports = {
   register_shop,
   verify_otp,
@@ -173,4 +178,5 @@ module.exports = {
   forget_password,
   imageUpload_For_Issues,
   getIssuedProduct,
+  getissuedOrders,
 };

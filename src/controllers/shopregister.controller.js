@@ -141,6 +141,7 @@ const imageUpload_For_Issues = catchAsync(async (req, res) => {
       shop.image.push('images/issue/' + files.filename);
     });
   }
+  await shop.save();
   res.send(shop);
 });
 

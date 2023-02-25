@@ -76,6 +76,7 @@ app.use(function (req, res, next) {
   next();
 });
 
+require('aws-sdk/lib/maintenance_mode_message').suppress = true;
 
 app.use(express.static('public'));
 

@@ -2962,7 +2962,7 @@ const vieworderbill_byshop = async (id) => {
         paymentstutes: '$lastpaid.paymentstutes',
         creditBillAssignedStatus: 1,
         Schedulereason: 1,
-        Scheduledate: 1
+        Scheduledate: 1,
       },
     },
   ]);
@@ -3977,9 +3977,7 @@ const getallmanageIssus = async (query) => {
         from: 'productorderclones',
         localField: '_id',
         foreignField: 'orderId',
-        pipeline: [
-          { $group: { _id: null, count: { $sum: 1 } } }
-        ],
+        pipeline: [{ $group: { _id: null, count: { $sum: 1 } } }],
         as: 'total_order',
       },
     },
@@ -4043,7 +4041,7 @@ const getallmanageIssus = async (query) => {
         status: 1,
         issueStatus: 1,
         order_issues: 1,
-        total_order: "$total_order.count"
+        total_order: '$total_order.count',
       },
     },
     { $skip: 10 * page },
@@ -4160,7 +4158,7 @@ const getmanageIssus_byID = async (query) => {
               issuediscription: 1,
               issuequantity: 1,
               issuetype: 1,
-              issueStatus: 1
+              issueStatus: 1,
             },
           },
         ],
@@ -4172,9 +4170,7 @@ const getmanageIssus_byID = async (query) => {
         from: 'productorderclones',
         localField: '_id',
         foreignField: 'orderId',
-        pipeline: [
-          { $match: { $and: [{ issueraised: { $eq: true } }, { issueStatus: { $eq: "Pending" } }] } },
-        ],
+        pipeline: [{ $match: { $and: [{ issueraised: { $eq: true } }, { issueStatus: { $eq: 'Pending' } }] } }],
         as: 'issueProducts_status',
       },
     },
@@ -4232,7 +4228,7 @@ const getmanageIssus_byID = async (query) => {
         status: 1,
         allProducts: '$allProducts',
         issueProducts: '$issueProducts',
-        issueProducts_status: "$issueProducts_status",
+        issueProducts_status: '$issueProducts_status',
         issueStatus_show: { $anyElementTrue: ['$issueProducts_status'] },
         issueStatus: 1,
       },
@@ -4788,7 +4784,7 @@ const getall_ordered_shops = async (query) => {
         time_of_delivery: 1,
         paidAmount: '$orderpayments.amount',
         subtotal: '$productData.price',
-        productData: "$productData"
+        productData: '$productData',
       },
     },
     { $skip: 10 * page },
@@ -5030,7 +5026,7 @@ const get_order_counts_ordered = async (status, deliverytype, timeslot, delivery
 const get_approved_orders = async (query) => {
   let pincode = { $and: [{ active: { $eq: true } }] };
   if (query.pincode != null && query.pincode != '' && query.pincode != 'null') {
-    console.log('asdas')
+    console.log('asdas');
     var result = query.pincode.split(',').map(function (x) {
       return parseInt(x, 10);
     });
@@ -5240,10 +5236,10 @@ const get_approved_orders = async (query) => {
         street: '$b2bshopclones.streets.street',
         area: '$b2bshopclones.streets.area',
         da_landmark: '$b2bshopclones.da_landmark',
-        da_long: "$b2bshopclones.da_long",
-        da_lot: "$b2bshopclones.da_lot",
-        Slat: "$b2bshopclones.Slat",
-        Slong: "$b2bshopclones.Slong",
+        da_long: '$b2bshopclones.da_long',
+        da_lot: '$b2bshopclones.da_lot',
+        Slat: '$b2bshopclones.Slat',
+        Slong: '$b2bshopclones.Slong',
         orderBy: '$b2busers.name',
         delivery_type: 1,
         devevery_mode: 1,
@@ -5851,10 +5847,10 @@ const get_rejected_orders = async (query) => {
         $and: [
           statusMatch,
           {
-            finalStatus: { $ne: "reorder" }
+            finalStatus: { $ne: 'reorder' },
           },
           {
-            finalStatus: { $ne: "remove" }
+            finalStatus: { $ne: 'remove' },
           },
           {
             RE_order_status: { $ne: 'Re-Ordered' },
@@ -5862,8 +5858,8 @@ const get_rejected_orders = async (query) => {
           {
             RE_order_status: { $ne: 'declined' },
           },
-        ]
-      }
+        ],
+      },
     },
     {
       $lookup: {
@@ -6016,23 +6012,28 @@ const get_rejected_orders = async (query) => {
     { $limit: 10 },
   ]);
 
-  let total = await ShopOrderClone.aggregate([{ $sort: { created: -1 } }, {
-    $match: {
-      $and: [statusMatch, {
-        finalStatus: { $ne: "reorder" }
+  let total = await ShopOrderClone.aggregate([
+    { $sort: { created: -1 } },
+    {
+      $match: {
+        $and: [
+          statusMatch,
+          {
+            finalStatus: { $ne: 'reorder' },
+          },
+          {
+            finalStatus: { $ne: 'remove' },
+          },
+          {
+            RE_order_status: { $ne: 'Re-Ordered' },
+          },
+          {
+            RE_order_status: { $ne: 'declined' },
+          },
+        ],
       },
-        {
-          finalStatus: { $ne: "remove" }
-        },
-        {
-          RE_order_status: { $ne: 'Re-Ordered' },
-        },
-        {
-          RE_order_status: { $ne: 'declined' },
-        },
-      ]
-    }
-  }]);
+    },
+  ]);
 
   let counts = await get_order_counts_rejected(statusMatch);
 
@@ -6049,10 +6050,10 @@ const get_order_counts_rejected = async (status) => {
         $and: [
           { status: { $eq: 'Rejected_assign' } },
           {
-            finalStatus: { $ne: "reorder" }
+            finalStatus: { $ne: 'reorder' },
           },
           {
-            finalStatus: { $ne: "remove" }
+            finalStatus: { $ne: 'remove' },
           },
           {
             RE_order_status: { $ne: 'Re-Ordered' },
@@ -6083,10 +6084,10 @@ const get_order_counts_rejected = async (status) => {
         $and: [
           { status: { $eq: 'Rejected' } },
           {
-            finalStatus: { $ne: "reorder" }
+            finalStatus: { $ne: 'reorder' },
           },
           {
-            finalStatus: { $ne: "remove" }
+            finalStatus: { $ne: 'remove' },
           },
           {
             RE_order_status: { $ne: 'Re-Ordered' },
@@ -6119,67 +6120,67 @@ const get_order_counts_rejected = async (status) => {
   return { orders: orders };
 };
 
-
 const get_assignorder_reassgin = async (body) => {
-
-  let shoporder = await ShopOrderClone.findByIdAndUpdate({ _id: body.id }, { finalStatus: "reorder" }, { new: true });
-  return { message: "Success" }
-}
+  let shoporder = await ShopOrderClone.findByIdAndUpdate({ _id: body.id }, { finalStatus: 'reorder' }, { new: true });
+  return { message: 'Success' };
+};
 const get_assignorder_remove = async (body) => {
-  let shoporder = await ShopOrderClone.findByIdAndUpdate({ _id: body.id }, { finalStatus: "remove" }, { new: true });
-  return { message: "Success" }
-}
-
+  let shoporder = await ShopOrderClone.findByIdAndUpdate({ _id: body.id }, { finalStatus: 'remove' }, { new: true });
+  return { message: 'Success' };
+};
 
 const sort_by_order_wde = async (body) => {
   let count = 0;
   if (body) {
     body.orders.forEach(async (e) => {
-      console.log(e)
+      console.log(e);
       count = count + 1;
       await ShopOrderClone.findByIdAndUpdate({ _id: e._id }, { sort_wde: count }, { new: true });
-    })
+    });
   }
 
-  await wardAdminGroup.findByIdAndUpdate((body.id), { sort_wde: true }, { new: true });
-  return { mesage: "success" };
-
-}
+  await wardAdminGroup.findByIdAndUpdate(body.id, { sort_wde: true }, { new: true });
+  return { mesage: 'success' };
+};
 
 const update_issue_status_approved = async (query) => {
-
-
-  return await ProductorderClone.findByIdAndUpdate({ issueraised: true, _id: query.id }, { issueStatus: "Approved" }, { new: true })
-
-}
+  return await ProductorderClone.findByIdAndUpdate(
+    { issueraised: true, _id: query.id },
+    { issueStatus: 'Approved' },
+    { new: true }
+  );
+};
 const update_issue_status_decline = async (query) => {
-
-  return await ProductorderClone.findByIdAndUpdate({ issueraised: true, _id: query.id }, { issueStatus: "Decline" }, { new: true })
-
-}
+  return await ProductorderClone.findByIdAndUpdate(
+    { issueraised: true, _id: query.id },
+    { issueStatus: 'Decline' },
+    { new: true }
+  );
+};
 const order_process_to_completed = async (query) => {
-  let status = "Decline";
-  let approved = await ProductorderClone.find({ orderId: query.id, issueStatus: "Approved", issueraised: true }).count();
-  let total = await ProductorderClone.find({ orderId: query.id, issueraised: true, issueStatus: "Pending" }).count();
+  let status = 'Decline';
+  let approved = await ProductorderClone.find({ orderId: query.id, issueStatus: 'Approved', issueraised: true }).count();
+  let total = await ProductorderClone.find({ orderId: query.id, issueraised: true, issueStatus: 'Pending' }).count();
   if (total != 0) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Order Pending');
   }
   if (approved != 0) {
-    status = "Approved";
+    status = 'Approved';
   }
-  return await ShopOrderClone.findByIdAndUpdate({ _id: query.id }, { issueStatus: status }, { new: true })
-
-}
+  return await ShopOrderClone.findByIdAndUpdate({ _id: query.id }, { issueStatus: status }, { new: true });
+};
 
 const order_process_to_return = async (query) => {
-  return await ShopOrderClone.findByIdAndUpdate({ _id: query.id, issueStatus: { $in: ["Approved", "Decline"] } }, { order_issues: "Process To Return" }, { new: true })
-
-}
-
+  return await ShopOrderClone.findByIdAndUpdate(
+    { _id: query.id, issueStatus: { $in: ['Approved', 'Decline'] } },
+    { order_issues: 'Process To Return' },
+    { new: true }
+  );
+};
 
 const order_issue_return = async () => {
   let orders = await ShopOrderClone.aggregate([
-    { $match: { $and: [{ issueStatus: { $eq: "Approved" } }, { issueAssign: { $ne: "Assigned" } }] } },
+    { $match: { $and: [{ issueStatus: { $eq: 'Approved' } }, { issueAssign: { $ne: 'Assigned' } }] } },
     {
       $lookup: {
         from: 'b2bshopclones',
@@ -6194,26 +6195,230 @@ const order_issue_return = async () => {
     {
       $project: {
         _id: 1,
-        SName: "$shopData.SName",
-        shopId: "$shopData._id",
-        Slat: "$shopData.Slat",
-        Slong: "$shopData.Slong",
+        SName: '$shopData.SName',
+        shopId: '$shopData._id',
+        Slat: '$shopData.Slat',
+        Slong: '$shopData.Slong',
         OrderId: 1,
         customerBillId: 1,
         OrderId: 1,
         date: 1,
         created: 1,
         issueStatus: 1,
-        issueStatus: 1
-      }
+        issueStatus: 1,
+      },
     },
 
-    { $group: { _id: { shop: "$shopId", Slat: "$Slat", Slong: "$Slong", SName: "$SName" } } },
-    { $project: { _id: "$_id.shop", Slat: "$_id.Slat", Slong: "$_id.Slong", SName: "$_id.SName" } }
+    { $group: { _id: { shop: '$shopId', Slat: '$Slat', Slong: '$Slong', SName: '$SName' } } },
+    { $project: { _id: '$_id.shop', Slat: '$_id.Slat', Slong: '$_id.Slong', SName: '$_id.SName' } },
   ]);
   return orders;
+};
+const shopDataMap = async () => {
+  console.log('sdjhf');
+  let today = moment().format('YYYY-MM-DD')
+  let values = await ShopOrderClone.aggregate([
+    { $sort: { created: 1 } },
+    // { $match: { $and: [statusMatch, deliveryType, timeSlot, deliveryMode, dateMacth] } },
+    {
+      $match: { status: 'Approved', devevery_mode:"DE" },
+    },
+    { $addFields: { creationDate: { $dateToString: { format: '%Y-%m-%d', date: '$created' } } } },
+    {
+      $lookup: {
+        from: 'productorderclones',
+        localField: '_id',
+        foreignField: 'orderId',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'products',
+              localField: 'productid',
+              foreignField: '_id',
+              as: 'products',
+            },
+          },
+          {
+            $unwind: '$products',
+          },
+          {
+            $project: {
+              _id: 1,
+              GST_Number: 1,
+              created: 1,
+              HSN_Code: 1,
+              finalPricePerKg: 1,
+              finalQuantity: 1,
+              orderId: 1,
+              packKg: 1,
+              priceperkg: 1,
+              quantity: 1,
+              status: 1,
+              unit: 1,
+              productTitle: '$products.productTitle',
+            },
+          },
+        ],
+        as: 'productOrderdata',
+      },
+    },
+    {
+      $lookup: {
+        from: 'orderpayments',
+        localField: '_id',
+        foreignField: 'orderId',
+        pipeline: [
+          {
+            $group: {
+              _id: null,
+              amount: {
+                $sum: '$paidAmt',
+              },
+            },
+          },
+        ],
+        as: 'orderpayments',
+      },
+    },
+    {
+      $unwind: {
+        path: '$orderpayments',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
 
-}
+    {
+      $lookup: {
+        from: 'b2bshopclones',
+        localField: 'shopId',
+        foreignField: '_id',
+        pipeline: [
+          // { $match: { $and: [pincode] } },
+          {
+            $lookup: {
+              from: 'streets',
+              localField: 'Strid',
+              foreignField: '_id',
+              as: 'streets',
+            },
+          },
+          {
+            $unwind: '$streets',
+          },
+        ],
+        as: 'b2bshopclones',
+      },
+    },
+    {
+      $unwind: '$b2bshopclones',
+    },
+    {
+      $lookup: {
+        from: 'b2busers',
+        localField: 'Uid',
+        foreignField: '_id',
+        as: 'b2busers',
+      },
+    },
+    {
+      $unwind: {
+        path: '$b2busers',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+
+    {
+      $lookup: {
+        from: 'productorderclones',
+        localField: '_id',
+        foreignField: 'orderId',
+        pipeline: [
+          {
+            $project: {
+              Amount: { $multiply: ['$finalQuantity', '$finalPricePerKg'] },
+              GST_Number: 1,
+            },
+          },
+          {
+            $project: {
+              sum: '$sum',
+              percentage: {
+                $divide: [
+                  {
+                    $multiply: ['$GST_Number', '$Amount'],
+                  },
+                  100,
+                ],
+              },
+              value: '$Amount',
+            },
+          },
+          {
+            $project: {
+              price: { $sum: ['$value', '$percentage'] },
+              value: '$value',
+              GST: '$percentage',
+            },
+          },
+          { $group: { _id: null, price: { $sum: '$price' } } },
+        ],
+        as: 'productData',
+      },
+    },
+    { $unwind: '$productData' },
+    {
+      $project: {
+        _id: 1,
+        orderType: 1,
+        status: 1,
+        created: 1,
+        OrderId: 1,
+        product: '$productOrderdata',
+        SName: '$b2bshopclones.SName',
+        mobile: '$b2bshopclones.mobile',
+        address: '$b2bshopclones.address',
+        Pincode: '$b2bshopclones.Pincode',
+        slocality: '$b2bshopclones.streets.locality',
+        street: '$b2bshopclones.streets.street',
+        area: '$b2bshopclones.streets.area',
+        da_landmark: '$b2bshopclones.da_landmark',
+        da_long: '$b2bshopclones.da_long',
+        da_lot: '$b2bshopclones.da_lot',
+        Slat: '$b2bshopclones.Slat',
+        Slong: '$b2bshopclones.Slong',
+        orderBy: '$b2busers.name',
+        delivery_type: 1,
+        devevery_mode: 1,
+        time_of_delivery: 1,
+        paidAmount: '$orderpayments.amount',
+        subtotal: '$productData.price',
+        creationDate: 1,
+        // timeloss: {
+        //   $or: [
+        //     {
+        //       $and: [
+        //         { $lte: ['$endSlot', parseInt(lossTime)] },
+        //         { $eq: ['$delivery_type', 'IMD'] },
+        //         { $eq: ['$date', today] },
+        //       ],
+        //     },
+        //     {
+        //       $and: [
+        //         { $lte: ['$endSlot', parseInt(lossTime)] },
+        //         { $eq: ['$delivery_type', 'NDD'] },
+        //         { $eq: ['$date', yesterday] },
+        //       ],
+        //     },
+        //   ],
+        // },
+      },
+    },
+    {
+      $match:{creationDate:today}
+    }
+  ]);
+  return values;
+};
 
 module.exports = {
   // product
@@ -6284,5 +6489,6 @@ module.exports = {
   update_issue_status_decline,
   order_process_to_return,
   order_process_to_completed,
-  order_issue_return
+  order_issue_return,
+  shopDataMap,
 };

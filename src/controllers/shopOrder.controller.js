@@ -391,34 +391,40 @@ const get_assignorder_remove = catchAsync(async (req, res) => {
   res.send(data);
 });
 
-const sort_by_order_wde= catchAsync(async (req, res) => {
+const sort_by_order_wde = catchAsync(async (req, res) => {
   const data = await shopOrderService.sort_by_order_wde(req.body);
   res.send(data);
 });
 
-const update_issue_status_approved= catchAsync(async (req, res) => {
+const update_issue_status_approved = catchAsync(async (req, res) => {
   const data = await shopOrderService.update_issue_status_approved(req.query);
   res.send(data);
 });
-const update_issue_status_decline= catchAsync(async (req, res) => {
+const update_issue_status_decline = catchAsync(async (req, res) => {
   const data = await shopOrderService.update_issue_status_decline(req.query);
   res.send(data);
 });
 
-const order_process_to_completed= catchAsync(async (req, res) => {
+const order_process_to_completed = catchAsync(async (req, res) => {
   const data = await shopOrderService.order_process_to_completed(req.query);
   res.send(data);
 });
 
-const order_process_to_return= catchAsync(async (req, res) => {
+const order_process_to_return = catchAsync(async (req, res) => {
   const data = await shopOrderService.order_process_to_return(req.query);
   res.send(data);
 });
 
-const order_issue_return= catchAsync(async (req, res) => {
+const order_issue_return = catchAsync(async (req, res) => {
   const data = await shopOrderService.order_issue_return();
   res.send(data);
 });
+
+const shopDataMap = catchAsync(async (req, res) => {
+  const data = await shopOrderService.shopDataMap();
+  res.send(data);
+});
+
 module.exports = {
   vieworderbill_byshop,
   createshopOrder,
@@ -485,5 +491,6 @@ module.exports = {
   update_issue_status_decline,
   order_process_to_completed,
   order_process_to_return,
-  order_issue_return
+  order_issue_return,
+  shopDataMap,
 };

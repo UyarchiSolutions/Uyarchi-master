@@ -1532,6 +1532,7 @@ const getIssuedProduct = async (id) => {
         issuediscription: 1,
         issuequantity: 1,
         issuetype: 1,
+        issueId: 1,
         videos: 1,
         image: 1,
         product: '$products.productTitle',

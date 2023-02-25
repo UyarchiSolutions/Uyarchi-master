@@ -32,9 +32,6 @@ const startStop_post = async (req, io) => {
     await StreamPost.findByIdAndUpdate({ _id: req.streampostsId }, { streamEnd: streamEnd }, { new: true });
 
   }
-
-  // post.save();
-
   let value = await Streamrequest.aggregate([
     { $match: { $and: [{ adminApprove: { $eq: "Approved" } }, { _id: { $eq: req.streamId } }] } },
     {

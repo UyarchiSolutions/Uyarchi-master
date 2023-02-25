@@ -100,7 +100,6 @@ const startStop_post = async (req, io) => {
               streamStart: "$streamposts.streamStart",
               streamEnd: "$streamposts.streamEnd",
               streampostsId: "$streamposts._id"
-
             }
           }
         ],
@@ -119,8 +118,11 @@ const startStop_post = async (req, io) => {
     {
       $lookup: {
         from: 'temptokens',
-        localField: 'tokenDetails',
-        foreignField: '_id',
+        localField: '_id',
+        foreignField: 'streamId',
+        pipeline: [
+          { $match: { $and: [{ supplierId: { $eq: userId } }] } },
+        ],
         as: 'temptokens',
       },
     },
@@ -132,7 +134,18 @@ const startStop_post = async (req, io) => {
         localField: '_id',
         foreignField: 'streamRequest',
         pipeline: [
-          { $match: { $and: [{ streamStart: { $ne: null } }, { streamEnd: { $eq: null } }] } },
+          {
+            $lookup: {
+              from: 'streamposts',
+              localField: 'postId',
+              foreignField: '_id',
+              pipeline: [
+                { $match: { $and: [{ streamStart: { $ne: null } }, { streamEnd: { $eq: null } }] } },
+              ],
+              as: 'streamposts',
+            }
+          },
+          { $unwind: "$streamposts" },
           { $group: { _id: null, count: { $sum: 1 } } }
         ],
         as: 'streamrequestposts_start',
@@ -174,8 +187,10 @@ const startStop_post = async (req, io) => {
         Duration: 1,
         startTime: 1,
         endTime: 1,
-        streamPending: 1
-
+        streamPending: 1,
+        primaryHost: { $eq: ["$allot_host_1", 'my self'] },
+        chatPermistion: { $eq: ["$allot_chat", 'my self'] },
+        chat_need: 1
       }
     },
 

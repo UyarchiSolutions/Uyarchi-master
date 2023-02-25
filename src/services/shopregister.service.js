@@ -1325,7 +1325,7 @@ const imageUpload_For_Issues = async (id, body) => {
   if (!values) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Product Order Not Found');
   }
-  delete body.image
+  delete body.image;
   values = await ProductorderClone.findByIdAndUpdate({ _id: id }, body, { new: true });
   return values;
 };
@@ -1566,6 +1566,15 @@ const getissuedOrders = async (page) => {
     },
     {
       $lookup: {
+        from: 'productorderclones',
+        localField: 'shoporderclones._id',
+        foreignField: 'orderId',
+        pipeline: [{ $match: { issueraised: true } }],
+        as: 'shoporder',
+      },
+    },
+    {
+      $lookup: {
         from: 'b2bshopclones',
         localField: 'shoporderclones.shopId',
         foreignField: '_id',
@@ -1627,6 +1636,8 @@ const getissuedOrders = async (page) => {
         shopId: '$shoporderclones.shopId',
         shopName: '$shops.SName',
         street: '$shops.street.street',
+        TotalOrders: { $size: '$shoporderclones.product' },
+        issuedOrder: { $size: '$shoporder' },
       },
     },
     {

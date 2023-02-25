@@ -118,16 +118,6 @@ const startStop_post = async (req, io) => {
     { $unwind: "$suppliers" },
     {
       $lookup: {
-        from: 'temptokens',
-        localField: 'tokenDetails',
-        foreignField: '_id',
-        as: 'temptokens',
-      },
-    },
-    { $unwind: "$temptokens" },
-
-    {
-      $lookup: {
         from: 'streamrequestposts',
         localField: '_id',
         foreignField: 'streamRequest',
@@ -170,7 +160,6 @@ const startStop_post = async (req, io) => {
         planId: 1,
         streamrequestposts: "$streamrequestposts",
         adminApprove: 1,
-        temptokens: "$temptokens",
         Duration: 1,
         startTime: 1,
         endTime: 1,

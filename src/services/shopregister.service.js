@@ -1565,6 +1565,30 @@ const getissuedOrders = async (page) => {
     },
     {
       $lookup: {
+        from: 'b2bshopclones',
+        localField: 'shoporderclones.shopId',
+        foreignField: '_id',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'streets',
+              localField: 'Strid',
+              foreignField: '_id',
+              as: 'street',
+            },
+          },
+          {
+            $unwind: '$street',
+          },
+        ],
+        as: 'shops',
+      },
+    },
+    {
+      $unwind: '$shops',
+    },
+    {
+      $lookup: {
         from: 'products',
         localField: 'productid',
         foreignField: '_id',
@@ -1599,6 +1623,9 @@ const getissuedOrders = async (page) => {
         issueDate_Time: 1,
         Order: '$shoporderclones.OrderId',
         Product: '$products.productTitle',
+        shopId: '$shoporderclones.shopId',
+        shopName: '$shops.SName',
+        street: '$shops.street.street',
       },
     },
     {

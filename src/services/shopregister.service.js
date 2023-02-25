@@ -1325,6 +1325,7 @@ const imageUpload_For_Issues = async (id, body) => {
   if (!values) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Product Order Not Found');
   }
+  delete body.image
   values = await ProductorderClone.findByIdAndUpdate({ _id: id }, body, { new: true });
   return values;
 };

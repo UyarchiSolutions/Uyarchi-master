@@ -32,6 +32,9 @@ const startStop_post = async (req, io) => {
     await StreamPost.findByIdAndUpdate({ _id: req.streampostsId }, { streamEnd: streamEnd }, { new: true });
 
   }
+
+  // post.save();
+
   let value = await Streamrequest.aggregate([
     { $match: { $and: [{ adminApprove: { $eq: "Approved" } }, { _id: { $eq: req.streamId } }] } },
     {
@@ -97,6 +100,7 @@ const startStop_post = async (req, io) => {
               streamStart: "$streamposts.streamStart",
               streamEnd: "$streamposts.streamEnd",
               streampostsId: "$streamposts._id"
+
             }
           }
         ],
@@ -114,35 +118,11 @@ const startStop_post = async (req, io) => {
     { $unwind: "$suppliers" },
     {
       $lookup: {
-        from: 'temptokens',
-        localField: '_id',
-        foreignField: 'streamId',
-        pipeline: [
-          { $match: { $and: [{ supplierId: { $eq: userId } }] } },
-        ],
-        as: 'temptokens',
-      },
-    },
-    { $unwind: "$temptokens" },
-
-    {
-      $lookup: {
         from: 'streamrequestposts',
         localField: '_id',
         foreignField: 'streamRequest',
         pipeline: [
-          {
-            $lookup: {
-              from: 'streamposts',
-              localField: 'postId',
-              foreignField: '_id',
-              pipeline: [
-                { $match: { $and: [{ streamStart: { $ne: null } }, { streamEnd: { $eq: null } }] } },
-              ],
-              as: 'streamposts',
-            }
-          },
-          { $unwind: "$streamposts" },
+          { $match: { $and: [{ streamStart: { $ne: null } }, { streamEnd: { $eq: null } }] } },
           { $group: { _id: null, count: { $sum: 1 } } }
         ],
         as: 'streamrequestposts_start',
@@ -180,14 +160,11 @@ const startStop_post = async (req, io) => {
         planId: 1,
         streamrequestposts: "$streamrequestposts",
         adminApprove: 1,
-        temptokens: "$temptokens",
         Duration: 1,
         startTime: 1,
         endTime: 1,
-        streamPending: 1,
-        primaryHost: { $eq: ["$allot_host_1", 'my self'] },
-        chatPermistion: { $eq: ["$allot_chat", 'my self'] },
-        chat_need: 1
+        streamPending: 1
+
       }
     },
 

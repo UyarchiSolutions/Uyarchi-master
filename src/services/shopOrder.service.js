@@ -6239,7 +6239,7 @@ const shopDataMap = async (query) => {
     },
   };
 
-  if (query.type == 'all') {
+  if (query.deliverytype == 'all') {
     deliveryType = {
       $or: [
         {

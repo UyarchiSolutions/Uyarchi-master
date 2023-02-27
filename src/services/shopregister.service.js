@@ -1004,7 +1004,7 @@ const get_my_issue_byorder = async (shopId, orderId) => {
 
 const get_raiseproduct = async (shopId, product, body) => {
   let last24h = moment().subtract(24, 'h').toDate();
-  console.log(body)
+  console.log(body);
 
   let orderId = await ProductorderClone.findById(product);
   if (!orderId) {
@@ -1554,6 +1554,7 @@ const getissuedOrders = async (page) => {
     {
       $match: { issueraised: true },
     },
+    { $sort: { issueDate: -1 } },
     {
       $lookup: {
         from: 'shoporderclones',

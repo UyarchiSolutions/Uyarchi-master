@@ -1084,7 +1084,7 @@ const get_raiseproduct = async (shopId, product, body) => {
     issuequantity: body.issuequantity == 'null' ? 0 : body.issuequantity,
     issueDate: moment(),
     issueDate_Time: moment().format('YYYY-MM-DD'),
-    image: body.image,
+    // image: body.image,
     issueId: issueId,
   };
   // issueId

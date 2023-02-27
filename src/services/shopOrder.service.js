@@ -6216,14 +6216,57 @@ const order_issue_return = async () => {
 };
 const shopDataMap = async (query) => {
   console.log(query);
-  let mode = query.mod;
+  // let mode = query.mod;
+  // let type = query.type;
+  // let today = moment().format('YYYY-MM-DD');
+  let deliveryType = { delivery_type: { $eq: query.deliverytype } };
+  let timeSlot = { active: true };
+  let deliveryMode = { active: true };
   let today = moment().format('YYYY-MM-DD');
+  let yesterday = moment().subtract(1, 'days').format('yyyy-MM-DD');
+  let dateMacth = { active: true };
+  let statusMatch = {
+    status: {
+      $in: ['Approved', 'Modified'],
+    },
+  };
+
+  if (query.type == 'all') {
+    deliveryType = {
+      $or: [
+        {
+          $and: [{ delivery_type: { $eq: 'IMD' } }, { date: { $eq: today } }],
+        },
+        {
+          $and: [{ delivery_type: { $eq: 'NDD' } }, { date: { $eq: yesterday } }],
+        },
+      ],
+    };
+    dateMacth = { active: true };
+  }
+  if (query.deliverytype == 'IMD' || query.deliverytype == 'NDD') {
+    dateMacth = { date: { $in: [today] } };
+  }
+  if (query.deliverytype == 'YOD') {
+    dateMacth = { date: { $in: [yesterday] } };
+    deliveryType = { delivery_type: { $eq: 'NDD' } };
+  }
+  if (query.deliverytype == 'IMD' || query.deliverytype == 'NDD') {
+    dateMacth = { date: { $in: [today] } };
+  }
+  if (query.timeslot != 'all') {
+    timeSlot = { time_of_delivery: { $eq: query.timeslot } };
+  }
+  if (query.deliverymode != 'all') {
+    deliveryMode = { devevery_mode: { $eq: query.deliverymode } };
+  }
+  let lossTime = moment().format('H');
   let values = await ShopOrderClone.aggregate([
     { $sort: { created: 1 } },
-    // { $match: { $and: [statusMatch, deliveryType, timeSlot, deliveryMode, dateMacth] } },
-    {
-      $match: { status: 'Approved', devevery_mode: mode },
-    },
+    { $match: { $and: [statusMatch, deliveryType, timeSlot, deliveryMode, dateMacth] } },
+    // {
+    //   $match: { status: 'Approved', devevery_mode: mode, delivery_type: type },
+    // },
     { $addFields: { creationDate: { $dateToString: { format: '%Y-%m-%d', date: '$created' } } } },
     {
       $lookup: {
@@ -6394,29 +6437,29 @@ const shopDataMap = async (query) => {
         paidAmount: '$orderpayments.amount',
         subtotal: '$productData.price',
         creationDate: 1,
-        // timeloss: {
-        //   $or: [
-        //     {
-        //       $and: [
-        //         { $lte: ['$endSlot', parseInt(lossTime)] },
-        //         { $eq: ['$delivery_type', 'IMD'] },
-        //         { $eq: ['$date', today] },
-        //       ],
-        //     },
-        //     {
-        //       $and: [
-        //         { $lte: ['$endSlot', parseInt(lossTime)] },
-        //         { $eq: ['$delivery_type', 'NDD'] },
-        //         { $eq: ['$date', yesterday] },
-        //       ],
-        //     },
-        //   ],
-        // },
+        timeloss: {
+          $or: [
+            {
+              $and: [
+                { $lte: ['$endSlot', parseInt(lossTime)] },
+                { $eq: ['$delivery_type', 'IMD'] },
+                { $eq: ['$date', today] },
+              ],
+            },
+            {
+              $and: [
+                { $lte: ['$endSlot', parseInt(lossTime)] },
+                { $eq: ['$delivery_type', 'NDD'] },
+                { $eq: ['$date', yesterday] },
+              ],
+            },
+          ],
+        },
       },
     },
-    {
-      $match: { creationDate: today },
-    },
+    // {
+    //   $match: { creationDate: today },
+    // },
   ]);
   return values;
 };

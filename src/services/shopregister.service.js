@@ -1638,7 +1638,7 @@ const getissuedOrders = async (page) => {
         street: '$shops.street.street',
         TotalOrders: { $size: '$shoporderclones.product' },
         issuedOrder: { $size: '$shoporder' },
-        issStatus:1,
+        issStatus: 1,
       },
     },
     {

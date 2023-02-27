@@ -136,14 +136,16 @@ const cancelbyorder = catchAsync(async (req, res) => {
 
 const imageUpload_For_Issues = catchAsync(async (req, res) => {
   const shop = await registerShop.imageUpload_For_Issues(req.params.id, req.body);
-  if (req.files.length != 0) {
-    let images = [];
-    req.files.forEach(function (files, index, arr) {
-      images.push('images/issue/' + files.filename);
-    });
-    shop.image = images;
+  if (req.files) {
+    if (req.files.length != 0) {
+      let images = [];
+      req.files.forEach(function (files, index, arr) {
+        images.push('images/issue/' + files.filename);
+      });
+      shop.image = images;
+      shop.save();
+    }
   }
-  shop.save();
   res.send(shop);
 });
 

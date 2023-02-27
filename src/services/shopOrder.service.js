@@ -6472,6 +6472,16 @@ const shopDataMap = async (query) => {
   return values;
 };
 
+const issueStatus_Update = async (id, body) => {
+  const { status } = body;
+  let values = ProductorderClone.findById(id);
+  if (!values) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'productOrders Not Found');
+  }
+  values = await ProductorderClone.findByIdAndUpdate({ _id: id }, { issStatus: status }, { new: true });
+  return values;
+};
+
 module.exports = {
   // product
   createProductOrderClone,
@@ -6543,4 +6553,5 @@ module.exports = {
   order_process_to_completed,
   order_issue_return,
   shopDataMap,
+  issueStatus_Update,
 };

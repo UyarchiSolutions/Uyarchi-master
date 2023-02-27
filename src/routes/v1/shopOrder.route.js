@@ -82,5 +82,6 @@ router.route('/update/process/to/completed').put(shopOrderController.order_proce
 router.route('/update/process/to/return').put(shopOrderController.order_process_to_return);
 router.route('/get/issue/order/returns').get(shopOrderController.order_issue_return);
 router.route('/shopDataMap/ndd').get(shopOrderController.shopDataMap);
+router.route('/issueStatus_Update/:id').put(shopOrderController.issueStatus_Update);
 
 module.exports = router;

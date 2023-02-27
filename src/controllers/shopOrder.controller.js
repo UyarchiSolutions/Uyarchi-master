@@ -421,7 +421,7 @@ const order_issue_return = catchAsync(async (req, res) => {
 });
 
 const shopDataMap = catchAsync(async (req, res) => {
-  const data = await shopOrderService.shopDataMap();
+  const data = await shopOrderService.shopDataMap(req.query);
   res.send(data);
 });
 

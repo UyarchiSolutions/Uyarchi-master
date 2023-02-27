@@ -6214,14 +6214,15 @@ const order_issue_return = async () => {
   ]);
   return orders;
 };
-const shopDataMap = async () => {
-  console.log('sdjhf');
-  let today = moment().format('YYYY-MM-DD')
+const shopDataMap = async (query) => {
+  console.log(query);
+  let mode = query.mod;
+  let today = moment().format('YYYY-MM-DD');
   let values = await ShopOrderClone.aggregate([
     { $sort: { created: 1 } },
     // { $match: { $and: [statusMatch, deliveryType, timeSlot, deliveryMode, dateMacth] } },
     {
-      $match: { status: 'Approved', devevery_mode:"DE" },
+      $match: { status: 'Approved', devevery_mode: mode },
     },
     { $addFields: { creationDate: { $dateToString: { format: '%Y-%m-%d', date: '$created' } } } },
     {
@@ -6414,8 +6415,8 @@ const shopDataMap = async () => {
       },
     },
     {
-      $match:{creationDate:today}
-    }
+      $match: { creationDate: today },
+    },
   ]);
   return values;
 };

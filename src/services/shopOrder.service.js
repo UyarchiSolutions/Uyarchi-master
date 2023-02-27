@@ -6219,6 +6219,14 @@ const shopDataMap = async (query) => {
   // let mode = query.mod;
   // let type = query.type;
   // let today = moment().format('YYYY-MM-DD');
+  let pincode = { $and: [{ active: { $eq: true } }] };
+  if (query.pincode != null && query.pincode != '' && query.pincode != 'null') {
+    console.log('asdas');
+    var result = query.pincode.split(',').map(function (x) {
+      return parseInt(x, 10);
+    });
+    pincode = { $and: [{ Pincode: { $in: result } }] };
+  }
   let deliveryType = { delivery_type: { $eq: query.deliverytype } };
   let timeSlot = { active: true };
   let deliveryMode = { active: true };
@@ -6337,7 +6345,7 @@ const shopDataMap = async (query) => {
         localField: 'shopId',
         foreignField: '_id',
         pipeline: [
-          // { $match: { $and: [pincode] } },
+          { $match: { $and: [pincode] } },
           {
             $lookup: {
               from: 'streets',

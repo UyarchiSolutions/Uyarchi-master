@@ -1462,7 +1462,6 @@ const getAssigned_details = async (pickuptype) => {
         from: 'vehicles',
         localField: 'vehicleId',
         foreignField: '_id',
-
         as: 'vehicles',
       },
     },
@@ -1540,6 +1539,7 @@ const getAssigned_details = async (pickuptype) => {
         vehicle_type: '$vehicles.vehicle_type',
         vehicleNo: '$vehicles.vehicleNo',
         tonne_Capacity: '$vehicles.tonne_Capacity',
+        vehiclesId: '$vehicles._id',
         pickuplocation: 1,
         zone: '$zones.zone',
         ward: '$wards.ward',

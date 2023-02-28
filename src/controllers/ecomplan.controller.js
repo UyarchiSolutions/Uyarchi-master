@@ -223,6 +223,12 @@ const cancel_stream = catchAsync(async (req, res) => {
   res.send(value);
 });
 
+const end_stream = catchAsync(async (req, res) => {
+  console.log("sdas")
+  const value = await Ecomserive.end_stream(req);
+  res.send(value);
+});
+
 
 const go_live_stream_host = catchAsync(async (req, res) => {
   console.log("sdas")
@@ -406,6 +412,7 @@ module.exports = {
   get_completed_stream,
   get_completed_stream_byid,
   get_completed_stream_buyer,
+  end_stream,
 
 
   go_live_stream_host,

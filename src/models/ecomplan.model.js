@@ -172,7 +172,7 @@ const streamPostschema = mongoose.Schema({
   },
   status: {
     type: String,
-    default:"Active"
+    default: "Active"
   }
 });
 

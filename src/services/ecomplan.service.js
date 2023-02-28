@@ -1444,6 +1444,15 @@ const cancel_stream = async (req) => {
     return value;
 };
 
+const end_stream = async (req) => {
+    let value = await Streamrequest.findByIdAndUpdate({ _id: req.body.id }, { status: "Completed" }, { new: true });
+    let assginStream = await StreamrequestPost.find({ streamRequest: req.body.id });
+    assginStream.forEach(async (a) => {
+        await StreamPost.findByIdAndUpdate({ _id: a.postId }, { status: "Completed" }, { new: true });
+    })
+    return value;
+};
+
 const get_all_streams = async (req) => {
     let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
     console.log(req.userId)
@@ -3084,7 +3093,7 @@ const get_completed_stream_buyer = async (req) => {
                                         suppierId: 1,
                                         DateIso: 1,
                                         created: 1,
-                                        bookingAmount:1,
+                                        bookingAmount: 1,
                                     }
                                 }
                             ],
@@ -3106,7 +3115,7 @@ const get_completed_stream_buyer = async (req) => {
                             incrementalLots: "$streamposts.incrementalLots",
                             postLiveStreamingPirce: "$streamposts.postLiveStreamingPirce",
                             image: "$streamposts.image",
-                            bookingAmount:"$streamposts.bookingAmount"
+                            bookingAmount: "$streamposts.bookingAmount"
 
                         }
                     }
@@ -3135,9 +3144,9 @@ const get_completed_stream_buyer = async (req) => {
                         },
                     },
                 ],
-                as: 'temptokens', 
+                as: 'temptokens',
 
-                
+
             },
         },
         {
@@ -4917,6 +4926,7 @@ module.exports = {
     get_subhost_token,
     get_subhost_streams,
     cancel_stream,
+    end_stream,
     get_all_Post_with_page_live,
     get_all_Post_with_page_completed,
     get_all_Post_with_page_exhausted,

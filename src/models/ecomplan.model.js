@@ -318,6 +318,12 @@ const streamRequestschema = mongoose.Schema({
   },
   status: {
     type: String
+  },
+  streamEnd_Time: {
+    type: Number
+  },
+  end_Status: {
+    type: String
   }
 
 

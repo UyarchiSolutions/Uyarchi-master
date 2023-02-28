@@ -1445,7 +1445,7 @@ const cancel_stream = async (req) => {
 };
 
 const end_stream = async (req) => {
-    let value = await Streamrequest.findByIdAndUpdate({ _id: req.body.id }, { status: "Completed" }, { new: true });
+    let value = await Streamrequest.findByIdAndUpdate({ _id: req.body.id }, { status: "Completed", streamEnd_Time: moment(), end_Status: "HostLeave" }, { new: true });
     let assginStream = await StreamrequestPost.find({ streamRequest: req.body.id });
     assginStream.forEach(async (a) => {
         await StreamPost.findByIdAndUpdate({ _id: a.postId }, { status: "Completed" }, { new: true });

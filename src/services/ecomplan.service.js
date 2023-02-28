@@ -427,7 +427,7 @@ const get_all_Post_with_page_completed = async (req) => {
                 discription: 1,
                 bookingAmount: 1,
                 afterStreaming: 1,
-                status:'Completed',
+                status: 'Completed',
                 streamStart: 1,
                 streamEnd: 1,
                 streamName: "$streamrequestposts.streamName",
@@ -2781,7 +2781,7 @@ const get_stream_alert = async (req) => {
     let value = await Streamrequest.aggregate([
         {
             $match: {
-                $and: [{ endTime: { $gt: date_now } }, { adminApprove: { $eq: "Approved" } }, { suppierId: { $eq: req.userId } }, { status: { $ne: "Cancelled" } }]
+                $and: [{ endTime: { $gt: date_now } }, { adminApprove: { $eq: "Approved" } }, { suppierId: { $eq: req.userId } }, { status: { $ne: "Cancelled" } }, { status: { $ne: "Completed" } }]
             }
         },
         {

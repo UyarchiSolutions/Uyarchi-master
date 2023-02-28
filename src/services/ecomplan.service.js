@@ -201,7 +201,7 @@ const get_all_Post_with_page_live = async (req) => {
     }
     const value = await StreamPost.aggregate([
         { $sort: { DateIso: 1 } },
-        { $match: { $and: [dateMatch, { suppierId: { $eq: req.userId } }, { status: { $eq: "Assigned" } }] } },
+        { $match: { $or: [{ $and: [dateMatch, { suppierId: { $eq: req.userId } }, { status: { $eq: "Assigned" } }] }] } },
         {
             $lookup: {
                 from: 'products',
@@ -348,7 +348,7 @@ const get_all_Post_with_page_completed = async (req) => {
     }
     const value = await StreamPost.aggregate([
         { $sort: { DateIso: 1 } },
-        { $match: { $and: [dateMatch, { suppierId: { $eq: req.userId } }, { status: { $eq: "Assigned" } }] } },
+        { $match: { $or: [{ $and: [dateMatch, { suppierId: { $eq: req.userId } }, { status: { $eq: "Assigned" } }] }, { $and: [dateMatch, { suppierId: { $eq: req.userId } }, { status: { $eq: "Completed" } }] }] } },
         {
             $lookup: {
                 from: 'products',

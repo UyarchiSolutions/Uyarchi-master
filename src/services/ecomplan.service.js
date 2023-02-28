@@ -383,7 +383,7 @@ const get_all_Post_with_page_completed = async (req) => {
                             localField: 'streamRequest',
                             foreignField: '_id',
                             pipeline: [
-                                { $match: { $and: [{ endTime: { $lte: date_now } }] } }
+                                { $match: { $or: [{ endTime: { $lte: date_now } }, { status: { $eq: "Completed" } }] } }
                             ],
                             as: 'streamrequests',
                         },
@@ -427,7 +427,7 @@ const get_all_Post_with_page_completed = async (req) => {
                 discription: 1,
                 bookingAmount: 1,
                 afterStreaming: 1,
-                status: "Completed",
+                status:1,
                 streamStart: 1,
                 streamEnd: 1,
                 streamName: "$streamrequestposts.streamName",
@@ -439,7 +439,7 @@ const get_all_Post_with_page_completed = async (req) => {
         { $limit: 10 },
     ])
     const total = await StreamPost.aggregate([
-        { $match: { $and: [dateMatch, { suppierId: { $eq: req.userId } }, { status: { $eq: "Assigned" } }] } },
+        { $match: { $or: [{ $and: [dateMatch, { suppierId: { $eq: req.userId } }, { status: { $eq: "Assigned" } }] }, { $and: [{ suppierId: { $eq: req.userId } }, { status: { $eq: "Completed" } }] }] } },
         {
             $lookup: {
                 from: 'products',
@@ -474,7 +474,7 @@ const get_all_Post_with_page_completed = async (req) => {
                             localField: 'streamRequest',
                             foreignField: '_id',
                             pipeline: [
-                                { $match: { $and: [{ endTime: { $lte: date_now } }] } }
+                                { $match: { $or: [{ endTime: { $lte: date_now } }, { status: { $eq: "Completed" } }] } }
                             ],
                             as: 'streamrequests',
                         },

@@ -348,7 +348,7 @@ const get_all_Post_with_page_completed = async (req) => {
     }
     const value = await StreamPost.aggregate([
         { $sort: { DateIso: 1 } },
-        { $match: { $or: [{ $and: [dateMatch, { suppierId: { $eq: req.userId } }, { status: { $eq: "Assigned" } }] }, { $and: [dateMatch, { suppierId: { $eq: req.userId } }, { status: { $eq: "Completed" } }] }] } },
+        { $match: { $or: [{ $and: [dateMatch, { suppierId: { $eq: req.userId } }, { status: { $eq: "Assigned" } }] }, { $and: [{ suppierId: { $eq: req.userId } }, { status: { $eq: "Completed" } }] }] } },
         {
             $lookup: {
                 from: 'products',

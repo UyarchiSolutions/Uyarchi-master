@@ -1442,14 +1442,19 @@ const getAssigned_details = async (pickuptype) => {
               as: 'productorderclones',
             },
           },
-
           {
-            $project: {
-              totalQuantity: "$productorderclones.totalQuantity",
-              _id: 1,
+            $unwind: {
+              path: '$productorderclones',
+              preserveNullAndEmptyArrays: true,
             },
           },
-          { $group: { _id: null, totalQuantity: { $sum: "$totalQuantity" } } }
+          // {
+          //   $project: {
+          //     totalQuantity: "$productorderclones.totalQuantity",
+          //     _id: 1,
+          //   },
+          // },
+          { $group: { _id: null, totalQuantity: { $sum: "$productorderclones.totalQuantity", } } }
         ],
         as: 'orderassigns_qty',
       },
@@ -1587,7 +1592,7 @@ const getAssigned_details = async (pickuptype) => {
         zone: '$zones.zone',
         ward: '$wards.ward',
         locationName: '$managepickuplocations.locationName',
-        totalQuantity: "$orderassigns_qty.totalQuantity"
+        totalQuantity: "$orderassigns_qty.totalQuantity",
       },
     },
   ]);

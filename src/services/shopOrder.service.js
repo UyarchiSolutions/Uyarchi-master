@@ -5098,6 +5098,42 @@ const get_approved_orders = async (query) => {
           {
             $project: {
               _id: 1,
+              totalQuantity: { $sum: [{ $multiply: ['$finalQuantity', '$packKg'] }] },
+
+            },
+          },
+          { $group: { _id: null, totalQuantity: { $sum: "$totalQuantity" } } }
+
+        ],
+        as: 'productOrderdata_qty',
+      },
+    },
+    {
+      $unwind: {
+        path: '$productOrderdata_qty',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: 'productorderclones',
+        localField: '_id',
+        foreignField: 'orderId',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'products',
+              localField: 'productid',
+              foreignField: '_id',
+              as: 'products',
+            },
+          },
+          {
+            $unwind: '$products',
+          },
+          {
+            $project: {
+              _id: 1,
               GST_Number: 1,
               created: 1,
               HSN_Code: 1,
@@ -5110,6 +5146,8 @@ const get_approved_orders = async (query) => {
               status: 1,
               unit: 1,
               productTitle: '$products.productTitle',
+              totalQuantity: { $sum: [{ $multiply: ['$finalQuantity', '$packKg'] }] },
+
             },
           },
         ],
@@ -5228,6 +5266,7 @@ const get_approved_orders = async (query) => {
         created: 1,
         OrderId: 1,
         product: '$productOrderdata',
+        totalQuantity: "$productOrderdata_qty.totalQuantity",
         SName: '$b2bshopclones.SName',
         mobile: '$b2bshopclones.mobile',
         address: '$b2bshopclones.address',

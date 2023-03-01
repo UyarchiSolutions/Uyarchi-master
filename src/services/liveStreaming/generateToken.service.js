@@ -148,7 +148,7 @@ const generateToken_sub = async (req) => {
   }
   user.latestedToken = stream._id;
   user.token = stream._id;
-  user.save();
+  await Joinusers.findByIdAndUpdate({ _id: user._id }, { latestedToken: stream._id, token: stream._id }, { new: true }).count()
   await get_participents_limit(req)
   // return user
   return { stream: stream, user: user };

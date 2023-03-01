@@ -2912,10 +2912,10 @@ const createAddOrdINGrp = async (id, body, userId) => {
   if (!datas) {
     throw new ApiError(httpStatus.NOT_FOUND, 'status not found');
   }
-  await wardAdminGroup.update({ _id: id }, { $push: { Orderdatas: body } }, { new: true });
+  await wardAdminGroup.update({ _id: id }, { $push: { Orderdatas: body.arr }, route: body.route }, { new: true });
   let serverdates = moment().format('YYYY-MM-DD');
   let servertime = moment().format('hh:mm a');
-  body.forEach(async (e) => {
+  body.arr.forEach(async (e) => {
     const group = await wardAdminGroupModel_ORDERS.findOne({
       wardAdminGroupID: id,
       orderId: e,
@@ -2929,7 +2929,7 @@ const createAddOrdINGrp = async (id, body, userId) => {
         {
           status: 'Assigned',
           completeStatus: 'Assigned',
-          deliveryExecutiveId: body.deliveryExecutiveId,
+          deliveryExecutiveId: datas.deliveryExecutiveId,
           WA_assigned_Time: moment(),
           AssignedCreated: moment(),
         },

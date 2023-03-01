@@ -1449,6 +1449,7 @@ const getAssigned_details = async (pickuptype) => {
               _id: 1,
             },
           },
+          { $group: { _id: null, totalQuantity: { $sum: "$totalQuantity" } } }
         ],
         as: 'orderassigns_qty',
       },

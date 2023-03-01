@@ -6311,10 +6311,42 @@ const shopDataMap = async (query) => {
   let values = await ShopOrderClone.aggregate([
     { $sort: { created: 1 } },
     { $match: { $and: [statusMatch, deliveryType, timeSlot, deliveryMode, dateMacth] } },
-    // {
-    //   $match: { status: 'Approved', devevery_mode: mode, delivery_type: type },
-    // },
-    { $addFields: { creationDate: { $dateToString: { format: '%Y-%m-%d', date: '$created' } } } },
+    {
+      $lookup: {
+        from: 'productorderclones',
+        localField: '_id',
+        foreignField: 'orderId',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'products',
+              localField: 'productid',
+              foreignField: '_id',
+              as: 'products',
+            },
+          },
+          {
+            $unwind: '$products',
+          },
+          {
+            $project: {
+              _id: 1,
+              totalQuantity: { $sum: [{ $multiply: ['$finalQuantity', '$packKg'] }] },
+
+            },
+          },
+          { $group: { _id: null, totalQuantity: { $sum: "$totalQuantity" } } }
+
+        ],
+        as: 'productOrderdata_qty',
+      },
+    },
+    {
+      $unwind: {
+        path: '$productOrderdata_qty',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
     {
       $lookup: {
         from: 'productorderclones',
@@ -6347,6 +6379,8 @@ const shopDataMap = async (query) => {
               status: 1,
               unit: 1,
               productTitle: '$products.productTitle',
+              totalQuantity: { $sum: [{ $multiply: ['$finalQuantity', '$packKg'] }] },
+
             },
           },
         ],
@@ -6465,6 +6499,7 @@ const shopDataMap = async (query) => {
         created: 1,
         OrderId: 1,
         product: '$productOrderdata',
+        totalQuantity: "$productOrderdata_qty.totalQuantity",
         SName: '$b2bshopclones.SName',
         mobile: '$b2bshopclones.mobile',
         address: '$b2bshopclones.address',
@@ -6483,7 +6518,6 @@ const shopDataMap = async (query) => {
         time_of_delivery: 1,
         paidAmount: '$orderpayments.amount',
         subtotal: '$productData.price',
-        creationDate: 1,
         timeloss: {
           $or: [
             {
@@ -6504,9 +6538,6 @@ const shopDataMap = async (query) => {
         },
       },
     },
-    // {
-    //   $match: { creationDate: today },
-    // },
   ]);
   return values;
 };

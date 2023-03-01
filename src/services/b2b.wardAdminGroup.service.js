@@ -75,7 +75,7 @@ const createGroup = async (body, userId) => {
   };
   let wardAdminGroupcreate = await wardAdminGroup.create(values);
   body.Orderdatas.forEach(async (e) => {
-    let productId = e._id;
+    let productId = e;
 
     await ShopOrderClone.findByIdAndUpdate(
       { _id: productId },

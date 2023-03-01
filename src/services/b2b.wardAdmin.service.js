@@ -1423,6 +1423,47 @@ const getAssigned_details = async (pickuptype) => {
         from: 'orderassigns',
         localField: '_id',
         foreignField: 'wardAdminGroupID',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'productorderclones',
+              localField: 'orderId',
+              foreignField: 'orderId',
+              pipeline: [
+                {
+                  $project: {
+                    _id: 1,
+                    totalQuantity: { $sum: [{ $multiply: ['$finalQuantity', '$packKg'] }] },
+
+                  },
+                },
+                { $group: { _id: null, totalQuantity: { $sum: "$totalQuantity" } } }
+              ],
+              as: 'productorderclones',
+            },
+          },
+
+          {
+            $project: {
+              totalQuantity: "$productorderclones.totalQuantity",
+              _id: 1,
+            },
+          },
+        ],
+        as: 'orderassigns_qty',
+      },
+    },
+    {
+      $unwind: {
+        path: '$orderassigns_qty',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: 'orderassigns',
+        localField: '_id',
+        foreignField: 'wardAdminGroupID',
         as: 'orderassignscount',
       },
     },
@@ -1540,10 +1581,12 @@ const getAssigned_details = async (pickuptype) => {
         vehicleNo: '$vehicles.vehicleNo',
         tonne_Capacity: '$vehicles.tonne_Capacity',
         vehiclesId: '$vehicles._id',
+        extendedKg: '$vehicles.extendedKg',
         pickuplocation: 1,
         zone: '$zones.zone',
         ward: '$wards.ward',
         locationName: '$managepickuplocations.locationName',
+        totalQuantity: "$orderassigns_qty.totalQuantity"
       },
     },
   ]);

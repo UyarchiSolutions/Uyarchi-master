@@ -1837,14 +1837,14 @@ const getDeliveryOrderSeparate = async (id, page) => {
                     as: 'datass',
                   },
                 },
-                {$unwind:"$datass"},
+                { $unwind: "$datass" },
                 {
                   $lookup: {
                     from: 'productorderclones',
                     localField: '_id',
                     foreignField: 'orderId',
                     pipeline: [
-                      {$match:{$and:[{issueraised:{$eq:true}}]}},
+                      { $match: { $and: [{ issueraised: { $eq: true } }] } },
                       {
                         $lookup: {
                           from: 'products',
@@ -1862,16 +1862,16 @@ const getDeliveryOrderSeparate = async (id, page) => {
                           priceperkg: 1,
                           product: '$productsData.productTitle',
                           productId: '$productsData._id',
-                          issue:1,
-                          issueDate:1,
-                          issuediscription:1,
-                          issuequantity:1,
-                          issuetype:1,
-                          issueStatus:1,
-                          unit:1,
-                          date:1,
-                          finalQuantity:1,
-                          finalPricePerKg:1
+                          issue: 1,
+                          issueDate: 1,
+                          issuediscription: 1,
+                          issuequantity: 1,
+                          issuetype: 1,
+                          issueStatus: 1,
+                          unit: 1,
+                          date: 1,
+                          finalQuantity: 1,
+                          finalPricePerKg: 1
 
                         },
                       },
@@ -1888,13 +1888,13 @@ const getDeliveryOrderSeparate = async (id, page) => {
                     shopName: '$datass.SName',
                     Slat: '$datass.Slat',
                     Slong: '$datass.Slong',
-                    productorderclonescount:"$productorderclonescount",
-                    OrderId:1,
-                    customerDeliveryStatus:1,
-                    receiveStatus:1,
-                    completeStatus:1,
-                    created:1
-                   
+                    productorderclonescount: "$productorderclonescount",
+                    OrderId: 1,
+                    customerDeliveryStatus: 1,
+                    receiveStatus: 1,
+                    completeStatus: 1,
+                    created: 1
+
                   },
                 },
               ],
@@ -1918,7 +1918,7 @@ const getDeliveryOrderSeparate = async (id, page) => {
               Slong: '$shopDatas.Slong',
               sort_wde: '$shopDatas.sort_wde',
               productorderclonescount: '$shopDatas.productorderclonescount',
-              created:"$shopDatas.created",
+              created: "$shopDatas.created",
             },
           },
           { $sort: { sort_wde: 1 } },
@@ -1943,7 +1943,7 @@ const getDeliveryOrderSeparate = async (id, page) => {
     sort_wde: datas[0].sort_wde,
     manageDeliveryStatus: datas[0].manageDeliveryStatus,
     total: total.length,
-    return_order:return_order
+    return_order: return_order
   };
 };
 
@@ -2918,11 +2918,11 @@ const createAddOrdINGrp = async (id, body, userId) => {
   body.forEach(async (e) => {
     const group = await wardAdminGroupModel_ORDERS.findOne({
       wardAdminGroupID: id,
-      orderId: e._id,
+      orderId: e,
       date: serverdates,
     });
     if (!group) {
-      let productId = e._id;
+      let productId = e;
 
       await ShopOrderClone.findByIdAndUpdate(
         { _id: productId },
@@ -2937,14 +2937,14 @@ const createAddOrdINGrp = async (id, body, userId) => {
       );
       await wardAdminGroupModel_ORDERS.create({
         wardAdminGroupID: id,
-        orderId: e._id,
+        orderId: e,
         date: serverdates,
         time: servertime,
         created: moment(),
         AssignedstatusPerDay: 2,
       });
     }
-    let statusActionArray = await ShopOrderClone.findById(e._id);
+    let statusActionArray = await ShopOrderClone.findById(e);
     statusActionArray.statusActionArray.push({ userid: userId, date: moment().toString(), status: 'Assigned' });
     statusActionArray.save();
   });
@@ -4392,14 +4392,14 @@ const get_existing_group = async (body) => {
 
 const assign_to_return_orders = async (body) => {
   // let wardAdminGroupModel_issue
-  let ward= await wardAdminGroup.findById(body.groupId)
+  let ward = await wardAdminGroup.findById(body.groupId)
   body.shops.forEach(async (e) => {
     let orders = await ShopOrderClone.aggregate([
       { $match: { $and: [{ issueStatus: { $eq: "Approved" } }, { shopId: { $eq: e._id } }] } },
     ]);
     orders.forEach(async (a) => {
-      await ShopOrderClone.findByIdAndUpdate({ _id: a._id},{issueAssign:"Assigned"},{ new: true});
-      await wardAdminGroupModel_issue.create({deliveryExecutiveId:ward.deliveryExecutiveId,orderId:a._id,wardAdminGroupID:body.groupId,created:moment(),date: moment().format('YYYY-MM-DD'),time: moment().format('HHmm')})
+      await ShopOrderClone.findByIdAndUpdate({ _id: a._id }, { issueAssign: "Assigned" }, { new: true });
+      await wardAdminGroupModel_issue.create({ deliveryExecutiveId: ward.deliveryExecutiveId, orderId: a._id, wardAdminGroupID: body.groupId, created: moment(), date: moment().format('YYYY-MM-DD'), time: moment().format('HHmm') })
     })
 
   })

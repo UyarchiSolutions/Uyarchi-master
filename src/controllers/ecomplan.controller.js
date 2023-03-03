@@ -54,7 +54,7 @@ const create_post = catchAsync(async (req, res) => {
       });
     }
   }
-  console.log(images)
+  console.log(images);
   const value = await Ecomserive.create_post(req, images);
   res.send(value);
 });
@@ -70,30 +70,23 @@ const get_all_Post_with_page = catchAsync(async (req, res) => {
   let status = req.query.status;
   let value;
   if (status == 'Active' || status == 'Cancelled') {
-
     value = await Ecomserive.get_all_Post_with_page(req, status);
   }
   if (status == 'assigned') {
     value = await Ecomserive.get_all_Post_with_page_assigned(req);
-
   }
   if (status == 'live') {
     value = await Ecomserive.get_all_Post_with_page_live(req);
-
   }
   if (status == 'completed') {
     value = await Ecomserive.get_all_Post_with_page_completed(req);
-
   }
   if (status == 'exhausted') {
     value = await Ecomserive.get_all_Post_with_page_exhausted(req);
-
   }
   if (status == 'removed') {
     value = await Ecomserive.get_all_Post_with_page_removed(req);
-
   }
-
 
   res.send(value);
 });
@@ -102,7 +95,7 @@ const get_one_post = catchAsync(async (req, res) => {
   res.send(value);
 });
 const update_one_post = catchAsync(async (req, res) => {
-  console.log(req.files)
+  console.log(req.files);
   let images = [];
   if (req.files) {
     let path = '';
@@ -126,7 +119,6 @@ const remove_one_post = catchAsync(async (req, res) => {
   res.send(value);
 });
 
-
 const create_stream_one = catchAsync(async (req, res) => {
   const value = await Ecomserive.create_stream_one(req);
   res.send(value);
@@ -137,17 +129,16 @@ const find_and_update_one = catchAsync(async (req, res) => {
   res.send(value);
 });
 
-
 const create_stream_one_image = catchAsync(async (req, res) => {
-  console.log('asdasasas')
-  console.log(req.file)
+  console.log('asdasasas');
+  console.log(req.file);
   const value = await Ecomserive.create_stream_one_image(req);
   res.send(value);
 });
 
 const create_stream_one_video = catchAsync(async (req, res) => {
-  console.log('asdasasas')
-  console.log(req.file)
+  console.log('asdasasas');
+  console.log(req.file);
   const value = await Ecomserive.create_stream_one_video(req);
   res.send(value);
 });
@@ -161,13 +152,13 @@ const get_all_stream = catchAsync(async (req, res) => {
   res.send(value);
 });
 const get_one_stream = catchAsync(async (req, res) => {
-  console.log("asdaszas")
+  console.log('asdaszas');
   const value = await Ecomserive.get_one_stream(req);
   res.send(value);
 });
 
 const get_one_stream_step_two = catchAsync(async (req, res) => {
-  console.log("zas")
+  console.log('zas');
   const value = await Ecomserive.get_one_stream_step_two(req);
   res.send(value);
 });
@@ -202,90 +193,86 @@ const update_reject = catchAsync(async (req, res) => {
 });
 
 const get_all_streams = catchAsync(async (req, res) => {
-  console.log("sdas")
+  console.log('sdas');
   const value = await Ecomserive.get_all_streams(req);
   res.send(value);
 });
 const get_subhost_streams = catchAsync(async (req, res) => {
-  console.log("sdas")
+  console.log('sdas');
   const value = await Ecomserive.get_subhost_streams(req);
   res.send(value);
 });
 const allot_stream_subhost = catchAsync(async (req, res) => {
-  console.log("sdas")
+  console.log('sdas');
   const value = await Ecomserive.allot_stream_subhost(req);
   res.send(value);
 });
 
 const cancel_stream = catchAsync(async (req, res) => {
-  console.log("sdas")
+  console.log('sdas');
   const value = await Ecomserive.cancel_stream(req);
   res.send(value);
 });
 
 const end_stream = catchAsync(async (req, res) => {
-  console.log("sdas")
+  console.log('sdas');
   const value = await Ecomserive.end_stream(req);
   res.send(value);
 });
 
-
 const go_live_stream_host = catchAsync(async (req, res) => {
-  console.log("sdas")
+  console.log('sdas');
   const value = await Ecomserive.go_live_stream_host(req, req.userId);
   res.send(value);
 });
 
 const get_subhost_token = catchAsync(async (req, res) => {
-  console.log("sdas")
+  console.log('sdas');
   const value = await Ecomserive.get_subhost_token(req, req.subhostId);
   res.send(value);
 });
 
-
 const go_live_stream_host_subhost = catchAsync(async (req, res) => {
-  console.log("sdas")
+  console.log('sdas');
   const value = await Ecomserive.go_live_stream_host_SUBHOST(req, req.createdBy);
   res.send(value);
 });
 
-
 const get_watch_live_steams = catchAsync(async (req, res) => {
-  console.log("sdas")
+  console.log('sdas');
   const value = await Ecomserive.get_watch_live_steams(req);
   res.send(value);
 });
 
 const get_watch_live_steams_admin_watch = catchAsync(async (req, res) => {
-  console.log("sdas")
+  console.log('sdas');
   const value = await Ecomserive.get_watch_live_steams_admin_watch(req);
   res.send(value);
 });
 
 const get_watch_live_token = catchAsync(async (req, res) => {
-  console.log("sdas")
+  console.log('sdas');
   const value = await Ecomserive.get_watch_live_token(req);
   res.send(value);
 });
 
 const regisetr_strean_instrest = catchAsync(async (req, res) => {
-  console.log("sdas")
+  console.log('sdas');
   const value = await Ecomserive.regisetr_strean_instrest(req);
   res.send(value);
 });
 
 const unregisetr_strean_instrest = catchAsync(async (req, res) => {
-  console.log("sdas")
+  console.log('sdas');
   const value = await Ecomserive.unregisetr_strean_instrest(req);
   res.send(value);
 });
 
 const purchase_details = catchAsync(async (req, res) => {
-  console.log("sdas")
+  console.log('sdas');
   const value = await Ecomserive.purchase_details(req);
   res.send(value);
 });
-
 
 const purchase_details_supplier = catchAsync(async (req, res) => {
   const value = await Ecomserive.purchase_details_supplier(req);
@@ -362,12 +349,20 @@ const getallslab = catchAsync(async (req, res) => {
   res.send(value);
 });
 
-
 const update_slab = catchAsync(async (req, res) => {
   const value = await Ecomserive.update_slab(req);
   res.send(value);
 });
 
+const getStock_Manager = catchAsync(async (req, res) => {
+  const data = await Ecomserive.getStock_Manager();
+  res.send(data);
+});
+
+const getPosted_Details_By_Stream = catchAsync(async (req, res) => {
+  const data = await Ecomserive.getPosted_Details_By_Stream(req.params.id);
+  res.send(data);
+});
 
 module.exports = {
   create_Plans,
@@ -386,7 +381,6 @@ module.exports = {
   remove_one_post,
   get_all_Post_with_page,
   create_post_teaser,
-
 
   create_stream_one,
   find_and_update_one,
@@ -414,37 +408,30 @@ module.exports = {
   get_completed_stream_buyer,
   end_stream,
 
-
   go_live_stream_host,
   get_watch_live_steams,
   get_watch_live_steams_admin_watch,
   get_watch_live_token,
 
-
-  // 
+  //
   regisetr_strean_instrest,
   unregisetr_strean_instrest,
   go_live_stream_host_subhost,
 
-
-
   purchase_details,
   purchase_details_supplier,
 
-
   purchase_link_plan,
   purchase_link_plan_get,
-
 
   get_stream_post,
   get_stream_alert,
   get_cancel_stream,
 
-
-
   create_slab,
   get_by_slab,
   update_slab,
-  getallslab
-
+  getallslab,
+  getStock_Manager,
+  getPosted_Details_By_Stream,
 };

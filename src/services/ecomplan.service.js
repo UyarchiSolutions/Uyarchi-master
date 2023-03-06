@@ -4909,16 +4909,17 @@ const get_completed_stream_cancelled = async (req) => {
 // completed Stream Supplier Side Flow
 
 const getStock_Manager = async () => {
+  let currentTime = new Date().getTime();
   let values = await Streamrequest.aggregate([
     {
-      $match: { status: 'Completed' },
+      $match: { endTime: { $lt: currentTime } },
     },
     {
       $sort: { created: -1 },
     },
     {
       $lookup: {
-        from: 'streamingcarts',
+        from: 'joinedusers',
         localField: '_id',
         foreignField: 'streamId',
         as: 'buyers',
@@ -4941,77 +4942,62 @@ const getStock_Manager = async () => {
 };
 
 const getPosted_Details_By_Stream = async (id) => {
-  let values = await Streamrequest.findById(id);
-  if (!values) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Stream Not Found');
-  }
-  let data = [];
-  for (let i = 0; i < values.post.length; i++) {
-    let ids = values.post[i];
-    let value = await StreamPost.aggregate([
-      {
-        $match: { _id: ids },
-      },
-      {
-        $lookup: {
-          from: 'products',
-          localField: 'productId',
-          foreignField: '_id',
-          as: 'product',
-        },
-      },
-      {
-        $unwind: {
-          preserveNullAndEmptyArrays: true,
-          path: '$product',
-        },
-      },
-      {
-        $lookup: {
-          from: 'streamingcarts',
-          localField: '_id',
-          foreignField: '_id',
-          //   let: { userId: id },
-          pipeline: [
-            {
-              $match: { streamId: id },
+  let values = await StreamrequestPost.aggregate([
+    {
+      $match: { streamRequest: id },
+    },
+    {
+      $lookup: {
+        from: 'streamposts',
+        localField: 'postId',
+        foreignField: '_id',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'products',
+              localField: 'productId',
+              foreignField: '_id',
+              as: 'products',
             },
-            // {
-            //   $match: {
-            //     $expr: {
-            //       $eq: ['$streamId', '$$userId'], // <-- This doesn't work. Dont want to use `$unwind` before `$match` stage
-            //     },
-            //   },
-            // },
-            // {000
-            //     $project:{
-            //         cart:1,
-            //         status:1,
-            //         shopId:1,
-            //         streamId:1,
-            //         DateIso:1,
-            //     }
-            // }
-          ],
-          as: 'streamingcarts',
-        },
+          },
+          {
+            $unwind: {
+              preserveNullAndEmptyArrays: true,
+              path: '$products',
+            },
+          },
+        ],
+        as: 'streamPost',
       },
-      {
-        $project: {
-          _id: 1,
-          productId: 1,
-          quantity: 1,
-          product: '$product.productTitle',
-          carts: '$carts',
-          summs: { $sum: '$carts.cart.cartQTY' },
-          streamingcarts: '$streamingcarts',
-        },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$streamPost',
       },
-    ]);
-    data.push(value[0]);
-  }
-  console.log(values.post);
-  return data;
+    },
+    {
+      $lookup: {
+        from: 'streamingcarts',
+        localField: 'streamRequest',
+        foreignField: 'streamId',
+        as: 'cart',
+      },
+    },
+    {
+      $unwind: '$cart',
+    },
+    {
+      $project: {
+        _id: 1,
+        postId: 1,
+        productName: '$streamPost.products.productTitle',
+        PostedKg: '$streamPost.quantity',
+        cart: '$cart',
+      },
+    },
+  ]);
+  return values;
 };
 
 module.exports = {

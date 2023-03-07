@@ -355,7 +355,7 @@ const update_slab = catchAsync(async (req, res) => {
 });
 
 const getStock_Manager = catchAsync(async (req, res) => {
-  const data = await Ecomserive.getStock_Manager();
+  const data = await Ecomserive.getStock_Manager(req.params.page);
   res.send(data);
 });
 

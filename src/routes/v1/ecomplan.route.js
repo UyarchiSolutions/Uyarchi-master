@@ -108,7 +108,7 @@ router.route('/slab/getall').get(Ecomcontroller.getallslab);
 
 // after Completed Stream Supplier Flow
 
-router.route('/getStock_Manager').get(Ecomcontroller.getStock_Manager);
+router.route('/getStock_Manager/:page').get(Ecomcontroller.getStock_Manager);
 router.route('/getPosted_Details_By_Stream/:id').get(Ecomcontroller.getPosted_Details_By_Stream);
 router.route('/fetchStream/details/:id').get(Ecomcontroller.fetchStream_Details_ById);
 

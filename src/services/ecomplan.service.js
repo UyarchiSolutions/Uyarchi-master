@@ -4912,7 +4912,7 @@ const get_completed_stream_cancelled = async (req) => {
 
 // completed Stream Supplier Side Flow
 
-const getStock_Manager = async () => {
+const getStock_Manager = async (page) => {
   let currentTime = new Date().getTime();
   let values = await Streamrequest.aggregate([
     {
@@ -4941,8 +4941,30 @@ const getStock_Manager = async () => {
         created: 1,
       },
     },
+    {
+      $skip: 10 * page,
+    },
+    {
+      $limit: 10,
+    },
   ]);
-  return values;
+  let total = await Streamrequest.aggregate([
+    {
+      $match: { endTime: { $lt: currentTime } },
+    },
+    {
+      $sort: { created: -1 },
+    },
+    {
+      $lookup: {
+        from: 'joinedusers',
+        localField: '_id',
+        foreignField: 'streamId',
+        as: 'buyers',
+      },
+    },
+  ]);
+  return { values: values, total: total.length };
 };
 
 const getPosted_Details_By_Stream = async (id) => {

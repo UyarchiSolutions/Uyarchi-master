@@ -8,6 +8,9 @@ const {
   streamPlanlink,
   Slab,
 } = require('../models/ecomplan.model');
+
+const { streamingOrder } = require('../models/liveStreaming/checkout.model');
+
 const ApiError = require('../utils/ApiError');
 const AWS = require('aws-sdk');
 const Dates = require('./Date.serive');
@@ -15,6 +18,7 @@ const { purchasePlan } = require('../models/purchasePlan.model');
 const { tempTokenModel } = require('../models/liveStreaming/generateToken.model');
 const generateLink = require('./liveStreaming/generatelink.service');
 const moment = require('moment');
+
 const create_Plans = async (req) => {
   console.log(req.body);
   const value = await Streamplan.create({ ...req.body, ...{ planType: 'normal' } });
@@ -4978,14 +4982,18 @@ const getPosted_Details_By_Stream = async (id) => {
     },
     {
       $lookup: {
-        from: 'streamingcarts',
-        localField: 'streamRequest',
-        foreignField: 'streamId',
-        as: 'cart',
+        from: 'streamingorderproducts',
+        localField: '_id',
+        foreignField: 'postId',
+        pipeline: [{ $group: { _id: null, sumValue: { $sum: '$purchase_quantity' } } }],
+        as: 'orderProducts',
       },
     },
     {
-      $unwind: '$cart',
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$orderProducts',
+      },
     },
     {
       $project: {
@@ -4993,7 +5001,180 @@ const getPosted_Details_By_Stream = async (id) => {
         postId: 1,
         productName: '$streamPost.products.productTitle',
         PostedKg: '$streamPost.quantity',
-        cart: '$cart',
+        Bookedkg: { $ifNull: ['$orderProducts.sumValue', 0] },
+      },
+    },
+  ]);
+  return values;
+};
+
+// fetch specific streaming details
+
+const fetchStream_Details_ById = async (id) => {
+  let values = await Streamrequest.aggregate([
+    {
+      $match: {
+        _id: id,
+      },
+    },
+    {
+      $lookup: {
+        from: 'streamrequestposts',
+        localField: '_id',
+        foreignField: 'streamRequest',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'streamposts',
+              localField: 'postId',
+              foreignField: '_id',
+              pipeline: [
+                {
+                  $lookup: {
+                    from: 'products',
+                    localField: 'productId',
+                    foreignField: '_id',
+                    as: 'products',
+                  },
+                },
+                {
+                  $unwind: {
+                    preserveNullAndEmptyArrays: true,
+                    path: '$products',
+                  },
+                },
+              ],
+              as: 'streamPost',
+            },
+          },
+          {
+            $unwind: '$streamPost',
+          },
+        ],
+        as: 'streamrequestposts',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$streamrequestposts',
+      },
+    },
+    {
+      $lookup: {
+        from: 'joinedusers',
+        localField: '_id',
+        foreignField: 'streamId',
+        as: 'joinedusers',
+      },
+    },
+    {
+      $lookup: {
+        from: 'streamingorderproducts',
+        localField: 'streamrequestposts._id',
+        foreignField: 'postId',
+        pipeline: [
+          {
+            $match: { status: 'confirmed' },
+          },
+          {
+            $group: { _id: null, totalOrders: { $sum: '$purchase_quantity' } },
+          },
+        ],
+        as: 'streamOrders',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$streamOrders',
+      },
+    },
+    // approved
+    {
+      $lookup: {
+        from: 'streamingorderproducts',
+        localField: 'streamrequestposts._id',
+        foreignField: 'postId',
+        pipeline: [
+          {
+            $match: { status: 'confirmed' },
+          },
+        ],
+        as: 'confirmed',
+      },
+    },
+    // denied
+    {
+      $lookup: {
+        from: 'streamingorderproducts',
+        localField: 'streamrequestposts._id',
+        foreignField: 'postId',
+        pipeline: [
+          {
+            $match: { status: 'denied' },
+          },
+        ],
+        as: 'denied',
+      },
+    },
+    {
+      $lookup: {
+        from: 'streamingorderproducts',
+        localField: 'streamrequestposts._id',
+        foreignField: 'postId',
+        pipeline: [
+          {
+            $match: { status: 'Pending' },
+          },
+        ],
+        as: 'Pending',
+      },
+    },
+    // check completed or Not
+    {
+      $lookup: {
+        from: 'streamingorderproducts',
+        localField: 'streamrequestposts._id',
+        foreignField: 'postId',
+        pipeline: [
+          {
+            $match: { status: 'Pending' },
+          },
+        ],
+        as: 'completed',
+      },
+    },
+    { $addFields: { completCount: { $size: '$completed' } } },
+    {
+      $project: {
+        _id: 1,
+        streamName: 1,
+        streamingDate_time: 1,
+        productName: '$streamrequestposts.streamPost.products.productTitle',
+        Buyer: { $size: '$joinedusers' },
+        InitiatedQuantity: '$streamrequestposts.streamPost.quantity',
+        postId: '$streamrequestposts._id',
+        productId: '$streamrequestposts.streamPost.products._id',
+        ConfirmedQuantity: { $ifNull: ['$streamOrders.totalOrders', 0] },
+        confirmed: { $size: '$confirmed' },
+        denied: { $size: '$denied' },
+        // completed: '$completed',
+        status: { $cond: { if: { $eq: ['$completCount', 0] }, then: 'Completed', else: 'Pending' } },
+        Pending: { $size: '$Pending' },
+      },
+    },
+  ]);
+  return values;
+};
+
+// Intimation Buyer Flow
+
+const fetch_Stream_Ordered_Details = async (id) => {
+  let values = await streamingOrder.aggregate([
+    {
+      $match: {
+        streamId: id,
       },
     },
   ]);
@@ -5080,4 +5261,6 @@ module.exports = {
   get_completed_stream_buyer,
   getStock_Manager,
   getPosted_Details_By_Stream,
+  fetchStream_Details_ById,
+  fetch_Stream_Ordered_Details,
 };

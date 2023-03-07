@@ -364,6 +364,16 @@ const getPosted_Details_By_Stream = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const fetchStream_Details_ById = catchAsync(async (req, res) => {
+  const data = await Ecomserive.fetchStream_Details_ById(req.params.id);
+  res.send(data);
+});
+
+const fetch_Stream_Ordered_Details = catchAsync(async (req, res) => {
+  const data = await Ecomserive.fetch_Stream_Ordered_Details(req.params.id);
+  res.send(data);
+});
+
 module.exports = {
   create_Plans,
   create_Plans_addon,
@@ -434,4 +444,6 @@ module.exports = {
   getallslab,
   getStock_Manager,
   getPosted_Details_By_Stream,
+  fetchStream_Details_ById,
+  fetch_Stream_Ordered_Details,
 };

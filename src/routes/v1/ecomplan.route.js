@@ -110,5 +110,10 @@ router.route('/slab/getall').get(Ecomcontroller.getallslab);
 
 router.route('/getStock_Manager').get(Ecomcontroller.getStock_Manager);
 router.route('/getPosted_Details_By_Stream/:id').get(Ecomcontroller.getPosted_Details_By_Stream);
+router.route('/fetchStream/details/:id').get(Ecomcontroller.fetchStream_Details_ById);
+
+// intimation Buyer Flow
+
+router.route('/fetch/Stream/Ordered/Details/:id').get(Ecomcontroller.fetch_Stream_Ordered_Details);
 
 module.exports = router;

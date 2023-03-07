@@ -12,7 +12,7 @@ const streamingCartschema = mongoose.Schema({
     default: v4,
   },
   DateIso: {
-    type: Number
+    type: Number,
   },
   date: {
     type: String,
@@ -34,13 +34,11 @@ const streamingCartschema = mongoose.Schema({
   },
   status: {
     type: String,
-    default: 'Pending'
+    default: 'Pending',
   },
-
 });
 
 const streamingCart = mongoose.model('streamingcart', streamingCartschema);
-
 
 const streamingOrderschema = mongoose.Schema({
   _id: {
@@ -48,7 +46,7 @@ const streamingOrderschema = mongoose.Schema({
     default: v4,
   },
   DateIso: {
-    type: Number
+    type: Number,
   },
   date: {
     type: String,
@@ -99,14 +97,9 @@ const streamingOrderschema = mongoose.Schema({
   totalAmount: {
     type: Number,
   },
-
-
-
 });
 
 const streamingOrder = mongoose.model('streamingorder', streamingOrderschema);
-
-
 
 const streamingproductschema = mongoose.Schema({
   _id: {
@@ -114,7 +107,7 @@ const streamingproductschema = mongoose.Schema({
     default: v4,
   },
   DateIso: {
-    type: Number
+    type: Number,
   },
   date: {
     type: String,
@@ -142,13 +135,14 @@ const streamingproductschema = mongoose.Schema({
   },
   shopId: {
     type: String,
-
   },
   streamId: {
     type: String,
-
   },
-
+  status: {
+    type: String,
+    default: 'Pending',
+  },
 });
 const streamingorderProduct = mongoose.model('streamingorderproduct', streamingproductschema);
 const streamingPaymant = mongoose.Schema({
@@ -157,7 +151,7 @@ const streamingPaymant = mongoose.Schema({
     default: v4,
   },
   DateIso: {
-    type: Number
+    type: Number,
   },
   date: {
     type: String,
@@ -220,7 +214,7 @@ const streamingPaymant = mongoose.Schema({
   },
   creditApprovalStatus: {
     type: String,
-    default: "Pending"
+    default: 'Pending',
   },
   onlinepaymentId: {
     type: String,
@@ -230,7 +224,7 @@ const streamingPaymant = mongoose.Schema({
   },
   paymentTypes: {
     type: String,
-    default: "offline",
+    default: 'offline',
   },
   paymentGatway: {
     type: String,
@@ -247,8 +241,7 @@ const streamingPaymant = mongoose.Schema({
   totalAmount: {
     type: Number,
   },
-
-})
+});
 const streamingorderPayments = mongoose.model('streamingorderpayment', streamingPaymant);
 
 module.exports = { streamingCart, streamingOrder, streamingorderProduct, streamingorderPayments };

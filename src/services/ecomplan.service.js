@@ -4939,6 +4939,7 @@ const getStock_Manager = async (page) => {
         startTime: 1,
         streamEnd_Time: 1,
         created: 1,
+        status:"Pending"
       },
     },
     {

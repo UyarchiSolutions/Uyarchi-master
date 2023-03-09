@@ -4909,16 +4909,17 @@ const get_completed_stream_cancelled = async (req) => {
 // completed Stream Supplier Side Flow
 
 const getStock_Manager = async () => {
+  let currentTIme = new Date().getTime()
   let values = await Streamrequest.aggregate([
     {
-      $match: { status: 'Completed' },
+      $match:{endTime:{$lt:currentTIme}}
     },
     {
       $sort: { created: -1 },
     },
     {
       $lookup: {
-        from: 'streamingcarts',
+        from: 'joinedusers',
         localField: '_id',
         foreignField: 'streamId',
         as: 'buyers',

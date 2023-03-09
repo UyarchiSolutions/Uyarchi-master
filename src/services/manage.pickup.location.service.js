@@ -71,6 +71,17 @@ const getAllManagepickup = async (userId, date, page) => {
       $unwind: '$streetData',
     },
     {
+      $lookup: {
+        from: 'b2busers',
+        localField: 'userId',
+        foreignField: '_id',
+        as: 'b2busers',
+      },
+    },
+    {
+      $unwind: '$b2busers',
+    },
+    {
       $project: {
         _id: 1,
         ward: '$wardData.ward',
@@ -88,6 +99,8 @@ const getAllManagepickup = async (userId, date, page) => {
         langitude: 1,
         pick_Up_Type: 1,
         picku_Up_Mode: 1,
+        b2busersname: "$b2busers.name",
+        pincode: 1,
       },
     },
     { $skip: 10 * page },
@@ -220,7 +233,7 @@ const getAllManagepickupLocation = async (userId, date, todate) => {
         userName: '$userData.name',
       },
     },
-    
+
   ]);
   return values;
 };

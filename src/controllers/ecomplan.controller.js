@@ -355,12 +355,22 @@ const update_slab = catchAsync(async (req, res) => {
 });
 
 const getStock_Manager = catchAsync(async (req, res) => {
-  const data = await Ecomserive.getStock_Manager();
+  const data = await Ecomserive.getStock_Manager(req.params.page);
   res.send(data);
 });
 
 const getPosted_Details_By_Stream = catchAsync(async (req, res) => {
   const data = await Ecomserive.getPosted_Details_By_Stream(req.params.id);
+  res.send(data);
+});
+
+const fetchStream_Details_ById = catchAsync(async (req, res) => {
+  const data = await Ecomserive.fetchStream_Details_ById(req.params.id);
+  res.send(data);
+});
+
+const fetch_Stream_Ordered_Details = catchAsync(async (req, res) => {
+  const data = await Ecomserive.fetch_Stream_Ordered_Details(req.params.id);
   res.send(data);
 });
 
@@ -434,4 +444,6 @@ module.exports = {
   getallslab,
   getStock_Manager,
   getPosted_Details_By_Stream,
+  fetchStream_Details_ById,
+  fetch_Stream_Ordered_Details,
 };

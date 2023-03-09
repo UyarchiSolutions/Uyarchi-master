@@ -8,6 +8,9 @@ const {
   streamPlanlink,
   Slab,
 } = require('../models/ecomplan.model');
+
+const { streamingOrder } = require('../models/liveStreaming/checkout.model');
+
 const ApiError = require('../utils/ApiError');
 const AWS = require('aws-sdk');
 const Dates = require('./Date.serive');
@@ -15,6 +18,7 @@ const { purchasePlan } = require('../models/purchasePlan.model');
 const { tempTokenModel } = require('../models/liveStreaming/generateToken.model');
 const generateLink = require('./liveStreaming/generatelink.service');
 const moment = require('moment');
+
 const create_Plans = async (req) => {
   console.log(req.body);
   const value = await Streamplan.create({ ...req.body, ...{ planType: 'normal' } });
@@ -4908,11 +4912,11 @@ const get_completed_stream_cancelled = async (req) => {
 
 // completed Stream Supplier Side Flow
 
-const getStock_Manager = async () => {
-  let currentTIme = new Date().getTime()
+const getStock_Manager = async (page) => {
+  let currentTime = new Date().getTime();
   let values = await Streamrequest.aggregate([
     {
-      $match:{endTime:{$lt:currentTIme}}
+      $match: { endTime: { $lt: currentTime } },
     },
     {
       $sort: { created: -1 },
@@ -4935,84 +4939,269 @@ const getStock_Manager = async () => {
         startTime: 1,
         streamEnd_Time: 1,
         created: 1,
+        status:"Pending"
+      },
+    },
+    {
+      $skip: 10 * page,
+    },
+    {
+      $limit: 10,
+    },
+  ]);
+  let total = await Streamrequest.aggregate([
+    {
+      $match: { endTime: { $lt: currentTime } },
+    },
+    {
+      $sort: { created: -1 },
+    },
+    {
+      $lookup: {
+        from: 'joinedusers',
+        localField: '_id',
+        foreignField: 'streamId',
+        as: 'buyers',
+      },
+    },
+  ]);
+  return { values: values, total: total.length };
+};
+
+const getPosted_Details_By_Stream = async (id) => {
+  let values = await StreamrequestPost.aggregate([
+    {
+      $match: { streamRequest: id },
+    },
+    {
+      $lookup: {
+        from: 'streamposts',
+        localField: 'postId',
+        foreignField: '_id',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'products',
+              localField: 'productId',
+              foreignField: '_id',
+              as: 'products',
+            },
+          },
+          {
+            $unwind: {
+              preserveNullAndEmptyArrays: true,
+              path: '$products',
+            },
+          },
+        ],
+        as: 'streamPost',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$streamPost',
+      },
+    },
+    {
+      $lookup: {
+        from: 'streamingorderproducts',
+        localField: '_id',
+        foreignField: 'postId',
+        pipeline: [{ $group: { _id: null, sumValue: { $sum: '$purchase_quantity' } } }],
+        as: 'orderProducts',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$orderProducts',
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        postId: 1,
+        productName: '$streamPost.products.productTitle',
+        PostedKg: '$streamPost.quantity',
+        Bookedkg: { $ifNull: ['$orderProducts.sumValue', 0] },
       },
     },
   ]);
   return values;
 };
 
-const getPosted_Details_By_Stream = async (id) => {
-  let values = await Streamrequest.findById(id);
-  if (!values) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Stream Not Found');
-  }
-  let data = [];
-  for (let i = 0; i < values.post.length; i++) {
-    let ids = values.post[i];
-    let value = await StreamPost.aggregate([
-      {
-        $match: { _id: ids },
+// fetch specific streaming details
+
+const fetchStream_Details_ById = async (id) => {
+  let values = await Streamrequest.aggregate([
+    {
+      $match: {
+        _id: id,
       },
-      {
-        $lookup: {
-          from: 'products',
-          localField: 'productId',
-          foreignField: '_id',
-          as: 'product',
-        },
-      },
-      {
-        $unwind: {
-          preserveNullAndEmptyArrays: true,
-          path: '$product',
-        },
-      },
-      {
-        $lookup: {
-          from: 'streamingcarts',
-          localField: '_id',
-          foreignField: '_id',
-          //   let: { userId: id },
-          pipeline: [
-            {
-              $match: { streamId: id },
+    },
+    {
+      $lookup: {
+        from: 'streamrequestposts',
+        localField: '_id',
+        foreignField: 'streamRequest',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'streamposts',
+              localField: 'postId',
+              foreignField: '_id',
+              pipeline: [
+                {
+                  $lookup: {
+                    from: 'products',
+                    localField: 'productId',
+                    foreignField: '_id',
+                    as: 'products',
+                  },
+                },
+                {
+                  $unwind: {
+                    preserveNullAndEmptyArrays: true,
+                    path: '$products',
+                  },
+                },
+              ],
+              as: 'streamPost',
             },
-            // {
-            //   $match: {
-            //     $expr: {
-            //       $eq: ['$streamId', '$$userId'], // <-- This doesn't work. Dont want to use `$unwind` before `$match` stage
-            //     },
-            //   },
-            // },
-            // {000
-            //     $project:{
-            //         cart:1,
-            //         status:1,
-            //         shopId:1,
-            //         streamId:1,
-            //         DateIso:1,
-            //     }
-            // }
-          ],
-          as: 'streamingcarts',
-        },
+          },
+          {
+            $unwind: '$streamPost',
+          },
+        ],
+        as: 'streamrequestposts',
       },
-      {
-        $project: {
-          _id: 1,
-          productId: 1,
-          quantity: 1,
-          product: '$product.productTitle',
-          carts: '$carts',
-          summs: { $sum: '$carts.cart.cartQTY' },
-          streamingcarts: '$streamingcarts',
-        },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$streamrequestposts',
       },
-    ]);
-    data.push(value[0]);
-  }
-  console.log(values.post);
-  return data;
+    },
+    {
+      $lookup: {
+        from: 'joinedusers',
+        localField: '_id',
+        foreignField: 'streamId',
+        as: 'joinedusers',
+      },
+    },
+    {
+      $lookup: {
+        from: 'streamingorderproducts',
+        localField: 'streamrequestposts._id',
+        foreignField: 'postId',
+        pipeline: [
+          {
+            $match: { status: 'confirmed' },
+          },
+          {
+            $group: { _id: null, totalOrders: { $sum: '$purchase_quantity' } },
+          },
+        ],
+        as: 'streamOrders',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$streamOrders',
+      },
+    },
+    // approved
+    {
+      $lookup: {
+        from: 'streamingorderproducts',
+        localField: 'streamrequestposts._id',
+        foreignField: 'postId',
+        pipeline: [
+          {
+            $match: { status: 'confirmed' },
+          },
+        ],
+        as: 'confirmed',
+      },
+    },
+    // denied
+    {
+      $lookup: {
+        from: 'streamingorderproducts',
+        localField: 'streamrequestposts._id',
+        foreignField: 'postId',
+        pipeline: [
+          {
+            $match: { status: 'denied' },
+          },
+        ],
+        as: 'denied',
+      },
+    },
+    {
+      $lookup: {
+        from: 'streamingorderproducts',
+        localField: 'streamrequestposts._id',
+        foreignField: 'postId',
+        pipeline: [
+          {
+            $match: { status: 'Pending' },
+          },
+        ],
+        as: 'Pending',
+      },
+    },
+    // check completed or Not
+    {
+      $lookup: {
+        from: 'streamingorderproducts',
+        localField: 'streamrequestposts._id',
+        foreignField: 'postId',
+        pipeline: [
+          {
+            $match: { status: 'Pending' },
+          },
+        ],
+        as: 'completed',
+      },
+    },
+    { $addFields: { completCount: { $size: '$completed' } } },
+    {
+      $project: {
+        _id: 1,
+        streamName: 1,
+        streamingDate_time: 1,
+        productName: '$streamrequestposts.streamPost.products.productTitle',
+        Buyer: { $size: '$joinedusers' },
+        InitiatedQuantity: '$streamrequestposts.streamPost.quantity',
+        postId: '$streamrequestposts._id',
+        productId: '$streamrequestposts.streamPost.products._id',
+        ConfirmedQuantity: { $ifNull: ['$streamOrders.totalOrders', 0] },
+        confirmed: { $size: '$confirmed' },
+        denied: { $size: '$denied' },
+        // completed: '$completed',
+        status: { $cond: { if: { $eq: ['$completCount', 0] }, then: 'Completed', else: 'Pending' } },
+        Pending: { $size: '$Pending' },
+      },
+    },
+  ]);
+  return values;
+};
+
+// Intimation Buyer Flow
+
+const fetch_Stream_Ordered_Details = async (id) => {
+  let values = await streamingOrder.aggregate([
+    {
+      $match: {
+        streamId: id,
+      },
+    },
+  ]);
+  return values;
 };
 
 module.exports = {
@@ -5095,4 +5284,6 @@ module.exports = {
   get_completed_stream_buyer,
   getStock_Manager,
   getPosted_Details_By_Stream,
+  fetchStream_Details_ById,
+  fetch_Stream_Ordered_Details,
 };

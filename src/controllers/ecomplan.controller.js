@@ -389,6 +389,12 @@ const update_approval_Status = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const fetch_Stream_Details_For_Buyer = catchAsync(async (req, res) => {
+  console.log(req.shopId)
+  const data = await Ecomserive.fetch_Stream_Details_For_Buyer(req.shopId);
+  res.send(data);
+});
+
 module.exports = {
   create_Plans,
   create_Plans_addon,
@@ -464,4 +470,5 @@ module.exports = {
   update_Status_For_StreamingOrders,
   fetch_streaming_Details_Approval,
   update_approval_Status,
+  fetch_Stream_Details_For_Buyer,
 };

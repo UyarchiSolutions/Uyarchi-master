@@ -10,7 +10,7 @@ const {
 } = require('../models/ecomplan.model');
 
 const { streamingOrder, streamingorderProduct } = require('../models/liveStreaming/checkout.model');
-
+const { Joinusers } = require('../models/liveStreaming/generateToken.model');
 const ApiError = require('../utils/ApiError');
 const AWS = require('aws-sdk');
 const Dates = require('./Date.serive');
@@ -5395,6 +5395,48 @@ const update_approval_Status = async (id, body) => {
   return values;
 };
 
+// Buyer FLow
+
+const fetch_Stream_Details_For_Buyer = async (buyerId) => {
+  let value = await Joinusers.aggregate([
+    {
+      $match: {
+        shopId: buyerId,
+      },
+    },
+    {
+      $lookup: {
+        from: 'streamrequests',
+        localField: 'streamId',
+        foreignField: '_id',
+        as: 'stream',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$stream',
+      },
+    },
+    {
+      $lookup: {
+        from: 'streamingorders',
+        localField: 'streamId',
+        foreignField: 'streamId',
+        pipeline: [{ $match: { shopId: buyerId } }],
+        as: 'streamOrders',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$streamOrders',
+      },
+    },
+  ]);
+  return value;
+};
+
 module.exports = {
   create_Plans,
   create_Plans_addon,
@@ -5480,4 +5522,5 @@ module.exports = {
   update_Status_For_StreamingOrders,
   fetch_streaming_Details_Approval,
   update_approval_Status,
+  fetch_Stream_Details_For_Buyer,
 };

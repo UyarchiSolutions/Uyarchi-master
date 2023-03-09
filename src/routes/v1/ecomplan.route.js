@@ -118,4 +118,8 @@ router.route('/fetch/Stream/Ordered/Details/:id').get(Ecomcontroller.fetch_Strea
 router.route('/update/Status/For/StreamingOrders/:id').put(Ecomcontroller.update_Status_For_StreamingOrders);
 router.route('/fetch/streaming/Details/Approval/:id').get(Ecomcontroller.fetch_streaming_Details_Approval);
 router.route('/update/approval/Status/:id').put(Ecomcontroller.update_approval_Status);
+
+// Buyer Flow
+router.route('/fetch/Stream/Details/For/Buyer').get(shopverify, Ecomcontroller.fetch_Stream_Details_For_Buyer);
+
 module.exports = router;

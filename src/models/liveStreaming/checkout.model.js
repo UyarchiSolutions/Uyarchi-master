@@ -70,6 +70,14 @@ const streamingOrderschema = mongoose.Schema({
     type: String,
     default: 'ordered',
   },
+  orderStatus: {
+    type: String,
+    default: 'Pending',
+  },
+  approvalStatus: {
+    type: String,
+    default: 'Pending',
+  },
   orderId: {
     type: String,
   },

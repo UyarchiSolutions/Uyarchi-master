@@ -115,5 +115,7 @@ router.route('/fetchStream/details/:id').get(Ecomcontroller.fetchStream_Details_
 // intimation Buyer Flow
 
 router.route('/fetch/Stream/Ordered/Details/:id').get(Ecomcontroller.fetch_Stream_Ordered_Details);
-
+router.route('/update/Status/For/StreamingOrders/:id').put(Ecomcontroller.update_Status_For_StreamingOrders);
+router.route('/fetch/streaming/Details/Approval/:id').get(Ecomcontroller.fetch_streaming_Details_Approval);
+router.route('/update/approval/Status/:id').put(Ecomcontroller.update_approval_Status);
 module.exports = router;

@@ -1501,6 +1501,61 @@ const getIssuedProduct = async (id) => {
         from: 'shoporderclones',
         localField: 'orderId',
         foreignField: '_id',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'productorderclones',
+              localField: '_id',
+              foreignField: 'orderId',
+              pipeline: [
+                {
+                  $lookup: {
+                    from: 'products',
+                    localField: 'productid',
+                    foreignField: '_id',
+                    as: 'products',
+                  },
+                },
+                {
+                  $unwind: '$products',
+                },
+                {
+                  $project: {
+                    _id: 1,
+                    preOrderClose: 1,
+                    active: 1,
+                    status: 1,
+                    issueraised: 1,
+                    issueStatus: 1,
+                    productid: 1,
+                    quantity: 1,
+                    priceperkg: 1,
+                    GST_Number: 1,
+                    HSN_Code: 1,
+                    productpacktypeId: 1,
+                    packKg: 1,
+                    unit: 1,
+                    time: 1,
+                    customerId: 1,
+                    finalQuantity: 1,
+                    finalPricePerKg: 1,
+                    created: 1,
+                    issue: 1,
+                    issueDate: 1,
+                    issuediscription: 1,
+                    issuequantity: 1,
+                    issuetype: 1,
+                    issueId: 1,
+                    videos: 1,
+                    image: 1,
+                    product: '$products.productTitle',
+                  }
+                }
+              ],
+              as: 'productorderclones',
+            },
+          },
+        ],
         as: 'shoporderclones',
       },
     },
@@ -1538,6 +1593,7 @@ const getIssuedProduct = async (id) => {
         videos: 1,
         image: 1,
         product: '$products.productTitle',
+        productorderclones: "$shoporderclones.productorderclones"
       },
     },
   ]);

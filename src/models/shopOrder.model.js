@@ -444,6 +444,9 @@ const productorderCloneSchema = new mongoose.Schema({
   issue_Res: {
     type: String,
   },
+  issue_assgin_by: {
+    type: String,
+  },
   image: {
     type: Array,
   },

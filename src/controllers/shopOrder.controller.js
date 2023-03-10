@@ -430,6 +430,10 @@ const issueStatus_Update = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const issueStatus_Update_assign = catchAsync(async (req, res) => {
+  const data = await shopOrderService.issueStatus_Update_assign(req.params.id, req.body);
+  res.send(data);
+});
 module.exports = {
   vieworderbill_byshop,
   createshopOrder,
@@ -499,4 +503,5 @@ module.exports = {
   order_issue_return,
   shopDataMap,
   issueStatus_Update,
+  issueStatus_Update_assign
 };

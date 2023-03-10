@@ -6552,6 +6552,16 @@ const issueStatus_Update = async (id, body) => {
   return values;
 };
 
+const issueStatus_Update_assign = async (id, body) => {
+  const { user } = body;
+  let values = ProductorderClone.findById(id);
+  if (!values) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'productOrders Not Found');
+  }
+  values = await ProductorderClone.findByIdAndUpdate({ _id: id }, { issStatus: "Assgined", issue_assgin_by: user }, { new: true });
+  return values;
+};
+
 module.exports = {
   // product
   createProductOrderClone,
@@ -6624,4 +6634,5 @@ module.exports = {
   order_issue_return,
   shopDataMap,
   issueStatus_Update,
+  issueStatus_Update_assign
 };

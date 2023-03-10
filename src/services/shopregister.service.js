@@ -1555,6 +1555,17 @@ const getIssuedProduct = async (id) => {
               as: 'productorderclones',
             },
           },
+          {
+            $lookup: {
+              from: 'b2bshopclones',
+              localField: 'shopId',
+              foreignField: '_id',
+              as: 'b2bshopclones',
+            },
+          },
+          {
+            $unwind: '$b2bshopclones',
+          },
         ],
         as: 'shoporderclones',
       },
@@ -1593,7 +1604,8 @@ const getIssuedProduct = async (id) => {
         videos: 1,
         image: 1,
         product: '$products.productTitle',
-        productorderclones: "$shoporderclones.productorderclones"
+        productorderclones: "$shoporderclones.productorderclones",
+        SName: "$shoporderclonesb2bshopclones.SName"
       },
     },
   ]);

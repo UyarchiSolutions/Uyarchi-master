@@ -83,6 +83,6 @@ router.route('/update/process/to/return').put(shopOrderController.order_process_
 router.route('/get/issue/order/returns').get(shopOrderController.order_issue_return);
 router.route('/shopDataMap/ndd').get(shopOrderController.shopDataMap);
 router.route('/issueStatus_Update/:id').put(shopOrderController.issueStatus_Update);
-router.route('/issueStatus_Update/assign/:id').put(shopOrderController.issueStatus_Update);
+router.route('/assign/issueStatus_Update/:id').put(shopOrderController.issueStatus_Update_assign);
 
 module.exports = router;

@@ -1607,7 +1607,7 @@ const getIssuedProduct = async (id) => {
         productorderclones: "$shoporderclones.productorderclones",
         SName: "$shoporderclones.b2bshopclones.SName",
         createdDate: "$shoporderclones.created",
-        delivered_date: "$delivered_date.",
+        delivered_date: "$shoporderclones.delivered_date",
       },
     },
   ]);

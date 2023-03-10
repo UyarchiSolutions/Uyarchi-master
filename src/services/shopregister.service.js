@@ -1605,7 +1605,7 @@ const getIssuedProduct = async (id) => {
         image: 1,
         product: '$products.productTitle',
         productorderclones: "$shoporderclones.productorderclones",
-        SName: "$shoporderclonesb2bshopclones.SName"
+        SName: "$shoporderclones.b2bshopclones.SName"
       },
     },
   ]);

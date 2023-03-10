@@ -9,8 +9,8 @@ const {
   Slab,
 } = require('../models/ecomplan.model');
 
-const { streamingOrder } = require('../models/liveStreaming/checkout.model');
-
+const { streamingOrder, streamingorderProduct } = require('../models/liveStreaming/checkout.model');
+const { Joinusers } = require('../models/liveStreaming/generateToken.model');
 const ApiError = require('../utils/ApiError');
 const AWS = require('aws-sdk');
 const Dates = require('./Date.serive');
@@ -4939,7 +4939,7 @@ const getStock_Manager = async (page) => {
         startTime: 1,
         streamEnd_Time: 1,
         created: 1,
-        status:"Pending"
+        status: 'Pending',
       },
     },
     {
@@ -5200,8 +5200,241 @@ const fetch_Stream_Ordered_Details = async (id) => {
         streamId: id,
       },
     },
+    {
+      $lookup: {
+        from: 'streamrequests',
+        localField: 'streamId',
+        foreignField: '_id',
+        as: 'stream',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$stream',
+      },
+    },
+    {
+      $lookup: {
+        from: 'b2bshopclones',
+        localField: 'shopId',
+        foreignField: '_id',
+        as: 'shops',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$shops',
+      },
+    },
+    {
+      $lookup: {
+        from: 'streamingorderproducts',
+        localField: '_id',
+        foreignField: 'orderId',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'products',
+              localField: 'productId',
+              foreignField: '_id',
+              as: 'product',
+            },
+          },
+          {
+            $unwind: '$product',
+          },
+          {
+            $project: {
+              _id: 1,
+              status: 1,
+              purchase_quantity: 1,
+              purchase_price: 1,
+              productName: '$product.productTitle',
+            },
+          },
+        ],
+        as: 'orderedProducts',
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        name: 1,
+        orderId: 1,
+        No_Of_Product: { $size: '$stream.post' },
+        orderedProducts: { $size: '$orderedProducts' },
+        orderStatus: 1,
+        orderedProducts: '$orderedProducts',
+      },
+    },
   ]);
   return values;
+};
+
+const update_Status_For_StreamingOrders = async (id, body) => {
+  let values = await streamingOrder.findById(id);
+  if (!values) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'streaming order not found 🖕');
+  }
+  values = await streamingOrder.findByIdAndUpdate({ _id: id }, { orderStatus: body.status }, { new: true });
+  return values;
+};
+
+const fetch_streaming_Details_Approval = async (id) => {
+  let values = await streamingOrder.aggregate([
+    {
+      $match: {
+        streamId: id,
+      },
+    },
+    {
+      $lookup: {
+        from: 'streamingorderpayments',
+        localField: '_id',
+        foreignField: 'orderId',
+        as: 'orderPayment',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$orderPayment',
+      },
+    },
+    {
+      $lookup: {
+        from: 'streamingorderproducts',
+        localField: '_id',
+        foreignField: 'orderId',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'products',
+              localField: 'productId',
+              foreignField: '_id',
+              as: 'product',
+            },
+          },
+          {
+            $unwind: {
+              preserveNullAndEmptyArrays: true,
+              path: '$product',
+            },
+          },
+        ],
+        as: 'orders',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$orders',
+      },
+    },
+    {
+      $lookup: {
+        from: 'streamrequests',
+        localField: 'streamId',
+        foreignField: '_id',
+        as: 'streaming',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$streaming',
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        name: 1,
+        orderedKg: '$orders.purchase_quantity',
+        checkout: '$orderPayment.created',
+        approvalStatus: 1,
+        productName: '$orders.product.productTitle',
+        streamingDate: '$streaming.streamingDate_time',
+        streamingStart: '$streaming.startTime',
+        streamEndTime: '$streaming.endTime',
+        streamingName: '$streaming.streamName',
+        ordered: 1,
+      },
+    },
+  ]);
+  let ordered = await streamingorderProduct.aggregate([
+    {
+      $match: {
+        streamId: id,
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        orderedKg: { $sum: '$purchase_quantity' },
+      },
+    },
+  ]);
+  return {
+    values: values,
+    orderedKg: ordered.length > 0 ? ordered[0].orderedKg : 0,
+    confirmedKg: 0,
+    cancelledKg: 0,
+    deniedKg: 0,
+    message: 'confirmedKg, cancelledKg and deniedKg is Dummy Data',
+  };
+};
+
+const update_approval_Status = async (id, body) => {
+  let values = await streamingOrder.findById(id);
+  if (!values) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'streaming order not found 🖕');
+  }
+  values = await streamingOrder.findByIdAndUpdate({ _id: id }, { approvalStatus: body.status }, { new: true });
+  return values;
+};
+
+// Buyer FLow
+
+const fetch_Stream_Details_For_Buyer = async (buyerId) => {
+  let value = await Joinusers.aggregate([
+    {
+      $match: {
+        shopId: buyerId,
+      },
+    },
+    {
+      $lookup: {
+        from: 'streamrequests',
+        localField: 'streamId',
+        foreignField: '_id',
+        as: 'stream',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$stream',
+      },
+    },
+    {
+      $lookup: {
+        from: 'streamingorders',
+        localField: 'streamId',
+        foreignField: 'streamId',
+        pipeline: [{ $match: { shopId: buyerId } }],
+        as: 'streamOrders',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$streamOrders',
+      },
+    },
+  ]);
+  return value;
 };
 
 module.exports = {
@@ -5286,4 +5519,8 @@ module.exports = {
   getPosted_Details_By_Stream,
   fetchStream_Details_ById,
   fetch_Stream_Ordered_Details,
+  update_Status_For_StreamingOrders,
+  fetch_streaming_Details_Approval,
+  update_approval_Status,
+  fetch_Stream_Details_For_Buyer,
 };

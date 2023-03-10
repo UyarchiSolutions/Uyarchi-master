@@ -374,6 +374,27 @@ const fetch_Stream_Ordered_Details = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const update_Status_For_StreamingOrders = catchAsync(async (req, res) => {
+  const data = await Ecomserive.update_Status_For_StreamingOrders(req.params.id, req.body);
+  res.send(data);
+});
+
+const fetch_streaming_Details_Approval = catchAsync(async (req, res) => {
+  const data = await Ecomserive.fetch_streaming_Details_Approval(req.params.id);
+  res.send(data);
+});
+
+const update_approval_Status = catchAsync(async (req, res) => {
+  const data = await Ecomserive.update_approval_Status(req.params.id, req.body);
+  res.send(data);
+});
+
+const fetch_Stream_Details_For_Buyer = catchAsync(async (req, res) => {
+  console.log(req.shopId)
+  const data = await Ecomserive.fetch_Stream_Details_For_Buyer(req.shopId);
+  res.send(data);
+});
+
 module.exports = {
   create_Plans,
   create_Plans_addon,
@@ -446,4 +467,8 @@ module.exports = {
   getPosted_Details_By_Stream,
   fetchStream_Details_ById,
   fetch_Stream_Ordered_Details,
+  update_Status_For_StreamingOrders,
+  fetch_streaming_Details_Approval,
+  update_approval_Status,
+  fetch_Stream_Details_For_Buyer,
 };

@@ -1566,6 +1566,17 @@ const getIssuedProduct = async (id) => {
           {
             $unwind: '$b2bshopclones',
           },
+          {
+            $lookup: {
+              from: 'b2busers',
+              localField: 'deliveryExecutiveId',
+              foreignField: '_id',
+              as: 'b2busers',
+            },
+          },
+          {
+            $unwind: '$b2busers',
+          },
         ],
         as: 'shoporderclones',
       },
@@ -1573,6 +1584,8 @@ const getIssuedProduct = async (id) => {
     {
       $unwind: '$shoporderclones',
     },
+
+    // deliveryExecutiveId
     {
       $project: {
         _id: 1,
@@ -1608,6 +1621,7 @@ const getIssuedProduct = async (id) => {
         SName: "$shoporderclones.b2bshopclones.SName",
         createdDate: "$shoporderclones.created",
         delivered_date: "$shoporderclones.delivered_date",
+        delivered_users: "$shoporderclones.b2busers.name"
       },
     },
   ]);

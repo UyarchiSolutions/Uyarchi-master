@@ -7,7 +7,7 @@ router.route('/').post(authorization, pickup.array('photoCapture'), managePickup
 
 router.route('/getAll/:userId/:date/:page').get(managePickupController.getAllManagepickup);
 router.route('/:id').get(managePickupController.getManagePickupById);
-router.route('/update/pickup/:id').put(managePickupController.update_pickup_location);
+router.route('/update/pickup').put(managePickupController.update_pickup_location);
 router.route('/getAll/pickup/:userId/:date/:todate').get(managePickupController.getAllManagepickupLocation);
 
 router.route('/getAll/pickuploaction').get(authorization, managePickupController.getallPickuplocation);

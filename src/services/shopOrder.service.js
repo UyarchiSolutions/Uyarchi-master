@@ -6543,12 +6543,12 @@ const shopDataMap = async (query) => {
 };
 
 const issueStatus_Update = async (id, body) => {
-  const { status } = body;
+  const { status, issue_Res } = body;
   let values = ProductorderClone.findById(id);
   if (!values) {
     throw new ApiError(httpStatus.NOT_FOUND, 'productOrders Not Found');
   }
-  values = await ProductorderClone.findByIdAndUpdate({ _id: id }, { issStatus: status }, { new: true });
+  values = await ProductorderClone.findByIdAndUpdate({ _id: id }, { issStatus: status, issue_Res: issue_Res }, { new: true });
   return values;
 };
 

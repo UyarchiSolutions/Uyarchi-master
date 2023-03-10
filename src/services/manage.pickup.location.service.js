@@ -153,6 +153,11 @@ const getManagePickupById = async (id) => {
   return getpickup;
 };
 
+const update_pickup_location = async (req) => {
+  let getpickup = await PickupLocation.findByIdAndUpdate({ _id: req.query.id }, req.body, { new: true });
+  return getpickup;
+};
+
 const getAllManagepickupLocation = async (userId, date, todate) => {
   let datematch = { active: { $eq: true } };
   let usermatch = { active: { $eq: true } };
@@ -248,5 +253,6 @@ module.exports = {
   getAllManagepickup,
   getManagePickupById,
   getAllManagepickupLocation,
-  getallPickuplocation
+  getallPickuplocation,
+  update_pickup_location
 };

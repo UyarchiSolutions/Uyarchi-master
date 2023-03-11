@@ -783,7 +783,6 @@ const get_all_Post_with_page_all = async (req, status) => {
               from: 'streamrequests',
               localField: 'streamRequest',
               foreignField: '_id',
-              pipeline: [{ $match: { $or: [{ startTime: { $gte: date_now } }] } }],
               as: 'streamrequests',
             },
           },
@@ -839,7 +838,8 @@ const get_all_Post_with_page_all = async (req, status) => {
         streamName: '$streamrequestposts.streamName',
         streamingDate: '$streamrequestposts.streamingDate',
         streamingTime: '$streamrequestposts.streamingTime',
-        endTime: "$streamrequestposts.endTime"
+        endTime: "$streamrequestposts.endTime",
+        // streamrequestposts: "$streamrequestposts"
       },
     },
     { $sort: { DateIso: -1 } },

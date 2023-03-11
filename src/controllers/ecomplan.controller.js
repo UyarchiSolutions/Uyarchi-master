@@ -87,7 +87,9 @@ const get_all_Post_with_page = catchAsync(async (req, res) => {
   if (status == 'removed') {
     value = await Ecomserive.get_all_Post_with_page_removed(req);
   }
-
+  if (status == 'all') {
+    value = await Ecomserive.get_all_Post_with_page_all(req);
+  }
   res.send(value);
 });
 const get_one_post = catchAsync(async (req, res) => {

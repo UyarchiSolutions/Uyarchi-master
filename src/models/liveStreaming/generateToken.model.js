@@ -97,6 +97,25 @@ const tempToken = mongoose.Schema({
   recoredStart: {
     type: String,
     default: "Pending"
+  },
+  audio: {
+    type: Boolean,
+    default: false,
+  },
+  video: {
+    type: Boolean,
+    default: false,
+  },
+  allMedia: {
+    type: Boolean,
+    default: false,
+  },
+  end_stream: {
+    type: Boolean,
+    default: false,
+  },
+  controlledBy: {
+    type: String,
   }
 });
 
@@ -138,6 +157,7 @@ const joinedusers = mongoose.Schema({
   latestedToken: {
     type: String,
   }
+
 
 });
 

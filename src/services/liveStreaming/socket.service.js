@@ -13,6 +13,19 @@ const { tempTokenModel, Joinusers } = require('../../models/liveStreaming/genera
 const leave_subhost = async (req, io) => {
   io.sockets.emit(req.streamId + req.uid, req);
 }
+
+const host_controll = async (req, io) => {
+  console.log(req)
+  let token = await tempTokenModel.findById(req.tokenId);
+  let res = await tempTokenModel.findOne({ Uid: req.userId, chennel: token.chennel })
+  let result = await tempTokenModel.findByIdAndUpdate({ _id: res._id }, req, { new: true })
+  result.controlledBy = 'mainhost'
+  result.save();
+  console.log(result)
+  // , req, { new: true }
+  // let res = await tempTokenModel.findByIdAndUpdate({ _id: token }, req, { new: true })
+  io.sockets.emit(result._id + result.Uid, { req, result });
+}
 const startStop_post = async (req, io) => {
   console.log(req)
   // // console.log(req)
@@ -176,5 +189,6 @@ const startStop_post = async (req, io) => {
 
 module.exports = {
   startStop_post,
-  leave_subhost
+  leave_subhost,
+  host_controll
 };

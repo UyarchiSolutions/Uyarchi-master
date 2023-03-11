@@ -70,6 +70,9 @@ io.sockets.on('connection', async (socket) => {
   socket.on('', (msg) => {
     console.log('message: ' + msg);
   });
+  socket.on('host_controll', async (data) => {
+    await socketService.host_controll(data, io)
+  });
 });
 app.use(function (req, res, next) {
   req.io = io;

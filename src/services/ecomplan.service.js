@@ -2041,7 +2041,14 @@ const go_live_stream_host = async (req, userId) => {
       },
     },
     { $unwind: '$temptokens' },
-
+    {
+      $lookup: {
+        from: 'temptokens',
+        localField: '_id',
+        foreignField: 'streamId',
+        as: 'temptokens_sub',
+      },
+    },
     {
       $lookup: {
         from: 'streamrequestposts',
@@ -2103,6 +2110,7 @@ const go_live_stream_host = async (req, userId) => {
         primaryHost: { $eq: ['$allot_host_1', 'my self'] },
         chatPermistion: { $eq: ['$allot_chat', 'my self'] },
         chat_need: 1,
+        temptokens_sub: "$temptokens_sub"
       },
     },
   ]);

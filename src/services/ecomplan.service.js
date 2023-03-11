@@ -2046,7 +2046,7 @@ const go_live_stream_host = async (req, userId) => {
         from: 'temptokens',
         localField: '_id',
         foreignField: 'streamId',
-        pipeline: [{ $match: { $and: [{ type: { $eq: "sub" } }] } }],
+        pipeline: [{ $match: { $and: [{ type: { $eq: "subhost" } }] } }],
         as: 'temptokens_sub',
       },
     },

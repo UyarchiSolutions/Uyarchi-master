@@ -799,6 +799,7 @@ const get_all_Post_with_page_all = async (req, status) => {
               streamName: '$streamrequests.streamName',
               streamingDate: '$streamrequests.streamingDate',
               streamingTime: '$streamrequests.streamingTime',
+              endTime: "$streamrequests.endTime",
             },
           },
         ],

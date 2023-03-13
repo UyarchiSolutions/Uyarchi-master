@@ -723,6 +723,136 @@ const get_all_Post_with_page_removed = async (req) => {
   return { value, total: total.length };
 };
 
+
+const get_all_Post_with_page_all = async (req, status) => {
+  console.log('asda');
+  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
+  var date_now = new Date().getTime();
+  let filterdate = req.query.date;
+  dateMatch = { active: true };
+  if (filterdate != null && filterdate != '' && filterdate != 'null') {
+    let date = filterdate.split(',');
+    if (date.length == 2) {
+      console.log();
+      dateMatch = {
+        $and: [{ DateIso: { $gte: new Date(date[0]).getTime() } }, { DateIso: { $lte: new Date(date[1]).getTime() } }],
+      };
+    }
+    console.log(date, dateMatch);
+  }
+  console.log(dateMatch);
+
+  const value = await StreamPost.aggregate([
+    // {
+    //     $addFields: {
+    //         date: { $dateToString: { format: "%Y-%m-%d", date: "$DateIso" } }
+
+    //     }
+    // },
+    { $match: { $and: [dateMatch, { suppierId: { $eq: req.userId } }] } },
+    {
+      $lookup: {
+        from: 'products',
+        localField: 'productId',
+        foreignField: '_id',
+        as: 'productName',
+      },
+    },
+    {
+      $unwind: '$productName',
+    },
+    {
+      $lookup: {
+        from: 'categories',
+        localField: 'categoryId',
+        foreignField: '_id',
+        as: 'categories',
+      },
+    },
+    {
+      $unwind: '$categories',
+    },
+    {
+      $lookup: {
+        from: 'streamrequestposts',
+        localField: '_id',
+        foreignField: 'postId',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'streamrequests',
+              localField: 'streamRequest',
+              foreignField: '_id',
+              as: 'streamrequests',
+            },
+          },
+          {
+            $unwind: {
+              preserveNullAndEmptyArrays: true,
+              path: '$streamrequests',
+            },
+          },
+          {
+            $project: {
+              _id: 1,
+              streamName: '$streamrequests.streamName',
+              streamingDate: '$streamrequests.streamingDate',
+              streamingTime: '$streamrequests.streamingTime',
+              endTime: "$streamrequests.endTime",
+            },
+          },
+        ],
+        as: 'streamrequestposts',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$streamrequestposts',
+      },
+    },
+    {
+      $project: {
+        productId: 1,
+        categoryId: 1,
+        quantity: 1,
+        marketPlace: 1,
+        offerPrice: 1,
+        postLiveStreamingPirce: 1,
+        minLots: 1,
+        incrementalLots: 1,
+        _id: 1,
+        catName: '$categories.categoryName',
+        productName: '$productName.productTitle',
+        created: 1,
+        DateIso: 1,
+        images: 1,
+        video: 1,
+        location: 1,
+        discription: 1,
+        bookingAmount: 1,
+        afterStreaming: 1,
+        status: 1,
+        streamStart: 1,
+        streamEnd: 1,
+        streamName: '$streamrequestposts.streamName',
+        streamingDate: '$streamrequestposts.streamingDate',
+        streamingTime: '$streamrequestposts.streamingTime',
+        endTime: "$streamrequestposts.endTime",
+        // streamrequestposts: "$streamrequestposts"
+      },
+    },
+    { $sort: { DateIso: -1 } },
+    { $skip: 10 * page },
+    { $limit: 10 },
+  ]);
+  const total = await StreamPost.aggregate([
+    { $match: { $and: [dateMatch, { suppierId: { $eq: req.userId } }] } },
+    { $sort: { DateIso: -1 } },
+  ]);
+  return { value, total: total.length };
+};
+
 const get_all_Post_with_page = async (req, status) => {
   console.log('asda');
   let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
@@ -1911,7 +2041,15 @@ const go_live_stream_host = async (req, userId) => {
       },
     },
     { $unwind: '$temptokens' },
-
+    {
+      $lookup: {
+        from: 'temptokens',
+        localField: '_id',
+        foreignField: 'streamId',
+        pipeline: [{ $match: { $and: [{ type: { $eq: "subhost" } }] } }],
+        as: 'temptokens_sub',
+      },
+    },
     {
       $lookup: {
         from: 'streamrequestposts',
@@ -1973,6 +2111,7 @@ const go_live_stream_host = async (req, userId) => {
         primaryHost: { $eq: ['$allot_host_1', 'my self'] },
         chatPermistion: { $eq: ['$allot_chat', 'my self'] },
         chat_need: 1,
+        temptokens_sub: "$temptokens_sub"
       },
     },
   ]);
@@ -2503,8 +2642,8 @@ const regisetr_strean_instrest = async (req) => {
       participents.noOfParticipants > count
         ? 'Confirmed'
         : participents.noOfParticipants + participents.noOfParticipants / 2 > count
-        ? 'RAC'
-        : 'Waiting';
+          ? 'RAC'
+          : 'Waiting';
     await Dates.create_date(findresult);
   } else {
     if (findresult.status != 'Registered') {
@@ -2513,8 +2652,8 @@ const regisetr_strean_instrest = async (req) => {
         participents.noOfParticipants > count
           ? 'Confirmed'
           : participents.noOfParticipants + participents.noOfParticipants / 2 > count
-          ? 'RAC'
-          : 'Waiting';
+            ? 'RAC'
+            : 'Waiting';
       findresult.eligible = participents.noOfParticipants > count;
       findresult.status = 'Registered';
       await Dates.create_date(findresult);
@@ -5646,6 +5785,7 @@ module.exports = {
   get_subhost_streams,
   cancel_stream,
   end_stream,
+  get_all_Post_with_page_all,
   get_all_Post_with_page_live,
   get_all_Post_with_page_completed,
   get_all_Post_with_page_exhausted,

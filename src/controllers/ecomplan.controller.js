@@ -390,8 +390,22 @@ const update_approval_Status = catchAsync(async (req, res) => {
 });
 
 const fetch_Stream_Details_For_Buyer = catchAsync(async (req, res) => {
-  console.log(req.shopId)
   const data = await Ecomserive.fetch_Stream_Details_For_Buyer(req.shopId);
+  res.send(data);
+});
+
+const update_Joined_User_Status_For_Buyer = catchAsync(async (req, res) => {
+  const data = await Ecomserive.update_Joined_User_Status_For_Buyer(req.params.id, req.body);
+  res.send(data);
+});
+
+const fetch_Stream_Product_Details = catchAsync(async (req, res) => {
+  const data = await Ecomserive.fetch_Stream_Product_Details(req.params.id);
+  res.send(data);
+});
+
+const fetch_stream_Payment_Details = catchAsync(async (req, res) => {
+  const data = await Ecomserive.fetch_stream_Payment_Details(req.params.id);
   res.send(data);
 });
 
@@ -471,4 +485,7 @@ module.exports = {
   fetch_streaming_Details_Approval,
   update_approval_Status,
   fetch_Stream_Details_For_Buyer,
+  update_Joined_User_Status_For_Buyer,
+  fetch_Stream_Product_Details,
+  fetch_stream_Payment_Details,
 };

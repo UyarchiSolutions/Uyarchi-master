@@ -5409,6 +5409,22 @@ const fetch_Stream_Details_For_Buyer = async (buyerId) => {
         from: 'streamrequests',
         localField: 'streamId',
         foreignField: '_id',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'suppliers',
+              localField: 'suppierId',
+              foreignField: '_id',
+              as: 'supplier',
+            },
+          },
+          {
+            $unwind: {
+              preserveNullAndEmptyArrays: true,
+              path: '$supplier',
+            },
+          },
+        ],
         as: 'stream',
       },
     },
@@ -5433,9 +5449,164 @@ const fetch_Stream_Details_For_Buyer = async (buyerId) => {
         path: '$streamOrders',
       },
     },
+    {
+      $project: {
+        _id: 1,
+        active: 1,
+        archive: 1,
+        streamName: '$stream.streamName',
+        shopName: '$stream.supplier.tradeName',
+        orderId: '$streamOrders.orderId',
+        orderedPrice: '$streamOrders.totalAmount',
+        status: 1,
+        AdvancePaid: 'Dummy Data',
+        streamId: '$stream._id',
+      },
+    },
   ]);
   return value;
 };
+
+// update Joined User Status For Buyer Flow
+
+const update_Joined_User_Status_For_Buyer = async (id, body) => {
+  let values = await Joinusers.findById(id);
+  console.log(values);
+  if (!values) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Buyer Not Found 🖕');
+  }
+  values = await Joinusers.findByIdAndUpdate({ _id: id }, { status: body.status }, { new: true });
+  return values;
+};
+
+const fetch_Stream_Product_Details = async (id) => {
+  let values = await streamingorderProduct.aggregate([
+    {
+      $match: {
+        streamId: id,
+      },
+    },
+    {
+      $lookup: {
+        from: 'streamrequests',
+        localField: 'streamId',
+        foreignField: '_id',
+        as: 'stream',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$stream',
+      },
+    },
+    {
+      $lookup: {
+        from: 'streamingorderpayments',
+        localField: 'orderId',
+        foreignField: 'orderId',
+        as: 'orderPayment',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$orderPayment',
+      },
+    },
+    {
+      $lookup: {
+        from: 'products',
+        localField: 'productId',
+        foreignField: '_id',
+        as: 'products',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$products',
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        purchase_quantity: 1,
+        purchase_price: 1,
+        TotalAmt: '$orderPayment.totalAmount',
+        paidAmt: '$orderPayment.paidAmt',
+        PendingAmt: { $subtract: ['$orderPayment.totalAmount', '$orderPayment.paidAmt'] },
+        status: 1,
+        streamName: '$stream.streamName',
+        streamDate: '$stream.streamingDate_time',
+        streamId: '$stream._id',
+        productName: '$products.productTitle',
+      },
+    },
+  ]);
+  return values;
+};
+
+const fetch_stream_Payment_Details = async (id) => {
+  let values = await streamingorderProduct.aggregate([
+    {
+      $match: {
+        streamId: id,
+      },
+    },
+    {
+      $lookup: {
+        from: 'products',
+        localField: 'productId',
+        foreignField: '_id',
+        as: 'product',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$product',
+      },
+    },
+    {
+      $lookup: {
+        from: 'streamingorderpayments',
+        localField: 'orderId',
+        foreignField: 'orderId',
+        as: 'orderPayment',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$orderPayment',
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        streamId: 1,
+        purchase_quantity: 1,
+        TotalAmt: '$orderPayment.totalAmount',
+        paidAmt: '$orderPayment.paidAmt',
+        PendingAmt: { $subtract: ['$orderPayment.totalAmount', '$orderPayment.paidAmt'] },
+        status: 1,
+      },
+    },
+  ]);
+  let orderDetails = {
+    orderedAmt: 'Dummy Data',
+    paidAmt: 'Dummy Data',
+    cancelledAmt: 'Dummy Data',
+    Rejected: 'Dummy Data',
+    Denied: 'DUmmy Data',
+    confirmedAmt: 'Dummy Data',
+    PaidAmount: 'Dummy Data',
+    BalanceAmt: 'Dummy Data',
+  };
+  return { values: values, orderDetails: orderDetails };
+};
+
 
 module.exports = {
   create_Plans,
@@ -5523,4 +5694,7 @@ module.exports = {
   fetch_streaming_Details_Approval,
   update_approval_Status,
   fetch_Stream_Details_For_Buyer,
+  update_Joined_User_Status_For_Buyer,
+  fetch_Stream_Product_Details,
+  fetch_stream_Payment_Details,
 };

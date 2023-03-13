@@ -5076,7 +5076,7 @@ const getStock_Manager = async (page) => {
         No_Of_Post: { $size: '$post' },
         aggregatedBuyers: { $size: '$buyers' },
         startTime: 1,
-        streamEnd_Time: 1,
+        endTime: 1,
         created: 1,
         status: 'Pending',
       },

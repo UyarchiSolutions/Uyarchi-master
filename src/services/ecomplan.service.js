@@ -723,7 +723,6 @@ const get_all_Post_with_page_removed = async (req) => {
   return { value, total: total.length };
 };
 
-
 const get_all_Post_with_page_all = async (req, status) => {
   console.log('asda');
   let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
@@ -798,7 +797,7 @@ const get_all_Post_with_page_all = async (req, status) => {
               streamName: '$streamrequests.streamName',
               streamingDate: '$streamrequests.streamingDate',
               streamingTime: '$streamrequests.streamingTime',
-              endTime: "$streamrequests.endTime",
+              endTime: '$streamrequests.endTime',
             },
           },
         ],
@@ -838,7 +837,7 @@ const get_all_Post_with_page_all = async (req, status) => {
         streamName: '$streamrequestposts.streamName',
         streamingDate: '$streamrequestposts.streamingDate',
         streamingTime: '$streamrequestposts.streamingTime',
-        endTime: "$streamrequestposts.endTime",
+        endTime: '$streamrequestposts.endTime',
         // streamrequestposts: "$streamrequestposts"
       },
     },
@@ -2046,7 +2045,7 @@ const go_live_stream_host = async (req, userId) => {
         from: 'temptokens',
         localField: '_id',
         foreignField: 'streamId',
-        pipeline: [{ $match: { $and: [{ type: { $eq: "subhost" } }] } }],
+        pipeline: [{ $match: { $and: [{ type: { $eq: 'subhost' } }] } }],
         as: 'temptokens_sub',
       },
     },
@@ -2111,7 +2110,7 @@ const go_live_stream_host = async (req, userId) => {
         primaryHost: { $eq: ['$allot_host_1', 'my self'] },
         chatPermistion: { $eq: ['$allot_chat', 'my self'] },
         chat_need: 1,
-        temptokens_sub: "$temptokens_sub"
+        temptokens_sub: '$temptokens_sub',
       },
     },
   ]);
@@ -2642,8 +2641,8 @@ const regisetr_strean_instrest = async (req) => {
       participents.noOfParticipants > count
         ? 'Confirmed'
         : participents.noOfParticipants + participents.noOfParticipants / 2 > count
-          ? 'RAC'
-          : 'Waiting';
+        ? 'RAC'
+        : 'Waiting';
     await Dates.create_date(findresult);
   } else {
     if (findresult.status != 'Registered') {
@@ -2652,8 +2651,8 @@ const regisetr_strean_instrest = async (req) => {
         participents.noOfParticipants > count
           ? 'Confirmed'
           : participents.noOfParticipants + participents.noOfParticipants / 2 > count
-            ? 'RAC'
-            : 'Waiting';
+          ? 'RAC'
+          : 'Waiting';
       findresult.eligible = participents.noOfParticipants > count;
       findresult.status = 'Registered';
       await Dates.create_date(findresult);
@@ -5166,10 +5165,10 @@ const getPosted_Details_By_Stream = async (id) => {
       },
     },
     {
-      $unwind:{
+      $unwind: {
         preserveNullAndEmptyArrays: true,
         path: '$Stream',
-      }
+      },
     },
     {
       $project: {
@@ -5178,7 +5177,7 @@ const getPosted_Details_By_Stream = async (id) => {
         productName: '$streamPost.products.productTitle',
         PostedKg: '$streamPost.quantity',
         Bookedkg: { $ifNull: ['$orderProducts.sumValue', 0] },
-        streamName:'$Stream.streamName',
+        streamName: '$Stream.streamName',
       },
     },
   ]);
@@ -5308,6 +5307,19 @@ const fetchStream_Details_ById = async (id) => {
         as: 'Pending',
       },
     },
+    {
+      $lookup: {
+        from: 'streamingorderproducts',
+        localField: 'streamrequestposts._id',
+        foreignField: 'postId',
+        pipeline: [
+          {
+            $match: { status: 'Cancelled' },
+          },
+        ],
+        as: 'Cancelled',
+      },
+    },
     // check completed or Not
     {
       $lookup: {
@@ -5339,6 +5351,7 @@ const fetchStream_Details_ById = async (id) => {
         // completed: '$completed',
         status: { $cond: { if: { $eq: ['$completCount', 0] }, then: 'Completed', else: 'Pending' } },
         Pending: { $size: '$Pending' },
+        Cancelled: { $size: '$Cancelled' },
       },
     },
   ]);
@@ -5760,7 +5773,6 @@ const fetch_stream_Payment_Details = async (id) => {
   };
   return { values: values, orderDetails: orderDetails };
 };
-
 
 module.exports = {
   create_Plans,

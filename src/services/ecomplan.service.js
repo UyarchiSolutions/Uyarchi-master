@@ -5158,12 +5158,27 @@ const getPosted_Details_By_Stream = async (id) => {
       },
     },
     {
+      $lookup: {
+        from: 'streamrequests',
+        localField: 'streamRequest',
+        foreignField: '_id',
+        as: 'Stream',
+      },
+    },
+    {
+      $unwind:{
+        preserveNullAndEmptyArrays: true,
+        path: '$Stream',
+      }
+    },
+    {
       $project: {
         _id: 1,
         postId: 1,
         productName: '$streamPost.products.productTitle',
         PostedKg: '$streamPost.quantity',
         Bookedkg: { $ifNull: ['$orderProducts.sumValue', 0] },
+        streamName:'$Stream.streamName',
       },
     },
   ]);

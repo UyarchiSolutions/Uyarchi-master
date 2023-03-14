@@ -6558,7 +6558,7 @@ const issueStatus_Update_assign = async (id, body) => {
   if (!values) {
     throw new ApiError(httpStatus.NOT_FOUND, 'productOrders Not Found');
   }
-  values = await ProductorderClone.findByIdAndUpdate({ _id: id }, { issStatus: "Assgined", issue_assgin_by: user }, { new: true });
+  values = await ProductorderClone.findByIdAndUpdate({ _id: id }, { issStatus: "Assgined", issue_assgin_by: user, issue_collection_status: "Pending" }, { new: true });
   return values;
 };
 
@@ -6656,7 +6656,8 @@ const get_issue_product_list = async (req) => {
         TotalOrders: { $size: '$shoporderclones.product' },
         issuedOrder: { $size: '$shoporder' },
         issStatus: 1,
-        issue_Res: 1
+        issue_Res: 1,
+        issue_collection_status: 1
       },
     },
     {
@@ -6721,6 +6722,61 @@ const get_issue_product_list = async (req) => {
     },
   ]);
   return { values: values, total: total.length };
+};
+
+const issue_collection_start = async (req) => {
+  const { id } = req.body;
+  let values = ProductorderClone.findById(id);
+  if (!values || value.issue_assgin_by != req.userId) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'productOrders Not Found');
+  }
+  values = await ProductorderClone.findByIdAndUpdate({ _id: id }, { issue_collection_status: "On Transits" }, { new: true });
+  return values;
+};
+const issue_collection_reached = async (req) => {
+  const { id } = req.body;
+  let values = ProductorderClone.findById(id);
+  if (!values || value.issue_assgin_by != req.userId) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'productOrders Not Found');
+  }
+  values = await ProductorderClone.findByIdAndUpdate({ _id: id }, { issue_collection_status: "Reached" }, { new: true });
+  return values;
+};
+const issue_collection_checked = async (req) => {
+  const { id } = req.body;
+  let values = ProductorderClone.findById(id);
+  if (!values || value.issue_assgin_by != req.userId) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'productOrders Not Found');
+  }
+  values = await ProductorderClone.findByIdAndUpdate({ _id: id }, { issue_collection_status: "Under Check" }, { new: true });
+  return values;
+};
+const issue_collection_pickedup = async (req) => {
+  const { id } = req.body;
+  let values = ProductorderClone.findById(id);
+  if (!values || value.issue_assgin_by != req.userId) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'productOrders Not Found');
+  }
+  values = await ProductorderClone.findByIdAndUpdate({ _id: id }, { issue_collection_status: "Pick Up" }, { new: true });
+  return values;
+};
+const issue_collection_rejected = async (req) => {
+  const { id } = req.body;
+  let values = ProductorderClone.findById(id);
+  if (!values || value.issue_assgin_by != req.userId) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'productOrders Not Found');
+  }
+  values = await ProductorderClone.findByIdAndUpdate({ _id: id }, { issue_collection_status: "Rejected" }, { new: true });
+  return values;
+};
+const issue_collection_returntosm = async (req) => {
+  const { id } = req.body;
+  let values = ProductorderClone.findById(id);
+  if (!values || value.issue_assgin_by != req.userId) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'productOrders Not Found');
+  }
+  values = await ProductorderClone.findByIdAndUpdate({ _id: id }, { issue_collection_status: "Product Surrendered" }, { new: true });
+  return values;
 };
 
 module.exports = {
@@ -6796,5 +6852,12 @@ module.exports = {
   shopDataMap,
   issueStatus_Update,
   issueStatus_Update_assign,
-  get_issue_product_list
+  get_issue_product_list,
+
+  issue_collection_start,
+  issue_collection_reached,
+  issue_collection_checked,
+  issue_collection_pickedup,
+  issue_collection_rejected,
+  issue_collection_returntosm
 };

@@ -5645,7 +5645,7 @@ const fetch_streaming_Details_Approval = async (id, product) => {
         name: 1,
         orderedKg: '$orders.purchase_quantity',
         checkout: '$orderPayment.created',
-        approvalStatus: 1,
+        approvalStatus: '$orders.status',
         productName: '$orders.product.productTitle',
         streamingDate: '$streaming.streamingDate_time',
         streamingStart: '$streaming.startTime',
@@ -5660,6 +5660,21 @@ const fetch_streaming_Details_Approval = async (id, product) => {
       $match: {
         streamId: id,
         productId: product,
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        orderedKg: { $sum: '$purchase_quantity' },
+      },
+    },
+  ]);
+  let confirmed = await streamingorderProduct.aggregate([
+    {
+      $match: {
+        streamId: id,
+        productId: product,
+        stat,
       },
     },
     {

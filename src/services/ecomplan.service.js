@@ -5669,21 +5669,21 @@ const fetch_streaming_Details_Approval = async (id, product) => {
       },
     },
   ]);
-  let confirmed = await streamingorderProduct.aggregate([
-    {
-      $match: {
-        streamId: id,
-        productId: product,
-        stat,
-      },
-    },
-    {
-      $group: {
-        _id: null,
-        orderedKg: { $sum: '$purchase_quantity' },
-      },
-    },
-  ]);
+  // let confirmed = await streamingorderProduct.aggregate([
+  //   {
+  //     $match: {
+  //       streamId: id,
+  //       productId: product,
+  //       stat,
+  //     },
+  //   },
+  //   {
+  //     $group: {
+  //       _id: null,
+  //       orderedKg: { $sum: '$purchase_quantity' },
+  //     },
+  //   },
+  // ]);
   return {
     values: values,
     orderedKg: ordered.length > 0 ? ordered[0].orderedKg : 0,

@@ -412,7 +412,7 @@ const fetch_stream_Payment_Details = catchAsync(async (req, res) => {
 });
 
 const update_Multiple_approval_Status = catchAsync(async (req, res) => {
-  const data = await Ecomserive.update_Multiple_approval_Status(req.params.id);
+  const data = await Ecomserive.update_Multiple_approval_Status(req.params.id, req.body);
   res.send(data);
 });
 

@@ -6730,7 +6730,7 @@ const issue_collection_start = async (req) => {
   if (!values) {
     throw new ApiError(httpStatus.NOT_FOUND, 'productOrders Not Found');
   }
-  if (value.issue_assgin_by != req.userId) {
+  if (values.issue_assgin_by != req.userId) {
     throw new ApiError(httpStatus.NOT_FOUND, 'productOrders Not Found');
   }
   values = await ProductorderClone.findByIdAndUpdate({ _id: id }, { issue_collection_status: "On Transits" }, { new: true });
@@ -6742,7 +6742,7 @@ const issue_collection_reached = async (req) => {
   if (!values) {
     throw new ApiError(httpStatus.NOT_FOUND, 'productOrders Not Found');
   }
-  if (value.issue_assgin_by != req.userId) {
+  if (values.issue_assgin_by != req.userId) {
     throw new ApiError(httpStatus.NOT_FOUND, 'productOrders Not Found');
   }
   values = await ProductorderClone.findByIdAndUpdate({ _id: id }, { issue_collection_status: "Reached" }, { new: true });
@@ -6754,7 +6754,7 @@ const issue_collection_checked = async (req) => {
   if (!values) {
     throw new ApiError(httpStatus.NOT_FOUND, 'productOrders Not Found');
   }
-  if (value.issue_assgin_by != req.userId) {
+  if (values.issue_assgin_by != req.userId) {
     throw new ApiError(httpStatus.NOT_FOUND, 'productOrders Not Found');
   }
   values = await ProductorderClone.findByIdAndUpdate({ _id: id }, { issue_collection_status: "Under Check" }, { new: true });
@@ -6766,7 +6766,7 @@ const issue_collection_pickedup = async (req) => {
   if (!values) {
     throw new ApiError(httpStatus.NOT_FOUND, 'productOrders Not Found');
   }
-  if (value.issue_assgin_by != req.userId) {
+  if (values.issue_assgin_by != req.userId) {
     throw new ApiError(httpStatus.NOT_FOUND, 'productOrders Not Found');
   }
   values = await ProductorderClone.findByIdAndUpdate({ _id: id }, { issue_collection_status: "Pick Up" }, { new: true });
@@ -6778,7 +6778,7 @@ const issue_collection_rejected = async (req) => {
   if (!values) {
     throw new ApiError(httpStatus.NOT_FOUND, 'productOrders Not Found');
   }
-  if (value.issue_assgin_by != req.userId) {
+  if (values.issue_assgin_by != req.userId) {
     throw new ApiError(httpStatus.NOT_FOUND, 'productOrders Not Found');
   }
   values = await ProductorderClone.findByIdAndUpdate({ _id: id }, { issue_collection_status: "Rejected" }, { new: true });
@@ -6790,7 +6790,7 @@ const issue_collection_returntosm = async (req) => {
   if (!values) {
     throw new ApiError(httpStatus.NOT_FOUND, 'productOrders Not Found');
   }
-  if (value.issue_assgin_by != req.userId) {
+  if (values.issue_assgin_by != req.userId) {
     throw new ApiError(httpStatus.NOT_FOUND, 'productOrders Not Found');
   }
   values = await ProductorderClone.findByIdAndUpdate({ _id: id }, { issue_collection_status: "Product Surrendered" }, { new: true });

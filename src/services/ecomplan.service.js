@@ -5538,12 +5538,21 @@ const fetch_Stream_Ordered_Details = async (id) => {
       },
     },
     {
+      $lookup: {
+        from: 'streamingorderproducts',
+        localField: '_id',
+        foreignField: 'orderId',
+        pipeline:[{$match:{status:{$ne:"Pending"}}}],
+        as: 'Actions',
+      },
+    },
+    {
       $project: {
         _id: 1,
         name: 1,
         orderId: 1,
         No_Of_Product: { $size: '$stream.post' },
-        ordered: { $size: '$orderedProducts' },
+        ordered: { $size: '$Actions' },
         orderStatus: 1,
         orderedProducts: '$orderedProducts',
       },

@@ -5561,11 +5561,12 @@ const update_Status_For_StreamingOrders = async (id, body) => {
   return values;
 };
 
-const fetch_streaming_Details_Approval = async (id) => {
+const fetch_streaming_Details_Approval = async (id, product) => {
   let values = await streamingOrder.aggregate([
     {
       $match: {
         streamId: id,
+        // productId: product,
       },
     },
     {
@@ -5588,6 +5589,9 @@ const fetch_streaming_Details_Approval = async (id) => {
         localField: '_id',
         foreignField: 'orderId',
         pipeline: [
+          {
+            $match: { productId: product },
+          },
           {
             $lookup: {
               from: 'products',
@@ -5646,6 +5650,7 @@ const fetch_streaming_Details_Approval = async (id) => {
     {
       $match: {
         streamId: id,
+        productId: product,
       },
     },
     {

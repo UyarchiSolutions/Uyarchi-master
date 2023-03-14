@@ -5718,8 +5718,8 @@ const fetch_streaming_Details_Approval = async (id, product) => {
     values: values,
     orderedKg: ordered.length > 0 ? ordered[0].orderedKg : 0,
     confirmedKg: confirmed.length > 0 ? confirmed[0].orderedKg : 0,
-    cancelledKg: 0,
-    deniedKg: cancelled.length > 0 ? cancelled[0].orderedKg : 0,
+    cancelledKg: cancelled.length > 0 ? cancelled[0].orderedKg : 0,
+    deniedKg: denied.length > 0 ? denied[0].orderedKg : 0,
   };
 };
 

@@ -5689,12 +5689,12 @@ const update_approval_Status = async (id, body) => {
 };
 
 const update_Multiple_approval_Status = async (body) => {
-  let { arr, status } = body;
-  arr.forEach(async (e) => {
+  console.log(body.arr);
+  body.arr.forEach(async (e) => {
     let values = await streamingOrder.findById(e);
-    values = await streamingOrder.findByIdAndUpdate({ _id: e }, { approvalStatus: status }, { new: true });
+    values = await streamingOrder.findByIdAndUpdate({ _id: e }, { approvalStatus: body.status }, { new: true });
   });
-  return { message: 'Updated SuccessFull' };
+  return { message: 'Updated...........' };
 };
 
 // Buyer FLow

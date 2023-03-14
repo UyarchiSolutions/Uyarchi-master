@@ -5053,8 +5053,9 @@ const get_completed_stream_cancelled = async (req) => {
 const getStock_Manager = async (page) => {
   let currentTime = new Date().getTime();
   let values = await Streamrequest.aggregate([
+    // endTime: { $lt: currentTime }
     {
-      $match: { endTime: { $lt: currentTime } },
+      $match: { $or: [{ endTime: { $lt: currentTime } }, { status: 'Completed' }] },
     },
     {
       $sort: { created: -1 },

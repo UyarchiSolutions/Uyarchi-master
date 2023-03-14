@@ -5669,28 +5669,57 @@ const fetch_streaming_Details_Approval = async (id, product) => {
       },
     },
   ]);
-  // let confirmed = await streamingorderProduct.aggregate([
-  //   {
-  //     $match: {
-  //       streamId: id,
-  //       productId: product,
-  //       stat,
-  //     },
-  //   },
-  //   {
-  //     $group: {
-  //       _id: null,
-  //       orderedKg: { $sum: '$purchase_quantity' },
-  //     },
-  //   },
-  // ]);
+  let confirmed = await streamingorderProduct.aggregate([
+    {
+      $match: {
+        streamId: id,
+        productId: product,
+        status: 'confirmed',
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        orderedKg: { $sum: '$purchase_quantity' },
+      },
+    },
+  ]);
+  let denied = await streamingorderProduct.aggregate([
+    {
+      $match: {
+        streamId: id,
+        productId: product,
+        status: 'denied',
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        orderedKg: { $sum: '$purchase_quantity' },
+      },
+    },
+  ]);
+  let cancelled = await streamingorderProduct.aggregate([
+    {
+      $match: {
+        streamId: id,
+        productId: product,
+        status: 'cancelled',
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        orderedKg: { $sum: '$purchase_quantity' },
+      },
+    },
+  ]);
   return {
     values: values,
     orderedKg: ordered.length > 0 ? ordered[0].orderedKg : 0,
-    confirmedKg: 0,
+    confirmedKg: confirmed.length > 0 ? confirmed[0].orderedKg : 0,
     cancelledKg: 0,
-    deniedKg: 0,
-    message: 'confirmedKg, cancelledKg and deniedKg is Dummy Data',
+    deniedKg: cancelled.length > 0 ? cancelled[0].orderedKg : 0,
   };
 };
 

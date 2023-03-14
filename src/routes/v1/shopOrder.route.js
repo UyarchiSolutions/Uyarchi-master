@@ -87,12 +87,12 @@ router.route('/assign/issueStatus_Update/:id').put(shopOrderController.issueStat
 router.route('/get/issues/product/list').get(authorization, shopOrderController.get_issue_product_list);
 
 // issue picked delivery Exc
-router.route('/issue/collection/start').get(authorization, shopOrderController.issue_collection_start);
-router.route('/issue/collection/reached').get(authorization, shopOrderController.issue_collection_reached);
-router.route('/issue/collection/checked').get(authorization, shopOrderController.issue_collection_checked);
-router.route('/issue/collection/pickedup').get(authorization, shopOrderController.issue_collection_pickedup);
-router.route('/issue/collection/rejected').get(authorization, shopOrderController.issue_collection_rejected);
-router.route('/issue/collection/returntosm').get(authorization, shopOrderController.issue_collection_returntosm);
+router.route('/issue/collection/start').put(authorization, shopOrderController.issue_collection_start);
+router.route('/issue/collection/reached').put(authorization, shopOrderController.issue_collection_reached);
+router.route('/issue/collection/checked').put(authorization, shopOrderController.issue_collection_checked);
+router.route('/issue/collection/pickedup').put(authorization, shopOrderController.issue_collection_pickedup);
+router.route('/issue/collection/rejected').put(authorization, shopOrderController.issue_collection_rejected);
+router.route('/issue/collection/returntosm').put(authorization, shopOrderController.issue_collection_returntosm);
 
 
 

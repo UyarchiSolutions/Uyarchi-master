@@ -86,6 +86,15 @@ router.route('/issueStatus_Update/:id').put(shopOrderController.issueStatus_Upda
 router.route('/assign/issueStatus_Update/:id').put(shopOrderController.issueStatus_Update_assign);
 router.route('/get/issues/product/list').get(authorization, shopOrderController.get_issue_product_list);
 
+// issue picked delivery Exc
+router.route('/issue/collection/start').put(authorization, shopOrderController.issue_collection_start);
+router.route('/issue/collection/reached').put(authorization, shopOrderController.issue_collection_reached);
+router.route('/issue/collection/checked').put(authorization, shopOrderController.issue_collection_checked);
+router.route('/issue/collection/pickedup').put(authorization, shopOrderController.issue_collection_pickedup);
+router.route('/issue/collection/rejected').put(authorization, shopOrderController.issue_collection_rejected);
+router.route('/issue/collection/returntosm').put(authorization, shopOrderController.issue_collection_returntosm);
+
+
 
 
 module.exports = router;

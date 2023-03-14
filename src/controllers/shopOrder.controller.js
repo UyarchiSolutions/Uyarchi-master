@@ -439,6 +439,31 @@ const get_issue_product_list = catchAsync(async (req, res) => {
   const data = await shopOrderService.get_issue_product_list(req);
   res.send(data);
 });
+
+const issue_collection_start = catchAsync(async (req, res) => {
+  const data = await shopOrderService.issue_collection_start(req);
+  res.send(data);
+});
+const issue_collection_reached = catchAsync(async (req, res) => {
+  const data = await shopOrderService.issue_collection_reached(req);
+  res.send(data);
+});
+const issue_collection_checked = catchAsync(async (req, res) => {
+  const data = await shopOrderService.issue_collection_checked(req);
+  res.send(data);
+});
+const issue_collection_pickedup = catchAsync(async (req, res) => {
+  const data = await shopOrderService.issue_collection_pickedup(req);
+  res.send(data);
+});
+const issue_collection_rejected = catchAsync(async (req, res) => {
+  const data = await shopOrderService.issue_collection_rejected(req);
+  res.send(data);
+});
+const issue_collection_returntosm = catchAsync(async (req, res) => {
+  const data = await shopOrderService.issue_collection_returntosm(req);
+  res.send(data);
+});
 module.exports = {
   vieworderbill_byshop,
   createshopOrder,
@@ -509,5 +534,13 @@ module.exports = {
   shopDataMap,
   issueStatus_Update,
   issueStatus_Update_assign,
-  get_issue_product_list
+  get_issue_product_list,
+
+
+  issue_collection_start,
+  issue_collection_reached,
+  issue_collection_checked,
+  issue_collection_pickedup,
+  issue_collection_rejected,
+  issue_collection_returntosm
 };

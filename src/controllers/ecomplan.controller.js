@@ -417,6 +417,16 @@ const update_Multiple_approval_Status = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const update_productOrders = catchAsync(async (req, res) => {
+  const data = await Ecomserive.update_productOrders(req.params.id, req.body);
+  res.send(data);
+});
+
+const update_Multiple_productOrders = catchAsync(async (req, res) => {
+  const data = await Ecomserive.update_Multiple_productOrders(req.body);
+  res.send(data);
+});
+
 module.exports = {
   create_Plans,
   create_Plans_addon,
@@ -497,4 +507,6 @@ module.exports = {
   fetch_Stream_Product_Details,
   fetch_stream_Payment_Details,
   update_Multiple_approval_Status,
+  update_productOrders,
+  update_Multiple_productOrders,
 };

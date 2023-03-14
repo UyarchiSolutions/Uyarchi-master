@@ -5703,6 +5703,24 @@ const update_approval_Status = async (id, body) => {
   return values;
 };
 
+const update_productOrders = async (id, body) => {
+  let values = await streamingorderProduct.findById(id);
+  if (!values) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'streaming order not found 🖕');
+  }
+  values = await streamingorderProduct.findByIdAndUpdate({ _id: id }, { status: body.status }, { new: true });
+  return values;
+};
+
+const update_Multiple_productOrders = async (body) => {
+  console.log(body.arr);
+  body.arr.forEach(async (e) => {
+    let values = await streamingorderProduct.findById(e);
+    values = await streamingorderProduct.findByIdAndUpdate({ _id: e }, { status: body.status }, { new: true });
+  });
+  return { message: 'Updated...........' };
+};
+
 const update_Multiple_approval_Status = async (body) => {
   console.log(body.arr);
   body.arr.forEach(async (e) => {
@@ -6015,4 +6033,6 @@ module.exports = {
   fetch_Stream_Product_Details,
   fetch_stream_Payment_Details,
   update_Multiple_approval_Status,
+  update_productOrders,
+  update_Multiple_productOrders,
 };

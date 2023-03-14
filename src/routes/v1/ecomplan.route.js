@@ -119,6 +119,8 @@ router.route('/update/Status/For/StreamingOrders/:id').put(Ecomcontroller.update
 router.route('/fetch/streaming/Details/Approval/:id/:product').get(Ecomcontroller.fetch_streaming_Details_Approval);
 router.route('/update/Multiple/approval/Status').post(Ecomcontroller.update_Multiple_approval_Status);
 router.route('/update/approval/Status/:id').put(Ecomcontroller.update_approval_Status);
+router.route('/update/productOrders/:id').put(Ecomcontroller.update_productOrders);
+router.route('/update/Multiple/productOrders').post(Ecomcontroller.update_Multiple_productOrders);
 
 // Buyer Flow
 router.route('/fetch/Stream/Details/For/Buyer').get(shopverify, Ecomcontroller.fetch_Stream_Details_For_Buyer);

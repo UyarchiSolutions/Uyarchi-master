@@ -5543,7 +5543,7 @@ const fetch_Stream_Ordered_Details = async (id) => {
         name: 1,
         orderId: 1,
         No_Of_Product: { $size: '$stream.post' },
-        orderedProducts: { $size: '$orderedProducts' },
+        ordered: { $size: '$orderedProducts' },
         orderStatus: 1,
         orderedProducts: '$orderedProducts',
       },

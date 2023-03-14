@@ -75,11 +75,9 @@ const tempToken = mongoose.Schema({
   },
   Duration: {
     type: Number,
-
   },
   joinedUser: {
     type: String,
-
   },
   resourceId: {
     type: String,
@@ -96,32 +94,11 @@ const tempToken = mongoose.Schema({
   },
   recoredStart: {
     type: String,
-    default: "Pending"
+    default: 'Pending',
   },
-  audio: {
-    type: Boolean,
-    default: false,
-  },
-  video: {
-    type: Boolean,
-    default: false,
-  },
-  allMedia: {
-    type: Boolean,
-    default: false,
-  },
-  end_stream: {
-    type: Boolean,
-    default: false,
-  },
-  controlledBy: {
-    type: String,
-  }
 });
 
 const tempTokenModel = mongoose.model('tempToken', tempToken);
-
-
 
 const joinedusers = mongoose.Schema({
   _id: {
@@ -137,10 +114,10 @@ const joinedusers = mongoose.Schema({
     default: false,
   },
   created: {
-    type: Date
+    type: Date,
   },
   DateIso: {
-    type: Number
+    type: Number,
   },
   token: {
     type: String,
@@ -156,14 +133,13 @@ const joinedusers = mongoose.Schema({
   },
   latestedToken: {
     type: String,
-  }
-
-
+  },
+  status: {
+    type: String,
+    default: 'Pending',
+  },
 });
 
 const Joinusers = mongoose.model('joinedusers', joinedusers);
-
-
-
 
 module.exports = { tempTokenModel, Joinusers };

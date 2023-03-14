@@ -121,5 +121,7 @@ router.route('/update/approval/Status/:id').put(Ecomcontroller.update_approval_S
 
 // Buyer Flow
 router.route('/fetch/Stream/Details/For/Buyer').get(shopverify, Ecomcontroller.fetch_Stream_Details_For_Buyer);
-
+router.route('/update/joined/status/:id').put(shopverify, Ecomcontroller.update_Joined_User_Status_For_Buyer);
+router.route('/fetch/Stream/Product/Details/:id').get(Ecomcontroller.fetch_Stream_Product_Details);
+router.route('/fetch/stream/Payment/Details/:id').get(Ecomcontroller.fetch_stream_Payment_Details);
 module.exports = router;

@@ -70,8 +70,15 @@ io.sockets.on('connection', async (socket) => {
   socket.on('', (msg) => {
     console.log('message: ' + msg);
   });
-  socket.on('host_controll', async (data) => {
-    await socketService.host_controll(data, io)
+  socket.on('host_controll_audio', async (data) => {
+    await socketService.host_controll_audio(data, io)
+  });
+
+  socket.on('host_controll_video', async (data) => {
+    await socketService.host_controll_video(data, io)
+  });
+  socket.on('host_controll_all', async (data) => {
+    await socketService.host_controll_all(data, io)
   });
 });
 app.use(function (req, res, next) {

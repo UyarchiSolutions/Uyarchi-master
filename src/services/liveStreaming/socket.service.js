@@ -14,7 +14,7 @@ const leave_subhost = async (req, io) => {
   io.sockets.emit(req.streamId + req.uid, req);
 }
 
-const host_controll = async (req, io) => {
+const host_controll_audio = async (req, io) => {
   console.log(req)
   let token = await tempTokenModel.findById(req.tokenId);
   let res = await tempTokenModel.findOne({ Uid: req.userId, chennel: token.chennel })
@@ -24,7 +24,31 @@ const host_controll = async (req, io) => {
   console.log(result)
   // , req, { new: true }
   // let res = await tempTokenModel.findByIdAndUpdate({ _id: token }, req, { new: true })
-  io.sockets.emit(result._id + result.Uid, { req, result });
+  io.sockets.emit(result._id + result.Uid + "_audio", { req, result });
+}
+const host_controll_video = async (req, io) => {
+  console.log(req)
+  let token = await tempTokenModel.findById(req.tokenId);
+  let res = await tempTokenModel.findOne({ Uid: req.userId, chennel: token.chennel })
+  let result = await tempTokenModel.findByIdAndUpdate({ _id: res._id }, req, { new: true })
+  result.controlledBy = 'mainhost'
+  result.save();
+  console.log(result)
+  // , req, { new: true }
+  // let res = await tempTokenModel.findByIdAndUpdate({ _id: token }, req, { new: true })
+  io.sockets.emit(result._id + result.Uid + "_video", { req, result });
+}
+const host_controll_all = async (req, io) => {
+  console.log(req)
+  let token = await tempTokenModel.findById(req.tokenId);
+  let res = await tempTokenModel.findOne({ Uid: req.userId, chennel: token.chennel })
+  let result = await tempTokenModel.findByIdAndUpdate({ _id: res._id }, { ...req, ...{ video: false, audio: false } }, { new: true })
+  result.controlledBy = 'mainhost'
+  result.save();
+  console.log(result)
+  // , req, { new: true }
+  // let res = await tempTokenModel.findByIdAndUpdate({ _id: token }, req, { new: true })
+  io.sockets.emit(result._id + result.Uid + "_all", { req, result });
 }
 const startStop_post = async (req, io) => {
   console.log(req)
@@ -190,5 +214,7 @@ const startStop_post = async (req, io) => {
 module.exports = {
   startStop_post,
   leave_subhost,
-  host_controll
+  host_controll_audio,
+  host_controll_video,
+  host_controll_all
 };

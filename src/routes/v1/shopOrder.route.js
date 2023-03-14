@@ -84,5 +84,8 @@ router.route('/get/issue/order/returns').get(shopOrderController.order_issue_ret
 router.route('/shopDataMap/ndd').get(shopOrderController.shopDataMap);
 router.route('/issueStatus_Update/:id').put(shopOrderController.issueStatus_Update);
 router.route('/assign/issueStatus_Update/:id').put(shopOrderController.issueStatus_Update_assign);
+router.route('/get/issues/product/list').get(authorization, shopOrderController.get_issue_product_list);
+
+
 
 module.exports = router;

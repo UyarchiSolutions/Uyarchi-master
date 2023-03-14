@@ -5575,7 +5575,6 @@ const fetch_streaming_Details_Approval = async (id, product) => {
     {
       $match: {
         streamId: id,
-        // productId: product,
       },
     },
     {
@@ -5645,6 +5644,7 @@ const fetch_streaming_Details_Approval = async (id, product) => {
         name: 1,
         orderedKg: '$orders.purchase_quantity',
         checkout: '$orderPayment.created',
+        orderId: '$orders._id',
         approvalStatus: '$orders.status',
         productName: '$orders.product.productTitle',
         streamingDate: '$streaming.streamingDate_time',

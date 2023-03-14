@@ -6562,6 +6562,167 @@ const issueStatus_Update_assign = async (id, body) => {
   return values;
 };
 
+const get_issue_product_list = async (req) => {
+  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
+
+  let values = await ProductorderClone.aggregate([
+    {
+      $match: { $and: [{ issueraised: { $eq: true } }, { issue_assgin_by: { $eq: req.userId } }] },
+    },
+    { $sort: { issueDate: -1 } },
+    {
+      $lookup: {
+        from: 'shoporderclones',
+        localField: 'orderId',
+        foreignField: '_id',
+        as: 'shoporderclones',
+      },
+    },
+    {
+      $unwind: '$shoporderclones',
+    },
+    {
+      $lookup: {
+        from: 'productorderclones',
+        localField: 'shoporderclones._id',
+        foreignField: 'orderId',
+        pipeline: [{ $match: { issueraised: true } }],
+        as: 'shoporder',
+      },
+    },
+    {
+      $lookup: {
+        from: 'b2bshopclones',
+        localField: 'shoporderclones.shopId',
+        foreignField: '_id',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'streets',
+              localField: 'Strid',
+              foreignField: '_id',
+              as: 'street',
+            },
+          },
+          {
+            $unwind: '$street',
+          },
+        ],
+        as: 'shops',
+      },
+    },
+    {
+      $unwind: '$shops',
+    },
+    {
+      $lookup: {
+        from: 'products',
+        localField: 'productid',
+        foreignField: '_id',
+        as: 'products',
+      },
+    },
+    {
+      $unwind: '$products',
+    },
+    {
+      $project: {
+        _id: 1,
+        preOrderClose: 1,
+        active: 1,
+        status: 1,
+        issueraised: 1,
+        issueStatus: 1,
+        orderId: 1,
+        productid: 1,
+        quantity: 1,
+        priceperkg: 1,
+        GST_Number: 1,
+        packKg: 1,
+        unit: 1,
+        finalQuantity: 1,
+        finalPricePerKg: 1,
+        issue: 1,
+        issueDate: 1,
+        issuediscription: 1,
+        issuequantity: 1,
+        issueId: 1,
+        issueDate_Time: 1,
+        Order: '$shoporderclones.OrderId',
+        Product: '$products.productTitle',
+        shopId: '$shoporderclones.shopId',
+        shopName: '$shops.SName',
+        street: '$shops.street.street',
+        TotalOrders: { $size: '$shoporderclones.product' },
+        issuedOrder: { $size: '$shoporder' },
+        issStatus: 1,
+        issue_Res: 1
+      },
+    },
+    {
+      $skip: 10 * page,
+    },
+    {
+      $limit: 10,
+    },
+  ]);
+  let total = await ProductorderClone.aggregate([
+    {
+      $match: { $and: [{ issueraised: { $eq: true } }, { issue_assgin_by: { $eq: req.userId } }] },
+    },
+    {
+      $lookup: {
+        from: 'shoporderclones',
+        localField: 'orderId',
+        foreignField: '_id',
+        as: 'shoporderclones',
+      },
+    },
+    {
+      $unwind: '$shoporderclones',
+    },
+    {
+      $lookup: {
+        from: 'products',
+        localField: 'productid',
+        foreignField: '_id',
+        as: 'products',
+      },
+    },
+    {
+      $unwind: '$products',
+    },
+    {
+      $project: {
+        _id: 1,
+        preOrderClose: 1,
+        active: 1,
+        status: 1,
+        issueraised: 1,
+        issueStatus: 1,
+        orderId: 1,
+        productid: 1,
+        quantity: 1,
+        priceperkg: 1,
+        GST_Number: 1,
+        packKg: 1,
+        unit: 1,
+        finalQuantity: 1,
+        finalPricePerKg: 1,
+        issue: 1,
+        issueDate: 1,
+        issuediscription: 1,
+        issuequantity: 1,
+        issueId: 1,
+        issueDate_Time: 1,
+        Order: '$shoporderclones.OrderId',
+        Product: '$products.productTitle',
+      },
+    },
+  ]);
+  return { values: values, total: total.length };
+};
+
 module.exports = {
   // product
   createProductOrderClone,
@@ -6634,5 +6795,6 @@ module.exports = {
   order_issue_return,
   shopDataMap,
   issueStatus_Update,
-  issueStatus_Update_assign
+  issueStatus_Update_assign,
+  get_issue_product_list
 };

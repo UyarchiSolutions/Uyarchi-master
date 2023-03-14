@@ -5542,7 +5542,7 @@ const fetch_Stream_Ordered_Details = async (id) => {
         from: 'streamingorderproducts',
         localField: '_id',
         foreignField: 'orderId',
-        pipeline:[{$match:{status:{$ne:"Pending"}}}],
+        pipeline: [{ $match: { status: { $ne: 'Pending' } } }],
         as: 'Actions',
       },
     },
@@ -5686,6 +5686,15 @@ const update_approval_Status = async (id, body) => {
   }
   values = await streamingOrder.findByIdAndUpdate({ _id: id }, { approvalStatus: body.status }, { new: true });
   return values;
+};
+
+const update_Multiple_approval_Status = async (body) => {
+  let { arr, status } = body;
+  arr.forEach(async (e) => {
+    let values = await streamingOrder.findById(e);
+    values = await streamingOrder.findByIdAndUpdate({ _id: e }, { approvalStatus: status }, { new: true });
+  });
+  return { message: 'Updated SuccessFull' };
 };
 
 // Buyer FLow
@@ -5990,4 +5999,5 @@ module.exports = {
   update_Joined_User_Status_For_Buyer,
   fetch_Stream_Product_Details,
   fetch_stream_Payment_Details,
+  update_Multiple_approval_Status,
 };

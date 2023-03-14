@@ -5462,6 +5462,7 @@ const fetchStream_Details_ById = async (id) => {
         confirmed: { $size: '$confirm' },
         denied: { $size: '$denied' },
         productName: '$streamPost.product.productTitle',
+        status:1,
       },
     },
   ]);

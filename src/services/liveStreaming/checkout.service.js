@@ -39,10 +39,12 @@ const get_addTocart = async (req) => {
       let cartProducts = [];
       for (let i = 0; i < value.cart.length; i++) {
         let post = await StreamPost.findById(value.cart[i].streamPostId);
-        let minimunQTY = post.pendingQTY >= post.minLots;
-        let allowedQTY = post.pendingQTY >= value.cart[i].cartQTY;
-        let cartview = { ...value.cart[i], ...{ minLots: post.minLots, minimunQTY: minimunQTY, allowedQTY: allowedQTY, orderedQTY: post.orderedQTY, pendingQTY: post.pendingQTY, totalpostQTY: post.quantity } }
-        cartProducts.push(cartview)
+        if (post) {
+          let minimunQTY = post.pendingQTY >= post.minLots;
+          let allowedQTY = post.pendingQTY >= value.cart[i].cartQTY;
+          let cartview = { ...value.cart[i], ...{ minLots: post.minLots, minimunQTY: minimunQTY, allowedQTY: allowedQTY, orderedQTY: post.orderedQTY, pendingQTY: post.pendingQTY, totalpostQTY: post.quantity } }
+          cartProducts.push(cartview)
+        }
       }
       value.cart = cartProducts;
       resolve(value);

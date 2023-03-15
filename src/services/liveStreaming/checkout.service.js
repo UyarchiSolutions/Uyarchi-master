@@ -121,8 +121,9 @@ const addstreaming_order_product = async (shopId, event, order) => {
     shopId: shopId,
     purchase_price: event.offerPrice,
     streamId: order.streamId,
+    streamPostId: event.streamPostId
   });
-  let post = await StreamPost.findById(event._id);
+  let post = await StreamPost.findById(event.streamPostId);
   if (post) {
     let total = 0;
     if (post.orderedQTY) {

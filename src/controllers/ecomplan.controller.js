@@ -382,7 +382,7 @@ const update_Status_For_StreamingOrders = catchAsync(async (req, res) => {
 });
 
 const fetch_streaming_Details_Approval = catchAsync(async (req, res) => {
-  const data = await Ecomserive.fetch_streaming_Details_Approval(req.params.id);
+  const data = await Ecomserive.fetch_streaming_Details_Approval(req.params.id, req.params.product);
   res.send(data);
 });
 
@@ -408,6 +408,22 @@ const fetch_Stream_Product_Details = catchAsync(async (req, res) => {
 
 const fetch_stream_Payment_Details = catchAsync(async (req, res) => {
   const data = await Ecomserive.fetch_stream_Payment_Details(req.params.id);
+  res.send(data);
+});
+
+const update_Multiple_approval_Status = catchAsync(async (req, res) => {
+  console.log(req.body);
+  const data = await Ecomserive.update_Multiple_approval_Status(req.body);
+  res.send(data);
+});
+
+const update_productOrders = catchAsync(async (req, res) => {
+  const data = await Ecomserive.update_productOrders(req.params.id, req.body);
+  res.send(data);
+});
+
+const update_Multiple_productOrders = catchAsync(async (req, res) => {
+  const data = await Ecomserive.update_Multiple_productOrders(req.body);
   res.send(data);
 });
 
@@ -490,4 +506,7 @@ module.exports = {
   update_Joined_User_Status_For_Buyer,
   fetch_Stream_Product_Details,
   fetch_stream_Payment_Details,
+  update_Multiple_approval_Status,
+  update_productOrders,
+  update_Multiple_productOrders,
 };

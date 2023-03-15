@@ -5452,6 +5452,16 @@ const fetchStream_Details_ById = async (id) => {
       },
     },
     {
+      $lookup: {
+        from: 'streamingorderproducts',
+        localField: '_id',
+        foreignField: 'postId',
+        pipeline: [{ $match: { status: 'Pending' } }],
+        as: 'status',
+      },
+    },
+    { $addFields: { counts: { $size: '$status' } } },
+    {
       $project: {
         _id: 1,
         Buyer: { $size: '$streamingorderProduct' },
@@ -5463,7 +5473,9 @@ const fetchStream_Details_ById = async (id) => {
         denied: { $size: '$denied' },
         productName: '$streamPost.product.productTitle',
         productId: '$streamPost.product._id',
-        status: 1,
+        status: {
+          $cond: [{ $gt: ['$counts', 0] }, 'Pending', 'Completed'],
+        },
       },
     },
   ]);
@@ -5538,12 +5550,21 @@ const fetch_Stream_Ordered_Details = async (id) => {
       },
     },
     {
+      $lookup: {
+        from: 'streamingorderproducts',
+        localField: '_id',
+        foreignField: 'orderId',
+        pipeline: [{ $match: { status: { $ne: 'Pending' } } }],
+        as: 'Actions',
+      },
+    },
+    {
       $project: {
         _id: 1,
         name: 1,
         orderId: 1,
         No_Of_Product: { $size: '$stream.post' },
-        orderedProducts: { $size: '$orderedProducts' },
+        ordered: { $size: '$Actions' },
         orderStatus: 1,
         orderedProducts: '$orderedProducts',
       },
@@ -5561,7 +5582,7 @@ const update_Status_For_StreamingOrders = async (id, body) => {
   return values;
 };
 
-const fetch_streaming_Details_Approval = async (id) => {
+const fetch_streaming_Details_Approval = async (id, product) => {
   let values = await streamingOrder.aggregate([
     {
       $match: {
@@ -5588,6 +5609,9 @@ const fetch_streaming_Details_Approval = async (id) => {
         localField: '_id',
         foreignField: 'orderId',
         pipeline: [
+          {
+            $match: { productId: product },
+          },
           {
             $lookup: {
               from: 'products',
@@ -5632,7 +5656,8 @@ const fetch_streaming_Details_Approval = async (id) => {
         name: 1,
         orderedKg: '$orders.purchase_quantity',
         checkout: '$orderPayment.created',
-        approvalStatus: 1,
+        orderId: '$orders._id',
+        approvalStatus: '$orders.status',
         productName: '$orders.product.productTitle',
         streamingDate: '$streaming.streamingDate_time',
         streamingStart: '$streaming.startTime',
@@ -5646,6 +5671,52 @@ const fetch_streaming_Details_Approval = async (id) => {
     {
       $match: {
         streamId: id,
+        productId: product,
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        orderedKg: { $sum: '$purchase_quantity' },
+      },
+    },
+  ]);
+  let confirmed = await streamingorderProduct.aggregate([
+    {
+      $match: {
+        streamId: id,
+        productId: product,
+        status: 'confirmed',
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        orderedKg: { $sum: '$purchase_quantity' },
+      },
+    },
+  ]);
+  let denied = await streamingorderProduct.aggregate([
+    {
+      $match: {
+        streamId: id,
+        productId: product,
+        status: 'denied',
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        orderedKg: { $sum: '$purchase_quantity' },
+      },
+    },
+  ]);
+  let cancelled = await streamingorderProduct.aggregate([
+    {
+      $match: {
+        streamId: id,
+        productId: product,
+        status: 'cancelled',
       },
     },
     {
@@ -5658,10 +5729,9 @@ const fetch_streaming_Details_Approval = async (id) => {
   return {
     values: values,
     orderedKg: ordered.length > 0 ? ordered[0].orderedKg : 0,
-    confirmedKg: 0,
-    cancelledKg: 0,
-    deniedKg: 0,
-    message: 'confirmedKg, cancelledKg and deniedKg is Dummy Data',
+    confirmedKg: confirmed.length > 0 ? confirmed[0].orderedKg : 0,
+    cancelledKg: cancelled.length > 0 ? cancelled[0].orderedKg : 0,
+    deniedKg: denied.length > 0 ? denied[0].orderedKg : 0,
   };
 };
 
@@ -5672,6 +5742,33 @@ const update_approval_Status = async (id, body) => {
   }
   values = await streamingOrder.findByIdAndUpdate({ _id: id }, { approvalStatus: body.status }, { new: true });
   return values;
+};
+
+const update_productOrders = async (id, body) => {
+  let values = await streamingorderProduct.findById(id);
+  if (!values) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'streaming order not found 🖕');
+  }
+  values = await streamingorderProduct.findByIdAndUpdate({ _id: id }, { status: body.status }, { new: true });
+  return values;
+};
+
+const update_Multiple_productOrders = async (body) => {
+  console.log(body.arr);
+  body.arr.forEach(async (e) => {
+    let values = await streamingorderProduct.findById(e);
+    values = await streamingorderProduct.findByIdAndUpdate({ _id: e }, { status: body.status }, { new: true });
+  });
+  return { message: 'Updated...........' };
+};
+
+const update_Multiple_approval_Status = async (body) => {
+  console.log(body.arr);
+  body.arr.forEach(async (e) => {
+    let values = await streamingOrder.findById(e);
+    values = await streamingOrder.findByIdAndUpdate({ _id: e }, { approvalStatus: body.status }, { new: true });
+  });
+  return { message: 'Updated...........' };
 };
 
 // Buyer FLow
@@ -5976,4 +6073,7 @@ module.exports = {
   update_Joined_User_Status_For_Buyer,
   fetch_Stream_Product_Details,
   fetch_stream_Payment_Details,
+  update_Multiple_approval_Status,
+  update_productOrders,
+  update_Multiple_productOrders,
 };

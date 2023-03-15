@@ -65,7 +65,10 @@ const get_addTocart = async (req) => {
     },
 
   ])
-  return value;
+  if (!value) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'cart not found 🖕');
+  }
+  return value[0];
 };
 
 const confirmOrder_cod = async (shopId, body) => {

@@ -9,6 +9,8 @@ const {
   streamingorderProduct,
   streamingorderPayments,
 } = require('../../models/liveStreaming/checkout.model');
+const { Streamplan, StreamPost, Streamrequest, StreamrequestPost, StreamPreRegister } = require('../../models/ecomplan.model');
+
 const axios = require('axios'); //
 const Dates = require('../Date.serive');
 const paymentgatway = require('../paymentgatway.service');
@@ -120,6 +122,18 @@ const addstreaming_order_product = async (shopId, event, order) => {
     purchase_price: event.offerPrice,
     streamId: order.streamId,
   });
+  let post = await StreamPost.findById(event._id);
+  if (post) {
+    let total = 0;
+    if (post.orderedQTY) {
+      total = post.orderedQTY + event.cartQTY;
+
+    }
+    post.orderedQTY = total;
+    post.pendingQTY = post.quantity - total;
+    post.save();
+  }
+
   await Dates.create_date(value);
   return value;
 };

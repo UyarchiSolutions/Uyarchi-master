@@ -451,7 +451,13 @@ const productorderCloneSchema = new mongoose.Schema({
     type: String,
 
   },
-
+  issue_returnImage: {
+    type: Array,
+    default: [],
+  },
+  issue_returnVideo: {
+    type: String,
+  },
   image: {
     type: Array,
   },

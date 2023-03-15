@@ -17,6 +17,7 @@ const { Users } = require('../models/B2Busers.model');
 const CallHistory = require('../models/b2b.callHistory.model');
 const BillAdj = require('../models/Bill.Adj.model');
 const { wardAdminGroup, wardAdminGroupModel_ORDERS } = require('../models/b2b.wardAdminGroup.model');
+const AWS = require('aws-sdk');
 
 const createshopOrder = async (shopOrderBody, userid) => {
   let { product, date, time, shopId, time_of_delivery } = shopOrderBody;
@@ -6726,7 +6727,8 @@ const get_issue_product_list = async (req) => {
 
 const issue_collection_start = async (req) => {
   const { id } = req.body;
-  let values = ProductorderClone.findById(id);
+  let values = await ProductorderClone.findById(id);
+  console.log(req.userId, values, id)
   if (!values) {
     throw new ApiError(httpStatus.NOT_FOUND, 'productOrders Not Found');
   }
@@ -6738,7 +6740,7 @@ const issue_collection_start = async (req) => {
 };
 const issue_collection_reached = async (req) => {
   const { id } = req.body;
-  let values = ProductorderClone.findById(id);
+  let values = await ProductorderClone.findById(id);
   if (!values) {
     throw new ApiError(httpStatus.NOT_FOUND, 'productOrders Not Found');
   }
@@ -6750,7 +6752,7 @@ const issue_collection_reached = async (req) => {
 };
 const issue_collection_checked = async (req) => {
   const { id } = req.body;
-  let values = ProductorderClone.findById(id);
+  let values = await ProductorderClone.findById(id);
   if (!values) {
     throw new ApiError(httpStatus.NOT_FOUND, 'productOrders Not Found');
   }
@@ -6760,9 +6762,39 @@ const issue_collection_checked = async (req) => {
   values = await ProductorderClone.findByIdAndUpdate({ _id: id }, { issue_collection_status: "Under Check" }, { new: true });
   return values;
 };
+
+const issue_collection_checked_video = async (req) => {
+  const { id } = req.body;
+  let values = await ProductorderClone.findById(id);
+  if (!values) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'productOrders Not Found');
+  }
+  if (values.issue_assgin_by != req.userId) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'productOrders Not Found');
+  }
+  const s3 = new AWS.S3({
+    accessKeyId: 'AKIA3323XNN7Y2RU77UG',
+    secretAccessKey: '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',
+    region: 'ap-south-1',
+  });
+  let params = {
+    Bucket: 'realestatevideoupload',
+    Key: req.file.originalname,
+    Body: req.file.buffer,
+  };
+  return new Promise((resolve) => {
+    s3.upload(params, async (err, data) => {
+      if (err) {
+        console.log(err);
+      }
+      values = await ProductorderClone.findByIdAndUpdate({ _id: id }, { issue_returnVideo: data.Location }, { new: true });
+      resolve({ video: 'success', values });
+    });
+  });
+};
 const issue_collection_pickedup = async (req) => {
   const { id } = req.body;
-  let values = ProductorderClone.findById(id);
+  let values = await ProductorderClone.findById(id);
   if (!values) {
     throw new ApiError(httpStatus.NOT_FOUND, 'productOrders Not Found');
   }
@@ -6774,7 +6806,7 @@ const issue_collection_pickedup = async (req) => {
 };
 const issue_collection_rejected = async (req) => {
   const { id } = req.body;
-  let values = ProductorderClone.findById(id);
+  let values = await ProductorderClone.findById(id);
   if (!values) {
     throw new ApiError(httpStatus.NOT_FOUND, 'productOrders Not Found');
   }
@@ -6786,7 +6818,7 @@ const issue_collection_rejected = async (req) => {
 };
 const issue_collection_returntosm = async (req) => {
   const { id } = req.body;
-  let values = ProductorderClone.findById(id);
+  let values = await ProductorderClone.findById(id);
   if (!values) {
     throw new ApiError(httpStatus.NOT_FOUND, 'productOrders Not Found');
   }
@@ -6875,6 +6907,7 @@ module.exports = {
   issue_collection_start,
   issue_collection_reached,
   issue_collection_checked,
+  issue_collection_checked_video,
   issue_collection_pickedup,
   issue_collection_rejected,
   issue_collection_returntosm

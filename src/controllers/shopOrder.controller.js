@@ -446,10 +446,25 @@ const issue_collection_start = catchAsync(async (req, res) => {
 });
 const issue_collection_reached = catchAsync(async (req, res) => {
   const data = await shopOrderService.issue_collection_reached(req);
+
   res.send(data);
 });
 const issue_collection_checked = catchAsync(async (req, res) => {
   const data = await shopOrderService.issue_collection_checked(req);
+  if (req.files) {
+    if (req.files.length != 0) {
+      let images = [];
+      req.files.forEach(function (files, index, arr) {
+        images.push('images/issue/' + files.filename);
+      });
+      data.issue_returnImage = images;
+      data.save();
+    }
+  }
+  res.send(data);
+});
+const issue_collection_checked_video = catchAsync(async (req, res) => {
+  const data = await shopOrderService.issue_collection_checked_video(req);
   res.send(data);
 });
 const issue_collection_pickedup = catchAsync(async (req, res) => {
@@ -540,6 +555,7 @@ module.exports = {
   issue_collection_start,
   issue_collection_reached,
   issue_collection_checked,
+  issue_collection_checked_video,
   issue_collection_pickedup,
   issue_collection_rejected,
   issue_collection_returntosm

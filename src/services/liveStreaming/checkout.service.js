@@ -28,49 +28,11 @@ const addTocart = async (req) => {
     value.cart = cart;
     value.save();
   }
-
   return value;
 };
 const get_addTocart = async (req) => {
   let shopId = req.shopId;
   let streamId = req.query.streamId;
-  // let value = await streamingCart.aggregate([
-  //   {
-  //     $match: {
-  //       $and: [
-  //         { shopId: { $eq: shopId } }, { streamId: { $eq: streamId } }, { status: { $ne: 'ordered' } }
-  //       ]
-  //     }
-  //   },
-  //   {
-  //     $lookup: {
-  //       from: 'streamposts',
-  //       localField: 'cart.streamPostId',
-  //       foreignField: '_id',
-  //       pipeline: [
-  //         {
-  //           $project: {
-  //             _id: 1,
-  //             orderedQTY: 1,
-  //             pendingQTY: 1,
-  //             quantity: 1,
-  //             minLots: 1,
-  //             incrementalLots: 1,
-  //             minimunQTY: { $gte: ["$pendingQTY", "$minLots"] },
-  //             allowedQTY: { $lte: ["$pendingQTY", "$cart.cartQTY"] },
-  //           }
-  //         }
-  //       ],
-  //       as: 'streamposts',
-  //     },
-  //   },
-
-  // ])
-  // if (!value) {
-  //   throw new ApiError(httpStatus.NOT_FOUND, 'cart not found 🖕');
-  // }
-  // return value[0];
-
   return new Promise(async (resolve) => {
     let value = await streamingCart.findOne({ shopId: shopId, streamId: streamId, status: { $ne: 'ordered' } });
     if (value) {
@@ -79,7 +41,7 @@ const get_addTocart = async (req) => {
         let post = await StreamPost.findById(value.cart[i].streamPostId);
         let minimunQTY = post.pendingQTY >= post.minLots;
         let allowedQTY = post.pendingQTY >= value.cart[i].cartQTY;
-        let cartview = { ...value.cart[i], ...{ minLots: post.minLots, minimunQTY: minimunQTY, allowedQTY: allowedQTY } }
+        let cartview = { ...value.cart[i], ...{ minLots: post.minLots, minimunQTY: minimunQTY, allowedQTY: allowedQTY, orderedQTY: post.orderedQTY, pendingQTY: post.pendingQTY, totalpostQTY: post.quantity } }
         cartProducts.push(cartview)
       }
       value.cart = cartProducts;

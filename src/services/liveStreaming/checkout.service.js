@@ -34,7 +34,37 @@ const addTocart = async (req) => {
 const get_addTocart = async (req) => {
   let shopId = req.shopId;
   let streamId = req.query.streamId;
-  let value = await streamingCart.findOne({ shopId: shopId, streamId: streamId, status: { $ne: 'ordered' } });
+  // let value = await streamingCart.findOne({ shopId: shopId, streamId: streamId, status: { $ne: 'ordered' } });
+  let value = await streamingCart.aggregate([
+    {
+      $match: {
+        $and: [
+          { shopId: { $eq: shopId } }, { streamId: { $eq: streamId } }, { status: { $ne: 'ordered' } }
+        ]
+      }
+    },
+    {
+      $lookup: {
+        from: 'streamposts',
+        localField: 'cart.streamPostId',
+        foreignField: '_id',
+        pipeline: [
+          {
+            $project: {
+              _id: 1,
+              orderedQTY: 1,
+              pendingQTY: 1,
+              quantity: 1,
+              minLots: 1,
+              incrementalLots: 1
+            }
+          }
+        ],
+        as: 'streamposts',
+      },
+    },
+
+  ])
   return value;
 };
 

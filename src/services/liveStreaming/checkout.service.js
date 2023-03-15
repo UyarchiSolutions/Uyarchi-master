@@ -128,7 +128,6 @@ const addstreaming_order_product = async (shopId, event, order) => {
     let total = 0;
     if (post.orderedQTY) {
       total = post.orderedQTY + event.cartQTY;
-
     }
     post.orderedQTY = total;
     post.pendingQTY = post.quantity - total;

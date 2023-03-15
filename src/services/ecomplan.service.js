@@ -5452,6 +5452,16 @@ const fetchStream_Details_ById = async (id) => {
       },
     },
     {
+      $lookup: {
+        from: 'streamingorderproducts',
+        localField: '_id',
+        foreignField: 'postId',
+        pipeline: [{ $match: { status: 'Pending' } }],
+        as: 'status',
+      },
+    },
+    { $addFields: { counts: { $size: '$status' } } },
+    {
       $project: {
         _id: 1,
         Buyer: { $size: '$streamingorderProduct' },
@@ -5463,7 +5473,9 @@ const fetchStream_Details_ById = async (id) => {
         denied: { $size: '$denied' },
         productName: '$streamPost.product.productTitle',
         productId: '$streamPost.product._id',
-        status: 1,
+        status: {
+          $cond: [{ $gt: ['$counts', 0] }, 'Pending', 'Completed'],
+        },
       },
     },
   ]);

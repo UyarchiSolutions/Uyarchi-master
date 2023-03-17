@@ -5853,7 +5853,14 @@ const update_productOrders = async (id, body) => {
   if (!values) {
     throw new ApiError(httpStatus.NOT_FOUND, 'streaming order not found 🖕');
   }
+  let orderId = values.orderId;
   values = await streamingorderProduct.findByIdAndUpdate({ _id: id }, { status: body.status }, { new: true });
+  let totalOrder = await streamingorderProduct.find({ orderId: orderId }).count();
+  let pendingCount = await streamingorderProduct.find({ orderId: orderId, status: 'Pending' }).count();
+  console.log(pendingCount);
+  if (pendingCount == 0) {
+    await streamingOrder.findByIdAndUpdate({ _id: orderId }, { orderStatus: 'ready' }, { new: true });
+  }
   return values;
 };
 

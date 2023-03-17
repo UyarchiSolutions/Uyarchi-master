@@ -382,7 +382,7 @@ const update_Status_For_StreamingOrders = catchAsync(async (req, res) => {
 });
 
 const fetch_streaming_Details_Approval = catchAsync(async (req, res) => {
-  const data = await Ecomserive.fetch_streaming_Details_Approval(req.params.id, req.params.product);
+  const data = await Ecomserive.fetch_streaming_Details_Approval(req.params.id, req.params.product, req.query);
   res.send(data);
 });
 

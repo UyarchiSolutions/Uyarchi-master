@@ -151,6 +151,9 @@ const streamingproductschema = mongoose.Schema({
     type: String,
     default: 'Pending',
   },
+  streamPostId: {
+    type: String,
+  }
 });
 const streamingorderProduct = mongoose.model('streamingorderproduct', streamingproductschema);
 const streamingPaymant = mongoose.Schema({

@@ -569,6 +569,8 @@ const get_sub_golive = async (req) => {
                     "minLots": "$streamposts.minLots",
                     "incrementalLots": "$streamposts.incrementalLots",
                     bookingAmount: "$streamposts.bookingAmount",
+                    streamPostId: "$streamposts._id",
+                    allowAdd_to_cart: { $gte: ["$streamposts.pendingQTY", "$streamposts.minLots"] },
                     "suppierId": 1,
                     "DateIso": 1,
                     "created": "2023-01-20T11:46:58.201Z",

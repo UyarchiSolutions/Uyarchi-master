@@ -111,7 +111,7 @@ const delete_one_Plans = async (req) => {
 
 const create_post = async (req, images) => {
   // console.log(req.userId, "asdas", { ...req.body, ...{ suppierId: req.userId, images: images } })
-  const value = await StreamPost.create({ ...req.body, ...{ suppierId: req.userId, images: images } });
+  const value = await StreamPost.create({ ...req.body, ...{ suppierId: req.userId, images: images, pendingQTY: req.body.quantity } });
   await Dates.create_date(value);
   return value;
 };
@@ -2641,8 +2641,8 @@ const regisetr_strean_instrest = async (req) => {
       participents.noOfParticipants > count
         ? 'Confirmed'
         : participents.noOfParticipants + participents.noOfParticipants / 2 > count
-        ? 'RAC'
-        : 'Waiting';
+          ? 'RAC'
+          : 'Waiting';
     await Dates.create_date(findresult);
   } else {
     if (findresult.status != 'Registered') {
@@ -2651,8 +2651,8 @@ const regisetr_strean_instrest = async (req) => {
         participents.noOfParticipants > count
           ? 'Confirmed'
           : participents.noOfParticipants + participents.noOfParticipants / 2 > count
-          ? 'RAC'
-          : 'Waiting';
+            ? 'RAC'
+            : 'Waiting';
       findresult.eligible = participents.noOfParticipants > count;
       findresult.status = 'Registered';
       await Dates.create_date(findresult);

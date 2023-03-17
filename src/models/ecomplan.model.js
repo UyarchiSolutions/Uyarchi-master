@@ -109,6 +109,15 @@ const streamPostschema = mongoose.Schema({
   },
   quantity: {
     type: Number,
+    default: 0
+  },
+  orderedQTY: {
+    type: Number,
+    default: 0
+  },
+  pendingQTY: {
+    type: Number,
+    default: 0
   },
   marketPlace: {
     type: Number,

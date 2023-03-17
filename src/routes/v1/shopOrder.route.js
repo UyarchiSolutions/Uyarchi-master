@@ -2,7 +2,8 @@ const express = require('express');
 const router = express.Router();
 const shopOrderController = require('../../controllers/shopOrder.controller');
 const authorization = require('../../controllers/tokenVerify.controller');
-
+const Issue = require('../../middlewares/issue');
+const multer = require("multer")
 router
   .route('/')
   .post(authorization, shopOrderController.createshopOrder)
@@ -86,10 +87,18 @@ router.route('/issueStatus_Update/:id').put(shopOrderController.issueStatus_Upda
 router.route('/assign/issueStatus_Update/:id').put(shopOrderController.issueStatus_Update_assign);
 router.route('/get/issues/product/list').get(authorization, shopOrderController.get_issue_product_list);
 
+const storage = multer.memoryStorage({
+  destination: function (req, res, callback) {
+    callback(null, '');
+  },
+});
+const upload = multer({ storage }).single('productvideo');
+
 // issue picked delivery Exc
 router.route('/issue/collection/start').put(authorization, shopOrderController.issue_collection_start);
 router.route('/issue/collection/reached').put(authorization, shopOrderController.issue_collection_reached);
-router.route('/issue/collection/checked').put(authorization, shopOrderController.issue_collection_checked);
+router.route('/issue/collection/checked').put(authorization, Issue.array('images'), shopOrderController.issue_collection_checked);
+router.route('/issue/collection/checked/video').put(authorization, upload, shopOrderController.issue_collection_checked_video);
 router.route('/issue/collection/pickedup').put(authorization, shopOrderController.issue_collection_pickedup);
 router.route('/issue/collection/rejected').put(authorization, shopOrderController.issue_collection_rejected);
 router.route('/issue/collection/returntosm').put(authorization, shopOrderController.issue_collection_returntosm);

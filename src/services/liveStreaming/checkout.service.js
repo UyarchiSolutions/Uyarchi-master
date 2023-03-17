@@ -9,6 +9,8 @@ const {
   streamingorderProduct,
   streamingorderPayments,
 } = require('../../models/liveStreaming/checkout.model');
+const { Streamplan, StreamPost, Streamrequest, StreamrequestPost, StreamPreRegister, streamPlanlink } = require('../../models/ecomplan.model');
+
 const axios = require('axios'); //
 const Dates = require('../Date.serive');
 const paymentgatway = require('../paymentgatway.service');
@@ -26,14 +28,31 @@ const addTocart = async (req) => {
     value.cart = cart;
     value.save();
   }
-
   return value;
 };
 const get_addTocart = async (req) => {
   let shopId = req.shopId;
   let streamId = req.query.streamId;
-  let value = await streamingCart.findOne({ shopId: shopId, streamId: streamId, status: { $ne: 'ordered' } });
-  return value;
+  return new Promise(async (resolve) => {
+    let value = await streamingCart.findOne({ shopId: shopId, streamId: streamId, status: { $ne: 'ordered' } });
+    if (value) {
+      let cartProducts = [];
+      for (let i = 0; i < value.cart.length; i++) {
+        let post = await StreamPost.findById(value.cart[i].streamPostId);
+        if (post) {
+          let minimunQTY = post.pendingQTY >= post.minLots;
+          let allowedQTY = post.pendingQTY >= value.cart[i].cartQTY;
+          let cartview = { ...value.cart[i], ...{ minLots: post.minLots, minimunQTY: minimunQTY, allowedQTY: allowedQTY, orderedQTY: post.orderedQTY, pendingQTY: post.pendingQTY, totalpostQTY: post.quantity } }
+          cartProducts.push(cartview)
+        }
+      }
+      value.cart = cartProducts;
+      resolve(value);
+    }
+    else {
+      resolve(value);
+    }
+  });
 };
 
 const confirmOrder_cod = async (shopId, body) => {
@@ -119,7 +138,22 @@ const addstreaming_order_product = async (shopId, event, order) => {
     shopId: shopId,
     purchase_price: event.offerPrice,
     streamId: order.streamId,
+    streamPostId: event.streamPostId
   });
+  let post = await StreamPost.findById(event.streamPostId);
+  if (post) {
+    let total = 0;
+    if (post.orderedQTY) {
+      total = post.orderedQTY + event.cartQTY;
+    }
+    else {
+      total = event.cartQTY;
+    }
+    post.orderedQTY = total;
+    post.pendingQTY = post.quantity - total;
+    post.save();
+  }
+
   await Dates.create_date(value);
   return value;
 };

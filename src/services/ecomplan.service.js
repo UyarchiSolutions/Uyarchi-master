@@ -5632,7 +5632,7 @@ const fetch_streaming_Details_Approval = async (id, product) => {
     },
     {
       $unwind: {
-        preserveNullAndEmptyArrays: true,
+        preserveNullAndEmptyArrays: false,
         path: '$orders',
       },
     },

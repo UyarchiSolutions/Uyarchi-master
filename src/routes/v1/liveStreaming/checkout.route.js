@@ -15,5 +15,7 @@ router.route('/razorpay/success/confirmorder').post(shopverify, checkout.confirm
 router.route('/success/confirmorder').post(shopverify, checkout.confirmOrder_cod);
 router.route('/get/streamingorderproducts').get(checkout.get_streamingorderproducts);
 router.route('/Buyer/Status/Update/:id').put(checkout.Buyer_Status_Update);
+router.route('/proceed/to/pay/start').put(shopverify, checkout.proceed_to_pay_start);
+router.route('/proceed/to/pay/stop').put(shopverify, checkout.proceed_to_pay_stop);
 
 module.exports = router;

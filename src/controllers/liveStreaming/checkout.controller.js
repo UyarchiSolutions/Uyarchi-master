@@ -31,6 +31,17 @@ const Buyer_Status_Update = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+
+const proceed_to_pay_start = catchAsync(async (req, res) => {
+  const data = await checkout.proceed_to_pay_start(req);
+  res.send(data);
+});
+
+const proceed_to_pay_stop = catchAsync(async (req, res) => {
+  const data = await checkout.proceed_to_pay_stop(req);
+  res.send(data);
+});
+
 module.exports = {
   addTocart,
   get_addTocart,
@@ -38,4 +49,6 @@ module.exports = {
   confirmOrder_cod,
   get_streamingorderproducts,
   Buyer_Status_Update,
+  proceed_to_pay_start,
+  proceed_to_pay_stop
 };

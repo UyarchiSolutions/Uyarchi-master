@@ -36,9 +36,99 @@ const streamingCartschema = mongoose.Schema({
     type: String,
     default: 'Pending',
   },
+  proceed_To_Pay: {
+    type: String,
+  },
+  startTime: {
+    type: Number,
+  },
+  endTime: {
+    type: Number,
+  },
+
 });
 
 const streamingCart = mongoose.model('streamingcart', streamingCartschema);
+
+
+const streamingCartProductschema = mongoose.Schema({
+  _id: {
+    type: String,
+    default: v4,
+  },
+  DateIso: {
+    type: Number,
+  },
+  categoryId: {
+    type: String,
+  },
+  created: {
+    type: String,
+  },
+  image: {
+    type: String,
+  },
+  incrementalLots: {
+    type: Number,
+  },
+  marketPlace: {
+    type: Number,
+  },
+  offerPrice: {
+    type: Number,
+  },
+  postLiveStreamingPirce: {
+    type: Number,
+  },
+  productTitle: {
+    type: String,
+  },
+  minLots: {
+    type: Number,
+  },
+  suppierId: {
+    type: String,
+  },
+  cartQTY: {
+    type: Number,
+  },
+  productId: {
+    type: String,
+  },
+  bookingAmount: {
+    type: String,
+  },
+  streamPostId: {
+    type: String,
+  },
+  streamrequestpostId: {
+    type: String,
+  },
+  streamingCart: {
+    type: String,
+  },
+  cardStatus: {
+    type: Boolean,
+    default: true
+  },
+  add_to_cart: {
+    type: Boolean,
+  },
+  quantity: {
+    type: Number,
+  },
+  proceed_To_Pay: {
+    type: String,
+  },
+  startTime: {
+    type: Number,
+  },
+  endTime: {
+    type: Number,
+  },
+});
+
+const streamingCartProduct = mongoose.model('streamingcartproducts', streamingCartProductschema);
 
 const streamingOrderschema = mongoose.Schema({
   _id: {
@@ -255,4 +345,4 @@ const streamingPaymant = mongoose.Schema({
 });
 const streamingorderPayments = mongoose.model('streamingorderpayment', streamingPaymant);
 
-module.exports = { streamingCart, streamingOrder, streamingorderProduct, streamingorderPayments };
+module.exports = { streamingCart, streamingCartProduct, streamingOrder, streamingorderProduct, streamingorderPayments };

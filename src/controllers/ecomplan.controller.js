@@ -372,7 +372,7 @@ const fetchStream_Details_ById = catchAsync(async (req, res) => {
 });
 
 const fetch_Stream_Ordered_Details = catchAsync(async (req, res) => {
-  const data = await Ecomserive.fetch_Stream_Ordered_Details(req.params.id);
+  const data = await Ecomserive.fetch_Stream_Ordered_Details(req.params.id, req.query);
   res.send(data);
 });
 

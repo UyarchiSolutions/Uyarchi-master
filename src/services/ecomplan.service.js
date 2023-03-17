@@ -5487,12 +5487,32 @@ const fetchStream_Details_ById = async (id) => {
 
 // Intimation Buyer Flow
 
-const fetch_Stream_Ordered_Details = async (id) => {
+const fetch_Stream_Ordered_Details = async (id, query) => {
+  console.log(query);
+  let buyerSearch = { _id: { $ne: null } };
+  let statusSearch = { _id: { $ne: null } };
+
+  if (!query.buyer == '' && query.buyer) {
+    buyerSearch = { name: { $regex: query.buyer, $options: 'i' } };
+  } else {
+    buyerSearch;
+  }
+  if (!query.status == '' && query.status) {
+    statusSearch = { orderStatus: { $regex: query.status, $options: 'i' } };
+  } else {
+    statusSearch;
+  }
   let values = await streamingOrder.aggregate([
     {
       $match: {
         streamId: id,
       },
+    },
+    {
+      $match: { $or: [buyerSearch] },
+    },
+    {
+      $match: { $or: [statusSearch] },
     },
     {
       $lookup: {
@@ -5572,8 +5592,94 @@ const fetch_Stream_Ordered_Details = async (id) => {
         orderedProducts: '$orderedProducts',
       },
     },
+    {
+      $skip: 10 * query.page,
+    },
+    {
+      $limit: 10,
+    },
   ]);
-  return values;
+  let total = await streamingOrder.aggregate([
+    {
+      $match: {
+        streamId: id,
+      },
+    },
+    {
+      $match: { $or: [buyerSearch] },
+    },
+    {
+      $match: { $or: [statusSearch] },
+    },
+    {
+      $lookup: {
+        from: 'streamrequests',
+        localField: 'streamId',
+        foreignField: '_id',
+        as: 'stream',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$stream',
+      },
+    },
+    {
+      $lookup: {
+        from: 'b2bshopclones',
+        localField: 'shopId',
+        foreignField: '_id',
+        as: 'shops',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$shops',
+      },
+    },
+    {
+      $lookup: {
+        from: 'streamingorderproducts',
+        localField: '_id',
+        foreignField: 'orderId',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'products',
+              localField: 'productId',
+              foreignField: '_id',
+              as: 'product',
+            },
+          },
+          {
+            $unwind: '$product',
+          },
+          {
+            $project: {
+              _id: 1,
+              status: 1,
+              purchase_quantity: 1,
+              purchase_price: 1,
+              productName: '$product.productTitle',
+            },
+          },
+        ],
+        as: 'orderedProducts',
+      },
+    },
+    {
+      $lookup: {
+        from: 'streamingorderproducts',
+        localField: '_id',
+        foreignField: 'orderId',
+        pipeline: [{ $match: { status: { $ne: 'Pending' } } }],
+        as: 'Actions',
+      },
+    },
+  ]);
+  return { values: values, total: total.length };
 };
 
 const update_Status_For_StreamingOrders = async (id, body) => {

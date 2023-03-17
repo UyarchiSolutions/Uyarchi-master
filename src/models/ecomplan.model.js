@@ -184,6 +184,7 @@ const streamPostschema = mongoose.Schema({
     type: String,
     default: 'Active',
   },
+  
 });
 
 const StreamPost = mongoose.model('Streampost', streamPostschema);

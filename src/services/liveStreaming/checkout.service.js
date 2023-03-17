@@ -5,6 +5,7 @@ const Agora = require('agora-access-token');
 const moment = require('moment');
 const {
   streamingCart,
+  streamingCartProduct,
   streamingOrder,
   streamingorderProduct,
   streamingorderPayments,
@@ -20,39 +21,169 @@ const addTocart = async (req) => {
   let streamId = req.body.streamId;
   let cart = req.body.cart;
   let value = await streamingCart.findOne({ shopId: shopId, streamId: streamId, status: { $ne: 'ordered' } });
-  console.log(value);
+  // console.log(value, 12312)
   if (!value) {
     value = await streamingCart.create({ cart: cart, shopId: shopId, streamId: streamId });
+    cart.forEach(async (a) => {
+      // streamingCart
+      let obj = { ...a, ...{ streamingCart: value._id, streamrequestpostId: a._id } };
+      delete obj._id
+      await streamingCartProduct.create(obj)
+    })
     await Dates.create_date(value);
   } else {
+    await streamingCartProduct.updateMany({ streamingCart: value._id }, { $set: { cardStatus: false } }, { new: true })
     value.cart = cart;
+    cart.forEach(async (a) => {
+      // streamingCart  
+      let cartproduct = await streamingCartProduct.findOne({ streamingCart: value._id, streamrequestpostId: a.streamrequestpostId });
+      // console.log(cartproduct)
+      if (cartproduct) {
+        cartproduct.cartQTY = a.cartQTY;
+      }
+      else {
+        let obj = { ...a, ...{ streamingCart: value._id, streamrequestpostId: a._id } };
+        delete obj._id
+        cartproduct = await streamingCartProduct.create(obj)
+      }
+      cartproduct.cardStatus = true;
+      cartproduct.add_to_cart = a.add_to_cart;
+      cartproduct.save();
+    })
     value.save();
   }
   return value;
 };
 const get_addTocart = async (req) => {
+  let timeNow = new Date().getTime();
   let shopId = req.shopId;
   let streamId = req.query.streamId;
-  return new Promise(async (resolve) => {
-    let value = await streamingCart.findOne({ shopId: shopId, streamId: streamId, status: { $ne: 'ordered' } });
-    if (value) {
-      let cartProducts = [];
-      for (let i = 0; i < value.cart.length; i++) {
-        let post = await StreamPost.findById(value.cart[i].streamPostId);
-        if (post) {
-          let minimunQTY = post.pendingQTY >= post.minLots;
-          let allowedQTY = post.pendingQTY >= value.cart[i].cartQTY;
-          let cartview = { ...value.cart[i], ...{ minLots: post.minLots, minimunQTY: minimunQTY, allowedQTY: allowedQTY, orderedQTY: post.orderedQTY, pendingQTY: post.pendingQTY, totalpostQTY: post.quantity } }
-          cartProducts.push(cartview)
-        }
+  let value = await streamingCart.aggregate([
+    {
+      $match: {
+        $and: [{ shopId: { $eq: shopId } }, { streamId: { $eq: streamId } }, { status: { $ne: 'ordered' } }]
       }
-      value.cart = cartProducts;
-      resolve(value);
+    },
+    {
+      $lookup: {
+        from: 'streamingcartproducts',
+        localField: '_id',
+        foreignField: 'streamingCart',
+        pipeline: [
+          { $match: { $and: [{ cardStatus: { $eq: true } }] } },
+          {
+            $lookup: {
+              from: 'streamposts',
+              localField: 'streamPostId',
+              foreignField: '_id',
+              as: 'streamposts',
+            },
+          },
+          { $unwind: "$streamposts" },
+          {
+            $lookup: {
+              from: 'streamingcartproducts',
+              localField: 'streamPostId',
+              foreignField: 'streamPostId',
+              pipeline: [
+                {
+                  $lookup: {
+                    from: 'streamingcarts',
+                    localField: 'streamingCart',
+                    foreignField: '_id',
+                    pipeline: [
+                      { $match: { $and: [{ shopId: { $ne: shopId } }] } }
+                    ],
+                    as: 'streamingcarts',
+                  },
+                },
+                { $unwind: "$streamingcarts" },
+                { $match: { $and: [{ proceed_To_Pay: { $eq: "start" } }, { endTime: { $gte: timeNow } }] } },
+                {
+                  $group: {
+                    _id: null,
+                    tempQTY: { $sum: "$cartQTY" }
+                  }
+                }
+              ],
+              as: 'streamingcartproducts',
+            },
+          },
+          {
+            $unwind: {
+              preserveNullAndEmptyArrays: true,
+              path: '$streamingcartproducts',
+            },
+          },
+          {
+            $addFields: {
+              minLots: "$streamposts.minLots",
+              orderedQTY: "$streamposts.orderedQTY",
+              pendingQTY: "$streamposts.pendingQTY",
+              totalpostQTY: "$streamposts.quantity",
+              minimunQTY: {
+                $gte: ['$streamposts.pendingQTY', '$streamposts.minLots']
+              },
+              allowedQTY: {
+                $gte: ['$streamposts.pendingQTY', "$cartQTY"]
+              },
+              streamingcartproducts: "$streamingcartproducts",
+              tempQTY: { $ifNull: ['$streamingcartproducts.tempQTY', 0] },
+            }
+          },
+          {
+            $addFields: {
+              avaibleQTY: { $subtract: ["$pendingQTY", "$tempQTY"] },
+            }
+          },
+          { $unset: "streamposts" }
+        ],
+        as: 'cart',
+      },
+    },
+
+    {
+      $project: {
+        "status": 1,
+        "shopId": 1,
+        "streamId": 1,
+        "DateIso": 1,
+        "created": 1,
+        "date": 1,
+        cart: "$cart",
+        _id: 1,
+        endTime: 1,
+        proceed_To_Pay: 1,
+        startTime: 1
+      }
     }
-    else {
-      resolve(value);
-    }
-  });
+
+  ]);
+
+  // return new Promise(async (resolve) => {
+  //   let value = await streamingCart.findOne({ shopId: shopId, streamId: streamId, status: { $ne: 'ordered' } });
+  //   if (value) {
+  //     let cartProducts = [];
+  //     for (let i = 0; i < value.cart.length; i++) {
+  //       let post = await StreamPost.findById(value.cart[i].streamPostId);
+  //       if (post) {
+  //         let minimunQTY = post.pendingQTY >= post.minLots;
+  //         let allowedQTY = post.pendingQTY >= value.cart[i].cartQTY;
+  //         let cartview = { ...value.cart[i], ...{ minLots: post.minLots, minimunQTY: minimunQTY, allowedQTY: allowedQTY, orderedQTY: post.orderedQTY, pendingQTY: post.pendingQTY, totalpostQTY: post.quantity } }
+  //         cartProducts.push(cartview)
+  //       }
+  //     }
+  //     value.cart = cartProducts;
+  //     resolve(value);
+  //   }
+  //   else {
+  //     resolve(value);
+  //   }
+  // });
+  if (value.length == 0) {
+    return null;
+  }
+  return value[0];
 };
 
 const confirmOrder_cod = async (shopId, body) => {
@@ -301,6 +432,47 @@ const Buyer_Status_Update = async (id, body) => {
   return values;
 };
 
+
+const proceed_to_pay_start = async (req) => {
+  let streamId = req.query.id;
+  let shopId = req.shopId;
+  console.log(streamId, shopId)
+  var startDate = new Date();
+  var oldDateObj = new Date();
+  var newDateObj = new Date();
+  newDateObj.setTime(oldDateObj.getTime() + (3 * 60 * 1000));
+  let values = await streamingCart.findOne({ shopId: shopId, streamId: streamId, status: { $ne: 'ordered' } });
+  console.log(values)
+  if (values) {
+    if (values.proceed_To_Pay == 'start' && values.endTime < startDate.getTime()) {
+      console.log("asda")
+      values.endTime = newDateObj.getTime();
+      values.startTime = startDate.getTime();
+      await streamingCartProduct.updateMany({ streamingCart: values._id }, { $set: { endTime: newDateObj.getTime(), startTime: startDate.getTime(), proceed_To_Pay: "start" } }, { new: true })
+    }
+    else if (values.proceed_To_Pay != 'start') {
+      console.log("asd2312a")
+      values.endTime = newDateObj.getTime();
+      values.proceed_To_Pay = "start";
+      values.startTime = startDate.getTime();
+      await streamingCartProduct.updateMany({ streamingCart: values._id }, { $set: { endTime: newDateObj.getTime(), startTime: startDate.getTime(), proceed_To_Pay: "start" } }, { new: true })
+    }
+    values.save();
+  }
+  return values;
+};
+const proceed_to_pay_stop = async (req) => {
+  let streamId = req.query.id;
+  let shopId = req.shopId;
+  let values = await streamingCart.findOne({ shopId: shopId, streamId: streamId, status: { $ne: 'ordered' } });
+  if (values) {
+    values.proceed_To_Pay = "stop";
+    await streamingCartProduct.updateMany({ streamingCart: values._id }, { $set: { proceed_To_Pay: "stop" } }, { new: true })
+    values.save();
+  }
+  return values;
+};
+
 module.exports = {
   addTocart,
   get_addTocart,
@@ -308,4 +480,6 @@ module.exports = {
   confirmOrder_cod,
   get_streamingorderproducts,
   Buyer_Status_Update,
+  proceed_to_pay_start,
+  proceed_to_pay_stop
 };

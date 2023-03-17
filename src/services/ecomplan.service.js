@@ -5384,7 +5384,7 @@ const fetchStream_Details_ById = async (id) => {
         from: 'streamingorderproducts',
         localField: '_id',
         foreignField: 'postId',
-        pipeline: [{ $match: { status: 'confirmed' } }],
+        pipeline: [{ $match: { status: 'approved' } }],
         as: 'confirm',
       },
     },

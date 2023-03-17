@@ -5686,7 +5686,7 @@ const fetch_streaming_Details_Approval = async (id, product) => {
       $match: {
         streamId: id,
         productId: product,
-        status: 'confirmed',
+        status: 'approved',
       },
     },
     {

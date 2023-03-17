@@ -5493,14 +5493,14 @@ const fetch_Stream_Ordered_Details = async (id, query) => {
   let statusSearch = { _id: { $ne: null } };
 
   if (!query.buyer == '' && query.buyer) {
-    buyerSearch = { name: { $regex: query.buyer, $options: 'i' } };
+    buyerSearch = {
+      $or: [{ name: { $regex: query.buyer, $options: 'i' } }, { orderId: { $regex: query.buyer, $options: 'i' } }],
+    };
   } else {
     buyerSearch;
   }
   if (!query.status == '' && query.status) {
-    statusSearch = {
-      $or: [{ orderStatus: { $regex: query.status, $options: 'i' } }, { orderId: { $regex: query.status, $options: 'i' } }],
-    };
+    statusSearch = { $or: [{ orderStatus: { $regex: query.status, $options: 'i' } }] };
   } else {
     statusSearch;
   }
@@ -5511,7 +5511,7 @@ const fetch_Stream_Ordered_Details = async (id, query) => {
       },
     },
     {
-      $match: { $or: [buyerSearch] },
+      $match: buyerSearch,
     },
     {
       $match: statusSearch,

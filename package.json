@@ -54,6 +54,7 @@
   ],
   "dependencies": {
     "agora-access-token": "^2.0.4",
+    "agora-rtc-sdk-ng": "^4.16.1",
     "aws-sdk": "^2.1322.0",
     "bcrypt": "^5.0.1",
     "bcryptjs": "^2.4.3",

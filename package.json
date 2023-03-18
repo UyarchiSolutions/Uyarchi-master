@@ -69,6 +69,7 @@
     "express-mongo-sanitize": "^2.0.0",
     "express-rate-limit": "^5.0.0",
     "express-session": "^1.17.3",
+    "fluent-ffmpeg": "^2.1.2",
     "helmet": "^4.1.0",
     "http-status": "^1.4.0",
     "jimp": "^0.16.1",

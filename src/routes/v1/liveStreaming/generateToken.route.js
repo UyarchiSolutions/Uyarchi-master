@@ -42,5 +42,9 @@ router.route('/production/livestream/generateToken/supplier').post(supplierAuth,
 router.route('/production/livestream/generateToken/supplier/cloudrecording').post(generateToken.production_supplier_token_cloudrecording);
 router.route('/production/livestream/generateToken/watchamin').post(generateToken.production_supplier_token_watchamin);
 router.route('/get/live/stream/videos').get(generateToken.get_stream_complete_videos);
+router.route('/download/video/aws').get(generateToken.videoConverter);
+
+
+
 
 module.exports = router;

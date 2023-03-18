@@ -11,10 +11,11 @@ const Authorization = `Basic ${Buffer.from(`61b817e750214d58ba9d8148e7c89a1b:884
   'base64'
 )}`;
 const Dates = require('../Date.serive')
-
 const { Streamplan, StreamPost, Streamrequest, StreamrequestPost, StreamPreRegister } = require('../../models/ecomplan.model');
 const { request } = require('express');
 
+const ffmpeg = require('fluent-ffmpeg');
+const path = require('path');
 
 const generateUid = async (req) => {
   const length = 5;
@@ -844,6 +845,38 @@ const get_stream_complete_videos = async (req) => {
 
 }
 
+
+const videoConverter = async () => {
+  const AWS = require('aws-sdk');
+  // const s3 = new AWS.S3();
+  const s3 = new AWS.S3({
+    accessKeyId: 'AKIA3323XNN7Y2RU77UG',
+    secretAccessKey: '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',
+    region: 'ap-south-1',
+  });
+  let params = {
+    Bucket: 'realestatevideoupload',
+    Key: '/001f1c47059a4fc7a8bbbca04d7442d4/24512/af3d71fb884912e0ebeac4ba3a2cc0ff_c615864f-7d5d-434b-b988-11bd56bd1d97.m3u8',
+    ResponseContentType: 'video/m3u8'
+
+  };
+  s3.getObject(params, (err, data) => {
+    if (err) {
+      console.error('Error downloading file:', err);
+    } else {
+      console.log('File downloaded successfully!');
+      // Write the file data to disk.
+      fs.writeFile('<output-file-name>.mp4', data.Body, (err) => {
+        if (err) {
+          console.error('Error writing file:', err);
+        } else {
+          console.log('File saved successfully!');
+        }
+      });
+    }
+  });
+}
+
 module.exports = {
   generateToken,
   getHostTokens,
@@ -869,5 +902,6 @@ module.exports = {
   production_supplier_token,
   production_supplier_token_cloudrecording,
   production_supplier_token_watchamin,
-  get_stream_complete_videos
+  get_stream_complete_videos,
+  videoConverter
 };

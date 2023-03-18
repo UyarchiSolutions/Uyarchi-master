@@ -136,6 +136,12 @@ const get_stream_complete_videos = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).send(tokens);
 });
 
+const videoConverter= catchAsync(async (req, res) => {
+  let tokens = await generateTokenService.videoConverter(req);
+  res.status(httpStatus.CREATED).send(tokens);
+});
+
+
 module.exports = {
   generateToken,
   getHostTokens,
@@ -161,5 +167,6 @@ module.exports = {
   production_supplier_token,
   production_supplier_token_cloudrecording,
   production_supplier_token_watchamin,
-  get_stream_complete_videos
+  get_stream_complete_videos,
+  videoConverter
 };

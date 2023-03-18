@@ -6735,7 +6735,7 @@ const issue_collection_start = async (req) => {
   if (values.issue_assgin_by != req.userId) {
     throw new ApiError(httpStatus.NOT_FOUND, 'productOrders Not Found');
   }
-  values = await ProductorderClone.findByIdAndUpdate({ _id: id }, { issue_collection_status: "On Transits" }, { new: true });
+  values = await ProductorderClone.findByIdAndUpdate({ _id: id }, { issue_collection_status: "On Transits", issStatus: "On Transits" }, { new: true });
   return values;
 };
 const issue_collection_reached = async (req) => {
@@ -6747,7 +6747,7 @@ const issue_collection_reached = async (req) => {
   if (values.issue_assgin_by != req.userId) {
     throw new ApiError(httpStatus.NOT_FOUND, 'productOrders Not Found');
   }
-  values = await ProductorderClone.findByIdAndUpdate({ _id: id }, { issue_collection_status: "Reached" }, { new: true });
+  values = await ProductorderClone.findByIdAndUpdate({ _id: id }, { issue_collection_status: "Reached", issStatus: "Reached" }, { new: true });
   return values;
 };
 const issue_collection_checked = async (req) => {
@@ -6759,7 +6759,7 @@ const issue_collection_checked = async (req) => {
   if (values.issue_assgin_by != req.userId) {
     throw new ApiError(httpStatus.NOT_FOUND, 'productOrders Not Found');
   }
-  values = await ProductorderClone.findByIdAndUpdate({ _id: id }, { issue_collection_status: "Under Check" }, { new: true });
+  values = await ProductorderClone.findByIdAndUpdate({ _id: id }, { issue_collection_status: "Under Check", issStatus: "Under Check" }, { new: true });
   return values;
 };
 
@@ -6813,7 +6813,7 @@ const issue_collection_rejected = async (req) => {
   if (values.issue_assgin_by != req.userId) {
     throw new ApiError(httpStatus.NOT_FOUND, 'productOrders Not Found');
   }
-  values = await ProductorderClone.findByIdAndUpdate({ _id: id }, { issue_collection_status: "Rejected" }, { new: true });
+  values = await ProductorderClone.findByIdAndUpdate({ _id: id }, { issue_collection_status: "Rejected", issStatus: "Rejected" }, { new: true });
   return values;
 };
 const issue_collection_returntosm = async (req) => {

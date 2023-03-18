@@ -2297,7 +2297,7 @@ const get_subhost_token = async (req, userId) => {
         primaryHost: { $eq: ['$allot_host_1', userId] },
         chatPermistion: { $eq: ['$allot_chat', userId] },
         chat_need: 1,
-        temptokens_sub:"$temptokens_sub"
+        temptokens_sub: "$temptokens_sub"
       },
     },
   ]);

@@ -5502,12 +5502,34 @@ const fetchStream_Details_ById = async (id) => {
 
 // Intimation Buyer Flow
 
-const fetch_Stream_Ordered_Details = async (id) => {
+const fetch_Stream_Ordered_Details = async (id, query) => {
+  console.log(query);
+  let buyerSearch = { _id: { $ne: null } };
+  let statusSearch = { _id: { $ne: null } };
+
+  if (!query.buyer == '' && query.buyer) {
+    buyerSearch = {
+      $or: [{ name: { $regex: query.buyer, $options: 'i' } }, { orderId: { $regex: query.buyer, $options: 'i' } }],
+    };
+  } else {
+    buyerSearch;
+  }
+  if (!query.status == '' && query.status) {
+    statusSearch = { $or: [{ orderStatus: { $regex: query.status, $options: 'i' } }] };
+  } else {
+    statusSearch;
+  }
   let values = await streamingOrder.aggregate([
     {
       $match: {
         streamId: id,
       },
+    },
+    {
+      $match: buyerSearch,
+    },
+    {
+      $match: statusSearch,
     },
     {
       $lookup: {
@@ -5577,18 +5599,113 @@ const fetch_Stream_Ordered_Details = async (id) => {
       },
     },
     {
+      $lookup: {
+        from: 'streamingorderproducts',
+        localField: '_id',
+        foreignField: 'orderId',
+        // pipeline: [{ $match: { status: { $ne: 'Pending' } } }],
+        as: 'ordercount',
+      },
+    },
+    {
       $project: {
         _id: 1,
         name: 1,
         orderId: 1,
-        No_Of_Product: { $size: '$stream.post' },
+        No_Of_Product: { $size: '$ordercount' },
         ordered: { $size: '$Actions' },
         orderStatus: 1,
         orderedProducts: '$orderedProducts',
       },
     },
+    {
+      $skip: 10 * query.page,
+    },
+    {
+      $limit: 10,
+    },
   ]);
-  return values;
+  let total = await streamingOrder.aggregate([
+    {
+      $match: {
+        streamId: id,
+      },
+    },
+    {
+      $match: { $or: [buyerSearch] },
+    },
+    {
+      $match: { $or: [statusSearch] },
+    },
+    {
+      $lookup: {
+        from: 'streamrequests',
+        localField: 'streamId',
+        foreignField: '_id',
+        as: 'stream',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$stream',
+      },
+    },
+    {
+      $lookup: {
+        from: 'b2bshopclones',
+        localField: 'shopId',
+        foreignField: '_id',
+        as: 'shops',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$shops',
+      },
+    },
+    {
+      $lookup: {
+        from: 'streamingorderproducts',
+        localField: '_id',
+        foreignField: 'orderId',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'products',
+              localField: 'productId',
+              foreignField: '_id',
+              as: 'product',
+            },
+          },
+          {
+            $unwind: '$product',
+          },
+          {
+            $project: {
+              _id: 1,
+              status: 1,
+              purchase_quantity: 1,
+              purchase_price: 1,
+              productName: '$product.productTitle',
+            },
+          },
+        ],
+        as: 'orderedProducts',
+      },
+    },
+    {
+      $lookup: {
+        from: 'streamingorderproducts',
+        localField: '_id',
+        foreignField: 'orderId',
+        pipeline: [{ $match: { status: { $ne: 'Pending' } } }],
+        as: 'Actions',
+      },
+    },
+  ]);
+  return { values: values, total: total.length };
 };
 
 const update_Status_For_StreamingOrders = async (id, body) => {
@@ -5868,7 +5985,14 @@ const update_productOrders = async (id, body) => {
   if (!values) {
     throw new ApiError(httpStatus.NOT_FOUND, 'streaming order not found 🖕');
   }
+  let orderId = values.orderId;
   values = await streamingorderProduct.findByIdAndUpdate({ _id: id }, { status: body.status }, { new: true });
+  let totalOrder = await streamingorderProduct.find({ orderId: orderId }).count();
+  let pendingCount = await streamingorderProduct.find({ orderId: orderId, status: 'Pending' }).count();
+  console.log(pendingCount);
+  if (pendingCount == 0) {
+    await streamingOrder.findByIdAndUpdate({ _id: orderId }, { orderStatus: 'ready' }, { new: true });
+  }
   return values;
 };
 

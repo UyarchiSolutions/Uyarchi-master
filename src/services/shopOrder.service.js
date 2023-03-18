@@ -6829,6 +6829,45 @@ const issue_collection_returntosm = async (req) => {
   return values;
 };
 
+const issue_collection_recieved = async (req) => {
+  const { id } = req.body;
+  let values = await ProductorderClone.findById(id);
+  if (!values) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'productOrders Not Found');
+  }
+  if (values.issue_assgin_by != req.userId) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'productOrders Not Found');
+  }
+  values = await ProductorderClone.findByIdAndUpdate({ _id: id }, { issue_collection_status: "Product Received", issStatus: "Product Received" }, { new: true });
+  return values;
+};
+
+const issue_collection_calculated = async (req) => {
+  const { id } = req.body;
+  let values = await ProductorderClone.findById(id);
+  if (!values) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'productOrders Not Found');
+  }
+  if (values.issue_assgin_by != req.userId) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'productOrders Not Found');
+  }
+  values = await ProductorderClone.findByIdAndUpdate({ _id: id }, { issue_collection_status: "Calculated", issStatus: "Calculated" }, { new: true });
+  return values;
+};
+
+const issue_collection_reconfirm = async (req) => {
+  const { id } = req.body;
+  let values = await ProductorderClone.findById(id);
+  if (!values) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'productOrders Not Found');
+  }
+  if (values.issue_assgin_by != req.userId) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'productOrders Not Found');
+  }
+  values = await ProductorderClone.findByIdAndUpdate({ _id: id }, req.body, { new: true });
+  return values;
+};
+
 module.exports = {
   // product
   createProductOrderClone,
@@ -6910,5 +6949,8 @@ module.exports = {
   issue_collection_checked_video,
   issue_collection_pickedup,
   issue_collection_rejected,
-  issue_collection_returntosm
+  issue_collection_returntosm,
+  issue_collection_recieved,
+  issue_collection_calculated,
+  issue_collection_reconfirm
 };

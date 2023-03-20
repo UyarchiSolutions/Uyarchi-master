@@ -42,7 +42,7 @@ const host_controll_all = async (req, io) => {
   console.log(req)
   let token = await tempTokenModel.findById(req.tokenId);
   let res = await tempTokenModel.findOne({ Uid: req.userId, chennel: token.chennel })
-  let result = await tempTokenModel.findByIdAndUpdate({ _id: res._id }, { ...req, ...{ video: false, audio: false } }, { new: true })
+  let result = await tempTokenModel.findByIdAndUpdate({ _id: res._id }, { ...req, ...{ video: true, audio: true } }, { new: true })
   result.controlledBy = 'mainhost'
   result.save();
   console.log(result)

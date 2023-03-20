@@ -544,6 +544,18 @@ const productorderCloneSchema = new mongoose.Schema({
     type: String,
     default: 'Pending',
   },
+  pick_up_charge: {
+    type: Number,
+    default: 0,
+  },
+  advance_delivery_charge: {
+    type: Number,
+    default: 0,
+  },
+  damage_deduction: {
+    type: Number,
+    default: 0,
+  },
 });
 
 productorderCloneSchema.plugin(toJSON);

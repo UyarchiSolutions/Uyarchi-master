@@ -6831,11 +6831,9 @@ const issue_collection_returntosm = async (req) => {
 
 const issue_collection_recieved = async (req) => {
   const { id } = req.body;
+  console.log(id)
   let values = await ProductorderClone.findById(id);
   if (!values) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'productOrders Not Found');
-  }
-  if (values.issue_assgin_by != req.userId) {
     throw new ApiError(httpStatus.NOT_FOUND, 'productOrders Not Found');
   }
   values = await ProductorderClone.findByIdAndUpdate({ _id: id }, { issue_collection_status: "Product Received", issStatus: "Product Received" }, { new: true });
@@ -6848,20 +6846,14 @@ const issue_collection_calculated = async (req) => {
   if (!values) {
     throw new ApiError(httpStatus.NOT_FOUND, 'productOrders Not Found');
   }
-  if (values.issue_assgin_by != req.userId) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'productOrders Not Found');
-  }
-  values = await ProductorderClone.findByIdAndUpdate({ _id: id }, { issue_collection_status: "Calculated", issStatus: "Calculated" }, { new: true });
+  values = await ProductorderClone.findByIdAndUpdate({ _id: id }, { ...{ issStatus: "Calculated" }, ...req.body }, { new: true });
   return values;
 };
 
 const issue_collection_reconfirm = async (req) => {
-  const { id } = req.body;
+  const { id, issue_Res, issStatus } = req.body;
   let values = await ProductorderClone.findById(id);
   if (!values) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'productOrders Not Found');
-  }
-  if (values.issue_assgin_by != req.userId) {
     throw new ApiError(httpStatus.NOT_FOUND, 'productOrders Not Found');
   }
   values = await ProductorderClone.findByIdAndUpdate({ _id: id }, req.body, { new: true });

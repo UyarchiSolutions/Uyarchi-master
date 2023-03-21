@@ -2268,11 +2268,6 @@ const get_subhost_token = async (req, userId) => {
             },
           },
           {
-            $addFields: {
-              supplierName: { $ifNull: ['$subhosts.Name', ''] },
-            },
-          },
-          {
             $lookup: {
               from: 'suppliers',
               localField: 'supplierId',
@@ -2288,7 +2283,7 @@ const get_subhost_token = async (req, userId) => {
           },
           {
             $addFields: {
-              supplierName: { $ifNull: ['$suppliers.Name', ''] },
+              supplierName: { $ifNull: ['$suppliers.Name', '$subhosts.Name'] },
             },
           },
         ],

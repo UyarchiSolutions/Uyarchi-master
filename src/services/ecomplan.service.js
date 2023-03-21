@@ -2283,7 +2283,7 @@ const get_subhost_token = async (req, userId) => {
           },
           {
             $addFields: {
-              supplierName: { $ifNull: ['$suppliers.Name', '$subhosts.Name'] },
+              supplierName: { $ifNull: ['$suppliers.primaryContactName', '$subhosts.Name'] },
             },
           },
         ],

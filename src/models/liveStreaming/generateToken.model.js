@@ -112,7 +112,7 @@ const tempToken = mongoose.Schema({
     type: Boolean,
     default: true,
   },
-  mainhostLive: {
+  mainhostLeave: {
     type: Boolean,
     default: false
   },

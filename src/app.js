@@ -67,6 +67,10 @@ io.sockets.on('connection', async (socket) => {
   socket.on('leave_subhost', async (data) => {
     await socketService.leave_subhost(data, io)
   });
+  socket.on('allow_subhost', async (data) => {
+    await socketService.admin_allow_controls(data, io)
+  });
+  
   socket.on('', (msg) => {
     console.log('message: ' + msg);
   });

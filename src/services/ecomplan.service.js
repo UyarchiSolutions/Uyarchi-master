@@ -2246,12 +2246,52 @@ const get_subhost_token = async (req, userId) => {
         from: 'temptokens',
         localField: '_id',
         foreignField: 'streamId',
-        pipeline: [{
-          $match: {
-            $or: [{ $and: [{ type: { $eq: 'subhost' } }, { supplierId: { $ne: userId } }] }, { type: { $eq: 'Supplier' } }]
+        pipeline: [
+          {
+            $match: {
+              $or: [{ $and: [{ type: { $eq: 'subhost' } }, { supplierId: { $ne: userId } }] }, { type: { $eq: 'Supplier' } }]
 
-          }
-        }],
+            }
+          },
+          {
+            $lookup: {
+              from: 'subhosts',
+              localField: 'supplierId',
+              foreignField: '_id',
+              as: 'subhosts',
+            },
+          },
+          {
+            $unwind: {
+              preserveNullAndEmptyArrays: true,
+              path: '$subhosts',
+            },
+          },
+          {
+            $addFields: {
+              supplierName: { $ifNull: ['$subhosts.Name', ''] },
+            },
+          },
+          {
+            $lookup: {
+              from: 'suppliers',
+              localField: 'supplierId',
+              foreignField: '_id',
+              as: 'suppliers',
+            },
+          },
+          {
+            $unwind: {
+              preserveNullAndEmptyArrays: true,
+              path: '$suppliers',
+            },
+          },
+          {
+            $addFields: {
+              supplierName: { $ifNull: ['$suppliers.Name', ''] },
+            },
+          },
+        ],
         as: 'temptokens_sub',
       },
     },

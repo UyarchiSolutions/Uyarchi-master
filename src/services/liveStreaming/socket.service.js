@@ -11,7 +11,8 @@ const Supplier = require('../../models/supplier.model');
 const { tempTokenModel, Joinusers } = require('../../models/liveStreaming/generateToken.model');
 
 const leave_subhost = async (req, io) => {
-  let token = await tempTokenModel.findByIdAndUpdate({ _id: req.tokenId }, { mainhostLeave: true }, { new: true });
+  console.log(req,2132)
+  let token = await tempTokenModel.findByIdAndUpdate({ _id: req.tokenId }, { mainhostLive: true }, { new: true });
   io.sockets.emit(req.streamId + req.uid, req);
 }
 
@@ -50,6 +51,17 @@ const host_controll_all = async (req, io) => {
   // , req, { new: true }
   // let res = await tempTokenModel.findByIdAndUpdate({ _id: token }, req, { new: true })
   io.sockets.emit(result._id + result.Uid + "_all", { req, result });
+}
+
+const admin_allow_controls = async (req, io) => {
+  console.log(req,123)
+  let token = await tempTokenModel.findById(req.tokenId);
+  let res = await tempTokenModel.findOne({ Uid: req.userId, chennel: token.chennel })
+  let result = await tempTokenModel.findByIdAndUpdate({ _id: res._id }, { ...req, ...{ mainhostLive: false } }, { new: true })
+  result.controlledBy = 'mainhost'
+  result.save();
+
+  io.sockets.emit(result._id + result.Uid + "allow_stream", { req, result });
 }
 const startStop_post = async (req, io) => {
   console.log(req)
@@ -217,5 +229,6 @@ module.exports = {
   leave_subhost,
   host_controll_audio,
   host_controll_video,
-  host_controll_all
+  host_controll_all,
+  admin_allow_controls
 };

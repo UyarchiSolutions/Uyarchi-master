@@ -116,6 +116,10 @@ const tempToken = mongoose.Schema({
     type: Boolean,
     default: false
   },
+  bigSize: {
+    type: Boolean,
+    default: false
+  }
 });
 
 const tempTokenModel = mongoose.model('tempToken', tempToken);

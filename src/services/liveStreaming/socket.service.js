@@ -11,66 +11,59 @@ const Supplier = require('../../models/supplier.model');
 const { tempTokenModel, Joinusers } = require('../../models/liveStreaming/generateToken.model');
 
 const leave_subhost = async (req, io) => {
-  console.log(req,2132)
-  let token = await tempTokenModel.findByIdAndUpdate({ _id: req.tokenId }, { mainhostLive: true }, { new: true });
-  io.sockets.emit(req.streamId + req.uid, req);
+  let token = await tempTokenModel.findByIdAndUpdate({ _id: req.tokenId }, { mainhostLeave: true }, { new: true });
+  io.sockets.emit(req.streamId + req.uid, { req, token });
+}
+const stream_view_change = async (req, io) => {
+  let stream = await tempTokenModel.updateMany({ chennel: req.chennel }, { bigSize: false }, { new: true });
+  let token = await tempTokenModel.findByIdAndUpdate({ _id: req.tokenId }, { bigSize: req.bigSize }, { new: true });
+  io.sockets.emit(req.streamId + "stream_view_change", { req, token, stream });
 }
 
 const host_controll_audio = async (req, io) => {
-  console.log(req)
   let token = await tempTokenModel.findById(req.tokenId);
   let res = await tempTokenModel.findOne({ Uid: req.userId, chennel: token.chennel })
   let result = await tempTokenModel.findByIdAndUpdate({ _id: res._id }, req, { new: true })
   result.controlledBy = 'mainhost'
   result.save();
-  console.log(result)
   // , req, { new: true }
   // let res = await tempTokenModel.findByIdAndUpdate({ _id: token }, req, { new: true })
   io.sockets.emit(result._id + result.Uid + "_audio", { req, result });
 }
 const host_controll_video = async (req, io) => {
-  console.log(req)
   let token = await tempTokenModel.findById(req.tokenId);
   let res = await tempTokenModel.findOne({ Uid: req.userId, chennel: token.chennel })
   let result = await tempTokenModel.findByIdAndUpdate({ _id: res._id }, req, { new: true })
   result.controlledBy = 'mainhost'
   result.save();
-  console.log(result)
   // , req, { new: true }
   // let res = await tempTokenModel.findByIdAndUpdate({ _id: token }, req, { new: true })
   io.sockets.emit(result._id + result.Uid + "_video", { req, result });
 }
 const host_controll_all = async (req, io) => {
-  console.log(req)
   let token = await tempTokenModel.findById(req.tokenId);
   let res = await tempTokenModel.findOne({ Uid: req.userId, chennel: token.chennel })
   let result = await tempTokenModel.findByIdAndUpdate({ _id: res._id }, { ...req, ...{ video: true, audio: true } }, { new: true })
   result.controlledBy = 'mainhost'
   result.save();
-  console.log(result)
   // , req, { new: true }
   // let res = await tempTokenModel.findByIdAndUpdate({ _id: token }, req, { new: true })
   io.sockets.emit(result._id + result.Uid + "_all", { req, result });
 }
 
 const admin_allow_controls = async (req, io) => {
-  console.log(req,123)
   let token = await tempTokenModel.findById(req.tokenId);
   let res = await tempTokenModel.findOne({ Uid: req.userId, chennel: token.chennel })
-  let result = await tempTokenModel.findByIdAndUpdate({ _id: res._id }, { ...req, ...{ mainhostLive: false } }, { new: true })
+  let result = await tempTokenModel.findByIdAndUpdate({ _id: res._id }, { ...req, ...{ mainhostLeave: false } }, { new: true })
   result.controlledBy = 'mainhost'
   result.save();
-
   io.sockets.emit(result._id + result.Uid + "allow_stream", { req, result });
 }
 const startStop_post = async (req, io) => {
-  console.log(req)
-  // // console.log(req)
   // let dateIso = new Date(new Date(moment().format('YYYY-MM-DD') + ' ' + moment().format('HH:mm:ss'))).getTime();
   // let stream = await Joinusers.findById(req.id)
   // let user = await Shop.findById(stream.shopId)
   // let data = await Groupchat.create({ ...req, ...{ created: moment(), dateISO: dateIso, userName: user.SName, userType: "buyer", shopId: stream.shopId, joinuser: req.id } })
-  // // console.log(data)
 
   let post = await StreamPost.findById(req.streampostsId);
   if (req.start) {
@@ -219,7 +212,6 @@ const startStop_post = async (req, io) => {
     },
 
   ])
-  console.log(value, post)
   io.sockets.emit(req.streamId + "postStart", { post, value });
 
 }
@@ -230,5 +222,6 @@ module.exports = {
   host_controll_audio,
   host_controll_video,
   host_controll_all,
-  admin_allow_controls
+  admin_allow_controls,
+  stream_view_change
 };

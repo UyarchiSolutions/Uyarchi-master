@@ -11,6 +11,7 @@ const Supplier = require('../../models/supplier.model');
 const { tempTokenModel, Joinusers } = require('../../models/liveStreaming/generateToken.model');
 
 const leave_subhost = async (req, io) => {
+  let token = await tempTokenModel.findByIdAndUpdate({ _id: req.tokenId }, { mainhostLeave: true }, { new: true });
   io.sockets.emit(req.streamId + req.uid, req);
 }
 

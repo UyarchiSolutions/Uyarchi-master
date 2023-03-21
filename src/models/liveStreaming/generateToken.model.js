@@ -111,7 +111,11 @@ const tempToken = mongoose.Schema({
   allMedia: {
     type: Boolean,
     default: true,
-  }
+  },
+  mainhostLive: {
+    type: Boolean,
+    default: false
+  },
 });
 
 const tempTokenModel = mongoose.model('tempToken', tempToken);

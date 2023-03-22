@@ -6066,10 +6066,7 @@ const fetch_Stream_Details_For_Buyer = async (buyerId) => {
       },
     },
     {
-      $unwind: {
-        preserveNullAndEmptyArrays: true,
-        path: '$streaming',
-      },
+      $unwind: '$streaming',
     },
     {
       $lookup: {

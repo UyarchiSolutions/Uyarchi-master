@@ -438,6 +438,11 @@ const getStreaming_orders_By_orders = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const getStreaming_orders_By_orders_for_pay = catchAsync(async (req, res) => {
+  const data = await Ecomserive.getStreaming_orders_By_orders_for_pay(req.params.id);
+  res.send(data);
+});
+
 module.exports = {
   create_Plans,
   create_Plans_addon,
@@ -521,4 +526,5 @@ module.exports = {
   update_productOrders,
   update_Multiple_productOrders,
   Fetch_Streaming_Details_By_buyer,
+  getStreaming_orders_By_orders_for_pay,
 };

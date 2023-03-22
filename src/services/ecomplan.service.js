@@ -6339,6 +6339,56 @@ const getStreaming_orders_By_orders = async (id) => {
   return { values: value, payment: payment.length != 0 ? payment[0] : 0 };
 };
 
+const getStreaming_orders_By_orders_for_pay = async (id) => {
+  let values = await streamingorderProduct.aggregate([
+    {
+      $match: {
+        orderId: id,
+      },
+    },
+    {
+      $lookup: {
+        from: 'products',
+        localField: 'productId',
+        foreignField: '_id',
+        as: 'product',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$product',
+      },
+    },
+    // streamingorderpayments
+
+    {
+      $lookup: {
+        from: 'streamingorderpayments',
+        localField: 'orderId',
+        foreignField: 'orderId',
+        as: 'Payment',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$Payment',
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        product: '$product.productTitle',
+        Quantity: '$purchase_quantity',
+        price: '$purchase_price',
+        status: 1,
+      },
+    },
+  ]);
+  return { values: values };
+};
+
 module.exports = {
   create_Plans,
   create_Plans_addon,
@@ -6433,4 +6483,5 @@ module.exports = {
   update_productOrders,
   update_Multiple_productOrders,
   Fetch_Streaming_Details_By_buyer,
+  getStreaming_orders_By_orders_for_pay,
 };

@@ -128,4 +128,5 @@ router.route('/update/joined/status/:id').put(shopverify, Ecomcontroller.update_
 router.route('/fetch/Stream/Product/Details/:id').get(Ecomcontroller.fetch_Stream_Product_Details);
 router.route('/fetch/stream/Payment/Details/:id').get(Ecomcontroller.fetch_stream_Payment_Details);
 router.route('/getStreaming/orders/By/orders/:id').get(Ecomcontroller.getStreaming_orders_By_orders);
+router.route('/getStreaming/orders/By_orders/for/pay/:id').get(Ecomcontroller.getStreaming_orders_By_orders_for_pay);
 module.exports = router;

@@ -87,6 +87,9 @@ io.sockets.on('connection', async (socket) => {
   socket.on('stream_view_change', async (data) => {
     await socketService.stream_view_change(data, io)
   });
+  socket.on('romove_message', async (data) => {
+    await socketService.romove_message(data, io)
+  });
 });
 app.use(function (req, res, next) {
   req.io = io;

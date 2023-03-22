@@ -9,7 +9,15 @@ const { Streamplan, StreamPost, Streamrequest, StreamrequestPost } = require('..
 const Supplier = require('../../models/supplier.model');
 
 const { tempTokenModel, Joinusers } = require('../../models/liveStreaming/generateToken.model');
+const { CodeBuild } = require('aws-sdk');
 
+const romove_message = async (req, io) => {
+  console.log(req)
+  let message = await Groupchat.findById(req._id);
+  message.removeMessage = true;
+  message.save();
+  io.sockets.emit(req.channel + "remove_image", message);
+}
 const leave_subhost = async (req, io) => {
   let token = await tempTokenModel.findByIdAndUpdate({ _id: req.tokenId }, { mainhostLeave: true }, { new: true });
   io.sockets.emit(req.streamId + req.uid, { req, token });
@@ -223,5 +231,6 @@ module.exports = {
   host_controll_video,
   host_controll_all,
   admin_allow_controls,
-  stream_view_change
+  stream_view_change,
+  romove_message
 };

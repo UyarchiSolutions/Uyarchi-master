@@ -23,7 +23,7 @@ const chat_room_create = async (req, io) => {
 
 const getoldchats = async (req) => {
   console.log(req)
-  let data = await Groupchat.find({ channel: req.query.channel }).sort({ dateISO: 1 });
+  let data = await Groupchat.find({ channel: req.query.channel, removeMessage: { $ne: true } }).sort({ dateISO: 1 });
   return data;
 }
 

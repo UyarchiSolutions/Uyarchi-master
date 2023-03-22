@@ -587,6 +587,55 @@ const get_sub_golive = async (req) => {
       },
     },
     { $unwind: "$streamrequests_post" },
+
+    {
+      $lookup: {
+        from: 'temptokens',
+        localField: 'streamId',
+        foreignField: 'streamId',
+        pipeline: [
+          {
+            $match: {
+              $or: [{ $and: [{ type: { $eq: 'subhost' } }, { supplierId: { $ne: userId } }] }, { type: { $eq: 'Supplier' } }]
+            }
+          },
+          {
+            $lookup: {
+              from: 'subhosts',
+              localField: 'supplierId',
+              foreignField: '_id',
+              as: 'subhosts',
+            },
+          },
+          {
+            $unwind: {
+              preserveNullAndEmptyArrays: true,
+              path: '$subhosts',
+            },
+          },
+          {
+            $lookup: {
+              from: 'suppliers',
+              localField: 'supplierId',
+              foreignField: '_id',
+              as: 'suppliers',
+            },
+          },
+          {
+            $unwind: {
+              preserveNullAndEmptyArrays: true,
+              path: '$suppliers',
+            },
+          },
+          {
+            $addFields: {
+              supplierName: { $ifNull: ['$suppliers.primaryContactName', '$subhosts.Name'] },
+            },
+          },
+        ],
+        as: 'temptokens_sub',
+      },
+    },
     {
       $project: {
         _id: 1,

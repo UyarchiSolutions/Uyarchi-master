@@ -6118,6 +6118,9 @@ const fetch_Stream_Details_For_Buyer = async (buyerId) => {
       $project: {
         _id: 1,
         streamName: '$streaming.streamName',
+        streamingDate: '$streaming.streamingDate',
+        startTime: '$streaming.startTime',
+        endTime: '$streaming.endTime',
         shopName: '$shop.SName',
         orderId: 1,
         totalAmount: 1,

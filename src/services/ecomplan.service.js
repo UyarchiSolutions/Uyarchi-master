@@ -5778,6 +5778,7 @@ const fetch_streaming_Details_Approval = async (id, product, query) => {
         orderedKg: '$purchase_quantity',
         approvalStatus: '$status',
         name: '$orders.name',
+        orderId: '$orders._id',
       },
     },
     {

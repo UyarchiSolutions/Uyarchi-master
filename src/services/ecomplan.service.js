@@ -9,7 +9,7 @@ const {
   Slab,
 } = require('../models/ecomplan.model');
 
-const { streamingOrder, streamingorderProduct } = require('../models/liveStreaming/checkout.model');
+const { streamingOrder, streamingorderProduct, streamingorderPayments } = require('../models/liveStreaming/checkout.model');
 const { Joinusers } = require('../models/liveStreaming/generateToken.model');
 const ApiError = require('../utils/ApiError');
 const AWS = require('aws-sdk');
@@ -6281,6 +6281,61 @@ const Fetch_Streaming_Details_By_buyer = async (buyerId) => {
   return values;
 };
 
+const getStreaming_orders_By_orders = async (id) => {
+  const value = await streamingorderProduct.aggregate([
+    {
+      $match: { orderId: id },
+    },
+    {
+      $lookup: {
+        from: 'products',
+        localField: 'productId',
+        foreignField: '_id',
+        as: 'products',
+      },
+    },
+    {
+      $unwind: '$products',
+    },
+    {
+      $lookup: {
+        from: 'streamrequests',
+        localField: 'streamId',
+        foreignField: '_id',
+        as: 'stream',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$stream',
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        status: 1,
+        purchase_quantity: 1,
+        purchase_price: 1,
+        streamId: 1,
+        product: '$products.productTitle',
+        streamName: '$stream.streamName',
+        startTime: '$stream.startTime',
+        endTime: '$stream.endTime',
+        orderId: 1,
+      },
+    },
+  ]);
+  let payment = await streamingorderPayments.aggregate([
+    {
+      $match: {
+        orderId: id,
+      },
+    },
+  ]);
+  return { values: value, payment: payment.length != 0 ? payment[0] : 0 };
+};
+
 module.exports = {
   create_Plans,
   create_Plans_addon,
@@ -6298,7 +6353,7 @@ module.exports = {
   delete_one_Post,
   remove_one_post,
   create_teaser_upload,
-
+  getStreaming_orders_By_orders,
   create_stream_one,
   find_and_update_one,
   create_stream_two,

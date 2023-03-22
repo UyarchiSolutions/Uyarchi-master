@@ -587,6 +587,55 @@ const get_sub_golive = async (req) => {
       },
     },
     { $unwind: "$streamrequests_post" },
+
+    {
+      $lookup: {
+        from: 'temptokens',
+        localField: 'streamId',
+        foreignField: 'streamId',
+        pipeline: [
+          {
+            $match: {
+              $or: [{ $and: [{ type: { $eq: 'subhost' } }] }, { type: { $eq: 'Supplier' } }]
+            }
+          },
+          {
+            $lookup: {
+              from: 'subhosts',
+              localField: 'supplierId',
+              foreignField: '_id',
+              as: 'subhosts',
+            },
+          },
+          {
+            $unwind: {
+              preserveNullAndEmptyArrays: true,
+              path: '$subhosts',
+            },
+          },
+          {
+            $lookup: {
+              from: 'suppliers',
+              localField: 'supplierId',
+              foreignField: '_id',
+              as: 'suppliers',
+            },
+          },
+          {
+            $unwind: {
+              preserveNullAndEmptyArrays: true,
+              path: '$suppliers',
+            },
+          },
+          {
+            $addFields: {
+              supplierName: { $ifNull: ['$suppliers.primaryContactName', '$subhosts.Name'] },
+            },
+          },
+        ],
+        as: 'temptokens_sub',
+      },
+    },
     {
       $project: {
         _id: 1,
@@ -610,7 +659,8 @@ const get_sub_golive = async (req) => {
         chat: "$streamrequests.purchasedplans.streamplans.chatNeed",
         streamrequests_post: "$streamrequests_post",
         streamrequestposts: "$streamrequests_post.streamrequestposts",
-        chat_need: "$streamrequests.chat_need"
+        chat_need: "$streamrequests.chat_need",
+        temptokens_sub: "$temptokens_sub"
 
       }
     }

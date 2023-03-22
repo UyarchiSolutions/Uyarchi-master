@@ -2060,7 +2060,6 @@ const go_live_stream_host = async (req, userId) => {
           },
           {
             $unwind: '$subhosts',
-
           },
           {
             $addFields: {
@@ -2249,9 +2248,11 @@ const get_subhost_token = async (req, userId) => {
         pipeline: [
           {
             $match: {
-              $or: [{ $and: [{ type: { $eq: 'subhost' } }, { supplierId: { $ne: userId } }] }, { type: { $eq: 'Supplier' } }]
-
-            }
+              $or: [
+                { $and: [{ type: { $eq: 'subhost' } }, { supplierId: { $ne: userId } }] },
+                { type: { $eq: 'Supplier' } },
+              ],
+            },
           },
           {
             $lookup: {
@@ -2351,7 +2352,7 @@ const get_subhost_token = async (req, userId) => {
         primaryHost: { $eq: ['$allot_host_1', userId] },
         chatPermistion: { $eq: ['$allot_chat', userId] },
         chat_need: 1,
-        temptokens_sub: "$temptokens_sub"
+        temptokens_sub: '$temptokens_sub',
       },
     },
   ]);
@@ -2713,8 +2714,8 @@ const regisetr_strean_instrest = async (req) => {
       participents.noOfParticipants > count
         ? 'Confirmed'
         : participents.noOfParticipants + participents.noOfParticipants / 2 > count
-          ? 'RAC'
-          : 'Waiting';
+        ? 'RAC'
+        : 'Waiting';
     await Dates.create_date(findresult);
   } else {
     if (findresult.status != 'Registered') {
@@ -2723,8 +2724,8 @@ const regisetr_strean_instrest = async (req) => {
         participents.noOfParticipants > count
           ? 'Confirmed'
           : participents.noOfParticipants + participents.noOfParticipants / 2 > count
-            ? 'RAC'
-            : 'Waiting';
+          ? 'RAC'
+          : 'Waiting';
       findresult.eligible = participents.noOfParticipants > count;
       findresult.status = 'Registered';
       await Dates.create_date(findresult);
@@ -6105,6 +6106,30 @@ const fetch_Stream_Details_For_Buyer = async (buyerId) => {
       },
     },
     {
+      $lookup: {
+        from: 'streamingorderproducts',
+        localField: '_id',
+        foreignField: 'orderId',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'products',
+              localField: 'productId',
+              foreignField: '_id',
+              as: 'products',
+            },
+          },
+          {
+            $unwind: {
+              preserveNullAndEmptyArrays: true,
+              path: '$products',
+            },
+          },
+        ],
+        as: 'orders',
+      },
+    },
+    {
       $project: {
         _id: 1,
         streamName: '$streaming.streamName',
@@ -6115,6 +6140,7 @@ const fetch_Stream_Details_For_Buyer = async (buyerId) => {
           $cond: { if: { $eq: ['$bookingtype', 'Booking Amount'] }, then: '$Amount', else: 0 },
         },
         orderStatus: 1,
+        orders: '$orders',
       },
     },
   ]);

@@ -6386,7 +6386,56 @@ const getStreaming_orders_By_orders_for_pay = async (id) => {
       },
     },
   ]);
-  return { values: values };
+  let payment = await streamingorderPayments.aggregate([
+    {
+      $match: {
+        orderId: id,
+      },
+    },
+  ]);
+
+  let cancelled = await streamingorderProduct.aggregate([
+    {
+      $match: {
+        orderId: id,
+        status: 'cancelled',
+      },
+    },
+    {
+      $group: { _id: null, total: { $sum: { $multiply: ['$purchase_quantity', '$purchase_price'] } } },
+    },
+  ]);
+  let Denied = await streamingorderProduct.aggregate([
+    {
+      $match: {
+        orderId: id,
+        status: 'denied',
+      },
+    },
+    {
+      $group: { _id: null, total: { $sum: { $multiply: ['$purchase_quantity', '$purchase_price'] } } },
+    },
+  ]);
+
+  let Rejected = await streamingorderProduct.aggregate([
+    {
+      $match: {
+        orderId: id,
+        status: 'rejected',
+      },
+    },
+    {
+      $group: { _id: null, total: { $sum: { $multiply: ['$purchase_quantity', '$purchase_price'] } } },
+    },
+  ]);
+
+  return {
+    values: values,
+    payment: payment.length != 0 ? payment[0] : {},
+    Rejected: Rejected.length != 0 ? Rejected[0].total : 0,
+    Denied: Denied.length != 0 ? Denied[0].total : 0,
+    cancelled: cancelled.length != 0 ? cancelled[0].total : 0,
+  };
 };
 
 module.exports = {

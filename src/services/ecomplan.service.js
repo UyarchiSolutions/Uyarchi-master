@@ -6106,14 +6106,14 @@ const fetch_Stream_Details_For_Buyer = async (buyerId) => {
         as: 'orders',
       },
     },
-    {
-      $lookup: {
-        from: 'streamingorderproducts',
-        localField: '_id',
-        foreignField: 'orderId',
-        as: 'orders',
-      },
-    },
+    // {
+    //   $lookup: {
+    //     from: 'streamingorderproducts',
+    //     localField: '_id',
+    //     foreignField: 'orderId',
+    //     as: 'orders',
+    //   },
+    // },
     {
       $project: {
         _id: 1,

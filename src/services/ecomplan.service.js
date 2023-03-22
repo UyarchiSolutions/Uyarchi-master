@@ -5729,11 +5729,6 @@ const fetch_streaming_Details_Approval = async (id, product, query) => {
         from: 'streamingorders',
         localField: 'orderId',
         foreignField: '_id',
-        pipeline: [
-          {
-            $match: { $or: [buyerSearch] },
-          },
-        ],
         as: 'orders',
       },
     },
@@ -5771,12 +5766,7 @@ const fetch_streaming_Details_Approval = async (id, product, query) => {
         path: '$orderPayment',
       },
     },
-    {
-      $skip: 10 * query.page,
-    },
-    {
-      $limit: 10,
-    },
+
     {
       $project: {
         _id: 1,
@@ -5789,6 +5779,16 @@ const fetch_streaming_Details_Approval = async (id, product, query) => {
         approvalStatus: '$status',
         name: '$orders.name',
       },
+    },
+    {
+      $match: { $or: [buyerSearch] },
+    },
+
+    {
+      $skip: 10 * query.page,
+    },
+    {
+      $limit: 10,
     },
   ]);
 
@@ -5880,11 +5880,6 @@ const fetch_streaming_Details_Approval = async (id, product, query) => {
         from: 'streamingorders',
         localField: 'orderId',
         foreignField: '_id',
-        pipeline: [
-          {
-            $match: { $or: [buyerSearch] },
-          },
-        ],
         as: 'orders',
       },
     },
@@ -5934,6 +5929,9 @@ const fetch_streaming_Details_Approval = async (id, product, query) => {
         approvalStatus: '$status',
         name: '$orders.name',
       },
+    },
+    {
+      $match: { $or: [buyerSearch] },
     },
   ]);
   let ordered = await streamingorderProduct.aggregate([

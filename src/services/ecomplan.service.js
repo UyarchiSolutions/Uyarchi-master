@@ -9,7 +9,7 @@ const {
   Slab,
 } = require('../models/ecomplan.model');
 
-const { streamingOrder, streamingorderProduct } = require('../models/liveStreaming/checkout.model');
+const { streamingOrder, streamingorderProduct, streamingorderPayments } = require('../models/liveStreaming/checkout.model');
 const { Joinusers } = require('../models/liveStreaming/generateToken.model');
 const ApiError = require('../utils/ApiError');
 const AWS = require('aws-sdk');
@@ -18,6 +18,7 @@ const { purchasePlan } = require('../models/purchasePlan.model');
 const { tempTokenModel } = require('../models/liveStreaming/generateToken.model');
 const generateLink = require('./liveStreaming/generatelink.service');
 const moment = require('moment');
+const { findById } = require('../models/token.model');
 
 const create_Plans = async (req) => {
   console.log(req.body);
@@ -6019,7 +6020,9 @@ const update_productOrders = async (id, body) => {
   values = await streamingorderProduct.findByIdAndUpdate({ _id: id }, { status: body.status }, { new: true });
   let totalOrder = await streamingorderProduct.find({ orderId: orderId }).count();
   let pendingCount = await streamingorderProduct.find({ orderId: orderId, status: 'Pending' }).count();
-  if (pendingCount == 0) {
+  let streamorder = await findById(orderId);
+
+  if (pendingCount == 0 && streamorder.orderStatus != 'confirmed' && streamorder.orderStatus != 'ready') {
     await streamingOrder.findByIdAndUpdate({ _id: orderId }, { orderStatus: 'ready' }, { new: true });
   }
   if (pendingCount != 0) {
@@ -6118,6 +6121,9 @@ const fetch_Stream_Details_For_Buyer = async (buyerId) => {
       $project: {
         _id: 1,
         streamName: '$streaming.streamName',
+        streamingDate: '$streaming.streamingDate',
+        startTime: '$streaming.startTime',
+        endTime: '$streaming.endTime',
         shopName: '$shop.SName',
         orderId: 1,
         totalAmount: 1,
@@ -6281,6 +6287,160 @@ const Fetch_Streaming_Details_By_buyer = async (buyerId) => {
   return values;
 };
 
+const getStreaming_orders_By_orders = async (id) => {
+  const value = await streamingorderProduct.aggregate([
+    {
+      $match: { orderId: id },
+    },
+    {
+      $lookup: {
+        from: 'products',
+        localField: 'productId',
+        foreignField: '_id',
+        as: 'products',
+      },
+    },
+    {
+      $unwind: '$products',
+    },
+    {
+      $lookup: {
+        from: 'streamrequests',
+        localField: 'streamId',
+        foreignField: '_id',
+        as: 'stream',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$stream',
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        status: 1,
+        purchase_quantity: 1,
+        purchase_price: 1,
+        streamId: 1,
+        product: '$products.productTitle',
+        streamName: '$stream.streamName',
+        startTime: '$stream.startTime',
+        endTime: '$stream.endTime',
+        orderId: 1,
+      },
+    },
+  ]);
+  let payment = await streamingorderPayments.aggregate([
+    {
+      $match: {
+        orderId: id,
+      },
+    },
+  ]);
+  return { values: value, payment: payment.length != 0 ? payment[0] : 0 };
+};
+
+const getStreaming_orders_By_orders_for_pay = async (id) => {
+  let values = await streamingorderProduct.aggregate([
+    {
+      $match: {
+        orderId: id,
+      },
+    },
+    {
+      $lookup: {
+        from: 'products',
+        localField: 'productId',
+        foreignField: '_id',
+        as: 'product',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$product',
+      },
+    },
+    // streamingorderpayments
+
+    {
+      $lookup: {
+        from: 'streamingorderpayments',
+        localField: 'orderId',
+        foreignField: 'orderId',
+        as: 'Payment',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$Payment',
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        product: '$product.productTitle',
+        Quantity: '$purchase_quantity',
+        price: '$purchase_price',
+        status: 1,
+      },
+    },
+  ]);
+  let payment = await streamingorderPayments.aggregate([
+    {
+      $match: {
+        orderId: id,
+      },
+    },
+  ]);
+
+  let cancelled = await streamingorderProduct.aggregate([
+    {
+      $match: {
+        orderId: id,
+        status: 'cancelled',
+      },
+    },
+    {
+      $group: { _id: null, total: { $sum: { $multiply: ['$purchase_quantity', '$purchase_price'] } } },
+    },
+  ]);
+  let Denied = await streamingorderProduct.aggregate([
+    {
+      $match: {
+        orderId: id,
+        status: 'denied',
+      },
+    },
+    {
+      $group: { _id: null, total: { $sum: { $multiply: ['$purchase_quantity', '$purchase_price'] } } },
+    },
+  ]);
+
+  let Rejected = await streamingorderProduct.aggregate([
+    {
+      $match: {
+        orderId: id,
+        status: 'rejected',
+      },
+    },
+    {
+      $group: { _id: null, total: { $sum: { $multiply: ['$purchase_quantity', '$purchase_price'] } } },
+    },
+  ]);
+
+  return {
+    values: values,
+    payment: payment.length != 0 ? payment[0] : {},
+    Rejected: Rejected.length != 0 ? Rejected[0].total : 0,
+    Denied: Denied.length != 0 ? Denied[0].total : 0,
+    cancelled: cancelled.length != 0 ? cancelled[0].total : 0,
+  };
+};
+
 module.exports = {
   create_Plans,
   create_Plans_addon,
@@ -6298,7 +6458,7 @@ module.exports = {
   delete_one_Post,
   remove_one_post,
   create_teaser_upload,
-
+  getStreaming_orders_By_orders,
   create_stream_one,
   find_and_update_one,
   create_stream_two,
@@ -6375,4 +6535,5 @@ module.exports = {
   update_productOrders,
   update_Multiple_productOrders,
   Fetch_Streaming_Details_By_buyer,
+  getStreaming_orders_By_orders_for_pay,
 };

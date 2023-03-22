@@ -433,6 +433,16 @@ const Fetch_Streaming_Details_By_buyer = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const getStreaming_orders_By_orders = catchAsync(async (req, res) => {
+  const data = await Ecomserive.getStreaming_orders_By_orders(req.params.id);
+  res.send(data);
+});
+
+const getStreaming_orders_By_orders_for_pay = catchAsync(async (req, res) => {
+  const data = await Ecomserive.getStreaming_orders_By_orders_for_pay(req.params.id);
+  res.send(data);
+});
+
 module.exports = {
   create_Plans,
   create_Plans_addon,
@@ -450,7 +460,7 @@ module.exports = {
   remove_one_post,
   get_all_Post_with_page,
   create_post_teaser,
-
+  getStreaming_orders_By_orders,
   create_stream_one,
   find_and_update_one,
   create_stream_two,
@@ -516,4 +526,5 @@ module.exports = {
   update_productOrders,
   update_Multiple_productOrders,
   Fetch_Streaming_Details_By_buyer,
+  getStreaming_orders_By_orders_for_pay,
 };

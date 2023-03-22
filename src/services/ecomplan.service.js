@@ -2048,7 +2048,26 @@ const go_live_stream_host = async (req, userId) => {
         from: 'temptokens',
         localField: '_id',
         foreignField: 'streamId',
-        pipeline: [{ $match: { $and: [{ type: { $eq: 'subhost' } }] } }],
+        pipeline: [
+          { $match: { $and: [{ type: { $eq: 'subhost' } }] } },
+          {
+            $lookup: {
+              from: 'subhosts',
+              localField: 'supplierId',
+              foreignField: '_id',
+              as: 'subhosts',
+            },
+          },
+          {
+            $unwind: '$subhosts',
+
+          },
+          {
+            $addFields: {
+              supplierName: { $ifNull: ['$subhosts.Name', ''] },
+            },
+          },
+        ],
         as: 'temptokens_sub',
       },
     },
@@ -2224,6 +2243,55 @@ const get_subhost_token = async (req, userId) => {
     { $unwind: '$temptokens' },
     {
       $lookup: {
+        from: 'temptokens',
+        localField: '_id',
+        foreignField: 'streamId',
+        pipeline: [
+          {
+            $match: {
+              $or: [{ $and: [{ type: { $eq: 'subhost' } }, { supplierId: { $ne: userId } }] }, { type: { $eq: 'Supplier' } }]
+
+            }
+          },
+          {
+            $lookup: {
+              from: 'subhosts',
+              localField: 'supplierId',
+              foreignField: '_id',
+              as: 'subhosts',
+            },
+          },
+          {
+            $unwind: {
+              preserveNullAndEmptyArrays: true,
+              path: '$subhosts',
+            },
+          },
+          {
+            $lookup: {
+              from: 'suppliers',
+              localField: 'supplierId',
+              foreignField: '_id',
+              as: 'suppliers',
+            },
+          },
+          {
+            $unwind: {
+              preserveNullAndEmptyArrays: true,
+              path: '$suppliers',
+            },
+          },
+          {
+            $addFields: {
+              supplierName: { $ifNull: ['$suppliers.primaryContactName', '$subhosts.Name'] },
+            },
+          },
+        ],
+        as: 'temptokens_sub',
+      },
+    },
+    {
+      $lookup: {
         from: 'streamrequestposts',
         localField: '_id',
         foreignField: 'streamRequest',
@@ -2283,6 +2351,7 @@ const get_subhost_token = async (req, userId) => {
         primaryHost: { $eq: ['$allot_host_1', userId] },
         chatPermistion: { $eq: ['$allot_chat', userId] },
         chat_need: 1,
+        temptokens_sub: "$temptokens_sub"
       },
     },
   ]);
@@ -2644,8 +2713,8 @@ const regisetr_strean_instrest = async (req) => {
       participents.noOfParticipants > count
         ? 'Confirmed'
         : participents.noOfParticipants + participents.noOfParticipants / 2 > count
-        ? 'RAC'
-        : 'Waiting';
+          ? 'RAC'
+          : 'Waiting';
     await Dates.create_date(findresult);
   } else {
     if (findresult.status != 'Registered') {
@@ -2654,8 +2723,8 @@ const regisetr_strean_instrest = async (req) => {
         participents.noOfParticipants > count
           ? 'Confirmed'
           : participents.noOfParticipants + participents.noOfParticipants / 2 > count
-          ? 'RAC'
-          : 'Waiting';
+            ? 'RAC'
+            : 'Waiting';
       findresult.eligible = participents.noOfParticipants > count;
       findresult.status = 'Registered';
       await Dates.create_date(findresult);

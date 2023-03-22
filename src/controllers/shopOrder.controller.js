@@ -479,6 +479,20 @@ const issue_collection_returntosm = catchAsync(async (req, res) => {
   const data = await shopOrderService.issue_collection_returntosm(req);
   res.send(data);
 });
+
+const issue_collection_recieved= catchAsync(async (req, res) => {
+  const data = await shopOrderService.issue_collection_recieved(req);
+  res.send(data);
+});
+const issue_collection_calculated= catchAsync(async (req, res) => {
+  const data = await shopOrderService.issue_collection_calculated(req);
+  res.send(data);
+});
+
+const issue_collection_reconfirm= catchAsync(async (req, res) => {
+  const data = await shopOrderService.issue_collection_reconfirm(req);
+  res.send(data);
+});
 module.exports = {
   vieworderbill_byshop,
   createshopOrder,
@@ -558,5 +572,8 @@ module.exports = {
   issue_collection_checked_video,
   issue_collection_pickedup,
   issue_collection_rejected,
-  issue_collection_returntosm
+  issue_collection_returntosm,
+  issue_collection_recieved,
+  issue_collection_calculated,
+  issue_collection_reconfirm
 };

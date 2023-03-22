@@ -102,6 +102,9 @@ router.route('/issue/collection/checked/video').put(authorization, upload, shopO
 router.route('/issue/collection/pickedup').put(authorization, shopOrderController.issue_collection_pickedup);
 router.route('/issue/collection/rejected').put(authorization, shopOrderController.issue_collection_rejected);
 router.route('/issue/collection/returntosm').put(authorization, shopOrderController.issue_collection_returntosm);
+router.route('/issue/collection/recieved').put(authorization, shopOrderController.issue_collection_recieved);
+router.route('/issue/collection/calculated').put(authorization, shopOrderController.issue_collection_calculated);
+router.route('/issue/collection/reconfirm').put(authorization, shopOrderController.issue_collection_reconfirm);
 
 
 

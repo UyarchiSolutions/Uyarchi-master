@@ -67,6 +67,10 @@ io.sockets.on('connection', async (socket) => {
   socket.on('leave_subhost', async (data) => {
     await socketService.leave_subhost(data, io)
   });
+  socket.on('allow_subhost', async (data) => {
+    await socketService.admin_allow_controls(data, io)
+  });
+
   socket.on('', (msg) => {
     console.log('message: ' + msg);
   });
@@ -79,6 +83,9 @@ io.sockets.on('connection', async (socket) => {
   });
   socket.on('host_controll_all', async (data) => {
     await socketService.host_controll_all(data, io)
+  });
+  socket.on('stream_view_change', async (data) => {
+    await socketService.stream_view_change(data, io)
   });
 });
 app.use(function (req, res, next) {

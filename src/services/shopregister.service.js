@@ -1725,7 +1725,10 @@ const getissuedOrders = async (page) => {
         TotalOrders: { $size: '$shoporderclones.product' },
         issuedOrder: { $size: '$shoporder' },
         issStatus: 1,
-        issue_Res: 1
+        issue_Res: 1,
+        pick_up_charge: 1,
+        advance_delivery_charge: 1,
+        damage_deduction: 1
       },
     },
     {

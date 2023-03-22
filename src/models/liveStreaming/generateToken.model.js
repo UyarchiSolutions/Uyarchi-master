@@ -96,6 +96,30 @@ const tempToken = mongoose.Schema({
     type: String,
     default: 'Pending',
   },
+  video: {
+    type: Boolean,
+    default: true,
+  },
+  audio: {
+    type: Boolean,
+    default: true,
+  },
+  video: {
+    type: Boolean,
+    default: true,
+  },
+  allMedia: {
+    type: Boolean,
+    default: true,
+  },
+  mainhostLeave: {
+    type: Boolean,
+    default: false
+  },
+  bigSize: {
+    type: Boolean,
+    default: false
+  }
 });
 
 const tempTokenModel = mongoose.model('tempToken', tempToken);

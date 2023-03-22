@@ -5488,7 +5488,6 @@ const fetchStream_Details_ById = async (id) => {
 // Intimation Buyer Flow
 
 const fetch_Stream_Ordered_Details = async (id, query) => {
-  console.log(query);
   let buyerSearch = { _id: { $ne: null } };
   let statusSearch = { _id: { $ne: null } };
 
@@ -6002,7 +6001,7 @@ const update_Multiple_approval_Status = async (body) => {
 // Buyer FLow
 
 const fetch_Stream_Details_For_Buyer = async (buyerId) => {
-  let value = await Joinusers.aggregate([
+  let value = await streamingOrder.aggregate([
     {
       $match: {
         shopId: buyerId,
@@ -6013,58 +6012,40 @@ const fetch_Stream_Details_For_Buyer = async (buyerId) => {
         from: 'streamrequests',
         localField: 'streamId',
         foreignField: '_id',
-        pipeline: [
-          {
-            $lookup: {
-              from: 'suppliers',
-              localField: 'suppierId',
-              foreignField: '_id',
-              as: 'supplier',
-            },
-          },
-          {
-            $unwind: {
-              preserveNullAndEmptyArrays: true,
-              path: '$supplier',
-            },
-          },
-        ],
-        as: 'stream',
+        as: 'streaming',
       },
     },
     {
       $unwind: {
         preserveNullAndEmptyArrays: true,
-        path: '$stream',
+        path: '$streaming',
       },
     },
     {
       $lookup: {
-        from: 'streamingorders',
-        localField: 'streamId',
-        foreignField: 'streamId',
-        pipeline: [{ $match: { shopId: buyerId } }],
-        as: 'streamOrders',
+        from: 'b2bshopclones',
+        localField: 'shopId',
+        foreignField: '_id',
+        as: 'shop',
       },
     },
     {
       $unwind: {
         preserveNullAndEmptyArrays: true,
-        path: '$streamOrders',
+        path: '$shop',
       },
     },
     {
       $project: {
         _id: 1,
-        active: 1,
-        archive: 1,
-        streamName: '$stream.streamName',
-        shopName: '$stream.supplier.tradeName',
-        orderId: '$streamOrders.orderId',
-        orderedPrice: '$streamOrders.totalAmount',
-        status: 1,
-        AdvancePaid: 'Dummy Data',
-        streamId: '$stream._id',
+        streamName: '$streaming.streamName',
+        shopName: '$shop.SName',
+        orderId: 1,
+        totalAmount: 1,
+        bookingAmount: {
+          $cond: { if: { $eq: ['$bookingtype', 'Booking Amount'] }, then: '$Amount', else: 0 },
+        },
+        orderStatus: 1,
       },
     },
   ]);
@@ -6211,6 +6192,15 @@ const fetch_stream_Payment_Details = async (id) => {
   return { values: values, orderDetails: orderDetails };
 };
 
+const Fetch_Streaming_Details_By_buyer = async (buyerId) => {
+  const values = await streamingOrder.aggregate([
+    {
+      shopId: buyerId,
+    },
+  ]);
+  return values;
+};
+
 module.exports = {
   create_Plans,
   create_Plans_addon,
@@ -6304,4 +6294,5 @@ module.exports = {
   update_Multiple_approval_Status,
   update_productOrders,
   update_Multiple_productOrders,
+  Fetch_Streaming_Details_By_buyer,
 };

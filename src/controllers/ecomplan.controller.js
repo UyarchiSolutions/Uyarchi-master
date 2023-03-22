@@ -427,6 +427,12 @@ const update_Multiple_productOrders = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const Fetch_Streaming_Details_By_buyer = catchAsync(async (req, res) => {
+  let userId = req.shopId;
+  const data = await Ecomserive.Fetch_Streaming_Details_By_buyer(userId);
+  res.send(data);
+});
+
 module.exports = {
   create_Plans,
   create_Plans_addon,
@@ -509,4 +515,5 @@ module.exports = {
   update_Multiple_approval_Status,
   update_productOrders,
   update_Multiple_productOrders,
+  Fetch_Streaming_Details_By_buyer,
 };

@@ -90,6 +90,9 @@ io.sockets.on('connection', async (socket) => {
   socket.on('romove_message', async (data) => {
     await socketService.romove_message(data, io)
   });
+  socket.on('ban_user_chat', async (data) => {
+    await socketService.ban_user_chat(data, io)
+  });
 });
 app.use(function (req, res, next) {
   req.io = io;

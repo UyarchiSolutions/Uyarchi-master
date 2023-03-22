@@ -18,6 +18,15 @@ const romove_message = async (req, io) => {
   message.save();
   io.sockets.emit(req.channel + "remove_image", message);
 }
+
+const ban_user_chat = async (req, io) => {
+  let joinuser = await Joinusers.findById(req.joinuser);
+  joinuser.joindedUserBan = true;
+  joinuser.save();
+  console.log(joinuser)
+  io.sockets.emit(req.joinuser + "ban_chat", joinuser);
+
+}
 const leave_subhost = async (req, io) => {
   let token = await tempTokenModel.findByIdAndUpdate({ _id: req.tokenId }, { mainhostLeave: true }, { new: true });
   io.sockets.emit(req.streamId + req.uid, { req, token });
@@ -232,5 +241,6 @@ module.exports = {
   host_controll_all,
   admin_allow_controls,
   stream_view_change,
-  romove_message
+  romove_message,
+  ban_user_chat
 };

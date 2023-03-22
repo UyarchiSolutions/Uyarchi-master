@@ -162,6 +162,10 @@ const joinedusers = mongoose.Schema({
     type: String,
     default: 'Pending',
   },
+  joindedUserBan: {
+    type: Boolean,
+    default: false
+  }
 });
 
 const Joinusers = mongoose.model('joinedusers', joinedusers);

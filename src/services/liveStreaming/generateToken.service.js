@@ -596,7 +596,7 @@ const get_sub_golive = async (req) => {
         pipeline: [
           {
             $match: {
-              $or: [{ $and: [{ type: { $eq: 'subhost' } }, { supplierId: { $ne: userId } }] }, { type: { $eq: 'Supplier' } }]
+              $or: [{ $and: [{ type: { $eq: 'subhost' } }] }, { type: { $eq: 'Supplier' } }]
             }
           },
           {
@@ -660,7 +660,7 @@ const get_sub_golive = async (req) => {
         streamrequests_post: "$streamrequests_post",
         streamrequestposts: "$streamrequests_post.streamrequestposts",
         chat_need: "$streamrequests.chat_need",
-        temptokens_sub:"$temptokens_sub"
+        temptokens_sub: "$temptokens_sub"
 
       }
     }

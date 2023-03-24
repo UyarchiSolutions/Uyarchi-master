@@ -6033,6 +6033,29 @@ const update_productOrders = async (id, body) => {
   return values;
 };
 
+const multipleCancel = async (body) => {
+  const { arr, status } = body;
+  arr.forEach(async (e) => {
+    let values = await streamingorderProduct.findById(e);
+    let orderId = values.orderId;
+    values = await streamingorderProduct.findByIdAndUpdate({ _id: id }, { status: body.status }, { new: true });
+
+    let totalOrder = await streamingorderProduct.find({ orderId: orderId }).count();
+    let pendingCount = await streamingorderProduct.find({ orderId: orderId, status: 'Pending' }).count();
+    let streamorder = await findById(orderId);
+
+    if (pendingCount == 0 && streamorder.orderStatus != 'confirmed' && streamorder.orderStatus != 'ready') {
+      await streamingOrder.findByIdAndUpdate({ _id: orderId }, { orderStatus: 'ready' }, { new: true });
+    }
+    if (pendingCount != 0) {
+      if (totalOrder != pendingCount) {
+        await streamingOrder.findByIdAndUpdate({ _id: orderId }, { orderStatus: 'partial' }, { new: true });
+      }
+    }
+  });
+  return { message: 'Updated......' };
+};
+
 const update_Multiple_productOrders = async (body) => {
   console.log(body.arr);
   body.arr.forEach(async (e) => {
@@ -6536,4 +6559,5 @@ module.exports = {
   update_Multiple_productOrders,
   Fetch_Streaming_Details_By_buyer,
   getStreaming_orders_By_orders_for_pay,
+  multipleCancel,
 };

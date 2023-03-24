@@ -6020,7 +6020,7 @@ const update_productOrders = async (id, body) => {
   values = await streamingorderProduct.findByIdAndUpdate({ _id: id }, { status: body.status }, { new: true });
   let totalOrder = await streamingorderProduct.find({ orderId: orderId }).count();
   let pendingCount = await streamingorderProduct.find({ orderId: orderId, status: 'Pending' }).count();
-  let streamorder = await findById(orderId);
+  let streamorder = await streamingOrder.findById(orderId);
 
   if (pendingCount == 0 && streamorder.orderStatus != 'confirmed' && streamorder.orderStatus != 'ready') {
     await streamingOrder.findByIdAndUpdate({ _id: orderId }, { orderStatus: 'ready' }, { new: true });

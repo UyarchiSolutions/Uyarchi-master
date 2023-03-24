@@ -6038,8 +6038,7 @@ const multipleCancel = async (body) => {
   arr.forEach(async (e) => {
     let values = await streamingorderProduct.findById(e);
     let orderId = values.orderId;
-    values = await streamingorderProduct.findByIdAndUpdate({ _id: id }, { status: body.status }, { new: true });
-
+    values = await streamingorderProduct.findByIdAndUpdate({ _id: e }, { status: body.status }, { new: true });
     let totalOrder = await streamingorderProduct.find({ orderId: orderId }).count();
     let pendingCount = await streamingorderProduct.find({ orderId: orderId, status: 'Pending' }).count();
     let streamorder = await findById(orderId);

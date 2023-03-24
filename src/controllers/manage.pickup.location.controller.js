@@ -48,11 +48,18 @@ const getallPickuplocation = catchAsync(async (req, res) => {
   const pickuplocations = await ManagePickupService.getallPickuplocation();
   res.send(pickuplocations);
 })
+
+const getNearbypickuplocation = catchAsync(async (req, res) => {
+
+  const pickuplocations = await ManagePickupService.getNearbypickuplocation();
+  res.send(pickuplocations);
+})
 module.exports = {
   createManagePickupLocation,
   getAllManagepickup,
   getManagePickupById,
   getAllManagepickupLocation,
   getallPickuplocation,
-  update_pickup_location
+  update_pickup_location,
+  getNearbypickuplocation
 };

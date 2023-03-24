@@ -32,10 +32,10 @@ const managepickupLocationSchema = new mongoose.Schema({
     type: Array,
   },
   latitude: {
-    type: String,
+    type: Number,
   },
   langitude: {
-    type: String,
+    type: Number,
   },
   date: {
     type: String,

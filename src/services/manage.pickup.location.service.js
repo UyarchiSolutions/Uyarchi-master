@@ -248,11 +248,16 @@ const getallPickuplocation = async () => {
   let values = await PickupLocation.find();
   return values;
 }
+const getNearbypickuplocation = async () => {
+  // let values = await PickupLocation.find();
+  // return values;
+}
 module.exports = {
   createManagePickupLocation,
   getAllManagepickup,
   getManagePickupById,
   getAllManagepickupLocation,
   getallPickuplocation,
-  update_pickup_location
+  update_pickup_location,
+  getNearbypickuplocation
 };

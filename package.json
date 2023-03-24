@@ -53,6 +53,7 @@
     "prettier"
   ],
   "dependencies": {
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "agora-access-token": "^2.0.4",
     "agora-rtc-sdk-ng": "^4.16.1",
     "aws-sdk": "^2.1322.0",
@@ -75,6 +76,7 @@
     "jimp": "^0.16.1",
     "joi": "^17.3.0",
     "jsonwebtoken": "^8.5.1",
+    "m3u8-parser": "^6.0.0",
     "moment": "^2.29.3",
     "moment-timezone": "^0.5.34",
     "mongoose": "^5.7.7",

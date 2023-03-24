@@ -18,7 +18,7 @@ const createManagePickupLocation = async (body, userId) => {
   // let locations = latlan.data.results[0].geometry;
   // let latitude = locations.location.lat;
   // let langitude = locations.location.lng;
-  let values = { ...body, ...{ date: serverdate, time: servertime, created: moment(), userId: userId } };
+  let values = { ...body, ...{ location: { type: 'Point', coordinates: [body.latitude, body.langitude] }, date: serverdate, time: servertime, created: moment(), userId: userId } };
   const createpickuplocations = await PickupLocation.create(values);
   return createpickuplocations;
 };
@@ -249,8 +249,25 @@ const getallPickuplocation = async () => {
   return values;
 }
 const getNearbypickuplocation = async () => {
-  // let values = await PickupLocation.find();
+  // 13.0334429 ,80.2529224
+  // 80.2529224
+  let values = await PickupLocation.aggregate([
+    {
+      $geoNear: {
+        near: {
+          type: "Point",
+          coordinates: [13.0334429, 80.2529224]
+        },
+        distanceField: "distance",
+        spherical: true
+      }
+    }
+
+  ])
+
+
   // return values;
+  return values;
 }
 module.exports = {
   createManagePickupLocation,

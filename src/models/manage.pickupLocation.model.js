@@ -65,8 +65,13 @@ const managepickupLocationSchema = new mongoose.Schema({
   },
   pincode: {
     type: Number,
-  }
+  },
+  location: {
+    type: Object
+  },
+
 });
+managepickupLocationSchema.index({ location: '2dsphere' });
 
 const ManagePickupLocations = mongoose.model('ManagePickupLocations', managepickupLocationSchema);
 

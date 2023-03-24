@@ -12,6 +12,6 @@ router.route('/getAll/pickup/:userId/:date/:todate').get(managePickupController.
 
 router.route('/getAll/pickuploaction').get(authorization, managePickupController.getallPickuplocation);
 
-router.route('get/near/pickuplocation').get(managePickupController.getNearbypickuplocation);
+router.route('/get/near/pickuplocation').get(managePickupController.getNearbypickuplocation);
 
 module.exports = router;

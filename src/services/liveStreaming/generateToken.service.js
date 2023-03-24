@@ -660,7 +660,8 @@ const get_sub_golive = async (req) => {
         streamrequests_post: "$streamrequests_post",
         streamrequestposts: "$streamrequests_post.streamrequestposts",
         chat_need: "$streamrequests.chat_need",
-        temptokens_sub: "$temptokens_sub"
+        temptokens_sub: "$temptokens_sub",
+        joindedUserBan: 1
 
       }
     }

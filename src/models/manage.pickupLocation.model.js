@@ -67,7 +67,8 @@ const managepickupLocationSchema = new mongoose.Schema({
     type: Number,
   },
   location: {
-    type: Object
+    type: Object,
+    
   },
 
 });

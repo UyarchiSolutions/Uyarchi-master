@@ -5,6 +5,7 @@ const axios = require('axios');
 const moment = require('moment');
 const { UserBindingPage } = require('twilio/lib/rest/ipMessaging/v2/service/user/userBinding');
 const { Users } = require('../models/B2Busers.model');
+const { Shop, AttendanceClone, AttendanceClonenew } = require('../models/b2b.ShopClone.model');
 
 const createManagePickupLocation = async (body, userId) => {
   // let latlan = await axios.get(
@@ -251,24 +252,25 @@ const getallPickuplocation = async () => {
   return values;
 }
 const getNearbypickuplocation = async () => {
-  // 13.0334429 ,80.2529224
-  // 80.2529224
   let values = await PickupLocation.aggregate([
     {
       $geoNear: {
+        includeLocs: "location",
         near: {
           type: "Point",
-          coordinates: [13.0334429, 80.2529224]
+          coordinates: [80.2042132, 12.9352945]
         },
         distanceField: "distance",
         spherical: true
       }
-    }
-
+    },
+    { $match: { $and: [{ active: { $eq: true } },] } },
   ])
+  // let val = await PickupLocation.find();
 
-
-  // return values;
+  // val.forEach(async (a) => {
+  //   await PickupLocation.findByIdAndUpdate({ _id: a._id }, { location: { type: "Point", coordinates: [a.langitude, a.latitude] } }, { new: true })
+  // })
   return values;
 }
 module.exports = {

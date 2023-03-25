@@ -48,8 +48,11 @@ const ShopOrderPriceSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  location: {
+    type: Object,
+  },
 });
-
+ShopOrderPriceSchema.plugin(toJSON);
 ShopOrderPriceSchema.plugin(toJSON);
 ShopOrderPriceSchema.plugin(paginate);
 const ShopOrder = mongoose.model('ShopOrder', ShopOrderPriceSchema);

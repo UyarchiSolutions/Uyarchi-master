@@ -150,7 +150,7 @@ const createshopOrderClone = async (body, userid) => {
       endSlot: endSlot,
       primary_Pickup: primary,
       secondary_Pickup: secondary,
-      third_Pickup, third
+      third_Pickup: third
     },
   };
 

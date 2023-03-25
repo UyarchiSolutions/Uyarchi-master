@@ -11,6 +11,7 @@ router.route('/update/pickup').put(managePickupController.update_pickup_location
 router.route('/getAll/pickup/:userId/:date/:todate').get(managePickupController.getAllManagepickupLocation);
 
 router.route('/getAll/pickuploaction').get(authorization, managePickupController.getallPickuplocation);
+router.route('/getAll/pickuploaction/orders').get( managePickupController.getallPickuplocation_orders);
 
 router.route('/get/near/pickuplocation').get(managePickupController.getNearbypickuplocation);
 

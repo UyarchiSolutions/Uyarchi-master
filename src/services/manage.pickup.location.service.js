@@ -251,6 +251,10 @@ const getallPickuplocation = async () => {
   let values = await PickupLocation.find();
   return values;
 }
+const getallPickuplocation_orders = async () => {
+  let values = await PickupLocation.find();
+  return values;
+}
 const getNearbypickuplocation = async (req) => {
   let values = await PickupLocation.aggregate([
     {
@@ -266,9 +270,7 @@ const getNearbypickuplocation = async (req) => {
     },
     { $match: { $and: [{ active: { $eq: true } },] } },
   ])
-
   // let val = await PickupLocation.find();
-
   // val.forEach(async (a) => {
   //   await PickupLocation.findByIdAndUpdate({ _id: a._id }, { location: { type: "Point", coordinates: [a.langitude, a.latitude] } }, { new: true })
   // })
@@ -281,5 +283,6 @@ module.exports = {
   getAllManagepickupLocation,
   getallPickuplocation,
   update_pickup_location,
-  getNearbypickuplocation
+  getNearbypickuplocation,
+  getallPickuplocation_orders
 };

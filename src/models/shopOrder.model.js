@@ -368,8 +368,20 @@ const ShopOrderClonePriceSchema = new mongoose.Schema({
   issueAssign: {
     type: String,
   },
+  location: {
+    type: Object,
+  },
+  primary_Pickup: {
+    type: String,
+  },
+  secondary_Pickup: {
+    type: String,
+  },
+  third_Pickup: {
+    type: String,
+  },
 });
-
+ShopOrderClonePriceSchema.index({ location: '2dsphere' });
 ShopOrderClonePriceSchema.plugin(toJSON);
 ShopOrderClonePriceSchema.plugin(paginate);
 const ShopOrderClone = mongoose.model('ShopOrderClone', ShopOrderClonePriceSchema);

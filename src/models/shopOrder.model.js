@@ -52,7 +52,7 @@ const ShopOrderPriceSchema = new mongoose.Schema({
     type: Object,
   },
 });
-ShopOrderPriceSchema.plugin(toJSON);
+ShopOrderPriceSchema.index({ location: '2dsphere' });
 ShopOrderPriceSchema.plugin(toJSON);
 ShopOrderPriceSchema.plugin(paginate);
 const ShopOrder = mongoose.model('ShopOrder', ShopOrderPriceSchema);

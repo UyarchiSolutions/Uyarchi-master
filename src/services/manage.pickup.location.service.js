@@ -258,7 +258,7 @@ const getNearbypickuplocation = async (req) => {
         includeLocs: "location",
         near: {
           type: "Point",
-          coordinates: [req.query.long, req.query.lat]
+          coordinates: [parseFloat(req.query.long), parseFloat(req.query.lat)]
         },
         distanceField: "distance",
         spherical: true

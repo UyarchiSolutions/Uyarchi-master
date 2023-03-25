@@ -109,7 +109,7 @@ const createshopOrderClone = async (body, userid) => {
         includeLocs: "location",
         near: {
           type: "Point",
-          coordinates: [shops.da_long, shops.da_long]
+          coordinates: [shops.da_long, shops.da_lot]
         },
         distanceField: "distance",
         spherical: true

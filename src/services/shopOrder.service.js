@@ -147,9 +147,12 @@ const createshopOrderClone = async (body, userid) => {
       Payment: Payment,
       startSlot: startSlot,
       endSlot: endSlot,
+      primary_Pickup: primary,
+      secondary_Pickup: secondary,
+      third_Pickup, third
     },
   };
-  
+
 
   let createShopOrderClone = await ShopOrderClone.create(bod);
   let Payment_type = body.paymentMethod;

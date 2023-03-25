@@ -251,14 +251,14 @@ const getallPickuplocation = async () => {
   let values = await PickupLocation.find();
   return values;
 }
-const getNearbypickuplocation = async () => {
+const getNearbypickuplocation = async (req) => {
   let values = await PickupLocation.aggregate([
     {
       $geoNear: {
         includeLocs: "location",
         near: {
           type: "Point",
-          coordinates: [80.2042132, 12.9352945]
+          coordinates: [req.query.long, req.query.lat]
         },
         distanceField: "distance",
         spherical: true
@@ -266,6 +266,7 @@ const getNearbypickuplocation = async () => {
     },
     { $match: { $and: [{ active: { $eq: true } },] } },
   ])
+
   // let val = await PickupLocation.find();
 
   // val.forEach(async (a) => {

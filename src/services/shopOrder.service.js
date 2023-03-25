@@ -18,6 +18,7 @@ const CallHistory = require('../models/b2b.callHistory.model');
 const BillAdj = require('../models/Bill.Adj.model');
 const { wardAdminGroup, wardAdminGroupModel_ORDERS } = require('../models/b2b.wardAdminGroup.model');
 const AWS = require('aws-sdk');
+const PickupLocation = require('../models/manage.pickupLocation.model');
 
 const createshopOrder = async (shopOrderBody, userid) => {
   let { product, date, time, shopId, time_of_delivery } = shopOrderBody;

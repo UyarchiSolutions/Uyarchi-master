@@ -21,8 +21,39 @@ const AWS = require('aws-sdk');
 
 const createshopOrder = async (shopOrderBody, userid) => {
   let { product, date, time, shopId, time_of_delivery } = shopOrderBody;
+  let shops = await Shop.findById(shopId)
+  let pickpulocation = await PickupLocation.aggregate([
+    {
+      $geoNear: {
+        includeLocs: "location",
+        near: {
+          type: "Point",
+          coordinates: [shops.da_long, shops.da_long]
+        },
+        distanceField: "distance",
+        spherical: true
+      }
+    },
+    { $match: { $and: [{ active: { $eq: true } },] } },
+    { $limit: 3 }
+  ]);
+  let primary;
+  let secondary;
+  let third;
+  if (pickpulocation.length == 3) {
+    primary = pickpulocation[0]._id;
+    secondary = pickpulocation[1]._id;
+    third = pickpulocation[2]._id;
+  }
+  if (pickpulocation.length == 2) {
+    primary = pickpulocation[0]._id;
+    secondary = pickpulocation[1]._id;
+  }
+  if (pickpulocation.length == 1) {
+    primary = pickpulocation[0]._id;
+  }
   let timeslot = time_of_delivery.replace('-', '');
-  let body = { ...shopOrderBody, ...{ Uid: userid, timeslot: timeslot } };
+  let body = { ...shopOrderBody, ...{ Uid: userid, timeslot: timeslot, primary_Pickup: primary, secondary_Pickup: secondary, third_Pickup, third } };
   let createShopOrder = await ShopOrder.create(body);
   product.forEach(async (e) => {
     ProductorderSchema.create({

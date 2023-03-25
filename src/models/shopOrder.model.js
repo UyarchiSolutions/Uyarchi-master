@@ -51,6 +51,15 @@ const ShopOrderPriceSchema = new mongoose.Schema({
   location: {
     type: Object,
   },
+  primary_Pickup: {
+    type: String,
+  },
+  secondary_Pickup: {
+    type: String,
+  },
+  third_Pickup: {
+    type: String,
+  },
 });
 ShopOrderPriceSchema.index({ location: '2dsphere' });
 ShopOrderPriceSchema.plugin(toJSON);

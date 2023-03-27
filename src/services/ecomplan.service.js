@@ -1223,6 +1223,7 @@ const create_stream_one = async (req) => {
       planId: req.body.planId,
       Duration: plan.Duration,
       endTime: datess,
+      streamEnd_Time: datess
     },
     { new: true }
   );

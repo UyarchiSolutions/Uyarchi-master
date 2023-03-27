@@ -817,6 +817,7 @@ const get_all_Post_with_page_all = async (req, status) => {
               allot_host_3: "$streamrequests.allot_host_3",
               streamEnd_Time: "$streamrequests.streamEnd_Time",
               postCount: "$streamrequests.postCount",
+              tokenGeneration: "$streamrequests.tokenGeneration"
             },
           },
         ],
@@ -865,7 +866,7 @@ const get_all_Post_with_page_all = async (req, status) => {
         allot_host_3: "$streamrequestposts.allot_host_3",
         streamEnd_Time: "$streamrequestposts.streamEnd_Time",
         postCount: "$streamrequestposts.postCount",
-
+        tokenGeneration: "$streamrequestposts.tokenGeneration"
       },
     },
     { $sort: { DateIso: -1 } },

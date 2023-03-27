@@ -404,6 +404,11 @@ const get_all_Post_with_page_completed = async (req) => {
               streamName: '$streamrequests.streamName',
               streamingDate: '$streamrequests.streamingDate',
               streamingTime: '$streamrequests.streamingTime',
+              startTime: "$streamrequests.startTime",
+              endTime: "$streamrequests.endTime",
+              allot_host_1: "$streamrequests.allot_host_1",
+              allot_host_2: "$streamrequests.allot_host_2",
+              allot_host_3: "$streamrequests.allot_host_3"
             },
           },
         ],
@@ -440,6 +445,11 @@ const get_all_Post_with_page_completed = async (req) => {
         streamName: '$streamrequestposts.streamName',
         streamingDate: '$streamrequestposts.streamingDate',
         streamingTime: '$streamrequestposts.streamingTime',
+        startTime: "$streamrequestposts.startTime",
+        endTime: "$streamrequestposts.endTime",
+        allot_host_1: "$streamrequestposts.allot_host_1",
+        allot_host_2: "$streamrequestposts.allot_host_2",
+        allot_host_3: "$streamrequestposts.allot_host_3"
       },
     },
     { $skip: 10 * page },

@@ -5767,7 +5767,20 @@ const fetch_streaming_Details_Approval = async (id, product, query) => {
         path: '$orderPayment',
       },
     },
-
+    {
+      $lookup: {
+        from: 'b2bshopclones',
+        localField: 'shopId',
+        foreignField: '_id',
+        as: 'shops',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$shops',
+      },
+    },
     {
       $project: {
         _id: 1,
@@ -5778,7 +5791,7 @@ const fetch_streaming_Details_Approval = async (id, product, query) => {
         streamingName: '$streaming.streamName',
         orderedKg: '$purchase_quantity',
         approvalStatus: '$status',
-        name: '$orders.name',
+        name: '$shops.SName',
         orderId: '$orders._id',
       },
     },

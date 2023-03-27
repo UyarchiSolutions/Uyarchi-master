@@ -810,8 +810,11 @@ const get_all_Post_with_page_all = async (req, status) => {
               _id: 1,
               streamName: '$streamrequests.streamName',
               streamingDate: '$streamrequests.streamingDate',
-              streamingTime: '$streamrequests.streamingTime',
-              endTime: '$streamrequests.endTime',
+              startTime: "$streamrequests.startTime",
+              endTime: "$streamrequests.endTime",
+              allot_host_1: "$streamrequests.allot_host_1",
+              allot_host_2: "$streamrequests.allot_host_2",
+              allot_host_3: "$streamrequests.allot_host_3"
             },
           },
         ],
@@ -852,7 +855,12 @@ const get_all_Post_with_page_all = async (req, status) => {
         streamingDate: '$streamrequestposts.streamingDate',
         streamingTime: '$streamrequestposts.streamingTime',
         endTime: '$streamrequestposts.endTime',
-        // streamrequestposts: "$streamrequestposts"
+        // streamrequestposts: "$streamrequestposts",
+        startTime: "$streamrequestposts.startTime",
+        endTime: "$streamrequestposts.endTime",
+        allot_host_1: "$streamrequestposts.allot_host_1",
+        allot_host_2: "$streamrequestposts.allot_host_2",
+        allot_host_3: "$streamrequestposts.allot_host_3"
       },
     },
     { $sort: { DateIso: -1 } },

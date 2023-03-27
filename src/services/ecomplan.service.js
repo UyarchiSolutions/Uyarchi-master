@@ -2233,6 +2233,20 @@ const go_live_stream_host = async (req, userId) => {
       },
     },
     {
+      $lookup: {
+        from: 'purchasedplans',
+        localField: 'planId',
+        foreignField: '_id',
+        as: 'purchasedplans',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$purchasedplans',
+      },
+    },
+    {
       $project: {
         _id: 1,
         supplierName: '$suppliers.primaryContactName',
@@ -2262,6 +2276,8 @@ const go_live_stream_host = async (req, userId) => {
         chatPermistion: { $eq: ['$allot_chat', 'my self'] },
         chat_need: 1,
         temptokens_sub: '$temptokens_sub',
+        no_of_host: '$purchasedplans.no_of_host',
+
       },
     },
   ]);

@@ -6056,10 +6056,25 @@ const multipleCancel = async (body) => {
 };
 
 const update_Multiple_productOrders = async (body) => {
-  console.log(body.arr);
   body.arr.forEach(async (e) => {
     let values = await streamingorderProduct.findById(e);
-    values = await streamingorderProduct.findByIdAndUpdate({ _id: e }, { status: body.status }, { new: true });
+    if (values) {
+      values = await streamingorderProduct.findByIdAndUpdate({ _id: e }, { status: body.status }, { new: true });
+      let orderId = values.orderId;
+      values = await streamingorderProduct.findByIdAndUpdate({ _id: e }, { status: body.status }, { new: true });
+      let totalOrder = await streamingorderProduct.find({ orderId: orderId }).count();
+      let pendingCount = await streamingorderProduct.find({ orderId: orderId, status: 'Pending' }).count();
+      let streamorder = await streamingOrder.findById(orderId);
+
+      if (pendingCount == 0 && streamorder.orderStatus != 'confirmed' && streamorder.orderStatus != 'ready') {
+        await streamingOrder.findByIdAndUpdate({ _id: orderId }, { orderStatus: 'ready' }, { new: true });
+      }
+      if (pendingCount != 0) {
+        if (totalOrder != pendingCount) {
+          await streamingOrder.findByIdAndUpdate({ _id: orderId }, { orderStatus: 'partial' }, { new: true });
+        }
+      }
+    }
   });
   return { message: 'Updated...........' };
 };
@@ -6462,6 +6477,8 @@ const getStreaming_orders_By_orders_for_pay = async (id) => {
     cancelled: cancelled.length != 0 ? cancelled[0].total : 0,
   };
 };
+
+// Account Manager Flow
 
 module.exports = {
   create_Plans,

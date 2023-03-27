@@ -815,7 +815,8 @@ const get_all_Post_with_page_all = async (req, status) => {
               allot_host_1: "$streamrequests.allot_host_1",
               allot_host_2: "$streamrequests.allot_host_2",
               allot_host_3: "$streamrequests.allot_host_3",
-              streamEnd_Time: "$streamrequests.streamEnd_Time"
+              streamEnd_Time: "$streamrequests.streamEnd_Time",
+              postCount: "$streamrequests.streamEnd_Time",
             },
           },
         ],
@@ -862,7 +863,8 @@ const get_all_Post_with_page_all = async (req, status) => {
         allot_host_1: "$streamrequestposts.allot_host_1",
         allot_host_2: "$streamrequestposts.allot_host_2",
         allot_host_3: "$streamrequestposts.allot_host_3",
-        streamEnd_Time: "$streamrequestposts.streamEnd_Time"
+        streamEnd_Time: "$streamrequestposts.streamEnd_Time",
+        postCount: "$streamrequestposts.postCount",
 
       },
     },

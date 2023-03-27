@@ -18,11 +18,12 @@ const CallHistory = require('../models/b2b.callHistory.model');
 const BillAdj = require('../models/Bill.Adj.model');
 const { wardAdminGroup, wardAdminGroupModel_ORDERS } = require('../models/b2b.wardAdminGroup.model');
 const AWS = require('aws-sdk');
+const PickupLocation = require('../models/manage.pickupLocation.model');
 
 const createshopOrder = async (shopOrderBody, userid) => {
   let { product, date, time, shopId, time_of_delivery } = shopOrderBody;
   let timeslot = time_of_delivery.replace('-', '');
-  let body = { ...shopOrderBody, ...{ Uid: userid, timeslot: timeslot } };
+  let body = { ...shopOrderBody, ...{ Uid: userid, timeslot: timeslot, primary_Pickup: primary, secondary_Pickup: secondary, third_Pickup, third } };
   let createShopOrder = await ShopOrder.create(body);
   product.forEach(async (e) => {
     ProductorderSchema.create({
@@ -101,6 +102,37 @@ const createshopOrderClone = async (body, userid) => {
   if (body.Payment == 'Continue' || body.Payment == 'addmore') {
     Payment = 'Paynow';
   }
+  let shops = await Shop.findById(body.shopId)
+  let pickpulocation = await PickupLocation.aggregate([
+    {
+      $geoNear: {
+        includeLocs: "location",
+        near: {
+          type: "Point",
+          coordinates: [shops.da_long, shops.da_lot]
+        },
+        distanceField: "distance",
+        spherical: true
+      }
+    },
+    { $match: { $and: [{ active: { $eq: true } },] } },
+    { $limit: 3 }
+  ]);
+  let primary;
+  let secondary;
+  let third;
+  if (pickpulocation.length == 3) {
+    primary = pickpulocation[0]._id;
+    secondary = pickpulocation[1]._id;
+    third = pickpulocation[2]._id;
+  }
+  if (pickpulocation.length == 2) {
+    primary = pickpulocation[0]._id;
+    secondary = pickpulocation[1]._id;
+  }
+  if (pickpulocation.length == 1) {
+    primary = pickpulocation[0]._id;
+  }
   let bod = {
     ...body,
     ...{
@@ -116,8 +148,12 @@ const createshopOrderClone = async (body, userid) => {
       Payment: Payment,
       startSlot: startSlot,
       endSlot: endSlot,
+      primary_Pickup: primary,
+      secondary_Pickup: secondary,
+      third_Pickup: third
     },
   };
+
 
   let createShopOrderClone = await ShopOrderClone.create(bod);
   let Payment_type = body.paymentMethod;

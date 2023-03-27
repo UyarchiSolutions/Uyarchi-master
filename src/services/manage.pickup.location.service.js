@@ -5,6 +5,7 @@ const axios = require('axios');
 const moment = require('moment');
 const { UserBindingPage } = require('twilio/lib/rest/ipMessaging/v2/service/user/userBinding');
 const { Users } = require('../models/B2Busers.model');
+const { Shop, AttendanceClone, AttendanceClonenew } = require('../models/b2b.ShopClone.model');
 
 const createManagePickupLocation = async (body, userId) => {
   // let latlan = await axios.get(
@@ -18,7 +19,9 @@ const createManagePickupLocation = async (body, userId) => {
   // let locations = latlan.data.results[0].geometry;
   // let latitude = locations.location.lat;
   // let langitude = locations.location.lng;
-  let values = { ...body, ...{ date: serverdate, time: servertime, created: moment(), userId: userId } };
+  let values = { ...body, ...{ location: { type: 'Point', coordinates: [parseFloat(body.latitude), parseFloat(body.langitude)] }, date: serverdate, time: servertime, created: moment(), userId: userId } };
+
+  console.log(values)
   const createpickuplocations = await PickupLocation.create(values);
   return createpickuplocations;
 };
@@ -248,11 +251,38 @@ const getallPickuplocation = async () => {
   let values = await PickupLocation.find();
   return values;
 }
+const getallPickuplocation_orders = async () => {
+  let values = await PickupLocation.find();
+  return values;
+}
+const getNearbypickuplocation = async (req) => {
+  let values = await PickupLocation.aggregate([
+    {
+      $geoNear: {
+        includeLocs: "location",
+        near: {
+          type: "Point",
+          coordinates: [parseFloat(req.query.long), parseFloat(req.query.lat)]
+        },
+        distanceField: "distance",
+        spherical: true
+      }
+    },
+    { $match: { $and: [{ active: { $eq: true } },] } },
+  ])
+  // let val = await PickupLocation.find();
+  // val.forEach(async (a) => {
+  //   await PickupLocation.findByIdAndUpdate({ _id: a._id }, { location: { type: "Point", coordinates: [a.langitude, a.latitude] } }, { new: true })
+  // })
+  return values;
+}
 module.exports = {
   createManagePickupLocation,
   getAllManagepickup,
   getManagePickupById,
   getAllManagepickupLocation,
   getallPickuplocation,
-  update_pickup_location
+  update_pickup_location,
+  getNearbypickuplocation,
+  getallPickuplocation_orders
 };

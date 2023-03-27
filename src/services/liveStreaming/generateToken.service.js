@@ -14,8 +14,11 @@ const Dates = require('../Date.serive')
 const { Streamplan, StreamPost, Streamrequest, StreamrequestPost, StreamPreRegister } = require('../../models/ecomplan.model');
 const { request } = require('express');
 
+const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 const ffmpeg = require('fluent-ffmpeg');
+ffmpeg.setFfmpegPath(ffmpegPath);
 const path = require('path');
+const AWS = require('aws-sdk');
 
 const generateUid = async (req) => {
   const length = 5;
@@ -898,32 +901,41 @@ const get_stream_complete_videos = async (req) => {
 
 
 const videoConverter = async () => {
-  const AWS = require('aws-sdk');
-  // const s3 = new AWS.S3();
+  const inputFilePath = 'https://streamingupload.s3.ap-south-1.amazonaws.com/0384e76d948647698ea43873dfad085d/93081/5dd71bb76a4e9a76d2e1bc9fef5cb7c8_411bbdb8-0fdf-4fb4-b944-703e1822f422.m3u8';
+  const outputFilePath = 'output.mp4';
+
+  ffmpeg(inputFilePath)
+    .outputOptions('-c', 'copy')
+    .output(outputFilePath)
+    .on('end', (e) => {
+      console.log('Conversion completed successfully', e);
+    })
+    .on('error', (err) => {
+      console.error('Error while converting:', err);
+    })
+    .run();
+  console.log(outputFilePath)
   const s3 = new AWS.S3({
     accessKeyId: 'AKIA3323XNN7Y2RU77UG',
     secretAccessKey: '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',
     region: 'ap-south-1',
   });
-  let params = {
-    Bucket: 'realestatevideoupload',
-    Key: '/001f1c47059a4fc7a8bbbca04d7442d4/24512/af3d71fb884912e0ebeac4ba3a2cc0ff_c615864f-7d5d-434b-b988-11bd56bd1d97.m3u8',
-    ResponseContentType: 'video/m3u8'
+  const bucketName = 'realestatevideoupload';
 
+  // Read the file from the local file system
+  const fileContent = fs.readFileSync(outputFilePath);
+
+  // Upload the file to S3
+  const params = {
+    Bucket: bucketName,
+    Key: outputFilePath,
+    Body: fileContent,
   };
-  s3.getObject(params, (err, data) => {
+  s3.upload(params, (err, data) => {
     if (err) {
-      console.error('Error downloading file:', err);
+      console.error(err);
     } else {
-      console.log('File downloaded successfully!');
-      // Write the file data to disk.
-      fs.writeFile('<output-file-name>.mp4', data.Body, (err) => {
-        if (err) {
-          console.error('Error writing file:', err);
-        } else {
-          console.log('File saved successfully!');
-        }
-      });
+      console.log(`File uploaded successfully. Location: ${data.Location}`);
     }
   });
 }

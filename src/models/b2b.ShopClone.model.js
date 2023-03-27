@@ -245,10 +245,18 @@ const shopSchema = mongoose.Schema({
   sort_wde: {
     type: Number,
   },
+  location: {
+    type: Object,
+
+  },
+  location_add: {
+    type: Object,
+  }
 });
 
 // assignSchema.plugin(toJSON);
 // assignSchema.plugin(paginate);
+// shopSchema.index({ location_add: '2dsphere' });
 
 shopSchema.plugin(toJSON);
 shopSchema.plugin(paginate);
@@ -281,6 +289,7 @@ shopSchema.pre('save', async function (next) {
   }
   next();
 });
+shopSchema.index({ location: '2dsphere' });
 const Shop = mongoose.model('B2BshopClone', shopSchema);
 
 const attendanceSchema = new mongoose.Schema({

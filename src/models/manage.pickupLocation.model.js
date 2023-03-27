@@ -32,10 +32,10 @@ const managepickupLocationSchema = new mongoose.Schema({
     type: Array,
   },
   latitude: {
-    type: String,
+    type: Number,
   },
   langitude: {
-    type: String,
+    type: Number,
   },
   date: {
     type: String,
@@ -65,8 +65,14 @@ const managepickupLocationSchema = new mongoose.Schema({
   },
   pincode: {
     type: Number,
-  }
+  },
+  location: {
+    type: Object,
+    
+  },
+
 });
+managepickupLocationSchema.index({ location: '2dsphere' });
 
 const ManagePickupLocations = mongoose.model('ManagePickupLocations', managepickupLocationSchema);
 

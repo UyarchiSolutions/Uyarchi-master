@@ -454,6 +454,11 @@ const multipleCancel = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const getOrder_For_Account_Manager = catchAsync(async (req, res) => {
+  const data = await Ecomserive.getOrder_For_Account_Manager(req.params.id);
+  res.send(data);
+});
+
 module.exports = {
   create_Plans,
   create_Plans_addon,
@@ -540,4 +545,5 @@ module.exports = {
   Fetch_Streaming_Details_By_buyer,
   getStreaming_orders_By_orders_for_pay,
   multipleCancel,
+  getOrder_For_Account_Manager,
 };

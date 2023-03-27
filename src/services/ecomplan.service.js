@@ -6623,6 +6623,176 @@ const getStreaming_orders_By_orders_for_pay = async (id) => {
 
 // Account Manager Flow
 
+const getOrder_For_Account_Manager = async (id) => {
+  let values = await streamingOrder.aggregate([
+    {
+      $match: {
+        streamId: id,
+      },
+    },
+    {
+      $lookup: {
+        from: 'b2bshopclones',
+        localField: 'shopId',
+        foreignField: '_id',
+        as: 'shops',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$shops',
+      },
+    },
+    {
+      $lookup: {
+        from: 'streamingorderproducts',
+        localField: '_id',
+        foreignField: 'orderId',
+        pipeline: [
+          { $match: { status: 'cancelled' } },
+          { $group: { _id: null, cancelAmt: { $sum: { $multiply: ['$purchase_quantity', '$purchase_price'] } } } },
+        ],
+        as: 'cancelled',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$cancelled',
+      },
+    },
+    {
+      $lookup: {
+        from: 'streamingorderproducts',
+        localField: '_id',
+        foreignField: 'orderId',
+        pipeline: [
+          { $match: { status: 'rejected' } },
+          { $group: { _id: null, cancelAmt: { $sum: { $multiply: ['$purchase_quantity', '$purchase_price'] } } } },
+        ],
+        as: 'rejected',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$rejected',
+      },
+    },
+    {
+      $lookup: {
+        from: 'streamingorderproducts',
+        localField: '_id',
+        foreignField: 'orderId',
+        pipeline: [
+          { $match: { status: 'denied' } },
+          { $group: { _id: null, cancelAmt: { $sum: { $multiply: ['$purchase_quantity', '$purchase_price'] } } } },
+        ],
+        as: 'denied',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$denied',
+      },
+    },
+    {
+      $lookup: {
+        from: 'streamingorderproducts',
+        localField: '_id',
+        foreignField: 'orderId',
+        pipeline: [{ $match: { status: 'denied' } }],
+        as: 'deniedCount',
+      },
+    },
+    {
+      $lookup: {
+        from: 'streamingorderproducts',
+        localField: '_id',
+        foreignField: 'orderId',
+        pipeline: [{ $match: { status: 'rejected' } }],
+        as: 'rejectCount',
+      },
+    },
+    {
+      $lookup: {
+        from: 'streamingorderproducts',
+        localField: '_id',
+        foreignField: 'orderId',
+        pipeline: [{ $match: { status: 'cancelled' } }],
+        as: 'cancelCount',
+      },
+    },
+    {
+      $lookup: {
+        from: 'streamingorderproducts',
+        localField: '_id',
+        foreignField: 'orderId',
+        as: 'ordersCount',
+      },
+    },
+    {
+      $addFields: {
+        cancelledAmount: { $ifNull: ['$cancelled.cancelAmt', 0] },
+      },
+    },
+    {
+      $addFields: {
+        RejectAmount: { $ifNull: ['$rejected.cancelAmt', 0] },
+      },
+    },
+    {
+      $addFields: {
+        DeniedAmount: { $ifNull: ['$denied.cancelAmt', 0] },
+      },
+    },
+    {
+      $addFields: {
+        PendingAmount: { $ifNull: [{ $subtract: ['$totalAmount', '$Amount'] }, 0] },
+      },
+    },
+    {
+      $addFields: {
+        finalAmount: { $add: ['$DeniedAmount', '$cancelledAmount', '$RejectAmount'] },
+      },
+    },
+    {
+      $addFields: {
+        PendingAmount: {
+          $cond: {
+            if: { $gt: ['$PendingAmount', 0] },
+            then: { $subtract: ['$PendingAmount', '$finalAmount'] },
+            else: '$PendingAmount',
+          },
+        },
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        orderId: 1,
+        orderStatus: 1,
+        totalAmount: 1,
+        Buyer: '$shops.SName',
+        PendingAmount: 1,
+        Amount: 1,
+        cancelCount: { $size: '$cancelCount' },
+        rejectCount: { $size: '$rejectCount' },
+        deniedCount: { $size: '$deniedCount' },
+        ordersCount: { $size: '$ordersCount' },
+        cancelledAmount: 1,
+        RejectAmount: 1,
+        DeniedAmount: 1,
+        finalAmount: 1,
+        consolidate: 1,
+      },
+    },
+  ]);
+  return values;
+};
+
 module.exports = {
   create_Plans,
   create_Plans_addon,
@@ -6720,4 +6890,5 @@ module.exports = {
   Fetch_Streaming_Details_By_buyer,
   getStreaming_orders_By_orders_for_pay,
   multipleCancel,
+  getOrder_For_Account_Manager,
 };

@@ -1110,7 +1110,7 @@ const get_all_Post_with_page_assigned = async (req) => {
               from: 'streamrequests',
               localField: 'streamRequest',
               foreignField: '_id',
-              pipeline: [{ $match: { $and: [{ tokenGeneration: { $eq: false } }, { startTime: { $gte: date_now } }] } }],
+              pipeline: [{ $match: { $or: [{ tokenGeneration: { $eq: false } }, { startTime: { $gte: date_now } }] } }],
               as: 'streamrequests',
             },
           },

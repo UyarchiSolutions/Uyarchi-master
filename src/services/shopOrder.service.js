@@ -6896,6 +6896,19 @@ const issue_collection_reconfirm = async (req) => {
   return values;
 };
 
+
+const get_selfpickupOrders = async (req) => {
+
+  let primary_Pickup = { active: true };
+  let secondary_Pickup = { active: true };
+  let third_Pickup = { active: true };
+  let value = await ShopOrderClone.aggregate([
+    { $match: { $and: [{ status: { $in: ['Approved', 'Modified',] } }, { devevery_mode: { $eq: 'SP' } }, primary_Pickup, secondary_Pickup, third_Pickup] } }
+  ])
+
+  return value;
+};
+
 module.exports = {
   // product
   createProductOrderClone,
@@ -6980,5 +6993,8 @@ module.exports = {
   issue_collection_returntosm,
   issue_collection_recieved,
   issue_collection_calculated,
-  issue_collection_reconfirm
+  issue_collection_reconfirm,
+
+
+  get_selfpickupOrders
 };

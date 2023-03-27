@@ -493,6 +493,13 @@ const issue_collection_reconfirm= catchAsync(async (req, res) => {
   const data = await shopOrderService.issue_collection_reconfirm(req);
   res.send(data);
 });
+
+
+const get_selfpickupOrders= catchAsync(async (req, res) => {
+  const data = await shopOrderService.get_selfpickupOrders(req);
+  res.send(data);
+});
+
 module.exports = {
   vieworderbill_byshop,
   createshopOrder,
@@ -575,5 +582,7 @@ module.exports = {
   issue_collection_returntosm,
   issue_collection_recieved,
   issue_collection_calculated,
-  issue_collection_reconfirm
+  issue_collection_reconfirm,
+
+  get_selfpickupOrders
 };

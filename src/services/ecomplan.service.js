@@ -240,7 +240,7 @@ const get_all_Post_with_page_live = async (req) => {
               from: 'streamrequests',
               localField: 'streamRequest',
               foreignField: '_id',
-              pipeline: [{ $match: { $and: [{ startTime: { $lte: date_now } }, { endTime: { $gte: date_now } }] } }],
+              pipeline: [{ $match: { $and: [{ tokenGeneration: { $eq: true } }, { startTime: { $lte: date_now } }, { endTime: { $gte: date_now } }] } }],
               as: 'streamrequests',
             },
           },
@@ -267,10 +267,7 @@ const get_all_Post_with_page_live = async (req) => {
       },
     },
     {
-      $unwind: {
-        preserveNullAndEmptyArrays: true,
-        path: '$streamrequestposts',
-      },
+      $unwind: '$streamrequestposts',
     },
     {
       $project: {
@@ -1113,7 +1110,7 @@ const get_all_Post_with_page_assigned = async (req) => {
               from: 'streamrequests',
               localField: 'streamRequest',
               foreignField: '_id',
-              pipeline: [{ $match: { $or: [{ startTime: { $gte: date_now } }] } }],
+              pipeline: [{ tokenGeneration: { $eq: false } }, { $match: { $or: [{ startTime: { $gte: date_now } }] } }],
               as: 'streamrequests',
             },
           },
@@ -1140,10 +1137,7 @@ const get_all_Post_with_page_assigned = async (req) => {
       },
     },
     {
-      $unwind: {
-        preserveNullAndEmptyArrays: true,
-        path: '$streamrequestposts',
-      },
+      $unwind: '$streamrequestposts',
     },
     {
       $project: {

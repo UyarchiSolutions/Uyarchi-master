@@ -159,6 +159,12 @@ const get_one_stream = catchAsync(async (req, res) => {
   res.send(value);
 });
 
+const get_one_stream_assign_host = catchAsync(async (req, res) => {
+  console.log('asdaszas');
+  const value = await Ecomserive.get_one_stream_assign_host(req);
+  res.send(value);
+});
+
 const get_one_stream_step_two = catchAsync(async (req, res) => {
   console.log('zas');
   const value = await Ecomserive.get_one_stream_step_two(req);
@@ -471,6 +477,7 @@ module.exports = {
   create_stream_two,
   get_all_stream,
   get_one_stream,
+  get_one_stream_assign_host,
   update_one_stream,
   delete_one_stream,
   create_stream_one_image,

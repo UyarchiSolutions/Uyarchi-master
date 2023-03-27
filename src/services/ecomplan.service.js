@@ -1376,6 +1376,32 @@ const get_one_stream = async (req) => {
   return value[0];
 };
 
+
+const get_one_stream_assign_host = async (req) => {
+  let id = req.query.id;
+  const value = await Streamrequest.aggregate([
+    { $match: { $and: [{ tokenGeneration: { $eq: false } }, { _id: { $eq: id } }] } },
+    {
+      $lookup: {
+        from: 'purchasedplans',
+        localField: 'planId',
+        foreignField: '_id',
+        as: 'purchasedplans',
+      },
+    },
+    {
+      $unwind: '$purchasedplans',
+    },
+  ]);
+  if (value.length == 0) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Not Found');
+  }
+  if (value[0].suppierId != req.userId) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Not Found');
+  }
+  return value[0];
+};
+
 const get_one_stream_step_two = async (req) => {
   console.log('Asas');
   const value = await Streamrequest.findById(req.query.id);
@@ -6516,6 +6542,7 @@ module.exports = {
   create_stream_two,
   get_all_stream,
   get_one_stream,
+  get_one_stream_assign_host,
   update_one_stream,
   delete_one_stream,
   create_stream_one_image,

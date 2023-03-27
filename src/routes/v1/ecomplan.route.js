@@ -48,6 +48,7 @@ router.route('/create/stream/one/video').post(upload, Ecomcontroller.create_stre
 router.route('/create/stream/two').post(supplierAuth, Ecomcontroller.create_stream_two);
 router.route('/get/all/stream').get(supplierAuth, Ecomcontroller.get_all_stream);
 router.route('/get/one/stream').get(supplierAuth, Ecomcontroller.get_one_stream);
+router.route('/get/one/stream/assign/host').get(supplierAuth, Ecomcontroller.get_one_stream_assign_host);
 router.route('/get/my/stream/step/two').get(supplierAuth, Ecomcontroller.get_one_stream_step_two);
 router.route('/update/one/stream').put(supplierAuth, Ecomcontroller.update_one_stream);
 router.route('/update/step/one/stream').put(supplierAuth, Ecomcontroller.update_one_stream_one);

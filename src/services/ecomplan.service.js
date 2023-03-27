@@ -816,7 +816,7 @@ const get_all_Post_with_page_all = async (req, status) => {
               allot_host_2: "$streamrequests.allot_host_2",
               allot_host_3: "$streamrequests.allot_host_3",
               streamEnd_Time: "$streamrequests.streamEnd_Time",
-              postCount: "$streamrequests.streamEnd_Time",
+              postCount: "$streamrequests.postCount",
             },
           },
         ],

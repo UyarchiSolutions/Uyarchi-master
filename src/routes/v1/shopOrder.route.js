@@ -107,6 +107,10 @@ router.route('/issue/collection/calculated').put(authorization, shopOrderControl
 router.route('/issue/collection/reconfirm').put(authorization, shopOrderController.issue_collection_reconfirm);
 
 
+// sde 
+router.route('/selfpickup/orders/all').get(shopOrderController.get_selfpickupOrders);
+
+
 
 
 module.exports = router;

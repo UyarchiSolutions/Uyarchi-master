@@ -1607,7 +1607,14 @@ const update_reject = async (req) => {
 };
 
 const allot_stream_subhost = async (req) => {
-  let value = await Streamrequest.findByIdAndUpdate({ _id: req.query.id }, req.body, { new: true });
+
+  let value = await Streamrequest.findById(req.query.id);
+  if (value.tokenGeneration) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Stream Not Found');
+  }
+  else {
+    value = await Streamrequest.findByIdAndUpdate({ _id: req.query.id }, req.body, { new: true });
+  }
   return value;
 };
 
@@ -3044,7 +3051,7 @@ const get_stream_alert = async (req) => {
     {
       $match: {
         $and: [
-          { tokenGeneration: { $eq: false } }, 
+          { tokenGeneration: { $eq: false } },
           { endTime: { $gt: date_now } },
           { adminApprove: { $eq: 'Approved' } },
           { suppierId: { $eq: req.userId } },

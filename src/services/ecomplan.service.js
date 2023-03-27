@@ -1637,7 +1637,7 @@ const get_all_streams = async (req) => {
   let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
   console.log(req.userId);
   const value = await Streamrequest.aggregate([
-    { $match: { $and: [{ tokenGeneration: { $eq: false } }, { suppierId: { $eq: req.userId } }, { adminApprove: { $eq: 'Approved' } }] } },
+    { $match: { $and: [{ suppierId: { $eq: req.userId } }, { adminApprove: { $eq: 'Approved' } }] } },
     {
       $lookup: {
         from: 'streamrequestposts',
@@ -3044,6 +3044,7 @@ const get_stream_alert = async (req) => {
     {
       $match: {
         $and: [
+          { tokenGeneration: { $eq: false } }, 
           { endTime: { $gt: date_now } },
           { adminApprove: { $eq: 'Approved' } },
           { suppierId: { $eq: req.userId } },

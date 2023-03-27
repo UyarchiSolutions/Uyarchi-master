@@ -6056,10 +6056,12 @@ const multipleCancel = async (body) => {
 };
 
 const update_Multiple_productOrders = async (body) => {
-  console.log(body.arr);
   body.arr.forEach(async (e) => {
     let values = await streamingorderProduct.findById(e);
-    values = await streamingorderProduct.findByIdAndUpdate({ _id: e }, { status: body.status }, { new: true });
+    console.log(values);
+    if (values) {
+      values = await streamingorderProduct.findByIdAndUpdate({ _id: e }, { status: body.status }, { new: true });
+    }
   });
   return { message: 'Updated...........' };
 };
@@ -6462,6 +6464,8 @@ const getStreaming_orders_By_orders_for_pay = async (id) => {
     cancelled: cancelled.length != 0 ? cancelled[0].total : 0,
   };
 };
+
+// Account Manager Flow
 
 module.exports = {
   create_Plans,

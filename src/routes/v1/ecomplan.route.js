@@ -133,5 +133,5 @@ router.route('/getStreaming/orders/By_orders/for/pay/:id').get(Ecomcontroller.ge
 router.route('/multipleCancel').post(Ecomcontroller.multipleCancel);
 
 // Account Manager Flow
-
+router.route('/getOrder/For/Account/Manager/:id').get(Ecomcontroller.getOrder_For_Account_Manager);
 module.exports = router;

@@ -133,7 +133,7 @@ const corsconfig = {
 app.use(cors());
 app.options('*', cors());
 app.use(cookieparser());
-
+//summa
 // jwt authentication
 app.use(passport.initialize());
 passport.use('jwt', jwtStrategy)

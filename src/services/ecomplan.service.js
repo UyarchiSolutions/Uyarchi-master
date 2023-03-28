@@ -1320,7 +1320,7 @@ const find_and_update_one = async (req) => {
   let plan = await Streamplan.findById(myplan.planId);
   let datess = new Date().setTime(new Date(streamss.startTime).getTime() + plan.Duration * 60 * 1000);
 
-  let value = await Streamrequest.findByIdAndUpdate({ _id: req.query.id }, { ...req.body, ...{startTime:startTime, endTime: datess,streamEnd_Time: datess,} }, { new: true });
+  let value = await Streamrequest.findByIdAndUpdate({ _id: req.query.id }, { ...req.body, ...{ startTime: startTime, endTime: datess, streamEnd_Time: datess, } }, { new: true });
   let posts = value.post;
   console.log(posts, req.body.addpost);
   req.body.addpost.forEach(async (a) => {
@@ -1744,6 +1744,7 @@ const end_stream = async (req) => {
     { status: 'Completed', streamEnd_Time: moment(), end_Status: 'HostLeave' },
     { new: true }
   );
+  req.io.emit(value._id + '_stream_end', value)
   let assginStream = await StreamrequestPost.find({ streamRequest: req.query.id });
   assginStream.forEach(async (a) => {
     await StreamPost.findByIdAndUpdate({ _id: a.postId }, { status: 'Completed' }, { new: true });

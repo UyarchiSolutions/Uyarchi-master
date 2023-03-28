@@ -1874,7 +1874,7 @@ const get_all_streams = async (req) => {
     },
     {
       $addFields: {
-        allot_chat_name: { $ifNull: ['$allot_chat_lookup.Name', null] },
+        allot_chat_name: { $ifNull: ['$allot_chat_lookup.Name', "$allot_chat"] },
       },
     },
     {
@@ -1893,7 +1893,7 @@ const get_all_streams = async (req) => {
     },
     {
       $addFields: {
-        allot_host_1_name: { $ifNull: ['$allot_host_1_lookup.Name', null] },
+        allot_host_1_name: { $ifNull: ['$allot_host_1_lookup.Name', "$allot_host_1"] },
       },
     },
     {
@@ -1912,7 +1912,7 @@ const get_all_streams = async (req) => {
     },
     {
       $addFields: {
-        allot_host_2_name: { $ifNull: ['$allot_host_2_lookup.Name', null] },
+        allot_host_2_name: { $ifNull: ['$allot_host_2_lookup.Name', "$allot_host_2"] },
       },
     },
     {
@@ -1931,7 +1931,7 @@ const get_all_streams = async (req) => {
     },
     {
       $addFields: {
-        allot_host_3_name: { $ifNull: ['$allot_host_3_lookup.Name', null] },
+        allot_host_3_name: { $ifNull: ['$allot_host_3_lookup.Name', "$allot_host_3"] },
       },
     },
     {

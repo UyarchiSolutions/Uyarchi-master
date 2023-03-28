@@ -240,7 +240,17 @@ const get_all_Post_with_page_live = async (req) => {
               from: 'streamrequests',
               localField: 'streamRequest',
               foreignField: '_id',
-              pipeline: [{ $match: { $and: [{ tokenGeneration: { $eq: true } }, { startTime: { $lte: date_now } }, { endTime: { $gte: date_now } }] } }],
+              pipeline: [
+                {
+                  $match: {
+                    $and: [
+                      { tokenGeneration: { $eq: true } },
+                      { startTime: { $lte: date_now } },
+                      { endTime: { $gte: date_now } },
+                    ],
+                  },
+                },
+              ],
               as: 'streamrequests',
             },
           },
@@ -252,14 +262,14 @@ const get_all_Post_with_page_live = async (req) => {
               _id: 1,
               streamName: '$streamrequests.streamName',
               streamingDate: '$streamrequests.streamingDate',
-              startTime: "$streamrequests.startTime",
-              endTime: "$streamrequests.endTime",
-              allot_host_1: "$streamrequests.allot_host_1",
-              allot_host_2: "$streamrequests.allot_host_2",
-              allot_host_3: "$streamrequests.allot_host_3",
-              streamEnd_Time: "$streamrequests.streamEnd_Time",
-              postCount: "$streamrequests.postCount",
-              tokenGeneration: "$streamrequests.tokenGeneration"
+              startTime: '$streamrequests.startTime',
+              endTime: '$streamrequests.endTime',
+              allot_host_1: '$streamrequests.allot_host_1',
+              allot_host_2: '$streamrequests.allot_host_2',
+              allot_host_3: '$streamrequests.allot_host_3',
+              streamEnd_Time: '$streamrequests.streamEnd_Time',
+              postCount: '$streamrequests.postCount',
+              tokenGeneration: '$streamrequests.tokenGeneration',
             },
           },
         ],
@@ -298,14 +308,14 @@ const get_all_Post_with_page_live = async (req) => {
         streamingTime: '$streamrequestposts.streamingTime',
         endTime: '$streamrequestposts.endTime',
         // streamrequestposts: "$streamrequestposts",
-        startTime: "$streamrequestposts.startTime",
-        endTime: "$streamrequestposts.endTime",
-        allot_host_1: "$streamrequestposts.allot_host_1",
-        allot_host_2: "$streamrequestposts.allot_host_2",
-        allot_host_3: "$streamrequestposts.allot_host_3",
-        streamEnd_Time: "$streamrequestposts.streamEnd_Time",
-        postCount: "$streamrequestposts.postCount",
-        tokenGeneration: "$streamrequestposts.tokenGeneration"
+        startTime: '$streamrequestposts.startTime',
+        endTime: '$streamrequestposts.endTime',
+        allot_host_1: '$streamrequestposts.allot_host_1',
+        allot_host_2: '$streamrequestposts.allot_host_2',
+        allot_host_3: '$streamrequestposts.allot_host_3',
+        streamEnd_Time: '$streamrequestposts.streamEnd_Time',
+        postCount: '$streamrequestposts.postCount',
+        tokenGeneration: '$streamrequestposts.tokenGeneration',
       },
     },
     { $skip: 10 * page },
@@ -421,11 +431,11 @@ const get_all_Post_with_page_completed = async (req) => {
               streamName: '$streamrequests.streamName',
               streamingDate: '$streamrequests.streamingDate',
               streamingTime: '$streamrequests.streamingTime',
-              startTime: "$streamrequests.startTime",
-              endTime: "$streamrequests.endTime",
-              allot_host_1: "$streamrequests.allot_host_1",
-              allot_host_2: "$streamrequests.allot_host_2",
-              allot_host_3: "$streamrequests.allot_host_3"
+              startTime: '$streamrequests.startTime',
+              endTime: '$streamrequests.endTime',
+              allot_host_1: '$streamrequests.allot_host_1',
+              allot_host_2: '$streamrequests.allot_host_2',
+              allot_host_3: '$streamrequests.allot_host_3',
             },
           },
         ],
@@ -462,11 +472,11 @@ const get_all_Post_with_page_completed = async (req) => {
         streamName: '$streamrequestposts.streamName',
         streamingDate: '$streamrequestposts.streamingDate',
         streamingTime: '$streamrequestposts.streamingTime',
-        startTime: "$streamrequestposts.startTime",
-        endTime: "$streamrequestposts.endTime",
-        allot_host_1: "$streamrequestposts.allot_host_1",
-        allot_host_2: "$streamrequestposts.allot_host_2",
-        allot_host_3: "$streamrequestposts.allot_host_3"
+        startTime: '$streamrequestposts.startTime',
+        endTime: '$streamrequestposts.endTime',
+        allot_host_1: '$streamrequestposts.allot_host_1',
+        allot_host_2: '$streamrequestposts.allot_host_2',
+        allot_host_3: '$streamrequestposts.allot_host_3',
       },
     },
     { $skip: 10 * page },
@@ -672,14 +682,14 @@ const get_all_Post_with_page_removed = async (req) => {
               _id: 1,
               streamName: '$streamrequests.streamName',
               streamingDate: '$streamrequests.streamingDate',
-              startTime: "$streamrequests.startTime",
-              endTime: "$streamrequests.endTime",
-              allot_host_1: "$streamrequests.allot_host_1",
-              allot_host_2: "$streamrequests.allot_host_2",
-              allot_host_3: "$streamrequests.allot_host_3",
-              streamEnd_Time: "$streamrequests.streamEnd_Time",
-              postCount: "$streamrequests.postCount",
-              tokenGeneration: "$streamrequests.tokenGeneration"
+              startTime: '$streamrequests.startTime',
+              endTime: '$streamrequests.endTime',
+              allot_host_1: '$streamrequests.allot_host_1',
+              allot_host_2: '$streamrequests.allot_host_2',
+              allot_host_3: '$streamrequests.allot_host_3',
+              streamEnd_Time: '$streamrequests.streamEnd_Time',
+              postCount: '$streamrequests.postCount',
+              tokenGeneration: '$streamrequests.tokenGeneration',
             },
           },
         ],
@@ -721,14 +731,14 @@ const get_all_Post_with_page_removed = async (req) => {
         streamingTime: '$streamrequestposts.streamingTime',
         endTime: '$streamrequestposts.endTime',
         // streamrequestposts: "$streamrequestposts",
-        startTime: "$streamrequestposts.startTime",
-        endTime: "$streamrequestposts.endTime",
-        allot_host_1: "$streamrequestposts.allot_host_1",
-        allot_host_2: "$streamrequestposts.allot_host_2",
-        allot_host_3: "$streamrequestposts.allot_host_3",
-        streamEnd_Time: "$streamrequestposts.streamEnd_Time",
-        postCount: "$streamrequestposts.postCount",
-        tokenGeneration: "$streamrequestposts.tokenGeneration"
+        startTime: '$streamrequestposts.startTime',
+        endTime: '$streamrequestposts.endTime',
+        allot_host_1: '$streamrequestposts.allot_host_1',
+        allot_host_2: '$streamrequestposts.allot_host_2',
+        allot_host_3: '$streamrequestposts.allot_host_3',
+        streamEnd_Time: '$streamrequestposts.streamEnd_Time',
+        postCount: '$streamrequestposts.postCount',
+        tokenGeneration: '$streamrequestposts.tokenGeneration',
       },
     },
     { $sort: { DateIso: -1 } },
@@ -847,14 +857,14 @@ const get_all_Post_with_page_all = async (req, status) => {
               _id: 1,
               streamName: '$streamrequests.streamName',
               streamingDate: '$streamrequests.streamingDate',
-              startTime: "$streamrequests.startTime",
-              endTime: "$streamrequests.endTime",
-              allot_host_1: "$streamrequests.allot_host_1",
-              allot_host_2: "$streamrequests.allot_host_2",
-              allot_host_3: "$streamrequests.allot_host_3",
-              streamEnd_Time: "$streamrequests.streamEnd_Time",
-              postCount: "$streamrequests.postCount",
-              tokenGeneration: "$streamrequests.tokenGeneration"
+              startTime: '$streamrequests.startTime',
+              endTime: '$streamrequests.endTime',
+              allot_host_1: '$streamrequests.allot_host_1',
+              allot_host_2: '$streamrequests.allot_host_2',
+              allot_host_3: '$streamrequests.allot_host_3',
+              streamEnd_Time: '$streamrequests.streamEnd_Time',
+              postCount: '$streamrequests.postCount',
+              tokenGeneration: '$streamrequests.tokenGeneration',
             },
           },
         ],
@@ -896,14 +906,14 @@ const get_all_Post_with_page_all = async (req, status) => {
         streamingTime: '$streamrequestposts.streamingTime',
         endTime: '$streamrequestposts.endTime',
         // streamrequestposts: "$streamrequestposts",
-        startTime: "$streamrequestposts.startTime",
-        endTime: "$streamrequestposts.endTime",
-        allot_host_1: "$streamrequestposts.allot_host_1",
-        allot_host_2: "$streamrequestposts.allot_host_2",
-        allot_host_3: "$streamrequestposts.allot_host_3",
-        streamEnd_Time: "$streamrequestposts.streamEnd_Time",
-        postCount: "$streamrequestposts.postCount",
-        tokenGeneration: "$streamrequestposts.tokenGeneration"
+        startTime: '$streamrequestposts.startTime',
+        endTime: '$streamrequestposts.endTime',
+        allot_host_1: '$streamrequestposts.allot_host_1',
+        allot_host_2: '$streamrequestposts.allot_host_2',
+        allot_host_3: '$streamrequestposts.allot_host_3',
+        streamEnd_Time: '$streamrequestposts.streamEnd_Time',
+        postCount: '$streamrequestposts.postCount',
+        tokenGeneration: '$streamrequestposts.tokenGeneration',
       },
     },
     { $sort: { DateIso: -1 } },
@@ -991,14 +1001,14 @@ const get_all_Post_with_page = async (req, status) => {
               _id: 1,
               streamName: '$streamrequests.streamName',
               streamingDate: '$streamrequests.streamingDate',
-              startTime: "$streamrequests.startTime",
-              endTime: "$streamrequests.endTime",
-              allot_host_1: "$streamrequests.allot_host_1",
-              allot_host_2: "$streamrequests.allot_host_2",
-              allot_host_3: "$streamrequests.allot_host_3",
-              streamEnd_Time: "$streamrequests.streamEnd_Time",
-              postCount: "$streamrequests.postCount",
-              tokenGeneration: "$streamrequests.tokenGeneration"
+              startTime: '$streamrequests.startTime',
+              endTime: '$streamrequests.endTime',
+              allot_host_1: '$streamrequests.allot_host_1',
+              allot_host_2: '$streamrequests.allot_host_2',
+              allot_host_3: '$streamrequests.allot_host_3',
+              streamEnd_Time: '$streamrequests.streamEnd_Time',
+              postCount: '$streamrequests.postCount',
+              tokenGeneration: '$streamrequests.tokenGeneration',
             },
           },
         ],
@@ -1040,14 +1050,14 @@ const get_all_Post_with_page = async (req, status) => {
         streamingTime: '$streamrequestposts.streamingTime',
         endTime: '$streamrequestposts.endTime',
         // streamrequestposts: "$streamrequestposts",
-        startTime: "$streamrequestposts.startTime",
-        endTime: "$streamrequestposts.endTime",
-        allot_host_1: "$streamrequestposts.allot_host_1",
-        allot_host_2: "$streamrequestposts.allot_host_2",
-        allot_host_3: "$streamrequestposts.allot_host_3",
-        streamEnd_Time: "$streamrequestposts.streamEnd_Time",
-        postCount: "$streamrequestposts.postCount",
-        tokenGeneration: "$streamrequestposts.tokenGeneration"
+        startTime: '$streamrequestposts.startTime',
+        endTime: '$streamrequestposts.endTime',
+        allot_host_1: '$streamrequestposts.allot_host_1',
+        allot_host_2: '$streamrequestposts.allot_host_2',
+        allot_host_3: '$streamrequestposts.allot_host_3',
+        streamEnd_Time: '$streamrequestposts.streamEnd_Time',
+        postCount: '$streamrequestposts.postCount',
+        tokenGeneration: '$streamrequestposts.tokenGeneration',
       },
     },
     { $sort: { DateIso: -1 } },
@@ -1122,14 +1132,14 @@ const get_all_Post_with_page_assigned = async (req) => {
               _id: 1,
               streamName: '$streamrequests.streamName',
               streamingDate: '$streamrequests.streamingDate',
-              startTime: "$streamrequests.startTime",
-              endTime: "$streamrequests.endTime",
-              allot_host_1: "$streamrequests.allot_host_1",
-              allot_host_2: "$streamrequests.allot_host_2",
-              allot_host_3: "$streamrequests.allot_host_3",
-              streamEnd_Time: "$streamrequests.streamEnd_Time",
-              postCount: "$streamrequests.postCount",
-              tokenGeneration: "$streamrequests.tokenGeneration"
+              startTime: '$streamrequests.startTime',
+              endTime: '$streamrequests.endTime',
+              allot_host_1: '$streamrequests.allot_host_1',
+              allot_host_2: '$streamrequests.allot_host_2',
+              allot_host_3: '$streamrequests.allot_host_3',
+              streamEnd_Time: '$streamrequests.streamEnd_Time',
+              postCount: '$streamrequests.postCount',
+              tokenGeneration: '$streamrequests.tokenGeneration',
             },
           },
         ],
@@ -1168,14 +1178,14 @@ const get_all_Post_with_page_assigned = async (req) => {
         streamingTime: '$streamrequestposts.streamingTime',
         endTime: '$streamrequestposts.endTime',
         // streamrequestposts: "$streamrequestposts",
-        startTime: "$streamrequestposts.startTime",
-        endTime: "$streamrequestposts.endTime",
-        allot_host_1: "$streamrequestposts.allot_host_1",
-        allot_host_2: "$streamrequestposts.allot_host_2",
-        allot_host_3: "$streamrequestposts.allot_host_3",
-        streamEnd_Time: "$streamrequestposts.streamEnd_Time",
-        postCount: "$streamrequestposts.postCount",
-        tokenGeneration: "$streamrequestposts.tokenGeneration"
+        startTime: '$streamrequestposts.startTime',
+        endTime: '$streamrequestposts.endTime',
+        allot_host_1: '$streamrequestposts.allot_host_1',
+        allot_host_2: '$streamrequestposts.allot_host_2',
+        allot_host_3: '$streamrequestposts.allot_host_3',
+        streamEnd_Time: '$streamrequestposts.streamEnd_Time',
+        postCount: '$streamrequestposts.postCount',
+        tokenGeneration: '$streamrequestposts.tokenGeneration',
       },
     },
     { $sort: { DateIso: -1 } },
@@ -1294,7 +1304,7 @@ const create_stream_one = async (req) => {
       planId: req.body.planId,
       Duration: plan.Duration,
       endTime: datess,
-      streamEnd_Time: datess
+      streamEnd_Time: datess,
     },
     { new: true }
   );
@@ -1471,7 +1481,6 @@ const get_one_stream = async (req) => {
   }
   return value[0];
 };
-
 
 const get_one_stream_assign_host = async (req) => {
   let id = req.query.id;
@@ -1703,12 +1712,10 @@ const update_reject = async (req) => {
 };
 
 const allot_stream_subhost = async (req) => {
-
   let value = await Streamrequest.findById(req.query.id);
   if (value.tokenGeneration) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Stream Not Found');
-  }
-  else {
+  } else {
     value = await Streamrequest.findByIdAndUpdate({ _id: req.query.id }, req.body, { new: true });
   }
   return value;
@@ -2946,8 +2953,8 @@ const regisetr_strean_instrest = async (req) => {
       participents.noOfParticipants > count
         ? 'Confirmed'
         : participents.noOfParticipants + participents.noOfParticipants / 2 > count
-          ? 'RAC'
-          : 'Waiting';
+        ? 'RAC'
+        : 'Waiting';
     await Dates.create_date(findresult);
   } else {
     if (findresult.status != 'Registered') {
@@ -2956,8 +2963,8 @@ const regisetr_strean_instrest = async (req) => {
         participents.noOfParticipants > count
           ? 'Confirmed'
           : participents.noOfParticipants + participents.noOfParticipants / 2 > count
-            ? 'RAC'
-            : 'Waiting';
+          ? 'RAC'
+          : 'Waiting';
       findresult.eligible = participents.noOfParticipants > count;
       findresult.status = 'Registered';
       await Dates.create_date(findresult);
@@ -6857,17 +6864,18 @@ const getOrder_For_Account_Manager = async (id) => {
     },
     {
       $addFields: {
-        finalAmount: { $add: ['$DeniedAmount', '$cancelledAmount', '$RejectAmount'] },
+        finalAmount: { $ifNull: [{ $add: ['$DeniedAmount', '$cancelledAmount', '$RejectAmount'] }, 0] },
       },
     },
     {
       $addFields: {
-        PendingAmount: {
-          $cond: {
-            if: { $gt: ['$PendingAmount', 0] },
-            then: { $subtract: ['$PendingAmount', '$finalAmount'] },
-            else: '$PendingAmount',
-          },
+        Balance: { $subtract: ['$PendingAmount', '$finalAmount'] },
+      },
+    },
+    {
+      $addFields: {
+        refund: {
+          $ifNull: [{ $cond: { if: { $lt: ['$Balance', 0] }, then: { $abs: '$Balance' }, else: 0 } }, 0],
         },
       },
     },
@@ -6888,7 +6896,8 @@ const getOrder_For_Account_Manager = async (id) => {
         RejectAmount: 1,
         DeniedAmount: 1,
         finalAmount: 1,
-        consolidate: 1,
+        Balance: 1,
+        refund: 1,
       },
     },
   ]);

@@ -1739,16 +1739,16 @@ const cancel_stream = async (req) => {
 };
 
 const end_stream = async (req) => {
-  // let value = await Streamrequest.findByIdAndUpdate(
-  //   { _id: req.query.id },
-  //   { status: 'Completed', streamEnd_Time: moment(), end_Status: 'HostLeave' },
-  //   { new: true }
-  // );
+  let value = await Streamrequest.findByIdAndUpdate(
+    { _id: req.query.id },
+    { status: 'Completed', streamEnd_Time: moment(), end_Status: 'HostLeave' },
+    { new: true }
+  );
   req.io.emit(req.query.id + '_stream_end', {value:true})
-  // let assginStream = await StreamrequestPost.find({ streamRequest: req.query.id });
-  // assginStream.forEach(async (a) => {
-  //   await StreamPost.findByIdAndUpdate({ _id: a.postId }, { status: 'Completed' }, { new: true });
-  // });
+  let assginStream = await StreamrequestPost.find({ streamRequest: req.query.id });
+  assginStream.forEach(async (a) => {
+    await StreamPost.findByIdAndUpdate({ _id: a.postId }, { status: 'Completed' }, { new: true });
+  });
   return { value: true };
 };
 

@@ -1894,6 +1894,11 @@ const get_all_streams = async (req) => {
         allot_host_1: 1,
         allot_host_2: 1,
         allot_host_3: 1,
+        teaser: 1,
+        image: 1,
+        video: 1,
+        chat: 1,
+        chat_need: 1
       },
     },
 

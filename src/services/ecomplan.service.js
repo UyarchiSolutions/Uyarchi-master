@@ -1312,7 +1312,14 @@ const create_stream_one = async (req) => {
 };
 
 const find_and_update_one = async (req) => {
-  let value = await Streamrequest.findByIdAndUpdate({ _id: req.query.id }, req.body, { new: true });
+  let data = req.body.streamingDate;
+  let time = req.body.streamingTime;
+  let startTime = new Date(new Date(data + ' ' + time)).getTime();
+  let streamss = await Streamrequest.findById(req.query.id);
+  let plan = await Streamplan.findById(streamss.planId);
+  let datess = new Date().setTime(new Date(streamss.startTime).getTime() + plan.Duration * 60 * 1000);
+
+  let value = await Streamrequest.findByIdAndUpdate({ _id: req.query.id }, { ...req.body, ...{ startTime: startTime, endTime: datess, streamEnd_Time: datess, } }, { new: true });
   let posts = value.post;
   console.log(posts, req.body.addpost);
   req.body.addpost.forEach(async (a) => {
@@ -1982,10 +1989,10 @@ const get_all_streams = async (req) => {
         video: 1,
         chat: 1,
         chat_need: 1,
-        allot_chat_name:1,
-        allot_host_1_name:1,
-        allot_host_2_name:1,
-        allot_host_3_name:1,
+        allot_chat_name: 1,
+        allot_host_1_name: 1,
+        allot_host_2_name: 1,
+        allot_host_3_name: 1,
 
       },
     },
@@ -2953,8 +2960,8 @@ const regisetr_strean_instrest = async (req) => {
       participents.noOfParticipants > count
         ? 'Confirmed'
         : participents.noOfParticipants + participents.noOfParticipants / 2 > count
-        ? 'RAC'
-        : 'Waiting';
+          ? 'RAC'
+          : 'Waiting';
     await Dates.create_date(findresult);
   } else {
     if (findresult.status != 'Registered') {
@@ -2963,8 +2970,8 @@ const regisetr_strean_instrest = async (req) => {
         participents.noOfParticipants > count
           ? 'Confirmed'
           : participents.noOfParticipants + participents.noOfParticipants / 2 > count
-          ? 'RAC'
-          : 'Waiting';
+            ? 'RAC'
+            : 'Waiting';
       findresult.eligible = participents.noOfParticipants > count;
       findresult.status = 'Registered';
       await Dates.create_date(findresult);

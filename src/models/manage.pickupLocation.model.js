@@ -70,6 +70,9 @@ const managepickupLocationSchema = new mongoose.Schema({
     type: Object,
     
   },
+  color:{
+    type: String,
+  }
 
 });
 managepickupLocationSchema.index({ location: '2dsphere' });

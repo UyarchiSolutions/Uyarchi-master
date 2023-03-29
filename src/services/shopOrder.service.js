@@ -6902,18 +6902,6 @@ const get_selfpickupOrders = async (req) => {
   let primary_Pickup = { active: true };
   let secondary_Pickup = { active: true };
   let third_Pickup = { active: true };
-  let value = await ShopOrderClone.aggregate([
-    { $match: { $and: [{ status: { $in: ['Approved', 'Modified',] } }, { devevery_mode: { $eq: 'SP' } }, primary_Pickup, secondary_Pickup, third_Pickup] } }
-  ])
-
-  return value;
-};
-
-const get_selfpickupOrders_group = async (req) => {
-
-  // let primary_Pickup = { active: true };
-  // let secondary_Pickup = { active: true };
-  // let third_Pickup = { active: true };
   let today = moment().format('YYYY-MM-DD');
   let yesterday = moment().subtract(1, 'days').format('yyyy-MM-DD');
   deliveryType = {
@@ -6926,15 +6914,32 @@ const get_selfpickupOrders_group = async (req) => {
       },
     ],
   };
-  // if (req.query.primary_Pickup != null && req.query.primary_Pickup != '' && req.query.primary_Pickup != 'null') {
-  //   primary_Pickup = { primary_Pickup: { $eq: req.query.primary_Pickup } }
-  // }
-  // if (req.query.secondary_Pickup != null && req.query.secondary_Pickup != '' && req.query.secondary_Pickup != 'null') {
-  //   secondary_Pickup = { secondary_Pickup: { $eq: req.query.secondary_Pickup } }
-  // }
-  // if (req.query.third_Pickup != null && req.query.third_Pickup != '' && req.query.third_Pickup != 'null') {
-  //   third_Pickup = { third_Pickup: { $eq: req.query.third_Pickup } }
-  // }
+  timeSlatMatch = { active: true }
+  let page = req.query.page == null || req.query.page == '' || req.query.page == 'null' ? 0 : req.query.page;
+
+  if (req.query.timeSlat != 'all') {
+    timeSlatMatch = { time_of_delivery: { $eq: req.query.timeSlat } }
+  }
+  if (req.query.delivery_type == 'IMD') {
+    deliveryType = {
+      $and: [{ delivery_type: { $eq: 'IMD' } }, { date: { $eq: today } }],
+    }
+  }
+  if (req.query.delivery_type == 'NDD') {
+    deliveryType = {
+      $and: [{ delivery_type: { $eq: 'NDD' } }, { date: { $eq: yesterday } }],
+    }
+
+  }
+  if (req.query.primary_Pickup != null && req.query.primary_Pickup != '' && req.query.primary_Pickup != 'null') {
+    primary_Pickup = { primary_Pickup: { $eq: req.query.primary_Pickup } }
+  }
+  if (req.query.secondary_Pickup != null && req.query.secondary_Pickup != '' && req.query.secondary_Pickup != 'null') {
+    secondary_Pickup = { secondary_Pickup: { $eq: req.query.secondary_Pickup } }
+  }
+  if (req.query.third_Pickup != null && req.query.third_Pickup != '' && req.query.third_Pickup != 'null') {
+    third_Pickup = { third_Pickup: { $eq: req.query.third_Pickup } }
+  }
 
   let value = await ShopOrderClone.aggregate([
     {
@@ -6943,18 +6948,272 @@ const get_selfpickupOrders_group = async (req) => {
           deliveryType,
           {
             status: {
-              $in: ['Acknowledged', 'Approved', 'Modified', 'Packed', 'Assigned', 'Order Picked', 'Delivery start', 'UnDelivered', 'ordered',]
+              $in: ['Approved', 'Modified']
             }
           },
           { devevery_mode: { $eq: 'SP' } },
-          // primary_Pickup,
-          // secondary_Pickup,
-          // third_Pickup
+          primary_Pickup,
+          secondary_Pickup,
+          third_Pickup,
+          timeSlatMatch
         ]
       }
+    },
+    {
+      $lookup: {
+        from: 'managepickuplocations',
+        localField: 'primary_Pickup',
+        foreignField: '_id',
+        as: 'primary_Pickup',
+      },
+    },
+    {
+      $unwind: {
+        path: '$primary_Pickup',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: 'managepickuplocations',
+        localField: 'secondary_Pickup',
+        foreignField: '_id',
+        as: 'secondary_Pickup',
+      },
+    },
+    {
+      $unwind: {
+        path: '$secondary_Pickup',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: 'managepickuplocations',
+        localField: 'third_Pickup',
+        foreignField: '_id',
+        as: 'third_Pickup',
+      },
+    },
+    {
+      $unwind: {
+        path: '$third_Pickup',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: 'b2bshopclones',
+        localField: 'shopId',
+        foreignField: '_id',
+        as: 'shopData',
+      },
+    },
+    {
+      $unwind: '$shopData',
+    },
+    {
+      $lookup: {
+        from: 'productorderclones',
+        localField: '_id',
+        foreignField: 'orderId',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'products',
+              localField: 'productid',
+              foreignField: '_id',
+              as: 'products',
+            },
+          },
+          {
+            $unwind: '$products',
+          },
+          {
+            $project: {
+              _id: 1,
+              totalQuantity: { $sum: [{ $multiply: ['$finalQuantity', '$packKg'] }] },
+
+            },
+          },
+          { $group: { _id: null, totalQuantity: { $sum: "$totalQuantity" } } }
+
+        ],
+        as: 'productOrderdata_qty',
+      },
+    },
+    {
+      $unwind: {
+        path: '$productOrderdata_qty',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        totalQuantity: "$productOrderdata_qty.totalQuantity",
+        third_Pickup_name: "$third_Pickup.locationName",
+        third_Pickup_pincode: "$third_Pickup.pincode",
+        secondary_Pickup_name: "$secondary_Pickup.locationName",
+        secondary_Pickup_pincode: "$secondary_Pickup.pincode",
+        primary_Pickup_name: "$primary_Pickup.locationName",
+        primary_Pickup_pincode: "$primary_Pickup.pincode",
+        shopName: "$shopData.SName",
+        SOwner: "$shopData.SOwner",
+        Pincode: "$shopData.Pincode",
+        created: 1,
+        OrderId: 1,
+        customerBillId: 1
+      }
+    },
+    {
+      $skip: 10 * parseInt(page),
+    },
+    {
+      $limit: 10,
+    },
+  ]);
+
+  let map = await ShopOrderClone.aggregate([
+    {
+      $match: {
+        $and: [
+          deliveryType,
+          {
+            status: {
+              $in: ['Approved', 'Modified']
+            }
+          },
+          { devevery_mode: { $eq: 'SP' } },
+          primary_Pickup,
+          secondary_Pickup,
+          third_Pickup,
+          timeSlatMatch
+        ]
+      }
+    },
+    {
+      $lookup: {
+        from: 'b2bshopclones',
+        localField: 'shopId',
+        foreignField: '_id',
+        as: 'shopData',
+      },
+    },
+    {
+      $unwind: '$shopData',
+    },
+    {
+      $lookup: {
+        from: 'managepickuplocations',
+        localField: 'primary_Pickup',
+        foreignField: '_id',
+        as: 'primary_Pickups',
+      },
+    },
+    {
+      $unwind: {
+        path: '$primary_Pickups',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: 'managepickuplocations',
+        localField: 'secondary_Pickup',
+        foreignField: '_id',
+        as: 'secondary_Pickup',
+      },
+    },
+    {
+      $unwind: {
+        path: '$secondary_Pickup',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: 'managepickuplocations',
+        localField: 'third_Pickup',
+        foreignField: '_id',
+        as: 'third_Pickup',
+      },
+    },
+    {
+      $unwind: {
+        path: '$third_Pickup',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $group: {
+        _id: {
+          primary_Pickup: "$primary_Pickups",
+        },
+        orderDate: {
+          "$push": {
+            "SName": "$shopData.SName",
+            da_long: "$shopData.da_long",
+            da_lot: "$shopData.da_lot",
+            third_Pickup_name: "$third_Pickup.locationName",
+            third_Pickup_pincode: "$third_Pickup.pincode",
+            secondary_Pickup_name: "$secondary_Pickup.locationName",
+            secondary_Pickup_pincode: "$secondary_Pickup.pincode",
+            primary_Pickup_name: "$primary_Pickups.locationName",
+            primary_Pickup_pincode: "$primary_Pickups.pincode",
+            _id: "$_id",
+          },
+        },
+      }
+    },
+    {
+      $project: {
+        _id: '',
+        primary_Pickup: "$_id.primary_Pickup",
+        orderDate: "$orderDate",
+        color: "$_id.primary_Pickup.color"
+      }
     }
+  ]);
+
+  let total = await ShopOrderClone.aggregate([
+    {
+      $match: {
+        $and: [
+          deliveryType,
+          {
+            status: {
+              $in: ['Approved', 'Modified']
+            }
+          },
+          { devevery_mode: { $eq: 'SP' } },
+          primary_Pickup,
+          secondary_Pickup,
+          third_Pickup,
+          timeSlatMatch
+        ]
+      }
+    },
+
   ])
 
+  return { map, value, total: total.length };
+};
+
+const get_selfpickupOrders_group = async (req) => {
+
+  let today = moment().format('YYYY-MM-DD');
+  let yesterday = moment().subtract(1, 'days').format('yyyy-MM-DD');
+  deliveryType = {
+    $or: [
+      {
+        $and: [{ delivery_type: { $eq: 'IMD' } }, { date: { $eq: today } }],
+      },
+      {
+        $and: [{ delivery_type: { $eq: 'NDD' } }, { date: { $eq: yesterday } }],
+      },
+    ],
+  };
   const values = await PickupLocation.aggregate([
     {
       $lookup: {
@@ -6994,7 +7253,7 @@ const get_selfpickupOrders_group = async (req) => {
             },
           },
           { $unwind: "$productOrderdata_qty" },
-          { $group: { _id: null, orderCound: { $sum: 1 }, totalQuantity: { $sum: "$productOrderdata_qty.totalQuantity" } }, }
+          { $group: { _id: null, orderCount: { $sum: 1 }, totalQuantity: { $sum: "$productOrderdata_qty.totalQuantity" } }, }
         ],
         as: 'shoporderclones',
       },
@@ -7011,12 +7270,11 @@ const get_selfpickupOrders_group = async (req) => {
         address: 1,
         landMark: 1,
         created: 1,
-        orderCound: "$shoporderclones.orderCound",
+        orderCount: "$shoporderclones.orderCount",
         totalQuantity: "$shoporderclones.totalQuantity",
       }
     }
   ])
-
   return values;
 };
 

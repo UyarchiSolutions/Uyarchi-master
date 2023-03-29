@@ -2379,7 +2379,6 @@ const go_live_stream_host = async (req, userId) => {
         chat_need: 1,
         temptokens_sub: '$temptokens_sub',
         no_of_host: '$purchasedplans.no_of_host',
-
       },
     },
   ]);
@@ -6913,6 +6912,94 @@ const getOrder_For_Account_Manager = async (id) => {
   return values;
 };
 
+const getDetails = async (id) => {
+  let values = await streamingorderProduct.aggregate([
+    {
+      $match: {
+        orderId: id,
+      },
+    },
+    {
+      $lookup: {
+        from: 'products',
+        localField: 'productId',
+        foreignField: '_id',
+        as: 'products',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$products',
+      },
+    },
+    {
+      $addFields: { Amount: { $multiply: ['$purchase_quantity', '$purchase_price'] } },
+    },
+    {
+      $project: {
+        _id: 1,
+        status: 1,
+        purchase_quantity: 1,
+        purchase_price: 1,
+        Amount: 1,
+        product: '$products.productTitle',
+      },
+    },
+  ]);
+  let orderPayMent = await streamingorderPayments.findOne({ orderId: id });
+  let cancelAmt = await streamingorderProduct.aggregate([
+    {
+      $match: {
+        orderId: id,
+        status: 'cancelled',
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        amt: { $sum: { $multiply: ['$purchase_quantity', '$purchase_price'] } },
+      },
+    },
+  ]);
+  let rejectAmt = await streamingorderProduct.aggregate([
+    {
+      $match: {
+        orderId: id,
+        status: 'rejected',
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        amt: { $sum: { $multiply: ['$purchase_quantity', '$purchase_price'] } },
+      },
+    },
+  ]);
+  let deniedAmt = await streamingorderProduct.aggregate([
+    {
+      $match: {
+        orderId: id,
+        status: 'denied',
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        amt: { $sum: { $multiply: ['$purchase_quantity', '$purchase_price'] } },
+      },
+    },
+  ]);
+
+  return {
+    values: values,
+    orderPayMent: orderPayMent,
+    cancelAmt: cancelAmt.length > 0 ? cancelAmt[0].amt : 0,
+    deniedAmt: deniedAmt.length > 0 ? deniedAmt[0].amt : 0,
+    rejectAmt: rejectAmt.length > 0 ? rejectAmt[0].amt : 0,
+  };
+};
+
 module.exports = {
   create_Plans,
   create_Plans_addon,
@@ -7011,4 +7098,5 @@ module.exports = {
   getStreaming_orders_By_orders_for_pay,
   multipleCancel,
   getOrder_For_Account_Manager,
+  getDetails,
 };

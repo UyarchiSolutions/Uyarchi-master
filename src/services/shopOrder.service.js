@@ -6909,6 +6909,118 @@ const get_selfpickupOrders = async (req) => {
   return value;
 };
 
+const get_selfpickupOrders_group = async (req) => {
+
+  // let primary_Pickup = { active: true };
+  // let secondary_Pickup = { active: true };
+  // let third_Pickup = { active: true };
+  let today = moment().format('YYYY-MM-DD');
+  let yesterday = moment().subtract(1, 'days').format('yyyy-MM-DD');
+  deliveryType = {
+    $or: [
+      {
+        $and: [{ delivery_type: { $eq: 'IMD' } }, { date: { $eq: today } }],
+      },
+      {
+        $and: [{ delivery_type: { $eq: 'NDD' } }, { date: { $eq: yesterday } }],
+      },
+    ],
+  };
+  // if (req.query.primary_Pickup != null && req.query.primary_Pickup != '' && req.query.primary_Pickup != 'null') {
+  //   primary_Pickup = { primary_Pickup: { $eq: req.query.primary_Pickup } }
+  // }
+  // if (req.query.secondary_Pickup != null && req.query.secondary_Pickup != '' && req.query.secondary_Pickup != 'null') {
+  //   secondary_Pickup = { secondary_Pickup: { $eq: req.query.secondary_Pickup } }
+  // }
+  // if (req.query.third_Pickup != null && req.query.third_Pickup != '' && req.query.third_Pickup != 'null') {
+  //   third_Pickup = { third_Pickup: { $eq: req.query.third_Pickup } }
+  // }
+
+  let value = await ShopOrderClone.aggregate([
+    {
+      $match: {
+        $and: [
+          deliveryType,
+          {
+            status: {
+              $in: ['Acknowledged', 'Approved', 'Modified', 'Packed', 'Assigned', 'Order Picked', 'Delivery start', 'UnDelivered', 'ordered',]
+            }
+          },
+          { devevery_mode: { $eq: 'SP' } },
+          // primary_Pickup,
+          // secondary_Pickup,
+          // third_Pickup
+        ]
+      }
+    }
+  ])
+
+  const values = await PickupLocation.aggregate([
+    {
+      $lookup: {
+        from: 'shoporderclones',
+        localField: '_id',
+        foreignField: 'primary_Pickup',
+        pipeline: [
+          {
+            $match: {
+              $and: [
+                deliveryType,
+                {
+                  status: {
+                    $in: ['Acknowledged', 'Approved', 'Modified', 'Packed', 'Assigned', 'Order Picked', 'Delivery start', 'UnDelivered', 'ordered',]
+                  }
+                },
+                { devevery_mode: { $eq: 'SP' } },
+              ]
+            }
+          },
+          {
+            $lookup: {
+              from: 'productorderclones',
+              localField: '_id',
+              foreignField: 'orderId',
+              pipeline: [
+                {
+                  $project: {
+                    _id: 1,
+                    totalQuantity: { $sum: [{ $multiply: ['$finalQuantity', '$packKg'] }] },
+                  },
+                },
+                { $group: { _id: null, totalQuantity: { $sum: "$totalQuantity" } } }
+
+              ],
+              as: 'productOrderdata_qty',
+            },
+          },
+          { $unwind: "$productOrderdata_qty" },
+          { $group: { _id: null, orderCound: { $sum: 1 }, totalQuantity: { $sum: "$productOrderdata_qty.totalQuantity" } }, }
+        ],
+        as: 'shoporderclones',
+      },
+    },
+    {
+      $unwind: '$shoporderclones',
+    },
+    {
+      $project: {
+        _id: 1,
+        locationName: 1,
+        langitude: 1,
+        latitude: 1,
+        address: 1,
+        landMark: 1,
+        created: 1,
+        orderCound: "$shoporderclones.orderCound",
+        totalQuantity: "$shoporderclones.totalQuantity",
+      }
+    }
+  ])
+
+  return values;
+};
+
+
 module.exports = {
   // product
   createProductOrderClone,
@@ -6996,5 +7108,6 @@ module.exports = {
   issue_collection_reconfirm,
 
 
-  get_selfpickupOrders
+  get_selfpickupOrders,
+  get_selfpickupOrders_group
 };

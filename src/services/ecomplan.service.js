@@ -1312,7 +1312,15 @@ const create_stream_one = async (req) => {
 };
 
 const find_and_update_one = async (req) => {
-  let value = await Streamrequest.findByIdAndUpdate({ _id: req.query.id }, req.body, { new: true });
+  let data = req.body.streamingDate;
+  let time = req.body.streamingTime;
+  let startTime = new Date(new Date(data + ' ' + time)).getTime();
+  let streamss = await Streamrequest.findById(req.query.id);
+  let myplan = await purchasePlan.findById(streamss.planId);
+  let plan = await Streamplan.findById(myplan.planId);
+  let datess = new Date().setTime(new Date(streamss.startTime).getTime() + plan.Duration * 60 * 1000);
+
+  let value = await Streamrequest.findByIdAndUpdate({ _id: req.query.id }, { ...req.body, ...{ startTime: startTime, endTime: datess, streamEnd_Time: datess, } }, { new: true });
   let posts = value.post;
   console.log(posts, req.body.addpost);
   req.body.addpost.forEach(async (a) => {
@@ -1736,11 +1744,12 @@ const end_stream = async (req) => {
     { status: 'Completed', streamEnd_Time: moment(), end_Status: 'HostLeave' },
     { new: true }
   );
+  req.io.emit(req.query.id + '_stream_end', {value:true})
   let assginStream = await StreamrequestPost.find({ streamRequest: req.query.id });
   assginStream.forEach(async (a) => {
     await StreamPost.findByIdAndUpdate({ _id: a.postId }, { status: 'Completed' }, { new: true });
   });
-  return value;
+  return { value: true };
 };
 
 const get_all_streams = async (req) => {
@@ -1859,6 +1868,82 @@ const get_all_streams = async (req) => {
       },
     },
     {
+      $lookup: {
+        from: 'subhosts',
+        localField: 'allot_chat',
+        foreignField: '_id',
+        as: 'allot_chat_lookup',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$allot_chat_lookup',
+      },
+    },
+    {
+      $addFields: {
+        allot_chat_name: { $ifNull: ['$allot_chat_lookup.Name', "$allot_chat"] },
+      },
+    },
+    {
+      $lookup: {
+        from: 'subhosts',
+        localField: 'allot_host_1',
+        foreignField: '_id',
+        as: 'allot_host_1_lookup',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$allot_host_1_lookup',
+      },
+    },
+    {
+      $addFields: {
+        allot_host_1_name: { $ifNull: ['$allot_host_1_lookup.Name', "$allot_host_1"] },
+      },
+    },
+    {
+      $lookup: {
+        from: 'subhosts',
+        localField: 'allot_host_2',
+        foreignField: '_id',
+        as: 'allot_host_2_lookup',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$allot_host_2_lookup',
+      },
+    },
+    {
+      $addFields: {
+        allot_host_2_name: { $ifNull: ['$allot_host_2_lookup.Name', "$allot_host_2"] },
+      },
+    },
+    {
+      $lookup: {
+        from: 'subhosts',
+        localField: 'allot_host_3',
+        foreignField: '_id',
+        as: 'allot_host_3_lookup',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$allot_host_3_lookup',
+      },
+    },
+    {
+      $addFields: {
+        allot_host_3_name: { $ifNull: ['$allot_host_3_lookup.Name', "$allot_host_3"] },
+      },
+    },
+    {
       $project: {
         _id: 1,
         supplierName: '$suppliers.primaryContactName',
@@ -1901,6 +1986,16 @@ const get_all_streams = async (req) => {
         allot_host_1: 1,
         allot_host_2: 1,
         allot_host_3: 1,
+        teaser: 1,
+        image: 1,
+        video: 1,
+        chat: 1,
+        chat_need: 1,
+        allot_chat_name: 1,
+        allot_host_1_name: 1,
+        allot_host_2_name: 1,
+        allot_host_3_name: 1,
+
       },
     },
 
@@ -2866,8 +2961,8 @@ const regisetr_strean_instrest = async (req) => {
       participents.noOfParticipants > count
         ? 'Confirmed'
         : participents.noOfParticipants + participents.noOfParticipants / 2 > count
-        ? 'RAC'
-        : 'Waiting';
+          ? 'RAC'
+          : 'Waiting';
     await Dates.create_date(findresult);
   } else {
     if (findresult.status != 'Registered') {
@@ -2876,8 +2971,8 @@ const regisetr_strean_instrest = async (req) => {
         participents.noOfParticipants > count
           ? 'Confirmed'
           : participents.noOfParticipants + participents.noOfParticipants / 2 > count
-          ? 'RAC'
-          : 'Waiting';
+            ? 'RAC'
+            : 'Waiting';
       findresult.eligible = participents.noOfParticipants > count;
       findresult.status = 'Registered';
       await Dates.create_date(findresult);

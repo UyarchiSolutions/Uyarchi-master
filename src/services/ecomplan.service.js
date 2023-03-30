@@ -3039,7 +3039,7 @@ const unregisetr_strean_instrest = async (req) => {
           streamObject: streamDetails,
           streamRegisterobject: next,
           streamName: streamDetails.streamName,
-          title: streamDetails.streamName + "Stream Is Available to Watch"
+          title: streamDetails.streamName + " Stream Is Available to Watch"
         })
       req.io.emit(next.shopId + "_stream_CFM", notification)
       next.save();

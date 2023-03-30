@@ -7042,7 +7042,7 @@ const get_notification_viewed = async (req) => {
 
 const get_notification_getall = async (req) => {
   let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
-  let notification = await shopNotification.find({ shopId: req.shopId }).skip(10 * page).limit(10)
+  let notification = await shopNotification.find({ shopId: req.shopId }).sort({ DateIso: -1 }).skip(10 * page).limit(10)
   let total = await shopNotification.find({ shopId: req.shopId }).count();
 
   return { notification, total: total }

@@ -7,6 +7,7 @@ const {
   StreamPreRegister,
   streamPlanlink,
   Slab,
+  shopNotification
 } = require('../models/ecomplan.model');
 
 const { streamingOrder, streamingorderProduct, streamingorderPayments } = require('../models/liveStreaming/checkout.model');
@@ -3027,7 +3028,20 @@ const unregisetr_strean_instrest = async (req) => {
       next.viewstatus = 'Confirmed';
       next.streamCount = user_postion;
       let streamDetails = await Streamrequest.findById(next.streamId);
-      req.io.emit(next.shopId + "_stream_CFM", { streamDetails, next })
+      let notification = await shopNotification.create(
+        {
+          DateIso: moment(),
+          created: moment(),
+          shopId: next.shopId,
+          streamId: next.streamId,
+          streamRegister: next._id,
+          type: "stream",
+          streamObject: streamDetails,
+          streamRegisterobject: next,
+          streamName: streamDetails.streamName,
+          title: streamDetails.streamName + "Stream Is Available to Watch"
+        })
+      req.io.emit(next.shopId + "_stream_CFM", notification)
       next.save();
     }
   }

@@ -3041,7 +3041,8 @@ const unregisetr_strean_instrest = async (req) => {
           streamName: streamDetails.streamName,
           title: streamDetails.streamName + " Stream Is Available to Watch"
         })
-      req.io.emit(next.shopId + "_stream_CFM", notification)
+      let count = await shopNotification.find({ shopId: req.shopId, status: 'created' }).count();
+      req.io.emit(next.shopId + "_stream_CFM", { notification, count: count })
       next.save();
     }
   }

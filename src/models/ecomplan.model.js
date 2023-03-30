@@ -184,7 +184,7 @@ const streamPostschema = mongoose.Schema({
     type: String,
     default: 'Active',
   },
-  
+
 });
 
 const StreamPost = mongoose.model('Streampost', streamPostschema);
@@ -501,4 +501,57 @@ const Slabschema = mongoose.Schema({
 
 const Slab = mongoose.model('slabdetails', Slabschema);
 
-module.exports = { Streamplan, StreamPost, Streamrequest, StreamrequestPost, StreamPreRegister, streamPlanlink, Slab };
+
+const shopNotificationschema = mongoose.Schema({
+  _id: {
+    type: String,
+    default: v4,
+  },
+  active: {
+    type: Boolean,
+    default: true,
+  },
+  archive: {
+    type: Boolean,
+    default: false,
+  },
+  created: {
+    type: Date,
+  },
+  DateIso: {
+    type: Number,
+  },
+  status: {
+    type: String,
+    default: 'created',
+  },
+  type: {
+    type: String,
+  },
+  shopId: {
+    type: String,
+  },
+  streamId: {
+    type: String,
+  },
+  streamName: {
+    type: String,
+  },
+  streamRegister: {
+    type: String,
+  },
+  streamObject: {
+    type: Object,
+  },
+  streamRegisterobject: {
+    type: Object,
+  },
+  title: {
+    type: String,
+  },
+});
+
+const shopNotification = mongoose.model('shopNotification', shopNotificationschema);
+
+
+module.exports = { Streamplan, StreamPost, Streamrequest, StreamrequestPost, StreamPreRegister, streamPlanlink, Slab, shopNotification };

@@ -500,6 +500,11 @@ const get_selfpickupOrders= catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const get_selfpickupOrders_group= catchAsync(async (req, res) => {
+  const data = await shopOrderService.get_selfpickupOrders_group(req);
+  res.send(data);
+});
+
 module.exports = {
   vieworderbill_byshop,
   createshopOrder,
@@ -584,5 +589,6 @@ module.exports = {
   issue_collection_calculated,
   issue_collection_reconfirm,
 
-  get_selfpickupOrders
+  get_selfpickupOrders,
+  get_selfpickupOrders_group
 };

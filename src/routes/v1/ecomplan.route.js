@@ -135,4 +135,11 @@ router.route('/multipleCancel').post(Ecomcontroller.multipleCancel);
 // Account Manager Flow
 router.route('/getOrder/For/Account/Manager/:id').get(Ecomcontroller.getOrder_For_Account_Manager);
 router.route('/getDetails/:id').get(Ecomcontroller.getDetails);
+
+
+// notification Detailss
+router.route('/get/notification/getall/count').get(shopverify,Ecomcontroller.get_notification_count);
+router.route('/get/notification/viewed').put(shopverify,Ecomcontroller.get_notification_viewed);
+router.route('/get/notification/getall').get(shopverify,Ecomcontroller.get_notification_getall);
+
 module.exports = router;

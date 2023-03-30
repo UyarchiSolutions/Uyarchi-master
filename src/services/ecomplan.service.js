@@ -7016,6 +7016,37 @@ const getDetails = async (id) => {
   };
 };
 
+
+
+
+const get_notification_count = async (req) => {
+  let notification = await shopNotification.find({ shopId: req.shopId, status: 'created' }).count();
+
+  return { count: notification }
+}
+
+
+
+const get_notification_viewed = async (req) => {
+  let notification = await shopNotification.findById(req.query.notificaion)
+
+  if (notification.shopId != req.shopId) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Not Found');
+
+  }
+  notification.status = 'viewed';
+  notification.save();
+  return notification;
+}
+
+const get_notification_getall = async (req) => {
+  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
+  let notification = await (await shopNotification.find({ shopId: req.shopId, status: 'created' })).skip(10 * page).limit(10)
+  let total = await shopNotification.find({ shopId: req.shopId, status: 'created' }).count();
+
+  return { notification, total: total }
+}
+
 module.exports = {
   create_Plans,
   create_Plans_addon,
@@ -7115,4 +7146,8 @@ module.exports = {
   multipleCancel,
   getOrder_For_Account_Manager,
   getDetails,
+
+  get_notification_count,
+  get_notification_viewed,
+  get_notification_getall
 };

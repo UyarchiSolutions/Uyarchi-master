@@ -1744,7 +1744,7 @@ const end_stream = async (req) => {
     { status: 'Completed', streamEnd_Time: moment(), end_Status: 'HostLeave' },
     { new: true }
   );
-  req.io.emit(req.query.id + '_stream_end', {value:true})
+  req.io.emit(req.query.id + '_stream_end', { value: true })
   let assginStream = await StreamrequestPost.find({ streamRequest: req.query.id });
   assginStream.forEach(async (a) => {
     await StreamPost.findByIdAndUpdate({ _id: a.postId }, { status: 'Completed' }, { new: true });
@@ -3026,6 +3026,8 @@ const unregisetr_strean_instrest = async (req) => {
       next.eligible = true;
       next.viewstatus = 'Confirmed';
       next.streamCount = user_postion;
+      let streamDetails = await Streamrequest.findById(next.streamId);
+      req.io.emit(next.shopId + "_stream_CFM", { streamDetails, next })
       next.save();
     }
   }

@@ -7042,7 +7042,7 @@ const get_notification_viewed = async (req) => {
 
 const get_notification_getall = async (req) => {
   let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
-  let notification = await (await shopNotification.find({ shopId: req.shopId, status: 'created' })).skip(10 * page).limit(10)
+  let notification = await shopNotification.find({ shopId: req.shopId, status: 'created' }).skip(10 * page).limit(10)
   let total = await shopNotification.find({ shopId: req.shopId, status: 'created' }).count();
 
   return { notification, total: total }

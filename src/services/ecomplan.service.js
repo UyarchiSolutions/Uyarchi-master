@@ -7,7 +7,7 @@ const {
   StreamPreRegister,
   streamPlanlink,
   Slab,
-  shopNotification
+  shopNotification,
 } = require('../models/ecomplan.model');
 
 const { streamingOrder, streamingorderProduct, streamingorderPayments } = require('../models/liveStreaming/checkout.model');
@@ -1321,7 +1321,11 @@ const find_and_update_one = async (req) => {
   let plan = await Streamplan.findById(myplan.planId);
   let datess = new Date().setTime(new Date(streamss.startTime).getTime() + plan.Duration * 60 * 1000);
 
-  let value = await Streamrequest.findByIdAndUpdate({ _id: req.query.id }, { ...req.body, ...{ startTime: startTime, endTime: datess, streamEnd_Time: datess, } }, { new: true });
+  let value = await Streamrequest.findByIdAndUpdate(
+    { _id: req.query.id },
+    { ...req.body, ...{ startTime: startTime, endTime: datess, streamEnd_Time: datess } },
+    { new: true }
+  );
   let posts = value.post;
   console.log(posts, req.body.addpost);
   req.body.addpost.forEach(async (a) => {
@@ -1745,7 +1749,7 @@ const end_stream = async (req) => {
     { status: 'Completed', streamEnd_Time: moment(), end_Status: 'HostLeave' },
     { new: true }
   );
-  req.io.emit(req.query.id + '_stream_end', { value: true })
+  req.io.emit(req.query.id + '_stream_end', { value: true });
   let assginStream = await StreamrequestPost.find({ streamRequest: req.query.id });
   assginStream.forEach(async (a) => {
     await StreamPost.findByIdAndUpdate({ _id: a.postId }, { status: 'Completed' }, { new: true });
@@ -1884,7 +1888,7 @@ const get_all_streams = async (req) => {
     },
     {
       $addFields: {
-        allot_chat_name: { $ifNull: ['$allot_chat_lookup.Name', "$allot_chat"] },
+        allot_chat_name: { $ifNull: ['$allot_chat_lookup.Name', '$allot_chat'] },
       },
     },
     {
@@ -1903,7 +1907,7 @@ const get_all_streams = async (req) => {
     },
     {
       $addFields: {
-        allot_host_1_name: { $ifNull: ['$allot_host_1_lookup.Name', "$allot_host_1"] },
+        allot_host_1_name: { $ifNull: ['$allot_host_1_lookup.Name', '$allot_host_1'] },
       },
     },
     {
@@ -1922,7 +1926,7 @@ const get_all_streams = async (req) => {
     },
     {
       $addFields: {
-        allot_host_2_name: { $ifNull: ['$allot_host_2_lookup.Name', "$allot_host_2"] },
+        allot_host_2_name: { $ifNull: ['$allot_host_2_lookup.Name', '$allot_host_2'] },
       },
     },
     {
@@ -1941,7 +1945,7 @@ const get_all_streams = async (req) => {
     },
     {
       $addFields: {
-        allot_host_3_name: { $ifNull: ['$allot_host_3_lookup.Name', "$allot_host_3"] },
+        allot_host_3_name: { $ifNull: ['$allot_host_3_lookup.Name', '$allot_host_3'] },
       },
     },
     {
@@ -1996,7 +2000,6 @@ const get_all_streams = async (req) => {
         allot_host_1_name: 1,
         allot_host_2_name: 1,
         allot_host_3_name: 1,
-
       },
     },
 
@@ -2978,8 +2981,8 @@ const regisetr_strean_instrest = async (req) => {
       participents.noOfParticipants > count
         ? 'Confirmed'
         : participents.noOfParticipants + participents.noOfParticipants / 2 > count
-          ? 'RAC'
-          : 'Waiting';
+        ? 'RAC'
+        : 'Waiting';
     await Dates.create_date(findresult);
   } else {
     if (findresult.status != 'Registered') {
@@ -2988,8 +2991,8 @@ const regisetr_strean_instrest = async (req) => {
         participents.noOfParticipants > count
           ? 'Confirmed'
           : participents.noOfParticipants + participents.noOfParticipants / 2 > count
-            ? 'RAC'
-            : 'Waiting';
+          ? 'RAC'
+          : 'Waiting';
       findresult.eligible = participents.noOfParticipants > count;
       findresult.status = 'Registered';
       await Dates.create_date(findresult);
@@ -3044,21 +3047,20 @@ const unregisetr_strean_instrest = async (req) => {
       next.viewstatus = 'Confirmed';
       next.streamCount = user_postion;
       let streamDetails = await Streamrequest.findById(next.streamId);
-      let notification = await shopNotification.create(
-        {
-          DateIso: moment(),
-          created: moment(),
-          shopId: next.shopId,
-          streamId: next.streamId,
-          streamRegister: next._id,
-          type: "stream",
-          streamObject: streamDetails,
-          streamRegisterobject: next,
-          streamName: streamDetails.streamName,
-          title: streamDetails.streamName + " Stream Is Available to Watch"
-        })
+      let notification = await shopNotification.create({
+        DateIso: moment(),
+        created: moment(),
+        shopId: next.shopId,
+        streamId: next.streamId,
+        streamRegister: next._id,
+        type: 'stream',
+        streamObject: streamDetails,
+        streamRegisterobject: next,
+        streamName: streamDetails.streamName,
+        title: streamDetails.streamName + ' Stream Is Available to Watch',
+      });
       let count = await shopNotification.find({ shopId: next.shopId, status: 'created' }).count();
-      req.io.emit(next.shopId + "_stream_CFM", { notification, count: count })
+      req.io.emit(next.shopId + '_stream_CFM', { notification, count: count });
       next.save();
     }
   }
@@ -6967,8 +6969,84 @@ const getDetails = async (id) => {
       },
     },
     {
-      $addFields: { Amount: { $multiply: ['$purchase_quantity', '$purchase_price'] } },
+      $addFields: { Amount: { $toInt: { $multiply: ['$purchase_quantity', '$purchase_price'] } } },
     },
+
+    {
+      $lookup: {
+        from: 'streamrequestposts',
+        localField: 'postId',
+        foreignField: '_id',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'streamposts',
+              localField: 'postId',
+              foreignField: '_id',
+              pipeline: [{ $match: { bookingAmount: 'yes' } }],
+              as: 'post',
+            },
+          },
+          {
+            $unwind: {
+              preserveNullAndEmptyArrays: true,
+              path: '$post',
+            },
+          },
+        ],
+        as: 'requestPOst',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$requestPOst',
+      },
+    },
+    {
+      $addFields: { bookingAmount: '$requestPOst.post.bookingAmount' },
+    },
+    {
+      $lookup: {
+        from: 'slabdetails',
+        let: { formAmount: '$Amount', endAmount: '$Amount', bookingAmount: '$bookingAmount' },
+        pipeline: [
+          {
+            $match: {
+              $and: [
+                { $expr: { $gte: ['$$formAmount', '$formAmount'] } },
+                { $expr: { $lte: ['$$endAmount', '$endAmount'] } },
+                { $expr: { $eq: ['$$bookingAmount', 'yes'] } },
+              ],
+            },
+          },
+          { $limit: 1 },
+        ],
+        as: 'slab',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$slab',
+      },
+    },
+    {
+      $addFields: { slabPercentage: { $ifNull: ['$slab.slabPercentage', 0] } },
+    },
+    {
+      $addFields: {
+        bookingAmount: {
+          $divide: [
+            {
+              $multiply: ['$slabPercentage', '$Amount'],
+            },
+            100,
+          ],
+        },
+      },
+    },
+
     {
       $project: {
         _id: 1,
@@ -6977,6 +7055,8 @@ const getDetails = async (id) => {
         purchase_price: 1,
         Amount: 1,
         product: '$products.productTitle',
+        slabPercentage: 1,
+        bookingAmount: 1,
       },
     },
   ]);
@@ -7024,45 +7104,58 @@ const getDetails = async (id) => {
     },
   ]);
 
+  let orderedAmount = await streamingorderProduct.aggregate([
+    {
+      $match: {
+        orderId: id,
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        amt: { $sum: { $multiply: ['$purchase_quantity', '$purchase_price'] } },
+      },
+    },
+  ]);
+
   return {
     values: values,
     orderPayMent: orderPayMent,
     cancelAmt: cancelAmt.length > 0 ? cancelAmt[0].amt : 0,
     deniedAmt: deniedAmt.length > 0 ? deniedAmt[0].amt : 0,
     rejectAmt: rejectAmt.length > 0 ? rejectAmt[0].amt : 0,
+    orderAmount: orderedAmount.length > 0 ? orderedAmount[0].amt : 0,
   };
 };
-
-
-
 
 const get_notification_count = async (req) => {
   let notification = await shopNotification.find({ shopId: req.shopId, status: 'created' }).count();
 
-  return { count: notification }
-}
-
-
+  return { count: notification };
+};
 
 const get_notification_viewed = async (req) => {
-  let notification = await shopNotification.findById(req.query.notificaion)
+  let notification = await shopNotification.findById(req.query.notificaion);
 
   if (notification.shopId != req.shopId) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Not Found');
-
   }
   notification.status = 'viewed';
   notification.save();
   return notification;
-}
+};
 
 const get_notification_getall = async (req) => {
   let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
-  let notification = await shopNotification.find({ shopId: req.shopId }).sort({ DateIso: -1 }).skip(10 * page).limit(10)
+  let notification = await shopNotification
+    .find({ shopId: req.shopId })
+    .sort({ DateIso: -1 })
+    .skip(10 * page)
+    .limit(10);
   let total = await shopNotification.find({ shopId: req.shopId }).count();
 
-  return { notification, total: total }
-}
+  return { notification, total: total };
+};
 
 module.exports = {
   create_Plans,
@@ -7166,5 +7259,5 @@ module.exports = {
 
   get_notification_count,
   get_notification_viewed,
-  get_notification_getall
+  get_notification_getall,
 };

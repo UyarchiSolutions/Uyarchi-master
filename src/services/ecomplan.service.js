@@ -7092,7 +7092,7 @@ const getDetails = async (id) => {
     {
       $group: {
         _id: null,
-        amt: { $sum: { $multiply: ['$$purchase_quantity', '$purchase_price'] } },
+        amt: { $sum: { $multiply: ['$purchase_quantity', '$purchase_price'] } },
       },
     },
   ]);

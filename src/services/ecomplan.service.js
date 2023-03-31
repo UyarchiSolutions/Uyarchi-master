@@ -2662,12 +2662,12 @@ const get_watch_live_steams = async (req) => {
     statusFilter = { startTime: { $gt: date_now } };
   }
   if (status == 'live') {
-    statusFilter = { $and: [{ status: { $ne: 'Completed' } }, { startTime: { $lt: date_now } }, { endTime: { $gt: date_now } }] };
+    statusFilter = { $and: [{ status: { $ne: 'Completed' } }, { startTime: { $lt: date_now } }, { streamEnd_Time: { $gt: date_now } }] };
   }
   if (status == 'completed') {
     var today = new Date();
     var date_now_com = new Date(new Date().setDate(today.getDate() + 30)).getTime();
-    statusFilter = { $or: [{ status: { $eq: 'Completed' } }, { $and: [{ endTime: { $lt: date_now } }, { tokenGeneration: { $eq: true } }] }] };
+    statusFilter = { $or: [{ status: { $eq: 'Completed' } }, { $and: [{ streamEnd_Time: { $lt: date_now } }, { tokenGeneration: { $eq: true } }] }] };
     completedHide = { streamrequestposts_count: { $ne: 0 } };
   }
   if (type == 'registered') {

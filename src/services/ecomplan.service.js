@@ -2682,6 +2682,7 @@ const get_watch_live_steams = async (req) => {
     }
   }
   let value = await Streamrequest.aggregate([
+    { $sort: { streamingDate: -1 } },
     { $match: { $and: [statusFilter, dateMatch, { adminApprove: { $eq: 'Approved' } }] } },
     {
       $lookup: {
@@ -2866,7 +2867,6 @@ const get_watch_live_steams = async (req) => {
       },
     },
     { $sort: { date: -1 } },
-
   ]);
   let total = await Streamrequest.aggregate([
     { $match: { $and: [statusFilter, dateMatch, { adminApprove: { $eq: 'Approved' } }] } },

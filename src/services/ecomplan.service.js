@@ -3620,6 +3620,7 @@ const get_completed_stream_buyer = async (req) => {
                     DateIso: 1,
                     created: 1,
                     bookingAmount: 1,
+                    products:"$products"
                   },
                 },
               ],

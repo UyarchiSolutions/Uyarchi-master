@@ -2858,7 +2858,6 @@ const get_watch_live_steams = async (req) => {
         count: { $sum: 1 },
       },
     },
-    { $sort: { date: -1 } },
     {
       $project: {
         _id: '',
@@ -2866,6 +2865,8 @@ const get_watch_live_steams = async (req) => {
         list: 1,
       },
     },
+    { $sort: { date: -1 } },
+
   ]);
   let total = await Streamrequest.aggregate([
     { $match: { $and: [statusFilter, dateMatch, { adminApprove: { $eq: 'Approved' } }] } },

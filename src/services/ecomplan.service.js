@@ -2662,7 +2662,7 @@ const get_watch_live_steams = async (req) => {
     statusFilter = { startTime: { $gt: date_now } };
   }
   if (status == 'live') {
-    statusFilter = { $and: [{ status: { $eq: 'Completed' } }, { startTime: { $lt: date_now } }, { endTime: { $gt: date_now } }] };
+    statusFilter = { $and: [{ status: { $ne: 'Completed' } }, { startTime: { $lt: date_now } }, { endTime: { $gt: date_now } }] };
   }
   if (status == 'completed') {
     var today = new Date();

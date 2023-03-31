@@ -2662,12 +2662,12 @@ const get_watch_live_steams = async (req) => {
     statusFilter = { startTime: { $gt: date_now } };
   }
   if (status == 'live') {
-    statusFilter = { $and: [{ startTime: { $lt: date_now } }, { endTime: { $gt: date_now } }] };
+    statusFilter = { $and: [{ status: { $eq: 'Completed' } }, { startTime: { $lt: date_now } }, { endTime: { $gt: date_now } }] };
   }
   if (status == 'completed') {
     var today = new Date();
     var date_now_com = new Date(new Date().setDate(today.getDate() + 30)).getTime();
-    statusFilter = { $and: [{ endTime: { $lt: date_now } }, { startTime: { $lt: date_now_com } }] };
+    statusFilter = { $or: [{ status: { $eq: 'Completed' } },{ $and: [{ endTime: { $lt: date_now } }, { startTime: { $lt: date_now_com } }] }] };
     completedHide = { streamrequestposts_count: { $ne: 0 } };
   }
   if (type == 'registered') {
@@ -2981,8 +2981,8 @@ const regisetr_strean_instrest = async (req) => {
       participents.noOfParticipants > count
         ? 'Confirmed'
         : participents.noOfParticipants + participents.noOfParticipants / 2 > count
-        ? 'RAC'
-        : 'Waiting';
+          ? 'RAC'
+          : 'Waiting';
     await Dates.create_date(findresult);
   } else {
     if (findresult.status != 'Registered') {
@@ -2991,8 +2991,8 @@ const regisetr_strean_instrest = async (req) => {
         participents.noOfParticipants > count
           ? 'Confirmed'
           : participents.noOfParticipants + participents.noOfParticipants / 2 > count
-          ? 'RAC'
-          : 'Waiting';
+            ? 'RAC'
+            : 'Waiting';
       findresult.eligible = participents.noOfParticipants > count;
       findresult.status = 'Registered';
       await Dates.create_date(findresult);

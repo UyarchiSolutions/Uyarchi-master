@@ -7089,11 +7089,11 @@ const getDetails = async (id) => {
   ]);
 
   let orderedAmount = await streamingorderProduct.aggregate([
-   {
-    $match:{
-      orderId:id
-    }
-   },
+    {
+      $match: {
+        orderId: id,
+      },
+    },
     {
       $group: {
         _id: null,

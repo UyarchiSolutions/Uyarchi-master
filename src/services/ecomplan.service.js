@@ -2667,7 +2667,7 @@ const get_watch_live_steams = async (req) => {
   if (status == 'completed') {
     var today = new Date();
     var date_now_com = new Date(new Date().setDate(today.getDate() + 30)).getTime();
-    statusFilter = { $or: [{ status: { $eq: 'Completed' } },{ $and: [{ endTime: { $lt: date_now } }, { startTime: { $lt: date_now_com } }] }] };
+    statusFilter = { $or: [{ status: { $eq: 'Completed' } }, { $and: [{ endTime: { $lt: date_now } }, { startTime: { $lt: date_now_com } }] }] };
     completedHide = { streamrequestposts_count: { $ne: 0 } };
   }
   if (type == 'registered') {
@@ -2858,6 +2858,7 @@ const get_watch_live_steams = async (req) => {
         count: { $sum: 1 },
       },
     },
+    { $sort: { date: -1 } },
     {
       $project: {
         _id: '',

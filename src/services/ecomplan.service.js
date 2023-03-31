@@ -7,7 +7,7 @@ const {
   StreamPreRegister,
   streamPlanlink,
   Slab,
-  shopNotification
+  shopNotification,
 } = require('../models/ecomplan.model');
 
 const { streamingOrder, streamingorderProduct, streamingorderPayments } = require('../models/liveStreaming/checkout.model');
@@ -1749,7 +1749,7 @@ const end_stream = async (req) => {
     { status: 'Completed', streamEnd_Time: moment(), end_Status: 'HostLeave' },
     { new: true }
   );
-  req.io.emit(req.query.id + '_stream_end', { value: true })
+  req.io.emit(req.query.id + '_stream_end', { value: true });
   let assginStream = await StreamrequestPost.find({ streamRequest: req.query.id });
   assginStream.forEach(async (a) => {
     await StreamPost.findByIdAndUpdate({ _id: a.postId }, { status: 'Completed' }, { new: true });
@@ -3031,21 +3031,20 @@ const unregisetr_strean_instrest = async (req) => {
       next.viewstatus = 'Confirmed';
       next.streamCount = user_postion;
       let streamDetails = await Streamrequest.findById(next.streamId);
-      let notification = await shopNotification.create(
-        {
-          DateIso: moment(),
-          created: moment(),
-          shopId: next.shopId,
-          streamId: next.streamId,
-          streamRegister: next._id,
-          type: "stream",
-          streamObject: streamDetails,
-          streamRegisterobject: next,
-          streamName: streamDetails.streamName,
-          title: streamDetails.streamName + " Stream Is Available to Watch"
-        })
+      let notification = await shopNotification.create({
+        DateIso: moment(),
+        created: moment(),
+        shopId: next.shopId,
+        streamId: next.streamId,
+        streamRegister: next._id,
+        type: 'stream',
+        streamObject: streamDetails,
+        streamRegisterobject: next,
+        streamName: streamDetails.streamName,
+        title: streamDetails.streamName + ' Stream Is Available to Watch',
+      });
       let count = await shopNotification.find({ shopId: next.shopId, status: 'created' }).count();
-      req.io.emit(next.shopId + "_stream_CFM", { notification, count: count })
+      req.io.emit(next.shopId + '_stream_CFM', { notification, count: count });
       next.save();
     }
   }
@@ -7040,7 +7039,6 @@ const getDetails = async (id) => {
         purchase_price: 1,
         Amount: 1,
         product: '$products.productTitle',
-        // bookingAmount: 1,
         slabPercentage: 1,
         bookingAmount: 1,
       },
@@ -7090,45 +7088,53 @@ const getDetails = async (id) => {
     },
   ]);
 
+  let orderedAmount = await streamingorderProduct.aggregate([
+    {
+      $group: {
+        _id: null,
+        amt: { $sum: { $multiply: ['$$purchase_quantity', '$purchase_price'] } },
+      },
+    },
+  ]);
+
   return {
     values: values,
     orderPayMent: orderPayMent,
     cancelAmt: cancelAmt.length > 0 ? cancelAmt[0].amt : 0,
     deniedAmt: deniedAmt.length > 0 ? deniedAmt[0].amt : 0,
     rejectAmt: rejectAmt.length > 0 ? rejectAmt[0].amt : 0,
+    orderAmount: orderedAmount.length > 0 ? orderedAmount[0].amt : 0,
   };
 };
-
-
-
 
 const get_notification_count = async (req) => {
   let notification = await shopNotification.find({ shopId: req.shopId, status: 'created' }).count();
 
-  return { count: notification }
-}
-
-
+  return { count: notification };
+};
 
 const get_notification_viewed = async (req) => {
-  let notification = await shopNotification.findById(req.query.notificaion)
+  let notification = await shopNotification.findById(req.query.notificaion);
 
   if (notification.shopId != req.shopId) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Not Found');
-
   }
   notification.status = 'viewed';
   notification.save();
   return notification;
-}
+};
 
 const get_notification_getall = async (req) => {
   let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
-  let notification = await shopNotification.find({ shopId: req.shopId }).sort({ DateIso: -1 }).skip(10 * page).limit(10)
+  let notification = await shopNotification
+    .find({ shopId: req.shopId })
+    .sort({ DateIso: -1 })
+    .skip(10 * page)
+    .limit(10);
   let total = await shopNotification.find({ shopId: req.shopId }).count();
 
-  return { notification, total: total }
-}
+  return { notification, total: total };
+};
 
 module.exports = {
   create_Plans,
@@ -7232,5 +7238,5 @@ module.exports = {
 
   get_notification_count,
   get_notification_viewed,
-  get_notification_getall
+  get_notification_getall,
 };

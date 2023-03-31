@@ -2572,6 +2572,20 @@ const get_subhost_token = async (req, userId) => {
       },
     },
     {
+      $lookup: {
+        from: 'purchasedplans',
+        localField: 'planId',
+        foreignField: '_id',
+        as: 'purchasedplans',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$purchasedplans',
+      },
+    },
+    {
       $project: {
         _id: 1,
         supplierName: '$suppliers.primaryContactName',
@@ -2601,6 +2615,8 @@ const get_subhost_token = async (req, userId) => {
         chatPermistion: { $eq: ['$allot_chat', userId] },
         chat_need: 1,
         temptokens_sub: '$temptokens_sub',
+        no_of_host: '$purchasedplans.no_of_host',
+
       },
     },
   ]);

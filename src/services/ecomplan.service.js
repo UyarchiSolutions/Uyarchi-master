@@ -5941,7 +5941,7 @@ const fetch_streaming_Details_Approval = async (id, product, query) => {
   } else {
     statusSearch;
   }
-  console.log(product)
+  console.log(product);
 
   let values = await streamingorderProduct.aggregate([
     {
@@ -6542,6 +6542,21 @@ const getStreaming_orders_By_orders = async (id) => {
       },
     },
   ]);
+
+  let orderAmount = await streamingorderProduct.aggregate([
+    {
+      $match: {
+        orderId: id,
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        Amt: { $sum: { $multiply: ['$purchase_quantity', '$purchase_price'] } },
+      },
+    },
+  ]);
+
   let payment = await streamingorderPayments.aggregate([
     {
       $match: {
@@ -6549,7 +6564,11 @@ const getStreaming_orders_By_orders = async (id) => {
       },
     },
   ]);
-  return { values: value, payment: payment.length != 0 ? payment[0] : 0 };
+  return {
+    values: value,
+    payment: payment.length != 0 ? payment[0] : 0,
+    orderAmount: orderAmount.length != 0 ? orderAmount[0] : {},
+  };
 };
 
 const getStreaming_orders_By_orders_for_pay = async (id) => {

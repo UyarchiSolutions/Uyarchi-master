@@ -93,6 +93,7 @@
     "razorpay": "^2.8.3",
     "serverless-http": "^3.0.1",
     "socket.io": "^4.5.4",
+    "stream": "^0.0.2",
     "swagger-jsdoc": "^6.0.8",
     "swagger-ui-express": "^4.1.6",
     "twilio": "^3.76.1",

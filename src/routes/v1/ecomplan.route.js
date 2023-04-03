@@ -144,11 +144,13 @@ router.route('/get/notification/viewed').put(shopverify, Ecomcontroller.get_noti
 router.route('/get/notification/getall').get(shopverify, Ecomcontroller.get_notification_getall);
 
 
+// const changeVideoupload = multer({ dest: 'uploads/' });
+const changeVideoupload =multer({ storage: multer.memoryStorage() });
 
 // after live stream videos
 router.route('/get/post/after/complete/stream').get(Ecomcontroller.get_stream_post_after_live_stream);
 router.route('/update/start/end/time').put(Ecomcontroller.update_start_end_time);
-router.route('/update/video/post').put(changeVideo, Ecomcontroller.video_upload_post);
+router.route('/update/video/post').put(changeVideoupload.single('video'), Ecomcontroller.video_upload_post);
 
 
 

@@ -7207,6 +7207,7 @@ const update_start_end_time = async (req) => {
 
   return
 };
+const stream = require('stream');
 
 const video_upload_post = async (req) => {
   let streamPostId = req.query.id;
@@ -7220,25 +7221,34 @@ const video_upload_post = async (req) => {
     secretAccessKey: 'NW7jfKJoom+Cu/Ys4ISrBvCU4n4bg9NsvzAbY07c',
     region: 'ap-south-1',
   });
-  const readStream = fs.createReadStream(req.file.buffer,);
+  const fileBuffer = req.file.buffer;
+  // const readStream = new stream.PassThrough();
+  // readStream.end(fileBuffer);
 
+  // console.log(readStream)
   let params = {
     Bucket: 'streamingupload',
     Key: store + '/uploaded/' + req.file.originalname,
-    Body: readStream,
+    Body: fileBuffer,
 
   };
   return new Promise((resolve) => {
-    s3.upload(params, async (err, data) => {
-      if (err) {
-        console.log(err);
-      }
-      console.log(data)
-      streamPost.uploadStreamVideo = data.Location;
-      streamPost.newVideoUpload = 'video';
-      streamPost.save();
-      resolve({ video: 'success', streamPost });
+    const s3Upload = s3.upload(params);
+
+    s3Upload.on('httpUploadProgress', function (progress) {
+      // console.log('Progress:', progress.loaded, '/', progress.total);
     });
+    s3Upload.send(function (err, data) {
+      if (err) {
+        // console.log('Error uploading file:', err);
+      } else {
+        // console.log('File uploaded successfully:', data.Location);
+        streamPost.uploadStreamVideo = data.Location;
+        streamPost.newVideoUpload = 'video';
+        streamPost.save();
+        resolve({ video: 'success', streamPost });
+      }
+    })
   });
 
 };

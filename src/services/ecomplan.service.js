@@ -7220,10 +7220,13 @@ const video_upload_post = async (req) => {
     secretAccessKey: 'NW7jfKJoom+Cu/Ys4ISrBvCU4n4bg9NsvzAbY07c',
     region: 'ap-south-1',
   });
+  const readStream = fs.createReadStream(req.file.buffer,);
+
   let params = {
     Bucket: 'streamingupload',
     Key: store + '/uploaded/' + req.file.originalname,
-    Body: req.file.buffer,
+    Body: readStream,
+
   };
   return new Promise((resolve) => {
     s3.upload(params, async (err, data) => {

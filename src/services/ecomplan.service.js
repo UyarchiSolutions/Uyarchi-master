@@ -7111,6 +7111,8 @@ const get_stream_post_after_live_stream = async (req) => {
               created: '$streamposts.created',
               video: '$streamposts.video',
               productTitle: '$streamposts.products.productTitle',
+              streampostId: '$streamposts._id'
+
             },
           },
           // {
@@ -7187,6 +7189,56 @@ const get_stream_post_after_live_stream = async (req) => {
     })
   }
   return value;
+};
+
+
+
+const update_start_end_time = async (req) => {
+  let streamPostId = req.query.id;
+  let streamPost = await StreamPost.findById(streamPostId);
+
+  if (!streamPost) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Not Found');
+  }
+  streamPost.streamStart = req.body.videoStart;
+  streamPost.streamEnd = req.body.videoEnd;
+  streamPost.newVideoUpload = 'video';
+  streamPost.save();
+
+  return
+};
+
+const video_upload_post = async (req) => {
+  // console.log(req.file)
+  let streamPostId = req.query.id;
+  let streamPost = await StreamPost.findById(streamPostId);
+  if (!streamPost) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Not Found post');
+  }
+  let store = streamPost._id.replace(/[^a-zA-Z0-9]/g, '');
+  const s3 = new AWS.S3({
+    accessKeyId: 'AKIA3323XNN7Y2RU77UG',
+    secretAccessKey: 'NW7jfKJoom+Cu/Ys4ISrBvCU4n4bg9NsvzAbY07c',
+    region: 'ap-south-1',
+  });
+  let params = {
+    Bucket: 'streamingupload',
+    Key: store + '/uploaded/' + req.file.originalname,
+    Body: req.file.buffer,
+  };
+  return new Promise((resolve) => {
+    s3.upload(params, async (err, data) => {
+      if (err) {
+        console.log(err);
+      }
+      console.log(data)
+      streamPost.uploadStreamVideo = data.Location;
+      streamPost.newVideoUpload = 'video';
+      streamPost.save();
+      resolve({ video: 'success', streamPost });
+    });
+  });
+
 };
 
 module.exports = {
@@ -7292,5 +7344,7 @@ module.exports = {
   get_notification_count,
   get_notification_viewed,
   get_notification_getall,
-  get_stream_post_after_live_stream
+  get_stream_post_after_live_stream,
+  update_start_end_time,
+  video_upload_post
 };

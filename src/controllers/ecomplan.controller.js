@@ -479,10 +479,21 @@ const get_notification_getall = catchAsync(async (req, res) => {
   const data = await Ecomserive.get_notification_getall(req);
   res.send(data);
 });
-const get_stream_post_after_live_stream= catchAsync(async (req, res) => {
+const get_stream_post_after_live_stream = catchAsync(async (req, res) => {
   const data = await Ecomserive.get_stream_post_after_live_stream(req);
   res.send(data);
 });
+
+const update_start_end_time = catchAsync(async (req, res) => {
+  const data = await Ecomserive.update_start_end_time(req);
+  res.send(data);
+});
+
+const video_upload_post = catchAsync(async (req, res) => {
+  const data = await Ecomserive.video_upload_post(req);
+  res.send(data);
+});
+
 module.exports = {
   create_Plans,
   create_Plans_addon,
@@ -578,5 +589,7 @@ module.exports = {
   get_notification_getall,
 
 
-  get_stream_post_after_live_stream
+  get_stream_post_after_live_stream,
+  update_start_end_time,
+  video_upload_post
 };

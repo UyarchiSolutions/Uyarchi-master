@@ -184,6 +184,13 @@ const streamPostschema = mongoose.Schema({
     type: String,
     default: 'Active',
   },
+  uploadStreamVideo:{
+    type: String,
+  },
+  newVideoUpload:{
+    type: String,
+    default: 'Pending'
+  }
 
 });
 

@@ -138,8 +138,15 @@ router.route('/getDetails/:id').get(Ecomcontroller.getDetails);
 
 
 // notification Detailss
-router.route('/get/notification/getall/count').get(shopverify,Ecomcontroller.get_notification_count);
-router.route('/get/notification/viewed').put(shopverify,Ecomcontroller.get_notification_viewed);
-router.route('/get/notification/getall').get(shopverify,Ecomcontroller.get_notification_getall);
+router.route('/get/notification/getall/count').get(shopverify, Ecomcontroller.get_notification_count);
+router.route('/get/notification/viewed').put(shopverify, Ecomcontroller.get_notification_viewed);
+router.route('/get/notification/getall').get(shopverify, Ecomcontroller.get_notification_getall);
+
+
+
+// after live stream videos
+router.route('/get/post/after/complete/stream').get(Ecomcontroller.get_stream_post_after_live_stream);
+
+
 
 module.exports = router;

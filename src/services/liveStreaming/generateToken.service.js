@@ -900,9 +900,11 @@ const get_stream_complete_videos = async (req) => {
 }
 
 
+const fs = require('fs')
+
 const videoConverter = async () => {
-  const inputFilePath = 'https://streamingupload.s3.ap-south-1.amazonaws.com/0384e76d948647698ea43873dfad085d/93081/5dd71bb76a4e9a76d2e1bc9fef5cb7c8_411bbdb8-0fdf-4fb4-b944-703e1822f422.m3u8';
-  const outputFilePath = 'output.mp4';
+  const inputFilePath = 'https://streamingupload.s3.ap-south-1.amazonaws.com/f7e4c26bade144a8a848ae24385e4a4e/16293/43d33e0a3a4f4ddbfa1e6098fb5248e0_5f304c8b-f8ca-42dc-a354-1845528f41fd.m3u8';
+  const outputFilePath = 'output1.mp4';
 
   ffmpeg(inputFilePath)
     .outputOptions('-c', 'copy')

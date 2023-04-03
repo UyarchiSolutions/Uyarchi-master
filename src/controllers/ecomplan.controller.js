@@ -479,6 +479,10 @@ const get_notification_getall = catchAsync(async (req, res) => {
   const data = await Ecomserive.get_notification_getall(req);
   res.send(data);
 });
+const get_stream_post_after_live_stream= catchAsync(async (req, res) => {
+  const data = await Ecomserive.get_stream_post_after_live_stream(req);
+  res.send(data);
+});
 module.exports = {
   create_Plans,
   create_Plans_addon,
@@ -571,5 +575,8 @@ module.exports = {
 
   get_notification_count,
   get_notification_viewed,
-  get_notification_getall
+  get_notification_getall,
+
+
+  get_stream_post_after_live_stream
 };

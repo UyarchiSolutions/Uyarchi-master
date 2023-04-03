@@ -7222,10 +7222,6 @@ const video_upload_post = async (req) => {
     region: 'ap-south-1',
   });
   const fileBuffer = req.file.buffer;
-  // const readStream = new stream.PassThrough();
-  // readStream.end(fileBuffer);
-
-  // console.log(readStream)
   let params = {
     Bucket: 'streamingupload',
     Key: store + '/uploaded/' + req.file.originalname,

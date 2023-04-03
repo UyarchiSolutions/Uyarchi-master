@@ -119,6 +119,14 @@ const tempToken = mongoose.Schema({
   bigSize: {
     type: Boolean,
     default: false
+  },
+  convertedVideo: {
+    type: String,
+    default: 'Pending',
+  },
+  convertStatus: {
+    type: String,
+    default: 'Pending',
   }
 });
 

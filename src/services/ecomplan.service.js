@@ -5789,7 +5789,7 @@ const fetch_Stream_Ordered_Details = async (id, query) => {
     {
       $project: {
         _id: 1,
-        name: 'shops.SName',
+        name: '$shops.SName',
         orderId: 1,
         No_Of_Product: { $size: '$ordercount' },
         ordered: { $size: '$Actions' },

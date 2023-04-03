@@ -5665,10 +5665,43 @@ const fetchStream_Details_ById = async (id) => {
       },
     },
     { $addFields: { counts: { $size: '$status' } } },
+    { $addFields: { productId: '$streamPost.product._id' } },
+    // {
+    //   $lookup: {
+    //     from: 'streamingorderproducts',
+    //     localField: 'streamRequest',
+    //     foreignField: 'streamId',
+    //     pipeline: [{ $match: { productId: '$streamPost.product._id' } }],
+    //     as: 'streamOrders',
+    //   },
+    // },
+    {
+      $lookup: {
+        from: 'streamingorderproducts',
+        let: { streamId: '$streamRequest', productId: '$streamPost.product._id' },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  {
+                    $eq: ['$streamId', '$$streamId'],
+                  },
+                  {
+                    $eq: ['$productId', '$$productId'],
+                  },
+                ],
+              },
+            },
+          },
+        ],
+        as: 'streamOrders',
+      },
+    },
     {
       $project: {
         _id: 1,
-        Buyer: { $size: '$streamingorderProduct' },
+        Buyer: { $size: '$streamOrders' },
         streamRequest: 1,
         Cancelled: { $size: '$cancelled' },
         ConfirmedQuantity: { $ifNull: ['$confirmQty.total', 0] },
@@ -5681,6 +5714,7 @@ const fetchStream_Details_ById = async (id) => {
         status: {
           $cond: [{ $gt: ['$counts', 0] }, 'Pending', 'Completed'],
         },
+        streamOrders: '$streamOrders',
       },
     },
   ]);

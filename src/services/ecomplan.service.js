@@ -5780,6 +5780,7 @@ const fetch_Stream_Ordered_Details = async (id, query) => {
         from: 'streamingorderproducts',
         localField: '_id',
         foreignField: 'orderId',
+        pipeline: [{ $match: { status: { $ne: 'Pending' } } }],
         as: 'Actions',
       },
     },

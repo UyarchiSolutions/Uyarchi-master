@@ -7209,7 +7209,6 @@ const update_start_end_time = async (req) => {
 };
 
 const video_upload_post = async (req) => {
-  // console.log(req.file)
   let streamPostId = req.query.id;
   let streamPost = await StreamPost.findById(streamPostId);
   if (!streamPost) {

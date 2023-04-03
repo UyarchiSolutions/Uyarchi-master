@@ -2575,6 +2575,20 @@ const get_subhost_token = async (req, userId) => {
       },
     },
     {
+      $lookup: {
+        from: 'purchasedplans',
+        localField: 'planId',
+        foreignField: '_id',
+        as: 'purchasedplans',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$purchasedplans',
+      },
+    },
+    {
       $project: {
         _id: 1,
         supplierName: '$suppliers.primaryContactName',
@@ -2604,6 +2618,8 @@ const get_subhost_token = async (req, userId) => {
         chatPermistion: { $eq: ['$allot_chat', userId] },
         chat_need: 1,
         temptokens_sub: '$temptokens_sub',
+        no_of_host: '$purchasedplans.no_of_host',
+
       },
     },
   ]);
@@ -2646,12 +2662,12 @@ const get_watch_live_steams = async (req) => {
     statusFilter = { startTime: { $gt: date_now } };
   }
   if (status == 'live') {
-    statusFilter = { $and: [{ startTime: { $lt: date_now } }, { endTime: { $gt: date_now } }] };
+    statusFilter = { $and: [{ status: { $ne: 'Completed' } }, { startTime: { $lt: date_now } }, { streamEnd_Time: { $gt: date_now } }] };
   }
   if (status == 'completed') {
     var today = new Date();
     var date_now_com = new Date(new Date().setDate(today.getDate() + 30)).getTime();
-    statusFilter = { $and: [{ endTime: { $lt: date_now } }, { startTime: { $lt: date_now_com } }] };
+    statusFilter = { $or: [{ status: { $eq: 'Completed' } }, { $and: [{ streamEnd_Time: { $lt: date_now } }, { tokenGeneration: { $eq: true } }] }] };
     completedHide = { streamrequestposts_count: { $ne: 0 } };
   }
   if (type == 'registered') {
@@ -2666,6 +2682,7 @@ const get_watch_live_steams = async (req) => {
     }
   }
   let value = await Streamrequest.aggregate([
+    { $sort: { streamingDate: -1 } },
     { $match: { $and: [statusFilter, dateMatch, { adminApprove: { $eq: 'Approved' } }] } },
     {
       $lookup: {
@@ -2849,6 +2866,7 @@ const get_watch_live_steams = async (req) => {
         list: 1,
       },
     },
+    { $sort: { date: -1 } },
   ]);
   let total = await Streamrequest.aggregate([
     { $match: { $and: [statusFilter, dateMatch, { adminApprove: { $eq: 'Approved' } }] } },
@@ -2965,8 +2983,8 @@ const regisetr_strean_instrest = async (req) => {
       participents.noOfParticipants > count
         ? 'Confirmed'
         : participents.noOfParticipants + participents.noOfParticipants / 2 > count
-        ? 'RAC'
-        : 'Waiting';
+          ? 'RAC'
+          : 'Waiting';
     await Dates.create_date(findresult);
   } else {
     if (findresult.status != 'Registered') {
@@ -2975,8 +2993,8 @@ const regisetr_strean_instrest = async (req) => {
         participents.noOfParticipants > count
           ? 'Confirmed'
           : participents.noOfParticipants + participents.noOfParticipants / 2 > count
-          ? 'RAC'
-          : 'Waiting';
+            ? 'RAC'
+            : 'Waiting';
       findresult.eligible = participents.noOfParticipants > count;
       findresult.status = 'Registered';
       await Dates.create_date(findresult);
@@ -3602,6 +3620,7 @@ const get_completed_stream_buyer = async (req) => {
                     DateIso: 1,
                     created: 1,
                     bookingAmount: 1,
+                    products:"$products"
                   },
                 },
               ],
@@ -3612,18 +3631,25 @@ const get_completed_stream_buyer = async (req) => {
           {
             $project: {
               _id: 1,
-              productTitle: '$streamposts.productTitle',
-              productId: '$streamposts.productId',
-              quantity: '$streamposts.quantity',
-              marketPlace: '$streamposts.marketPlace',
-              offerPrice: '$streamposts.offerPrice',
-              postLiveStreamingPirce: '$streamposts.postLiveStreamingPirce',
-              validity: '$streamposts.validity',
-              minLots: '$streamposts.minLots',
-              incrementalLots: '$streamposts.incrementalLots',
-              postLiveStreamingPirce: '$streamposts.postLiveStreamingPirce',
-              image: '$streamposts.image',
-              bookingAmount: '$streamposts.bookingAmount',
+              "active": 1,
+              "archive": 1,
+              "productId": "$streamposts.productId",
+              "productTitle": "$streamposts.products.productTitle",
+              "image": "$streamposts.products.image",
+              "categoryId": "a7c95af4-abd5-4fe0-b685-fd93bb98f5ec",
+              "quantity": "$streamposts.quantity",
+              "marketPlace": "$streamposts.marketPlace",
+              "offerPrice": "$streamposts.offerPrice",
+              "postLiveStreamingPirce": "$streamposts.postLiveStreamingPirce",
+              "validity": "$streamposts.validity",
+              "minLots": "$streamposts.minLots",
+              "incrementalLots": "$streamposts.incrementalLots",
+              bookingAmount: "$streamposts.bookingAmount",
+              streamPostId: "$streamposts._id",
+              allowAdd_to_cart: { $gte: ["$streamposts.pendingQTY", "$streamposts.minLots"] },
+              "suppierId": 1,
+              "DateIso": 1,
+              "created": "2023-01-20T11:46:58.201Z",
             },
           },
         ],

@@ -7264,6 +7264,8 @@ const get_video_link = async (req) => {
 
   let streamId = req.query.id;
   let streamnotification = await Streamrequest.findById(streamId);
+  const promises = []
+  const arr = [1, 2, 3, 4, 5]
 
   let notification = await Streamrequest.aggregate([
     { $match: { $and: [{ _id: { $eq: streamId } }] } },
@@ -7283,8 +7285,8 @@ const get_video_link = async (req) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'Not Found stream');
   }
   let value = notification[0];
-  if (streamnotification.videoconvertStatus != 'Converted') {
-    value.temptokens.forEach(async (e) => {
+  value.temptokens.forEach(async (e) => {
+    const promise = new Promise((resolve, reject) => {
       if (e.convertStatus != 'Converted') {
         const inputFilePath = 'https://streamingupload.s3.ap-south-1.amazonaws.com/' + e.videoLink;
         let store = e._id.replace(/[^a-zA-Z0-9]/g, '');
@@ -7328,22 +7330,49 @@ const get_video_link = async (req) => {
               val.save()
               streamnotification.videoconvertStatus = 'Converted';
               streamnotification.save();
-              fs.unlink(outputFilePath, (err) => {
-                if (err) {
-                  console.log('Error deleting file:', err);
-                } else {
-                  console.log('File deleted successfully!');
-                }
-              }); 
-              
+              resolve(val)
+              // fs.unlink(outputFilePath, (err) => {
+              //   if (err) {
+              //     console.log('Error deleting file:', err);
+              //   } else {
+              //     console.log('File deleted successfully!');
+              //   }
+              // });
             }
 
           });
         }
       }
+      else {
+        resolve(e)
+      }
     })
-  }
-  return value;
+    promises.push(promise)
+  })
+
+
+
+  // arr.forEach((num) => {
+  //   const promise = new Promise((resolve, reject) => {
+  //     // Perform an asynchronous operation
+  //     setTimeout(() => {
+  //       resolve(`${num} is even`)
+  //     }, 1000)
+  //   })
+  //   promises.push(promise)
+  // })
+
+  return Promise.all(promises)
+    .then((results) => {
+      console.log(results)
+      notification[0].temptokens = results
+      return notification[0];
+    })
+    .catch((error) => {
+      console.error(error)
+    })
+
+
 };
 
 

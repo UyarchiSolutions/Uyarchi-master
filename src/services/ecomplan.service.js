@@ -7280,7 +7280,7 @@ const get_video_link = async (req) => {
     },
   ])
   if (notification.length == 0) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Not Found');
+    throw new ApiError(httpStatus.NOT_FOUND, 'Not Found stream');
   }
   let value = notification[0];
   if (streamnotification.videoconvertStatus != 'Converted') {

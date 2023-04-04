@@ -15,6 +15,7 @@ const storage = multer.memoryStorage({
   },
 });
 const upload = multer({ storage }).single('teaser');
+const changeVideo = multer({ storage }).single('video');
 // plan APIS
 router.route('/create/plan').post(Ecomcontroller.create_Plans);
 router.route('/create/plan/addon').post(Ecomcontroller.create_Plans_addon);
@@ -143,9 +144,16 @@ router.route('/get/notification/viewed').put(shopverify, Ecomcontroller.get_noti
 router.route('/get/notification/getall').get(shopverify, Ecomcontroller.get_notification_getall);
 
 
+// const changeVideoupload = multer({ dest: 'uploads/' });
+const changeVideoupload = multer({ storage: multer.memoryStorage() });
 
 // after live stream videos
 router.route('/get/post/after/complete/stream').get(Ecomcontroller.get_stream_post_after_live_stream);
+router.route('/update/start/end/time').put(Ecomcontroller.update_start_end_time);
+router.route('/update/video/post').put(changeVideo, Ecomcontroller.video_upload_post);
+
+
+router.route('/get/video/link').get(changeVideo, Ecomcontroller.get_video_link);
 
 
 

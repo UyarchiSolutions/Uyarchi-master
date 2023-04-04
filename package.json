@@ -32,6 +32,8 @@
     "docker:test": "docker-compose -f docker-compose.yml -f docker-compose.test.yml up",
     "prepare": "husky install"
   },
+  "max_memory_restart": "2048M",
+  "max_old_space_size": 4096,
   "keywords": [
     "node",
     "node.js",

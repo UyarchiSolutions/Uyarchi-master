@@ -184,6 +184,13 @@ const streamPostschema = mongoose.Schema({
     type: String,
     default: 'Active',
   },
+  uploadStreamVideo:{
+    type: String,
+  },
+  newVideoUpload:{
+    type: String,
+    default: 'Pending'
+  }
 
 });
 
@@ -334,6 +341,10 @@ const streamRequestschema = mongoose.Schema({
   end_Status: {
     type: String,
   },
+  videoconvertStatus: {
+    type: String,
+    default: "Pending"
+  }
 });
 
 const Streamrequest = mongoose.model('StreamRequest', streamRequestschema);

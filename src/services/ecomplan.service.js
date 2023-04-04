@@ -7062,6 +7062,7 @@ ffmpeg.setFfmpegPath(ffmpegPath);
 const get_stream_post_after_live_stream = async (req) => {
 
   let streamId = req.query.id;
+  let streamnotification = await Streamrequest.findById(streamId);
 
   let notification = await Streamrequest.aggregate([
     { $match: { $and: [{ _id: { $eq: streamId } }] } },
@@ -7110,6 +7111,9 @@ const get_stream_post_after_live_stream = async (req) => {
               created: '$streamposts.created',
               video: '$streamposts.video',
               productTitle: '$streamposts.products.productTitle',
+              streampostId: '$streamposts._id',
+              uploadStreamVideo: '$streamposts.uploadStreamVideo',
+              newVideoUpload: "$streamposts.newVideoUpload"
             },
           },
           // {
@@ -7138,52 +7142,210 @@ const get_stream_post_after_live_stream = async (req) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'Not Found');
   }
   let value = notification[0];
+  if (streamnotification.videoconvertStatus != 'Converted') {
+    value.temptokens.forEach(async (e) => {
+      if (e.convertStatus != 'Converted') {
+        // console.log(e)
+        const inputFilePath = 'https://streamingupload.s3.ap-south-1.amazonaws.com/' + e.videoLink;
+        let store = e._id.replace(/[^a-zA-Z0-9]/g, '');
+        const outputFilePath = 'output.mp4';
 
-  value.temptokens.forEach(async (e) => {
-    if (e.convertStatus != 'Converted') {
-      // console.log(e)
-      const inputFilePath = 'https://streamingupload.s3.ap-south-1.amazonaws.com/' + e.videoLink;
-      let store = e._id.replace(/[^a-zA-Z0-9]/g, '');
-      const outputFilePath = 'output1.mp4';
+        ffmpeg(inputFilePath)
+          .outputOptions('-c', 'copy')
+          .output(outputFilePath)
+          .on('end', (e) => {
+            console.log('Conversion completed successfully', e);
+          })
+          .on('error', (err) => {
+            console.error('Error while converting:', err);
+          })
+          .run();
+        const s3 = new AWS.S3({
+          accessKeyId: 'AKIA3323XNN7Y2RU77UG',
+          secretAccessKey: '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',
+          region: 'ap-south-1',
+        });
+        const bucketName = 'streamingupload';
 
-      ffmpeg(inputFilePath)
-        .outputOptions('-c', 'copy')
-        .output(outputFilePath)
-        .on('end', (e) => {
-          // console.log('Conversion completed successfully', e);
-        })
-        .on('error', (err) => {
-          // console.error('Error while converting:', err);
-        })
-        .run();
-      const s3 = new AWS.S3({
-        accessKeyId: 'AKIA3323XNN7Y2RU77UG',
-        secretAccessKey: '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',
-        region: 'ap-south-1',
-      });
-      const bucketName = 'streamingupload';
+        console.log(outputFilePath)
 
-      const fileContent = fs.readFileSync(outputFilePath);
-      const params = {
-        Bucket: bucketName,
-        Key: store + '/mp4/' + outputFilePath,
-        Body: fileContent,
-      };
-      s3.upload(params, async (err, data) => {
-        if (err) {
-          console.error(err);
-        } else {
-          e.convertedVideo = data.Location;
-          let val = await tempTokenModel.findById(e._id)
-          val.convertedVideo = data.Location;
-          val.convertStatus = 'Converted';
-          val.save()
+        const fileContent = fs.readFileSync(outputFilePath);
+        console.log(fileContent)
+        if (fileContent != null) {
+          const params = {
+            Bucket: bucketName,
+            Key: store + '/mp4/' + outputFilePath,
+            Body: fileContent,
+          };
+          s3.upload(params, async (err, data) => {
+            if (err) {
+              console.error(err);
+            } else {
+              e.convertedVideo = data.Location;
+              let val = await tempTokenModel.findById(e._id)
+              val.convertedVideo = data.Location;
+              val.convertStatus = 'Converted';
+              val.save()
+              streamnotification.videoconvertStatus = 'Converted';
+              streamnotification.save();
+              fs.unlink(outputFilePath, (err) => {
+                if (err) {
+                  console.log('Error deleting file:', err);
+                } else {
+                  console.log('File deleted successfully!');
+                }
+              });
+            }
+
+          });
         }
-      });
-    }
-  })
+      }
+    })
+  }
   return value;
 };
+
+const update_start_end_time = async (req) => {
+  let streamPostId = req.query.id;
+  let streamPost = await StreamPost.findById(streamPostId);
+
+  if (!streamPost) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Not Found');
+  }
+  streamPost.streamStart = req.body.videoStart;
+  streamPost.streamEnd = req.body.videoEnd;
+  streamPost.newVideoUpload = 'time';
+  streamPost.save();
+
+  return
+};
+
+const video_upload_post = async (req) => {
+  let streamPostId = req.query.id;
+  let streamPost = await StreamPost.findById(streamPostId);
+  if (!streamPost) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Not Found post');
+  }
+  let store = streamPost._id.replace(/[^a-zA-Z0-9]/g, '');
+  const s3 = new AWS.S3({
+    accessKeyId: 'AKIA3323XNN7Y2RU77UG',
+    secretAccessKey: 'NW7jfKJoom+Cu/Ys4ISrBvCU4n4bg9NsvzAbY07c',
+    region: 'ap-south-1',
+  });
+  const fileBuffer = req.file.buffer;
+  let params = {
+    Bucket: 'streamingupload',
+    Key: store + '/uploaded/' + req.file.originalname,
+    Body: fileBuffer,
+
+  };
+  return new Promise((resolve) => {
+    const s3Upload = s3.upload(params);
+
+    s3Upload.on('httpUploadProgress', function (progress) {
+      console.log('Progress:', progress.loaded, '/', progress.total);
+    });
+    s3Upload.send(function (err, data) {
+      if (err) {
+        // console.log('Error uploading file:', err);
+      } else {
+        console.log('File uploaded successfully:', data.Location);
+        streamPost.uploadStreamVideo = data.Location;
+        streamPost.newVideoUpload = 'video';
+        streamPost.save();
+        resolve({ video: 'success', streamPost });
+      }
+    })
+  });
+
+};
+
+const get_video_link = async (req) => {
+
+  let streamId = req.query.id;
+  let streamnotification = await Streamrequest.findById(streamId);
+
+  let notification = await Streamrequest.aggregate([
+    { $match: { $and: [{ _id: { $eq: streamId } }] } },
+    {
+      $lookup: {
+        from: 'temptokens',
+        localField: '_id',
+        foreignField: 'streamId',
+        pipeline: [
+          { $match: { $and: [{ type: { $eq: "CloudRecording" } }] } },
+        ],
+        as: 'temptokens',
+      },
+    },
+  ])
+  if (notification.length == 0) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Not Found stream');
+  }
+  let value = notification[0];
+  if (streamnotification.videoconvertStatus != 'Converted') {
+    value.temptokens.forEach(async (e) => {
+      if (e.convertStatus != 'Converted') {
+        const inputFilePath = 'https://streamingupload.s3.ap-south-1.amazonaws.com/' + e.videoLink;
+        let store = e._id.replace(/[^a-zA-Z0-9]/g, '');
+        const outputFilePath = 'output.mp4';
+
+        ffmpeg(inputFilePath)
+          .outputOptions('-c', 'copy')
+          .output(outputFilePath)
+          .on('end', (e) => {
+            console.log('Conversion completed successfully', e);
+          })
+          .on('error', (err) => {
+            console.error('Error while converting:', err);
+          })
+          .run();
+        const s3 = new AWS.S3({
+          accessKeyId: 'AKIA3323XNN7Y2RU77UG',
+          secretAccessKey: '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',
+          region: 'ap-south-1',
+        });
+        const bucketName = 'streamingupload';
+
+        console.log(outputFilePath)
+
+        const fileContent = fs.readFileSync(outputFilePath);
+        console.log(fileContent)
+        if (fileContent != null) {
+          const params = {
+            Bucket: bucketName,
+            Key: store + '/mp4/' + outputFilePath,
+            Body: fileContent,
+          };
+          s3.upload(params, async (err, data) => {
+            if (err) {
+              console.error(err);
+            } else {
+              e.convertedVideo = data.Location;
+              let val = await tempTokenModel.findById(e._id)
+              val.convertedVideo = data.Location;
+              val.convertStatus = 'Converted';
+              val.save()
+              streamnotification.videoconvertStatus = 'Converted';
+              streamnotification.save();
+              fs.unlink(outputFilePath, (err) => {
+                if (err) {
+                  console.log('Error deleting file:', err);
+                } else {
+                  console.log('File deleted successfully!');
+                }
+              }); 
+              
+            }
+
+          });
+        }
+      }
+    })
+  }
+  return value;
+};
+
 
 module.exports = {
   create_Plans,
@@ -7288,5 +7450,8 @@ module.exports = {
   get_notification_count,
   get_notification_viewed,
   get_notification_getall,
-  get_stream_post_after_live_stream
+  get_stream_post_after_live_stream,
+  update_start_end_time,
+  video_upload_post,
+  get_video_link
 };

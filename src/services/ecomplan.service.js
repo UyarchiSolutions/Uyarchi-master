@@ -6661,12 +6661,27 @@ const getStreaming_orders_By_orders_for_pay = async (id) => {
     },
   ]);
 
+  let orderedAmt = await streamingorderProduct.aggregate([
+    {
+      $match: {
+        orderId: id,
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        Amt: { $sum: { $multiply: ['$purchase_quantity', '$purchase_price'] } },
+      },
+    },
+  ]);
+
   return {
     values: values,
     payment: payment.length != 0 ? payment[0] : {},
     Rejected: Rejected.length != 0 ? Rejected[0].total : 0,
     Denied: Denied.length != 0 ? Denied[0].total : 0,
     cancelled: cancelled.length != 0 ? cancelled[0].total : 0,
+    orderedAmt: orderedAmt.length > 0 ? orderedAmt[0] : {},
   };
 };
 

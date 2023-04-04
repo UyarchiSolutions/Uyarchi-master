@@ -494,6 +494,11 @@ const video_upload_post = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const get_video_link = catchAsync(async (req, res) => {
+  const data = await Ecomserive.get_video_link(req);
+  res.send(data);
+});
+
 module.exports = {
   create_Plans,
   create_Plans_addon,
@@ -591,5 +596,6 @@ module.exports = {
 
   get_stream_post_after_live_stream,
   update_start_end_time,
-  video_upload_post
+  video_upload_post,
+  get_video_link
 };

@@ -6566,8 +6566,8 @@ const getStreaming_orders_By_orders = async (id) => {
   ]);
   return {
     values: value,
-    payment: payment.length != 0 ? payment[0] : 0,
-    orderAmount: orderAmount.length != 0 ? orderAmount[0] : {},
+    payment: payment.length > 0 ? payment[0] : 0,
+    orderAmount: orderAmount.length > 0 ? orderAmount[0] : {},
   };
 };
 

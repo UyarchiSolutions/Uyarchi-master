@@ -2989,8 +2989,8 @@ const regisetr_strean_instrest = async (req) => {
       participents.noOfParticipants > count
         ? 'Confirmed'
         : participents.noOfParticipants + participents.noOfParticipants / 2 > count
-          ? 'RAC'
-          : 'Waiting';
+        ? 'RAC'
+        : 'Waiting';
     await Dates.create_date(findresult);
   } else {
     if (findresult.status != 'Registered') {
@@ -2999,8 +2999,8 @@ const regisetr_strean_instrest = async (req) => {
         participents.noOfParticipants > count
           ? 'Confirmed'
           : participents.noOfParticipants + participents.noOfParticipants / 2 > count
-            ? 'RAC'
-            : 'Waiting';
+          ? 'RAC'
+          : 'Waiting';
       findresult.eligible = participents.noOfParticipants > count;
       findresult.status = 'Registered';
       await Dates.create_date(findresult);
@@ -6566,8 +6566,8 @@ const getStreaming_orders_By_orders = async (id) => {
   ]);
   return {
     values: value,
-    payment: payment.length != 0 ? payment[0] : 0,
-    orderAmount: orderAmount.length != 0 ? orderAmount[0] : {},
+    payment: payment.length > 0 ? payment[0] : {},
+    orderAmount: orderAmount.length > 0 ? orderAmount[0] : {},
   };
 };
 
@@ -6661,12 +6661,27 @@ const getStreaming_orders_By_orders_for_pay = async (id) => {
     },
   ]);
 
+  let orderedAmt = await streamingorderProduct.aggregate([
+    {
+      $match: {
+        orderId: id,
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        Amt: { $sum: { $multiply: ['$purchase_quantity', '$purchase_price'] } },
+      },
+    },
+  ]);
+
   return {
     values: values,
     payment: payment.length != 0 ? payment[0] : {},
     Rejected: Rejected.length != 0 ? Rejected[0].total : 0,
     Denied: Denied.length != 0 ? Denied[0].total : 0,
     cancelled: cancelled.length != 0 ? cancelled[0].total : 0,
+    orderedAmt: orderedAmt.length > 0 ? orderedAmt[0] : {},
   };
 };
 
@@ -7054,13 +7069,12 @@ const get_notification_getall = async (req) => {
   return { notification, total: total };
 };
 
-const fs = require('fs')
+const fs = require('fs');
 const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 const ffmpeg = require('fluent-ffmpeg');
 ffmpeg.setFfmpegPath(ffmpegPath);
 
 const get_stream_post_after_live_stream = async (req) => {
-
   let streamId = req.query.id;
   let streamnotification = await Streamrequest.findById(streamId);
 
@@ -7113,7 +7127,7 @@ const get_stream_post_after_live_stream = async (req) => {
               productTitle: '$streamposts.products.productTitle',
               streampostId: '$streamposts._id',
               uploadStreamVideo: '$streamposts.uploadStreamVideo',
-              newVideoUpload: "$streamposts.newVideoUpload"
+              newVideoUpload: '$streamposts.newVideoUpload',
             },
           },
           // {
@@ -7130,14 +7144,11 @@ const get_stream_post_after_live_stream = async (req) => {
         from: 'temptokens',
         localField: '_id',
         foreignField: 'streamId',
-        pipeline: [
-          { $match: { $and: [{ type: { $eq: "CloudRecording" } }] } },
-        ],
+        pipeline: [{ $match: { $and: [{ type: { $eq: 'CloudRecording' } }] } }],
         as: 'temptokens',
       },
     },
-
-  ])
+  ]);
   if (notification.length == 0) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Not Found');
   }
@@ -7167,10 +7178,10 @@ const get_stream_post_after_live_stream = async (req) => {
         });
         const bucketName = 'streamingupload';
 
-        console.log(outputFilePath)
+        console.log(outputFilePath);
 
         const fileContent = fs.readFileSync(outputFilePath);
-        console.log(fileContent)
+        console.log(fileContent);
         if (fileContent != null) {
           const params = {
             Bucket: bucketName,
@@ -7182,10 +7193,10 @@ const get_stream_post_after_live_stream = async (req) => {
               console.error(err);
             } else {
               e.convertedVideo = data.Location;
-              let val = await tempTokenModel.findById(e._id)
+              let val = await tempTokenModel.findById(e._id);
               val.convertedVideo = data.Location;
               val.convertStatus = 'Converted';
-              val.save()
+              val.save();
               streamnotification.videoconvertStatus = 'Converted';
               streamnotification.save();
               fs.unlink(outputFilePath, (err) => {
@@ -7196,11 +7207,10 @@ const get_stream_post_after_live_stream = async (req) => {
                 }
               });
             }
-
           });
         }
       }
-    })
+    });
   }
   return value;
 };
@@ -7217,7 +7227,7 @@ const update_start_end_time = async (req) => {
   streamPost.newVideoUpload = 'time';
   streamPost.save();
 
-  return
+  return;
 };
 
 const video_upload_post = async (req) => {
@@ -7237,7 +7247,6 @@ const video_upload_post = async (req) => {
     Bucket: 'streamingupload',
     Key: store + '/uploaded/' + req.file.originalname,
     Body: fileBuffer,
-
   };
   return new Promise((resolve) => {
     const s3Upload = s3.upload(params);
@@ -7255,13 +7264,11 @@ const video_upload_post = async (req) => {
         streamPost.save();
         resolve({ video: 'success', streamPost });
       }
-    })
+    });
   });
-
 };
 
 const get_video_link = async (req) => {
-
   let streamId = req.query.id;
   let streamnotification = await Streamrequest.findById(streamId);
   const promises = []
@@ -7274,13 +7281,11 @@ const get_video_link = async (req) => {
         from: 'temptokens',
         localField: '_id',
         foreignField: 'streamId',
-        pipeline: [
-          { $match: { $and: [{ type: { $eq: "CloudRecording" } }] } },
-        ],
+        pipeline: [{ $match: { $and: [{ type: { $eq: 'CloudRecording' } }] } }],
         as: 'temptokens',
       },
     },
-  ])
+  ]);
   if (notification.length == 0) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Not Found stream');
   }
@@ -7309,10 +7314,10 @@ const get_video_link = async (req) => {
         });
         const bucketName = 'streamingupload';
 
-        console.log(outputFilePath)
+        console.log(outputFilePath);
 
         const fileContent = fs.readFileSync(outputFilePath);
-        console.log(fileContent)
+        console.log(fileContent);
         if (fileContent != null) {
           const params = {
             Bucket: bucketName,
@@ -7324,10 +7329,10 @@ const get_video_link = async (req) => {
               console.error(err);
             } else {
               e.convertedVideo = data.Location;
-              let val = await tempTokenModel.findById(e._id)
+              let val = await tempTokenModel.findById(e._id);
               val.convertedVideo = data.Location;
               val.convertStatus = 'Converted';
-              val.save()
+              val.save();
               streamnotification.videoconvertStatus = 'Converted';
               streamnotification.save();
               resolve(val)
@@ -7339,7 +7344,6 @@ const get_video_link = async (req) => {
               //   }
               // });
             }
-
           });
         }
       }
@@ -7374,7 +7378,6 @@ const get_video_link = async (req) => {
 
 
 };
-
 
 module.exports = {
   create_Plans,
@@ -7482,5 +7485,5 @@ module.exports = {
   get_stream_post_after_live_stream,
   update_start_end_time,
   video_upload_post,
-  get_video_link
+  get_video_link,
 };

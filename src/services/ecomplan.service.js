@@ -7154,10 +7154,10 @@ const get_stream_post_after_live_stream = async (req) => {
           .outputOptions('-c', 'copy')
           .output(outputFilePath)
           .on('end', (e) => {
-            // console.log('Conversion completed successfully', e);
+            console.log('Conversion completed successfully', e);
           })
           .on('error', (err) => {
-            // console.error('Error while converting:', err);
+            console.error('Error while converting:', err);
           })
           .run();
         const s3 = new AWS.S3({
@@ -7167,25 +7167,31 @@ const get_stream_post_after_live_stream = async (req) => {
         });
         const bucketName = 'streamingupload';
 
+        console.log(outputFilePath)
+
         const fileContent = fs.readFileSync(outputFilePath);
-        const params = {
-          Bucket: bucketName,
-          Key: store + '/mp4/' + outputFilePath,
-          Body: fileContent,
-        };
-        s3.upload(params, async (err, data) => {
-          if (err) {
-            console.error(err);
-          } else {
-            e.convertedVideo = data.Location;
-            let val = await tempTokenModel.findById(e._id)
-            val.convertedVideo = data.Location;
-            val.convertStatus = 'Converted';
-            val.save()
-            streamnotification.videoconvertStatus = 'Converted';
-            streamnotification.save();
-          }
-        });
+        console.log(fileContent)
+        if (fileContent != null) {
+          const params = {
+            Bucket: bucketName,
+            Key: store + '/mp4/' + outputFilePath,
+            Body: fileContent,
+          };
+          s3.upload(params, async (err, data) => {
+            if (err) {
+              console.error(err);
+            } else {
+              e.convertedVideo = data.Location;
+              let val = await tempTokenModel.findById(e._id)
+              val.convertedVideo = data.Location;
+              val.convertStatus = 'Converted';
+              val.save()
+              streamnotification.videoconvertStatus = 'Converted';
+              streamnotification.save();
+            }
+
+          });
+        }
       }
     })
   }

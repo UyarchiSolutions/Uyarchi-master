@@ -7111,8 +7111,9 @@ const get_stream_post_after_live_stream = async (req) => {
               created: '$streamposts.created',
               video: '$streamposts.video',
               productTitle: '$streamposts.products.productTitle',
-              streampostId: '$streamposts._id'
-
+              streampostId: '$streamposts._id',
+              uploadStreamVideo: '$streamposts.uploadStreamVideo',
+              newVideoUpload: "$streamposts.newVideoUpload"
             },
           },
           // {

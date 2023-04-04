@@ -7232,13 +7232,13 @@ const video_upload_post = async (req) => {
     const s3Upload = s3.upload(params);
 
     s3Upload.on('httpUploadProgress', function (progress) {
-      // console.log('Progress:', progress.loaded, '/', progress.total);
+      console.log('Progress:', progress.loaded, '/', progress.total);
     });
     s3Upload.send(function (err, data) {
       if (err) {
         // console.log('Error uploading file:', err);
       } else {
-        // console.log('File uploaded successfully:', data.Location);
+        console.log('File uploaded successfully:', data.Location);
         streamPost.uploadStreamVideo = data.Location;
         streamPost.newVideoUpload = 'video';
         streamPost.save();

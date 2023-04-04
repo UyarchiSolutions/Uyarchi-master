@@ -7203,12 +7203,11 @@ const update_start_end_time = async (req) => {
   }
   streamPost.streamStart = req.body.videoStart;
   streamPost.streamEnd = req.body.videoEnd;
-  streamPost.newVideoUpload = 'video';
+  streamPost.newVideoUpload = 'time';
   streamPost.save();
 
   return
 };
-const stream = require('stream');
 
 const video_upload_post = async (req) => {
   let streamPostId = req.query.id;

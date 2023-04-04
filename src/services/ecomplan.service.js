@@ -7148,7 +7148,7 @@ const get_stream_post_after_live_stream = async (req) => {
         // console.log(e)
         const inputFilePath = 'https://streamingupload.s3.ap-south-1.amazonaws.com/' + e.videoLink;
         let store = e._id.replace(/[^a-zA-Z0-9]/g, '');
-        const outputFilePath = 'output1.mp4';
+        const outputFilePath = 'output.mp4';
 
         ffmpeg(inputFilePath)
           .outputOptions('-c', 'copy')
@@ -7191,8 +7191,6 @@ const get_stream_post_after_live_stream = async (req) => {
   }
   return value;
 };
-
-
 
 const update_start_end_time = async (req) => {
   let streamPostId = req.query.id;

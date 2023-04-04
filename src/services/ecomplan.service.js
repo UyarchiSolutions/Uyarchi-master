@@ -7355,17 +7355,6 @@ const get_video_link = async (req) => {
   })
 
 
-
-  // arr.forEach((num) => {
-  //   const promise = new Promise((resolve, reject) => {
-  //     // Perform an asynchronous operation
-  //     setTimeout(() => {
-  //       resolve(`${num} is even`)
-  //     }, 1000)
-  //   })
-  //   promises.push(promise)
-  // })
-
   return Promise.all(promises)
     .then((results) => {
       console.log(results)

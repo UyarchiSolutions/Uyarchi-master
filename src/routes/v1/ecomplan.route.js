@@ -137,12 +137,10 @@ router.route('/multipleCancel').post(Ecomcontroller.multipleCancel);
 router.route('/getOrder/For/Account/Manager/:id').get(Ecomcontroller.getOrder_For_Account_Manager);
 router.route('/getDetails/:id').get(Ecomcontroller.getDetails);
 
-
 // notification Detailss
 router.route('/get/notification/getall/count').get(shopverify, Ecomcontroller.get_notification_count);
 router.route('/get/notification/viewed').put(shopverify, Ecomcontroller.get_notification_viewed);
 router.route('/get/notification/getall').get(shopverify, Ecomcontroller.get_notification_getall);
-
 
 // const changeVideoupload = multer({ dest: 'uploads/' });
 const changeVideoupload = multer({ storage: multer.memoryStorage() });
@@ -152,9 +150,10 @@ router.route('/get/post/after/complete/stream').get(Ecomcontroller.get_stream_po
 router.route('/update/start/end/time').put(Ecomcontroller.update_start_end_time);
 router.route('/update/video/post').put(changeVideo, Ecomcontroller.video_upload_post);
 
-
 router.route('/get/video/link').get(changeVideo, Ecomcontroller.get_video_link);
 
+// Loading manager
 
+router.route('/loading-manager/get-order-details/:id').get(Ecomcontroller.get_order_details_by_stream);
 
 module.exports = router;

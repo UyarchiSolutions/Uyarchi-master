@@ -7385,7 +7385,7 @@ const get_order_details_by_stream = async (id, query) => {
     {
       $match: {
         streamId: id,
-        orderStatus: { $in: ['processed', 'payment received'] },
+        orderStatus: { $in: ['processed', 'payment received','loaded'] },
       },
     },
     {

@@ -7368,6 +7368,68 @@ const get_video_link = async (req) => {
 
 };
 
+const get_order_details_by_stream = async (id, query) => {
+  console.log(query);
+  let buyerSearch = { _id: { $ne: null } };
+
+  if (query.Buyer) {
+    if (query.Buyer != '') {
+      buyerSearch = {
+        $or: [{ name: { $regex: query.buyer, $options: 'i' } }, { orderId: { $regex: query.buyer, $options: 'i' } }],
+      };
+    }
+  } else {
+  }
+
+  let values = await streamingOrder.aggregate([
+    {
+      $match: {
+        streamId: id,
+        orderStatus: { $in: ['processed', 'payment received','loaded'] },
+      },
+    },
+    {
+      $lookup: {
+        from: 'streamingorderproducts',
+        localField: '_id',
+        foreignField: 'orderId',
+        pipeline: [
+          {
+            $match: {
+              status: 'approved',
+            },
+          },
+        ],
+        as: 'approved',
+      },
+    },
+    {
+      $lookup: {
+        from: 'b2bshopclones',
+        localField: 'shopId',
+        foreignField: '_id',
+        as: 'shop',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$shop',
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        orderStatus: 1,
+        orderId: 1,
+        DispathCount: { $size: '$approved' },
+        Buyer: '$shop.SName',
+      },
+    },
+  ]);
+  return values;
+};
+
 module.exports = {
   create_Plans,
   create_Plans_addon,
@@ -7475,4 +7537,5 @@ module.exports = {
   update_start_end_time,
   video_upload_post,
   get_video_link,
+  get_order_details_by_stream,
 };

@@ -469,7 +469,6 @@ const get_notification_count = catchAsync(async (req, res) => {
   res.send(data);
 });
 
-
 const get_notification_viewed = catchAsync(async (req, res) => {
   const data = await Ecomserive.get_notification_viewed(req);
   res.send(data);
@@ -496,6 +495,11 @@ const video_upload_post = catchAsync(async (req, res) => {
 
 const get_video_link = catchAsync(async (req, res) => {
   const data = await Ecomserive.get_video_link(req);
+  res.send(data);
+});
+
+const get_order_details_by_stream = catchAsync(async (req, res) => {
+  const data = await Ecomserive.get_order_details_by_stream(req.params.id, req.query);
   res.send(data);
 });
 
@@ -588,14 +592,13 @@ module.exports = {
   getOrder_For_Account_Manager,
   getDetails,
 
-
   get_notification_count,
   get_notification_viewed,
   get_notification_getall,
 
-
   get_stream_post_after_live_stream,
   update_start_end_time,
   video_upload_post,
-  get_video_link
+  get_video_link,
+  get_order_details_by_stream,
 };

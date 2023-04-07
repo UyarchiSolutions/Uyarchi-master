@@ -18,17 +18,10 @@ router.route('/getAllAppSupplierApproved').get(auth, supplierController.getAllAp
 router.route('/already_Customer').post(supplierController.already_Customer);
 router.route('/checkApproved').get(auth, supplierController.checkApproved);
 
-router
-  .route('/:supplierId')
-  .get(supplierController.getSupplierById)
-  .put(supplierController.updateSupplierById)
-  .delete(supplierController.deleteSupplierById);
+router.route('/:supplierId').get(supplierController.getSupplierById).put(supplierController.updateSupplierById).delete(supplierController.deleteSupplierById);
 router.route('/enable/:supplierId').put(supplierController.recoverById);
 router.route('/disable/All').get(supplierController.getAllDisableSupplier);
-router
-  .route('/disable/:id')
-  .get(supplierController.getDisableSupplierById)
-  .put(supplierController.updateDisableSupplierById);
+router.route('/disable/:id').get(supplierController.getDisableSupplierById).put(supplierController.updateDisableSupplierById);
 router.route('/products/dealing/:id/').get(supplierController.productDealingWithsupplier);
 router.route('/dealing/:date').get(supplierController.getSupplierWithApprovedstatus);
 router.route('/product/supplier/:supplierId/:date').get(supplierController.getproductsWithSupplierId);
@@ -40,9 +33,7 @@ router.route('/getSupplierWith/Advanced').get(supplierController.getSupplierWith
 // create supplier fot third version
 router.route('/third/supplier').post(authorization, supplierController.createSuppliers);
 router.route('/third/supplier/:key/:page').get(supplierController.getSupplierthird);
-router
-  .route('/third/update/Supplier/:id')
-  .put(authorization, supplierupload.array('image'), supplierController.updateSupplierthird);
+router.route('/third/update/Supplier/:id').put(authorization, supplierupload.array('image'), supplierController.updateSupplierthird);
 router.route('/supplier/get/single/:id').get(supplierController.getSupplierDetails);
 router.route('/store/:id').put(authorization, supplierController.Store_lat_long);
 router.route('/getSupplier/WithverifiedUser/:key/:date/:page').get(supplierController.getSupplierWithverifiedUser);

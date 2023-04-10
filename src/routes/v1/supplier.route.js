@@ -4,8 +4,11 @@ const auth = require('../../controllers/supplierAppAuth.controller');
 const router = express.Router();
 const supplierupload = require('../../middlewares/supplier');
 const authorization = require('../../controllers/tokenVerify.controller');
-router.route('/').post(supplierController.createSupplier).get(supplierController.getAllSupplier);
 
+
+
+
+router.route('/').post(supplierController.createSupplier).get(supplierController.getAllSupplier);
 // appSupplier
 router.route('/login').post(supplierController.UsersLogin);
 router.route('/otp_verify').post(supplierController.otpVerify_Setpassword);

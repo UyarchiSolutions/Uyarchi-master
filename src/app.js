@@ -29,7 +29,7 @@ const moment = require('moment');
 // secure:false,
 // httpOnly:false // by default it's boolean value true }
 // }}));
-
+app.use(cookieparser());
 let http = require('http');
 let server = http.Server(app);
 let socketIO = require('socket.io');
@@ -132,7 +132,6 @@ const corsconfig = {
 // git develper
 app.use(cors());
 app.options('*', cors());
-app.use(cookieparser());
 //summa
 // jwt authentication
 app.use(passport.initialize());

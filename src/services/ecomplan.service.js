@@ -5690,6 +5690,32 @@ const fetchStream_Details_ById = async (id) => {
       },
     },
     {
+      $lookup: {
+        from: 'streamingorderproducts',
+        let: { streamId: '$streamRequest', productId: '$streamPost.product._id' },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  {
+                    $eq: ['$streamId', '$$streamId'],
+                  },
+                  {
+                    $eq: ['$productId', '$$productId'],
+                  },
+                  {
+                    $eq: ['$status', 'Pending'],
+                  },
+                ],
+              },
+            },
+          },
+        ],
+        as: 'streamOrderscount',
+      },
+    },
+    {
       $project: {
         _id: 1,
         Buyer: { $size: '$streamOrders' },
@@ -5697,7 +5723,7 @@ const fetchStream_Details_ById = async (id) => {
         Cancelled: { $size: '$cancelled' },
         ConfirmedQuantity: { $ifNull: ['$confirmQty.total', 0] },
         InitiatedQuantity: '$streamPost.quantity',
-        Pending: { $size: '$Pending' },
+        Pending: { $size: '$streamOrderscount' },
         confirmed: { $size: '$confirm' },
         denied: { $size: '$denied' },
         productName: '$streamPost.product.productTitle',
@@ -6319,14 +6345,20 @@ const fetch_Stream_Details_For_Buyer = async (buyerId) => {
         as: 'orders',
       },
     },
-    // {
-    //   $lookup: {
-    //     from: 'streamingorderproducts',
-    //     localField: '_id',
-    //     foreignField: 'orderId',
-    //     as: 'orders',
-    //   },
-    // },
+    {
+      $lookup: {
+        from: 'streamingorderpayments',
+        localField: '_id',
+        foreignField: 'orderId',
+        as: 'orderPayment',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$orderPayment',
+      },
+    },
     {
       $project: {
         _id: 1,
@@ -6337,9 +6369,10 @@ const fetch_Stream_Details_For_Buyer = async (buyerId) => {
         shopName: '$shop.SName',
         orderId: 1,
         totalAmount: 1,
-        bookingAmount: {
-          $cond: { if: { $eq: ['$bookingtype', 'Booking Amount'] }, then: '$Amount', else: 0 },
-        },
+        // bookingAmount: {
+        //   $cond: { if: { $eq: ['$bookingtype', 'Booking Amount'] }, then: '$Amount', else: 0 },
+        // },
+        bookingAmount: '$orderPayment.paidAmt',
         orderStatus: 1,
         orders: '$orders',
       },
@@ -7271,8 +7304,8 @@ const video_upload_post = async (req) => {
 const get_video_link = async (req) => {
   let streamId = req.query.id;
   let streamnotification = await Streamrequest.findById(streamId);
-  const promises = []
-  const arr = [1, 2, 3, 4, 5]
+  const promises = [];
+  const arr = [1, 2, 3, 4, 5];
 
   let notification = await Streamrequest.aggregate([
     { $match: { $and: [{ _id: { $eq: streamId } }] } },
@@ -7335,7 +7368,7 @@ const get_video_link = async (req) => {
               val.save();
               streamnotification.videoconvertStatus = 'Converted';
               streamnotification.save();
-              resolve(val)
+              resolve(val);
               // fs.unlink(outputFilePath, (err) => {
               //   if (err) {
               //     console.log('Error deleting file:', err);
@@ -7346,26 +7379,84 @@ const get_video_link = async (req) => {
             }
           });
         }
+      } else {
+        resolve(e);
       }
-      else {
-        resolve(e)
-      }
-    })
-    promises.push(promise)
-  })
-
+    });
+    promises.push(promise);
+  });
 
   return Promise.all(promises)
     .then((results) => {
-      console.log(results)
-      notification[0].temptokens = results
+      console.log(results);
+      notification[0].temptokens = results;
       return notification[0];
     })
     .catch((error) => {
-      console.error(error)
-    })
+      console.error(error);
+    });
+};
 
+const get_order_details_by_stream = async (id, query) => {
+  console.log(query);
+  let buyerSearch = { _id: { $ne: null } };
 
+  if (query.Buyer) {
+    if (query.Buyer != '') {
+      buyerSearch = {
+        $or: [{ name: { $regex: query.buyer, $options: 'i' } }, { orderId: { $regex: query.buyer, $options: 'i' } }],
+      };
+    }
+  } else {
+  }
+
+  let values = await streamingOrder.aggregate([
+    {
+      $match: {
+        streamId: id,
+        orderStatus: { $in: ['processed', 'payment received', 'loaded'] },
+      },
+    },
+    {
+      $lookup: {
+        from: 'streamingorderproducts',
+        localField: '_id',
+        foreignField: 'orderId',
+        pipeline: [
+          {
+            $match: {
+              status: 'approved',
+            },
+          },
+        ],
+        as: 'approved',
+      },
+    },
+    {
+      $lookup: {
+        from: 'b2bshopclones',
+        localField: 'shopId',
+        foreignField: '_id',
+        as: 'shop',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$shop',
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        orderStatus: 1,
+        orderId: 1,
+        DispathCount: { $size: '$approved' },
+        Buyer: '$shop.SName',
+      },
+    },
+  ]);
+  return values;
 };
 
 module.exports = {

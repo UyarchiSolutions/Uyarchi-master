@@ -5690,6 +5690,32 @@ const fetchStream_Details_ById = async (id) => {
       },
     },
     {
+      $lookup: {
+        from: 'streamingorderproducts',
+        let: { streamId: '$streamRequest', productId: '$streamPost.product._id' },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  {
+                    $eq: ['$streamId', '$$streamId'],
+                  },
+                  {
+                    $eq: ['$productId', '$$productId'],
+                  },
+                  {
+                    $eq: ['$status', 'Pending'],
+                  },
+                ],
+              },
+            },
+          },
+        ],
+        as: 'streamOrderscount',
+      },
+    },
+    {
       $project: {
         _id: 1,
         Buyer: { $size: '$streamOrders' },
@@ -5697,7 +5723,7 @@ const fetchStream_Details_ById = async (id) => {
         Cancelled: { $size: '$cancelled' },
         ConfirmedQuantity: { $ifNull: ['$confirmQty.total', 0] },
         InitiatedQuantity: '$streamPost.quantity',
-        Pending: { $size: '$Pending' },
+        Pending: { $size: '$streamOrderscount' },
         confirmed: { $size: '$confirm' },
         denied: { $size: '$denied' },
         productName: '$streamPost.product.productTitle',

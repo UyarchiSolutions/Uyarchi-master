@@ -1,4 +1,4 @@
-const OTP = require('../models/saveOtp.model');
+const {OTP} = require('../models/saveOtp.model');
 const httpStatus = require('http-status');
 const ApiError = require('../utils/ApiError');
 const token = require('../services/token.service');

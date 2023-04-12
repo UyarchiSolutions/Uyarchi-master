@@ -5,7 +5,7 @@ const config = require('../config/config');
 const userService = require('./user.service');
 const { Token } = require('../models');
 const ApiError = require('../utils/ApiError');
-const { tokenTypes } = require('../config/tokens');
+const { tokenTypes, verifyOTP } = require('../config/tokens');
 const b2busers = require('../models/B2Busers.model');
 /**
  * Generate token
@@ -172,6 +172,38 @@ const generateAuthTokens_supplier = async (user) => {
     },
   };
 };
+const generateAuthTokens_verifedOTP = async (user) => {
+  const accessTokenExpires = moment().add(30, 'minutes');
+  const accessToken = generateToken(user._id, user, accessTokenExpires, verifyOTP.ACCESS);
+  const refreshTokenExpires = moment().add(30, 'minutes');
+  const refreshToken = generateToken(user._id, user, refreshTokenExpires, verifyOTP.REFRESH);
+  return {
+    access: {
+      token: accessToken,
+      expires: accessTokenExpires.toDate(),
+    },
+    refresh: {
+      token: refreshToken,
+      expires: refreshTokenExpires.toDate(),
+    },
+  };
+};
+const generateAuthTokens_sellerApp = async (user) => {
+  const accessTokenExpires = moment().add(config.jwt.accessExpirationMinutes, 'days');
+  const accessToken = generateToken(user._id, user, accessTokenExpires, verifyOTP.ACCESS);
+  const refreshTokenExpires = moment().add(config.jwt.refreshExpirationDays, 'days');
+  const refreshToken = generateToken(user._id, user, refreshTokenExpires, verifyOTP.REFRESH);
+  return {
+    access: {
+      token: accessToken,
+      expires: accessTokenExpires.toDate(),
+    },
+    refresh: {
+      token: refreshToken,
+      expires: refreshTokenExpires.toDate(),
+    },
+  };
+};
 
 module.exports = {
   generateToken,
@@ -182,4 +214,6 @@ module.exports = {
   generateVerifyEmailToken,
   generateAuthTokens_forget,
   generateAuthTokens_shop,
+  generateAuthTokens_verifedOTP,
+  generateAuthTokens_sellerApp
 };

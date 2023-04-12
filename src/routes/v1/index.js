@@ -118,7 +118,7 @@ const defaultRoutes = [
     route: purchasePlan,
   },
   {
-    path: 'Seller',
+    path: '/seller',
     route: SellerRoute,
   },
   {

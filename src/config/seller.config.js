@@ -11,10 +11,10 @@ const Otp = async (mobile, user) => {
   let OTPCODE = Math.floor(100000 + Math.random() * 900000);
   message = urlencodeed(
     'Dear ' +
-      user.SName +
-      ', thank you for registering with Kapture(An Uyarchi Solutions company). Your OTP for logging into the account is ' +
-      OTPCODE +
-      ' .'
+    user.contactName +
+    ', thank you for registering with Kapture(An Uyarchi Solutions company). Your OTP for logging into the account is ' +
+    OTPCODE +
+    ' .'
   );
   data = 'send/?apikey=' + apiKey + '&numbers=' + numbers + '&sender=' + sender + '&message=' + message;
   var options = 'https://api.textlocal.in/' + data;
@@ -33,10 +33,10 @@ callback = function (response) {
   });
 };
 
-const {OTP} = require('../models/saveOtp.model');
+const { OTP, sellerOTP } = require('../models/saveOtp.model');
 
 const saveOtp = async (number, otp, user) => {
-  return await OTP.create({
+  return await sellerOTP.create({
     OTP: otp,
     mobileNumber: number,
     userId: user._id,

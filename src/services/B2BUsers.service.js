@@ -10,7 +10,7 @@ const TextlocalChat = require('../config/chat-bot.OTP');
 const Verfy = require('../config/OtpVerify');
 const WardAssign = require('../models/wardAssign.model');
 const { MarketClone } = require('../models/market.model');
-const OTP = require('../models/saveOtp.model');
+const {OTP} = require('../models/saveOtp.model');
 const ChatBotOTP = require('../models/chatBot.OTP.model');
 
 const moment = require('moment');

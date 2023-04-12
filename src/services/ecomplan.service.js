@@ -2989,8 +2989,8 @@ const regisetr_strean_instrest = async (req) => {
       participents.noOfParticipants > count
         ? 'Confirmed'
         : participents.noOfParticipants + participents.noOfParticipants / 2 > count
-          ? 'RAC'
-          : 'Waiting';
+        ? 'RAC'
+        : 'Waiting';
     await Dates.create_date(findresult);
   } else {
     if (findresult.status != 'Registered') {
@@ -2999,8 +2999,8 @@ const regisetr_strean_instrest = async (req) => {
         participents.noOfParticipants > count
           ? 'Confirmed'
           : participents.noOfParticipants + participents.noOfParticipants / 2 > count
-            ? 'RAC'
-            : 'Waiting';
+          ? 'RAC'
+          : 'Waiting';
       findresult.eligible = participents.noOfParticipants > count;
       findresult.status = 'Registered';
       await Dates.create_date(findresult);
@@ -6375,6 +6375,7 @@ const fetch_Stream_Details_For_Buyer = async (buyerId) => {
         bookingAmount: '$orderPayment.paidAmt',
         orderStatus: 1,
         orders: '$orders',
+        BalanceAmt: { $subtract: ['$totalAmount', '$orderPayment.paidAmt'] },
       },
     },
   ]);

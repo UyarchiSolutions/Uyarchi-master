@@ -6327,6 +6327,74 @@ const fetch_Stream_Details_For_Buyer = async (buyerId) => {
         localField: '_id',
         foreignField: 'orderId',
         pipeline: [
+          { $match: { status: 'cancelled' } },
+          { $group: { _id: null, amt: { $sum: { $multiply: ['$purchase_quantity', '$purchase_price'] } } } },
+        ],
+        as: 'cancelAmount',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$cancelAmount',
+      },
+    },
+    {
+      $lookup: {
+        from: 'streamingorderproducts',
+        localField: '_id',
+        foreignField: 'orderId',
+        pipeline: [
+          { $match: { status: 'rejected' } },
+          { $group: { _id: null, amt: { $sum: { $multiply: ['$purchase_quantity', '$purchase_price'] } } } },
+        ],
+        as: 'RejectAmount',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$RejectAmount',
+      },
+    },
+    {
+      $lookup: {
+        from: 'streamingorderproducts',
+        localField: '_id',
+        foreignField: 'orderId',
+        pipeline: [
+          { $match: { status: 'denied' } },
+          { $group: { _id: null, amt: { $sum: { $multiply: ['$purchase_quantity', '$purchase_price'] } } } },
+        ],
+        as: 'DeniedAmount',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$DeniedAmount',
+      },
+    },
+    {
+      $addFields: {
+        RejectAmount: '$RejectAmount.amt',
+        DeniedAmount: '$DeniedAmount.amt',
+        cancelAmount: '$cancelAmount.amt',
+      },
+    },
+    // {
+    //   $addFields: {
+    //     Amount: {
+    //       $add: [{ $ifnull: ['$RejectAmount', 0] }, { $ifNull: ['$DeniedAmount', 0] }, { $ifNull: ['$cancelAmount', 0] }],
+    //     },
+    //   },
+    // },
+    {
+      $lookup: {
+        from: 'streamingorderproducts',
+        localField: '_id',
+        foreignField: 'orderId',
+        pipeline: [
           {
             $lookup: {
               from: 'products',
@@ -6375,7 +6443,9 @@ const fetch_Stream_Details_For_Buyer = async (buyerId) => {
         bookingAmount: '$orderPayment.paidAmt',
         orderStatus: 1,
         orders: '$orders',
-        BalanceAmt: { $subtract: ['$totalAmount', '$orderPayment.paidAmt'] },
+        RejectAmount: { $ifNull: ['$RejectAmount', 0] },
+        DeniedAmount: { $ifNull: ['$DeniedAmount', 0] },
+        cancelAmount: { $ifNull: ['$cancelAmount', 0] },
       },
     },
   ]);

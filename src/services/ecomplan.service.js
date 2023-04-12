@@ -6437,13 +6437,13 @@ const fetch_Stream_Details_For_Buyer = async (buyerId) => {
         shopName: '$shop.SName',
         orderId: 1,
         totalAmount: 1,
-        // bookingAmount: {
-        //   $cond: { if: { $eq: ['$bookingtype', 'Booking Amount'] }, then: '$Amount', else: 0 },
-        // },
         bookingAmount: '$orderPayment.paidAmt',
+        balanceAmount: { $subtract: ['$totalAmount', { $ifNull: ['$orderPayment.paidAmt', 0] }] },
         orderStatus: 1,
         orders: '$orders',
-        addedAmount:{$add:[ { $ifNull: ['$RejectAmount', 0] },{ $ifNull: ['$DeniedAmount', 0] },{ $ifNull: ['$cancelAmount', 0] }]},
+        addedAmount: {
+          $add: [{ $ifNull: ['$RejectAmount', 0] }, { $ifNull: ['$DeniedAmount', 0] }, { $ifNull: ['$cancelAmount', 0] }],
+        },
         RejectAmount: { $ifNull: ['$RejectAmount', 0] },
         DeniedAmount: { $ifNull: ['$DeniedAmount', 0] },
         cancelAmount: { $ifNull: ['$cancelAmount', 0] },

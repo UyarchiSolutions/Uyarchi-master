@@ -2989,8 +2989,8 @@ const regisetr_strean_instrest = async (req) => {
       participents.noOfParticipants > count
         ? 'Confirmed'
         : participents.noOfParticipants + participents.noOfParticipants / 2 > count
-          ? 'RAC'
-          : 'Waiting';
+        ? 'RAC'
+        : 'Waiting';
     await Dates.create_date(findresult);
   } else {
     if (findresult.status != 'Registered') {
@@ -2999,8 +2999,8 @@ const regisetr_strean_instrest = async (req) => {
         participents.noOfParticipants > count
           ? 'Confirmed'
           : participents.noOfParticipants + participents.noOfParticipants / 2 > count
-            ? 'RAC'
-            : 'Waiting';
+          ? 'RAC'
+          : 'Waiting';
       findresult.eligible = participents.noOfParticipants > count;
       findresult.status = 'Registered';
       await Dates.create_date(findresult);
@@ -6327,6 +6327,74 @@ const fetch_Stream_Details_For_Buyer = async (buyerId) => {
         localField: '_id',
         foreignField: 'orderId',
         pipeline: [
+          { $match: { status: 'cancelled' } },
+          { $group: { _id: null, amt: { $sum: { $multiply: ['$purchase_quantity', '$purchase_price'] } } } },
+        ],
+        as: 'cancelAmount',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$cancelAmount',
+      },
+    },
+    {
+      $lookup: {
+        from: 'streamingorderproducts',
+        localField: '_id',
+        foreignField: 'orderId',
+        pipeline: [
+          { $match: { status: 'rejected' } },
+          { $group: { _id: null, amt: { $sum: { $multiply: ['$purchase_quantity', '$purchase_price'] } } } },
+        ],
+        as: 'RejectAmount',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$RejectAmount',
+      },
+    },
+    {
+      $lookup: {
+        from: 'streamingorderproducts',
+        localField: '_id',
+        foreignField: 'orderId',
+        pipeline: [
+          { $match: { status: 'denied' } },
+          { $group: { _id: null, amt: { $sum: { $multiply: ['$purchase_quantity', '$purchase_price'] } } } },
+        ],
+        as: 'DeniedAmount',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$DeniedAmount',
+      },
+    },
+    {
+      $addFields: {
+        RejectAmount: '$RejectAmount.amt',
+        DeniedAmount: '$DeniedAmount.amt',
+        cancelAmount: '$cancelAmount.amt',
+      },
+    },
+    // {
+    //   $addFields: {
+    //     Amount: {
+    //       $add: [{ $ifnull: ['$RejectAmount', 0] }, { $ifNull: ['$DeniedAmount', 0] }, { $ifNull: ['$cancelAmount', 0] }],
+    //     },
+    //   },
+    // },
+    {
+      $lookup: {
+        from: 'streamingorderproducts',
+        localField: '_id',
+        foreignField: 'orderId',
+        pipeline: [
           {
             $lookup: {
               from: 'products',
@@ -6369,12 +6437,16 @@ const fetch_Stream_Details_For_Buyer = async (buyerId) => {
         shopName: '$shop.SName',
         orderId: 1,
         totalAmount: 1,
-        // bookingAmount: {
-        //   $cond: { if: { $eq: ['$bookingtype', 'Booking Amount'] }, then: '$Amount', else: 0 },
-        // },
         bookingAmount: '$orderPayment.paidAmt',
+        balanceAmount: { $subtract: ['$totalAmount', { $ifNull: ['$orderPayment.paidAmt', 0] }] },
         orderStatus: 1,
         orders: '$orders',
+        addedAmount: {
+          $add: [{ $ifNull: ['$RejectAmount', 0] }, { $ifNull: ['$DeniedAmount', 0] }, { $ifNull: ['$cancelAmount', 0] }],
+        },
+        RejectAmount: { $ifNull: ['$RejectAmount', 0] },
+        DeniedAmount: { $ifNull: ['$DeniedAmount', 0] },
+        cancelAmount: { $ifNull: ['$cancelAmount', 0] },
       },
     },
   ]);
@@ -6708,10 +6780,22 @@ const getStreaming_orders_By_orders_for_pay = async (id) => {
     },
   ]);
 
+  let Approved = await streamingorderProduct.aggregate([
+    {
+      $match: {
+        orderId: id,
+        status: 'approved',
+      },
+    },
+    {
+      $group: { _id: null, total: { $sum: { $multiply: ['$purchase_quantity', '$purchase_price'] } } },
+    },
+  ]);
   return {
     values: values,
     payment: payment.length != 0 ? payment[0] : {},
     Rejected: Rejected.length != 0 ? Rejected[0].total : 0,
+    Approved: Approved.length != 0 ? Approved[0].total : 0,
     Denied: Denied.length != 0 ? Denied[0].total : 0,
     cancelled: cancelled.length != 0 ? cancelled[0].total : 0,
     orderedAmt: orderedAmt.length > 0 ? orderedAmt[0] : {},

@@ -8,6 +8,7 @@ const ecommulter = require('../../middlewares/ecomstrean');
 const shopverify = require('../../controllers/shoptokenverify.controller');
 const subhostVerify = require('../../controllers/subhostVefify.controller');
 const uploadimage = require('../../middlewares/upload');
+const { SetPass, SellerAuth } = require('../../controllers/sellerAuth.controller');
 
 const storage = multer.memoryStorage({
   destination: function (req, res, callback) {
@@ -29,10 +30,10 @@ router.route('/update/one/plan').put(Ecomcontroller.update_one_Plans);
 router.route('/delete/one/plan').delete(Ecomcontroller.delete_one_Plans);
 
 // post APIS
-router.route('/create/post').post(supplierAuth, uploadimage.fields([{ name: 'galleryImages' }]), Ecomcontroller.create_post);
+router.route('/create/post').post(SellerAuth, uploadimage.fields([{ name: 'galleryImages' }]), Ecomcontroller.create_post);
 router.route('/create/post/teaser').post(upload, Ecomcontroller.create_post_teaser);
-router.route('/get/all/post').get(supplierAuth, Ecomcontroller.get_all_post);
-router.route('/get/all/post/pagenation').get(supplierAuth, Ecomcontroller.get_all_Post_with_page);
+router.route('/get/all/post').get(SellerAuth, Ecomcontroller.get_all_post);
+router.route('/get/all/post/pagenation').get(SellerAuth, Ecomcontroller.get_all_Post_with_page);
 
 router.route('/get/one/post').get(supplierAuth, Ecomcontroller.get_one_post);
 router
@@ -42,8 +43,8 @@ router.route('/delete/one/post').delete(supplierAuth, Ecomcontroller.delete_one_
 router.route('/remove/one/post').put(supplierAuth, Ecomcontroller.remove_one_post);
 
 // Stream Request APIS
-router.route('/create/stream/one').post(supplierAuth, Ecomcontroller.create_stream_one);
-router.route('/create/stream/one').put(supplierAuth, Ecomcontroller.find_and_update_one);
+router.route('/create/stream/one').post(SellerAuth, Ecomcontroller.create_stream_one);
+router.route('/create/stream/one').put(SellerAuth, Ecomcontroller.find_and_update_one);
 router.route('/create/stream/one/image').post(ecommulter.single('image'), Ecomcontroller.create_stream_one_image);
 router.route('/create/stream/one/video').post(upload, Ecomcontroller.create_stream_one_video);
 router.route('/create/stream/two').post(supplierAuth, Ecomcontroller.create_stream_two);
@@ -67,7 +68,7 @@ router.route('/steam/end/now').put(Ecomcontroller.end_stream);
 
 // live Stream APIS
 
-router.route('/golive/host/view').get(supplierAuth, Ecomcontroller.go_live_stream_host);
+router.route('/golive/host/view').get(SellerAuth, Ecomcontroller.go_live_stream_host);
 router.route('/golive/host/view/subhost').get(subhostVerify, Ecomcontroller.get_subhost_token);
 router.route('/golive/subhost/view').get(subhostVerify, Ecomcontroller.go_live_stream_host_subhost);
 

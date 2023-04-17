@@ -35,34 +35,34 @@ router.route('/create/post/teaser').post(upload, Ecomcontroller.create_post_teas
 router.route('/get/all/post').get(SellerAuth, Ecomcontroller.get_all_post);
 router.route('/get/all/post/pagenation').get(SellerAuth, Ecomcontroller.get_all_Post_with_page);
 
-router.route('/get/one/post').get(supplierAuth, Ecomcontroller.get_one_post);
+router.route('/get/one/post').get(SellerAuth, Ecomcontroller.get_one_post);
 router
   .route('/update/one/post')
-  .put(supplierAuth, uploadimage.fields([{ name: 'galleryImages' }]), Ecomcontroller.update_one_post);
-router.route('/delete/one/post').delete(supplierAuth, Ecomcontroller.delete_one_post);
-router.route('/remove/one/post').put(supplierAuth, Ecomcontroller.remove_one_post);
+  .put(SellerAuth, uploadimage.fields([{ name: 'galleryImages' }]), Ecomcontroller.update_one_post);
+router.route('/delete/one/post').delete(SellerAuth, Ecomcontroller.delete_one_post);
+router.route('/remove/one/post').put(SellerAuth, Ecomcontroller.remove_one_post);
 
 // Stream Request APIS
 router.route('/create/stream/one').post(SellerAuth, Ecomcontroller.create_stream_one);
 router.route('/create/stream/one').put(SellerAuth, Ecomcontroller.find_and_update_one);
 router.route('/create/stream/one/image').post(ecommulter.single('image'), Ecomcontroller.create_stream_one_image);
 router.route('/create/stream/one/video').post(upload, Ecomcontroller.create_stream_one_video);
-router.route('/create/stream/two').post(supplierAuth, Ecomcontroller.create_stream_two);
-router.route('/get/all/stream').get(supplierAuth, Ecomcontroller.get_all_stream);
-router.route('/get/one/stream').get(supplierAuth, Ecomcontroller.get_one_stream);
-router.route('/get/one/stream/assign/host').get(supplierAuth, Ecomcontroller.get_one_stream_assign_host);
-router.route('/get/my/stream/step/two').get(supplierAuth, Ecomcontroller.get_one_stream_step_two);
-router.route('/update/one/stream').put(supplierAuth, Ecomcontroller.update_one_stream);
-router.route('/update/step/one/stream').put(supplierAuth, Ecomcontroller.update_one_stream_one);
-router.route('/update/step/two/stream').put(supplierAuth, Ecomcontroller.update_one_stream_two);
-router.route('/delete/one/stream').delete(supplierAuth, Ecomcontroller.delete_one_stream);
+router.route('/create/stream/two').post(SellerAuth, Ecomcontroller.create_stream_two);
+router.route('/get/all/stream').get(SellerAuth, Ecomcontroller.get_all_stream);
+router.route('/get/one/stream').get(SellerAuth, Ecomcontroller.get_one_stream);
+router.route('/get/one/stream/assign/host').get(SellerAuth, Ecomcontroller.get_one_stream_assign_host);
+router.route('/get/my/stream/step/two').get(SellerAuth, Ecomcontroller.get_one_stream_step_two);
+router.route('/update/one/stream').put(SellerAuth, Ecomcontroller.update_one_stream);
+router.route('/update/step/one/stream').put(SellerAuth, Ecomcontroller.update_one_stream_one);
+router.route('/update/step/two/stream').put(SellerAuth, Ecomcontroller.update_one_stream_two);
+router.route('/delete/one/stream').delete(SellerAuth, Ecomcontroller.delete_one_stream);
 router.route('/getall/admin/streams').get(Ecomcontroller.get_all_admin);
 router.route('/update/approved').put(Ecomcontroller.update_approved);
 router.route('/update/reject').put(Ecomcontroller.update_reject);
-router.route('/my/approved/streams').get(supplierAuth, Ecomcontroller.get_all_streams);
-router.route('/subhost/assign/streams').get(subhostVerify, Ecomcontroller.get_subhost_streams);
-router.route('/allot/stream/subhost').put(supplierAuth, Ecomcontroller.allot_stream_subhost);
-router.route('/cancel/stream').put(supplierAuth, Ecomcontroller.cancel_stream);
+router.route('/my/approved/streams').get(SellerAuth, Ecomcontroller.get_all_streams);
+router.route('/subhost/assign/streams').get(SellerAuth, Ecomcontroller.get_subhost_streams);
+router.route('/allot/stream/subhost').put(SellerAuth, Ecomcontroller.allot_stream_subhost);
+router.route('/cancel/stream').put(SellerAuth, Ecomcontroller.cancel_stream);
 router.route('/cancel/stream/admin').put(Ecomcontroller.cancel_stream);
 router.route('/steam/end/now').put(Ecomcontroller.end_stream);
 
@@ -95,7 +95,7 @@ router.route('/purchase/link/plan').get(Ecomcontroller.purchase_link_plan_get);
 
 router.route('/get/stream/post/all').get(Ecomcontroller.get_stream_post);
 
-router.route('/get/stream/all/alert').get(supplierAuth, Ecomcontroller.get_stream_alert);
+router.route('/get/stream/all/alert').get(SellerAuth, Ecomcontroller.get_stream_alert);
 router.route('/get/stream/cancel/admin').get(Ecomcontroller.get_cancel_stream);
 router.route('/get/admin/completed/stream').get(Ecomcontroller.get_completed_stream);
 router.route('/get/admin/completed/stream/byid').get(Ecomcontroller.get_completed_stream_byid);

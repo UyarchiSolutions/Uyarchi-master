@@ -200,7 +200,7 @@ const get_all_Post_with_page_live = async (req) => {
     let date = filterdate.split(',');
     if (date.length == 2) {
       dateMatch = {
-        $and: [{ DateIso: { $gte: new Date(date[0]).getTime() } }, { DateIso: { $lte: new Date(date[1]).getTime() } }],
+        $and: [{ DateIso: { $gte: new Date(date[0] + " 0:0:0").getTime() } }, { DateIso: { $lte: new Date(date[1] + " 23:59:59").getTime() } }],
       };
     }
     // console.log(date, dateMatch)
@@ -358,7 +358,7 @@ const get_all_Post_with_page_live = async (req) => {
     {
       $unwind: '$streamrequestposts',
     },
-    { $skip: 10 * page + 1 },
+    { $skip: 10 * (page + 1) },
     { $limit: 10 },
   ]);
   return { value, next: total.length != 0 };
@@ -373,7 +373,7 @@ const get_all_Post_with_page_completed = async (req) => {
     let date = filterdate.split(',');
     if (date.length == 2) {
       dateMatch = {
-        $and: [{ DateIso: { $gte: new Date(date[0]).getTime() } }, { DateIso: { $lte: new Date(date[1]).getTime() } }],
+        $and: [{ DateIso: { $gte: new Date(date[0] + " 0:0:0").getTime() } }, { DateIso: { $lte: new Date(date[1] + " 23:59:59").getTime() } }],
       };
     }
     // console.log(date, dateMatch)
@@ -549,7 +549,7 @@ const get_all_Post_with_page_completed = async (req) => {
     {
       $unwind: '$streamrequestposts',
     },
-    { $skip: 10 * page + 1 },
+    { $skip: 10 * (page + 1) },
     { $limit: 10 },
   ]);
   return { value, next: total.length != 0 };
@@ -564,7 +564,7 @@ const get_all_Post_with_page_exhausted = async (req) => {
     let date = filterdate.split(',');
     if (date.length == 2) {
       dateMatch = {
-        $and: [{ DateIso: { $gte: new Date(date[0]).getTime() } }, { DateIso: { $lte: new Date(date[1]).getTime() } }],
+        $and: [{ DateIso: { $gte: new Date(date[0] + " 0:0:0").getTime() } }, { DateIso: { $lte: new Date(date[1] + " 23:59:59").getTime() } }],
       };
     }
     // console.log(date, dateMatch)
@@ -623,7 +623,7 @@ const get_all_Post_with_page_exhausted = async (req) => {
   const total = await StreamPost.aggregate([
     { $match: { $and: [{ suppierId: { $eq: req.userId } }, { isUsed: { $eq: false } }] } },
     { $sort: { DateIso: -1 } },
-    { $skip: 10 * page + 1 },
+    { $skip: 10 * (page + 1) },
     { $limit: 10 },
   ]);
   return { value, next: total.length != 0 };
@@ -638,8 +638,8 @@ const get_all_Post_with_page_removed = async (req) => {
     let date = filterdate.split(',');
     if (date.length == 2) {
       dateMatch = {
-        $and: [{ DateIso: { $gte: new Date(date[0]).getTime() } }, { DateIso: { $lte: new Date(date[1]).getTime() } }],
-      };
+        $and: [{ DateIso: { $gte: new Date(date[0] + " 0:0:0").getTime() } }, { DateIso: { $lte: new Date(date[1] + " 23:59:59").getTime() } }],
+      };;
     }
     // console.log(date, dateMatch)
   }
@@ -787,7 +787,7 @@ const get_all_Post_with_page_removed = async (req) => {
       $unwind: '$streamrequestposts',
     },
     { $sort: { DateIso: -1 } },
-    { $skip: 10 * page + 1 },
+    { $skip: 10 * (page + 1) },
     { $limit: 10 },
   ]);
   return { value, next: total.length != 0 };
@@ -804,7 +804,7 @@ const get_all_Post_with_page_all = async (req, status) => {
     if (date.length == 2) {
       console.log();
       dateMatch = {
-        $and: [{ DateIso: { $gte: new Date(date[0]).getTime() } }, { DateIso: { $lte: new Date(date[1]).getTime() } }],
+        $and: [{ DateIso: { $gte: new Date(date[0] + " 0:0:0").getTime() } }, { DateIso: { $lte: new Date(date[1] + " 23:59:59").getTime() } }],
       };
     }
     console.log(date, dateMatch);
@@ -932,7 +932,7 @@ const get_all_Post_with_page_all = async (req, status) => {
   const total = await StreamPost.aggregate([
     { $match: { $and: [dateMatch, { suppierId: { $eq: req.userId } }] } },
     { $sort: { DateIso: -1 } },
-    { $skip: 10 * page + 1 },
+    { $skip: 10 * (page + 1) },
     { $limit: 10 },
   ]);
   return { value, next: total.length != 0 };
@@ -949,7 +949,7 @@ const get_all_Post_with_page = async (req, status) => {
     if (date.length == 2) {
       console.log();
       dateMatch = {
-        $and: [{ DateIso: { $gte: new Date(date[0]).getTime() } }, { DateIso: { $lte: new Date(date[1]).getTime() } }],
+        $and: [{ DateIso: { $gte: new Date(date[0] + " 0:0:0").getTime() } }, { DateIso: { $lte: new Date(date[1] + " 23:59:59").getTime() } }],
       };
     }
     console.log(date, dateMatch);
@@ -1078,7 +1078,7 @@ const get_all_Post_with_page = async (req, status) => {
   const total = await StreamPost.aggregate([
     { $match: { $and: [dateMatch, { suppierId: { $eq: req.userId } }, { status: { $eq: status } }] } },
     { $sort: { DateIso: -1 } },
-    { $skip: 10 * page + 1 },
+    { $skip: 10 * (page + 1) },
     { $limit: 10 },
   ]);
   return { value, next: total.length != 0 };
@@ -1093,7 +1093,7 @@ const get_all_Post_with_page_assigned = async (req) => {
     let date = filterdate.split(',');
     if (date.length == 2) {
       dateMatch = {
-        $and: [{ DateIso: { $gte: new Date(date[0]).getTime() } }, { DateIso: { $lte: new Date(date[1]).getTime() } }],
+        $and: [{ DateIso: { $gte: new Date(date[0] + " 0:0:0").getTime() } }, { DateIso: { $lte: new Date(date[1] + " 23:59:59").getTime() } }],
       };
     }
     // console.log(date, dateMatch)
@@ -1241,7 +1241,7 @@ const get_all_Post_with_page_assigned = async (req) => {
       $unwind: '$streamrequestposts',
     },
     { $sort: { DateIso: -1 } },
-    { $skip: 10 * page + 1 },
+    { $skip: 10 * (page + 1) },
     { $limit: 10 },
   ]);
   return { value, next: total.length != 0 };
@@ -1344,7 +1344,7 @@ const find_and_update_one = async (req) => {
   console.log(posts, req.body.addpost);
   req.body.addpost.forEach(async (a) => {
     posts.push(a);
-    await StreamPost.findByIdAndUpdate({ _id: a }, { isUsed: true }, { new: true });
+    await StreamPost.findByIdAndUpdate({ _id: a }, { isUsed: true, status: 'Assigned' }, { new: true });
     let post = await StreamrequestPost.create({ suppierId: req.userId, streamRequest: req.query.id, postId: a });
     await Dates.create_date(post);
   });
@@ -1481,8 +1481,11 @@ const get_all_stream = async (req) => {
     { $skip: 10 * page },
     { $limit: 10 },
   ]);
-  const total = await Streamrequest.aggregate([{ $match: { $and: [{ suppierId: { $eq: req.userId } }] } }]);
-  return { value, total: total.length };
+  const total = await Streamrequest.aggregate([
+    { $match: { $and: [{ suppierId: { $eq: req.userId } }] } },
+    { $skip: 10 * (page + 1) },
+    { $limit: 10 },]);
+  return { value, next: total.length != 0 };
 };
 const get_one_stream = async (req) => {
   let id = req.query.id;

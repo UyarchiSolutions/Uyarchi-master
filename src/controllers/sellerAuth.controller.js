@@ -19,7 +19,7 @@ const SellerAuth = async (req, res, next) => {
     if (!userss) {
       return res.send(httpStatus.UNAUTHORIZED, 'Seller Not Found');
     }
-    req.sellerID = payload['_id'];
+    req.userId = payload['_id'];
     req.seller = payload.userRole;
     return next();
   } catch {

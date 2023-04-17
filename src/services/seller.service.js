@@ -48,7 +48,7 @@ const verifyOTP = async (req) => {
 
 const setPassword = async (req) => {
   let body = req.body;
-  let sellerId = req.sellerID;
+  let sellerId = req.userId;
   let seller = await Seller.findById(sellerId);
 
   if (!seller) {
@@ -105,7 +105,7 @@ const alreadyUser = async (req) => {
 
 const createSubhost = async (req) => {
   let body = req.body;
-  let sellerID = req.sellerID;
+  let sellerID = req.userId;
   let value = await Seller.findOne({ $or: [{ email: body.email }, { mobileNumber: body.mobileNumber }] });
 
   if (value) {
@@ -123,7 +123,7 @@ const createSubhost = async (req) => {
 
 const createSubUser = async (req) => {
   let body = req.body;
-  let sellerID = req.sellerID;
+  let sellerID = req.userId;
   let value = await Seller.findOne({ $or: [{ email: body.email }, { mobileNumber: body.mobileNumber }] });
 
   if (value) {
@@ -139,7 +139,7 @@ const createSubUser = async (req) => {
 };
 
 const mydetails = async (req) => {
-  let sellerID = req.sellerID;
+  let sellerID = req.userId;
   let value = await Seller.findById(sellerID)
 
   if (!value) {
@@ -176,7 +176,7 @@ const UpdateSellerById = async (id, body) => {
 
 
 const getsubhostAll = async (req) => {
-  let sellerID = req.sellerID;
+  let sellerID = req.userId;
   let values = await Seller.aggregate([
     { $match: { $and: [{ mainSeller: { $eq: sellerID } }, { sellerType: { $eq: "sub-host" } }] } }
   ])
@@ -184,7 +184,7 @@ const getsubhostAll = async (req) => {
 
 };
 const getsubuserAll = async (req) => {
-  let sellerID = req.sellerID;
+  let sellerID = req.userId;
   let values = await Seller.aggregate([
     { $match: { $and: [{ mainSeller: { $eq: sellerID } }, { sellerType: { $eq: "sub-user" } }] } }
   ])

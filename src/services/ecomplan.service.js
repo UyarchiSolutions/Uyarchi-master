@@ -358,8 +358,10 @@ const get_all_Post_with_page_live = async (req) => {
     {
       $unwind: '$streamrequestposts',
     },
+    { $skip: 10 * page + 1 },
+    { $limit: 10 },
   ]);
-  return { value, total: total.length };
+  return { value, next: total.length != 0 };
 };
 
 const get_all_Post_with_page_completed = async (req) => {
@@ -547,8 +549,10 @@ const get_all_Post_with_page_completed = async (req) => {
     {
       $unwind: '$streamrequestposts',
     },
+    { $skip: 10 * page + 1 },
+    { $limit: 10 },
   ]);
-  return { value, total: total.length };
+  return { value, next: total.length != 0 };
 };
 
 const get_all_Post_with_page_exhausted = async (req) => {
@@ -619,8 +623,10 @@ const get_all_Post_with_page_exhausted = async (req) => {
   const total = await StreamPost.aggregate([
     { $match: { $and: [{ suppierId: { $eq: req.userId } }, { isUsed: { $eq: false } }] } },
     { $sort: { DateIso: -1 } },
+    { $skip: 10 * page + 1 },
+    { $limit: 10 },
   ]);
-  return { value, total: total.length };
+  return { value, next: total.length != 0 };
 };
 
 const get_all_Post_with_page_removed = async (req) => {
@@ -781,8 +787,10 @@ const get_all_Post_with_page_removed = async (req) => {
       $unwind: '$streamrequestposts',
     },
     { $sort: { DateIso: -1 } },
+    { $skip: 10 * page + 1 },
+    { $limit: 10 },
   ]);
-  return { value, total: total.length };
+  return { value, next: total.length != 0 };
 };
 
 const get_all_Post_with_page_all = async (req, status) => {
@@ -924,8 +932,10 @@ const get_all_Post_with_page_all = async (req, status) => {
   const total = await StreamPost.aggregate([
     { $match: { $and: [dateMatch, { suppierId: { $eq: req.userId } }] } },
     { $sort: { DateIso: -1 } },
+    { $skip: 10 * page + 1 },
+    { $limit: 10 },
   ]);
-  return { value, total: total.length };
+  return { value, next: total.length != 0 };
 };
 
 const get_all_Post_with_page = async (req, status) => {
@@ -1068,8 +1078,10 @@ const get_all_Post_with_page = async (req, status) => {
   const total = await StreamPost.aggregate([
     { $match: { $and: [dateMatch, { suppierId: { $eq: req.userId } }, { status: { $eq: status } }] } },
     { $sort: { DateIso: -1 } },
+    { $skip: 10 * page + 1 },
+    { $limit: 10 },
   ]);
-  return { value, total: total.length };
+  return { value, next: total.length != 0 };
 };
 
 const get_all_Post_with_page_assigned = async (req) => {
@@ -1229,8 +1241,10 @@ const get_all_Post_with_page_assigned = async (req) => {
       $unwind: '$streamrequestposts',
     },
     { $sort: { DateIso: -1 } },
+    { $skip: 10 * page + 1 },
+    { $limit: 10 },
   ]);
-  return { value, total: total.length };
+  return { value, next: total.length != 0 };
 };
 
 const get_one_Post = async (req) => {
@@ -2989,8 +3003,8 @@ const regisetr_strean_instrest = async (req) => {
       participents.noOfParticipants > count
         ? 'Confirmed'
         : participents.noOfParticipants + participents.noOfParticipants / 2 > count
-        ? 'RAC'
-        : 'Waiting';
+          ? 'RAC'
+          : 'Waiting';
     await Dates.create_date(findresult);
   } else {
     if (findresult.status != 'Registered') {
@@ -2999,8 +3013,8 @@ const regisetr_strean_instrest = async (req) => {
         participents.noOfParticipants > count
           ? 'Confirmed'
           : participents.noOfParticipants + participents.noOfParticipants / 2 > count
-          ? 'RAC'
-          : 'Waiting';
+            ? 'RAC'
+            : 'Waiting';
       findresult.eligible = participents.noOfParticipants > count;
       findresult.status = 'Registered';
       await Dates.create_date(findresult);

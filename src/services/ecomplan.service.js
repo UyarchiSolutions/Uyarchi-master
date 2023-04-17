@@ -939,7 +939,6 @@ const get_all_Post_with_page_all = async (req, status) => {
 };
 
 const get_all_Post_with_page = async (req, status) => {
-  console.log('asda');
   let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
   var date_now = new Date().getTime();
   let filterdate = req.query.date;
@@ -1693,17 +1692,17 @@ const get_all_admin = async (req) => {
     },
     {
       $lookup: {
-        from: 'suppliers',
+        from: 'sellers',
         localField: 'suppierId',
         foreignField: '_id',
-        as: 'suppliers',
+        as: 'sellers',
       },
     },
-    { $unwind: '$suppliers' },
+    { $unwind: '$sellers' },
     {
       $project: {
         _id: 1,
-        supplierName: '$suppliers.primaryContactName',
+        supplierName: '$suppliers.contactName',
         active: 1,
         archive: 1,
         post: 1,

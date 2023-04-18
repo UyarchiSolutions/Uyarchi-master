@@ -2043,16 +2043,16 @@ const get_all_streams = async (req) => {
 
 const get_subhost_streams = async (req) => {
   let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
-  console.log(req.subhostId);
+  console.log(req.userId);
   const value = await Streamrequest.aggregate([
     {
       $match: {
         $and: [
           {
             $or: [
-              { allot_host_1: { $eq: req.subhostId } },
-              { allot_host_2: { $eq: req.subhostId } },
-              { allot_host_3: { $eq: req.subhostId } },
+              { allot_host_1: { $eq: req.userId } },
+              { allot_host_2: { $eq: req.userId } },
+              { allot_host_3: { $eq: req.userId } },
             ],
           },
           { adminApprove: { $eq: 'Approved' } },
@@ -2123,7 +2123,7 @@ const get_subhost_streams = async (req) => {
     },
     {
       $lookup: {
-        from: 'suppliers',
+        from: 'sellers',
         localField: 'suppierId',
         foreignField: '_id',
         as: 'suppliers',
@@ -2170,9 +2170,85 @@ const get_subhost_streams = async (req) => {
       },
     },
     {
+      $lookup: {
+        from: 'sellers',
+        localField: 'allot_chat',
+        foreignField: '_id',
+        as: 'allot_chat_lookup',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$allot_chat_lookup',
+      },
+    },
+    {
+      $addFields: {
+        allot_chat_name: { $ifNull: ['$allot_chat_lookup.contactName', '$allot_chat'] },
+      },
+    },
+    {
+      $lookup: {
+        from: 'sellers',
+        localField: 'allot_host_1',
+        foreignField: '_id',
+        as: 'allot_host_1_lookup',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$allot_host_1_lookup',
+      },
+    },
+    {
+      $addFields: {
+        allot_host_1_name: { $ifNull: ['$allot_host_1_lookup.contactName', '$allot_host_1'] },
+      },
+    },
+    {
+      $lookup: {
+        from: 'sellers',
+        localField: 'allot_host_2',
+        foreignField: '_id',
+        as: 'allot_host_2_lookup',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$allot_host_2_lookup',
+      },
+    },
+    {
+      $addFields: {
+        allot_host_2_name: { $ifNull: ['$allot_host_2_lookup.contactName', '$allot_host_2'] },
+      },
+    },
+    {
+      $lookup: {
+        from: 'sellers',
+        localField: 'allot_host_3',
+        foreignField: '_id',
+        as: 'allot_host_3_lookup',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$allot_host_3_lookup',
+      },
+    },
+    {
+      $addFields: {
+        allot_host_3_name: { $ifNull: ['$allot_host_3_lookup.contactName', '$allot_host_3'] },
+      },
+    },
+    {
       $project: {
         _id: 1,
-        supplierName: '$suppliers.primaryContactName',
+        supplierName: '$suppliers.contactName',
         active: 1,
         archive: 1,
         post: 1,
@@ -2199,6 +2275,28 @@ const get_subhost_streams = async (req) => {
         noOfParticipants: 1,
         max_post_per_stream: 1,
         status: 1,
+        hostingPermissions: {
+          $or: [
+            { $eq: ['$allot_host_1', 'my self'] },
+            { $eq: ['$allot_host_2', 'my self'] },
+            { $eq: ['$allot_host_3', 'my self'] },
+          ],
+        },
+        no_of_host: '$purchasedplans.no_of_host',
+        chat_need: 1,
+        allot_chat: 1,
+        allot_host_1: 1,
+        allot_host_2: 1,
+        allot_host_3: 1,
+        teaser: 1,
+        image: 1,
+        video: 1,
+        chat: 1,
+        chat_need: 1,
+        allot_chat_name: 1,
+        allot_host_1_name: 1,
+        allot_host_2_name: 1,
+        allot_host_3_name: 1,
       },
     },
 
@@ -2208,8 +2306,10 @@ const get_subhost_streams = async (req) => {
   ]);
   const total = await Streamrequest.aggregate([
     { $match: { $and: [{ suppierId: { $eq: req.userId } }, { adminApprove: { $eq: 'Approved' } }] } },
+    { $skip: 10 * (page + 1) },
+    { $limit: 10 },
   ]);
-  return { value, total: total.length };
+  return { value, next: total.length != 0 };
 };
 
 const go_live_stream_host = async (req, userId) => {
@@ -2502,7 +2602,7 @@ const get_subhost_token = async (req, userId) => {
     },
     {
       $lookup: {
-        from: 'suppliers',
+        from: 'sellers',
         localField: 'suppierId',
         foreignField: '_id',
         as: 'suppliers',
@@ -2535,7 +2635,7 @@ const get_subhost_token = async (req, userId) => {
           },
           {
             $lookup: {
-              from: 'subhosts',
+              from: 'sellers',
               localField: 'supplierId',
               foreignField: '_id',
               as: 'subhosts',
@@ -2549,7 +2649,7 @@ const get_subhost_token = async (req, userId) => {
           },
           {
             $lookup: {
-              from: 'suppliers',
+              from: 'sellers',
               localField: 'supplierId',
               foreignField: '_id',
               as: 'suppliers',
@@ -2563,7 +2663,7 @@ const get_subhost_token = async (req, userId) => {
           },
           {
             $addFields: {
-              supplierName: { $ifNull: ['$suppliers.primaryContactName', '$subhosts.Name'] },
+              supplierName: { $ifNull: ['$suppliers.contactName', '$subhosts.contactName'] },
             },
           },
         ],
@@ -2619,7 +2719,7 @@ const get_subhost_token = async (req, userId) => {
     {
       $project: {
         _id: 1,
-        supplierName: '$suppliers.primaryContactName',
+        supplierName: '$suppliers.contactName',
         active: 1,
         archive: 1,
         post: 1,

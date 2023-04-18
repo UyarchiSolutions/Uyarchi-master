@@ -236,7 +236,7 @@ const go_live_stream_host = catchAsync(async (req, res) => {
 
 const get_subhost_token = catchAsync(async (req, res) => {
   console.log('sdas');
-  const value = await Ecomserive.get_subhost_token(req, req.subhostId);
+  const value = await Ecomserive.get_subhost_token(req, req.userId);
   res.send(value);
 });
 

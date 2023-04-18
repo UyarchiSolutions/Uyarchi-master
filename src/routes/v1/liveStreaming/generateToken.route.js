@@ -35,7 +35,7 @@ router.route('/participents/limit/all').get(generateToken.get_participents_limit
 
 router.route('/remove/hostlive/now').get(generateToken.remove_host_live);
 
-router.route('/create/subhost/token').post(subhostVerify, generateToken.create_subhost_token);
+router.route('/create/subhost/token').post(SellerAuth, generateToken.create_subhost_token);
 router.route('/create/raice/your/token').post(generateToken.create_raice_token);
 
 

@@ -69,8 +69,8 @@ router.route('/steam/end/now').put(Ecomcontroller.end_stream);
 // live Stream APIS
 
 router.route('/golive/host/view').get(SellerAuth, Ecomcontroller.go_live_stream_host);
-router.route('/golive/host/view/subhost').get(subhostVerify, Ecomcontroller.get_subhost_token);
-router.route('/golive/subhost/view').get(subhostVerify, Ecomcontroller.go_live_stream_host_subhost);
+router.route('/golive/host/view/subhost').get(SellerAuth, Ecomcontroller.get_subhost_token);
+router.route('/golive/subhost/view').get(SellerAuth, Ecomcontroller.go_live_stream_host_subhost);
 
 router.route('/getAll/shop/live/stream').get(shopverify, Ecomcontroller.get_watch_live_steams);
 router.route('/getAll/shop/live/stream/watch/admin').get(Ecomcontroller.get_watch_live_steams_admin_watch);

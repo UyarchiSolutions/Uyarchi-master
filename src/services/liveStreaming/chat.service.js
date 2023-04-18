@@ -34,7 +34,7 @@ const chat_room_create_subhost = async (req, io) => {
   let dateIso = new Date(new Date(moment().format('YYYY-MM-DD') + ' ' + moment().format('HH:mm:ss'))).getTime();
   let token = await tempTokenModel.findById(req.id)
   let user = await Seller.findById(token.supplierId)
-  let data = await Groupchat.create({ ...req, ...{ created: moment(), dateISO: dateIso, userName: user.primaryContactName, userType: "supplier", supplierId: user._id, joinuser: req.id, user } })
+  let data = await Groupchat.create({ ...req, ...{ created: moment(), dateISO: dateIso, userName: user.contactName, userType: "supplier", supplierId: user._id, joinuser: req.id, user } })
   // console.log(req)
   io.sockets.emit(req.channel, data);
 }
@@ -43,7 +43,7 @@ const chat_room_create_host = async (req, io) => {
   let dateIso = new Date(new Date(moment().format('YYYY-MM-DD') + ' ' + moment().format('HH:mm:ss'))).getTime();
   let token = await Streamrequest.findById(req.id)
   let user = await Seller.findById(token.suppierId)
-  let data = await Groupchat.create({ ...req, ...{ created: moment(), dateISO: dateIso, userName: user.primaryContactName, userType: "supplier", supplierId: user._id, joinuser: req.id, user } })
+  let data = await Groupchat.create({ ...req, ...{ created: moment(), dateISO: dateIso, userName: user.contactName, userType: "supplier", supplierId: user._id, joinuser: req.id, user } })
   // console.log(req)
   io.sockets.emit(req.channel, data);
 }

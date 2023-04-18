@@ -2416,7 +2416,7 @@ const go_live_stream_host = async (req, userId) => {
           { $match: { $and: [{ type: { $eq: 'subhost' } }] } },
           {
             $lookup: {
-              from: 'subhosts',
+              from: 'sellers',
               localField: 'supplierId',
               foreignField: '_id',
               as: 'subhosts',
@@ -2427,7 +2427,7 @@ const go_live_stream_host = async (req, userId) => {
           },
           {
             $addFields: {
-              supplierName: { $ifNull: ['$subhosts.Name', ''] },
+              supplierName: { $ifNull: ['$subhosts.contactName', ''] },
             },
           },
         ],

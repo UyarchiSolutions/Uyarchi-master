@@ -6081,7 +6081,7 @@ const update_Status_For_StreamingOrders = async (id, body) => {
   return values;
 };
 
-const fetch_streaming_Details_Approval = async (id, query,req) => {
+const fetch_streaming_Details_Approval = async (id, query, req) => {
   let buyerSearch = { _id: { $ne: null } };
   let statusSearch = { _id: { $ne: null } };
   let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
@@ -6264,8 +6264,7 @@ const fetch_streaming_Details_Approval = async (id, query,req) => {
   let ordered = await streamingorderProduct.aggregate([
     {
       $match: {
-        streamId: id,
-        productId: product,
+        postId: id,
       },
     },
     {
@@ -6278,8 +6277,7 @@ const fetch_streaming_Details_Approval = async (id, query,req) => {
   let confirmed = await streamingorderProduct.aggregate([
     {
       $match: {
-        streamId: id,
-        productId: product,
+        postId: id,
         status: 'approved',
       },
     },
@@ -6294,8 +6292,7 @@ const fetch_streaming_Details_Approval = async (id, query,req) => {
   let denied = await streamingorderProduct.aggregate([
     {
       $match: {
-        streamId: id,
-        productId: product,
+        postId: id,
         status: 'denied',
       },
     },
@@ -6309,8 +6306,7 @@ const fetch_streaming_Details_Approval = async (id, query,req) => {
   let cancelled = await streamingorderProduct.aggregate([
     {
       $match: {
-        streamId: id,
-        productId: product,
+        postId: id,
         status: 'cancelled',
       },
     },

@@ -7,6 +7,7 @@ const { Groupchat } = require('../../models/liveStreaming/chat.model');
 const { Shop } = require('../../models/b2b.ShopClone.model');
 const { Streamplan, StreamPost, Streamrequest, StreamrequestPost } = require('../../models/ecomplan.model');
 const Supplier = require('../../models/supplier.model');
+const { Seller } = require('../../models/seller.models');
 
 const { tempTokenModel, Joinusers } = require('../../models/liveStreaming/generateToken.model');
 
@@ -32,7 +33,7 @@ const chat_room_create_subhost = async (req, io) => {
   // console.log(req)
   let dateIso = new Date(new Date(moment().format('YYYY-MM-DD') + ' ' + moment().format('HH:mm:ss'))).getTime();
   let token = await tempTokenModel.findById(req.id)
-  let user = await Supplier.findById(token.supplierId)
+  let user = await Seller.findById(token.supplierId)
   let data = await Groupchat.create({ ...req, ...{ created: moment(), dateISO: dateIso, userName: user.primaryContactName, userType: "supplier", supplierId: user._id, joinuser: req.id, user } })
   // console.log(req)
   io.sockets.emit(req.channel, data);
@@ -41,7 +42,7 @@ const chat_room_create_host = async (req, io) => {
   // console.log(req)
   let dateIso = new Date(new Date(moment().format('YYYY-MM-DD') + ' ' + moment().format('HH:mm:ss'))).getTime();
   let token = await Streamrequest.findById(req.id)
-  let user = await Supplier.findById(token.suppierId)
+  let user = await Seller.findById(token.suppierId)
   let data = await Groupchat.create({ ...req, ...{ created: moment(), dateISO: dateIso, userName: user.primaryContactName, userType: "supplier", supplierId: user._id, joinuser: req.id, user } })
   // console.log(req)
   io.sockets.emit(req.channel, data);

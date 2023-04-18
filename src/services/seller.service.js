@@ -19,6 +19,7 @@ const createSeller = async (req) => {
   }
   else {
     value = await Seller.create({ ...body, ...{ mainSeller: 'admin', sellerType: "MainSeller", sellerRole: "admin" } })
+    value.roleNum = [1]
     const otp = await sentOTP(value.mobileNumber, value);
   }
   return value;
@@ -137,6 +138,13 @@ const createSubUser = async (req) => {
     }
   }
   let returnval = await Seller.create({ ...body, ...{ mainSeller: sellerID, sellerType: "sub-user", sellerRole: body.sellerRole } })
+  let rolesNumeric = [];
+  let roles = { 'admin': 1, "Stock-Manager": 2, "Account-Manager": 3, "Delivery-Excutive": 4, "Loading-Manager": 5, };
+  body.sellerRole.forEach(element => {
+    rolesNumeric.push(roles[element])
+  });
+  returnval.roleNum = rolesNumeric;
+  returnval.save();
   return returnval;
 };
 

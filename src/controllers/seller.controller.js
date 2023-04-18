@@ -46,6 +46,11 @@ const getsubhostAll = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const subhost_free_users= catchAsync(async (req, res) => {
+  const data = await SellerService.subhost_free_users(req);
+  res.send(data);
+});
+
 const getsubuserAll = catchAsync(async (req, res) => {
   const data = await SellerService.getsubuserAll(req);
   res.send(data);
@@ -95,6 +100,7 @@ module.exports = {
   createSubUser,
   mydetails,
   getsubhostAll,
-  getsubuserAll
+  getsubuserAll,
+  subhost_free_users
 
 };

@@ -240,8 +240,6 @@ const get_all_my_orders_normal = async (req) => {
         { $match: { $and: [{ suppierId: req.userId }, { planType: { $eq: 'normal' } }] } },
         { $skip: 10 * page },
         { $limit: 10 },
-
-
     ])
     let total = await purchasePlan.aggregate([
         { $sort: { DateIso: -1 } },
@@ -249,7 +247,7 @@ const get_all_my_orders_normal = async (req) => {
         { $skip: 10 * (page + 1) },
         { $limit: 10 },
     ]);
-    return { plan, next: total.length == 0 };
+    return { plan, next: total.length != 0 };
 }
 
 const get_all_purchasePlans = async (req) => {

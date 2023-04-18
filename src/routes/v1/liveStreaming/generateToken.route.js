@@ -6,11 +6,12 @@ const auth = require('../../../middlewares/auth');
 const supplierAuth = require('../../../controllers/supplier.authorizations');
 const shopverify = require('../../../controllers/shoptokenverify.controller');
 const subhostVerify = require('../../../controllers/subhostVefify.controller');
+const { SetPass, SellerAuth } = require('../../../controllers/sellerAuth.controller');
 
 const router = express.Router();
 const generateToken = require('../../../controllers/liveStreaming/generateToken.controller');
 
-router.route('/getToken').post(supplierAuth, generateToken.generateToken);
+router.route('/getToken').post(SellerAuth, generateToken.generateToken);
 router.get('/getHostTokens', generateToken.getHostTokens);
 router.get('/gettoken/byId', generateToken.gettokenById);
 router.get('/gettoken/host/byId', generateToken.gettokenById_host);
@@ -38,7 +39,7 @@ router.route('/create/subhost/token').post(subhostVerify, generateToken.create_s
 router.route('/create/raice/your/token').post(generateToken.create_raice_token);
 
 
-router.route('/production/livestream/generateToken/supplier').post(supplierAuth, generateToken.production_supplier_token);
+router.route('/production/livestream/generateToken/supplier').post(SellerAuth, generateToken.production_supplier_token);
 router.route('/production/livestream/generateToken/supplier/cloudrecording').post(generateToken.production_supplier_token_cloudrecording);
 router.route('/production/livestream/generateToken/watchamin').post(generateToken.production_supplier_token_watchamin);
 router.route('/get/live/stream/videos').get(generateToken.get_stream_complete_videos);

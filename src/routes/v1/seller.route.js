@@ -13,6 +13,7 @@ router.route('/alreadyuser/seller').post(SellerController.alreadyUser)
 // sub host
 router.route('/create/subhost').post(SellerAuth, SellerController.createSubhost)
 router.route('/getall/subhost').get(SellerAuth, SellerController.getsubhostAll)
+router.route('/get/subhost/free').get(SellerAuth, SellerController.subhost_free_users)
 
 // sub user
 router.route('/create/subuser').post(SellerAuth, SellerController.createSubUser)

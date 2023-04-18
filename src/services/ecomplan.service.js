@@ -71,7 +71,7 @@ const get_all_Plans_pagination = async (req) => {
   ]);
   const total = await Streamplan.aggregate([{ $sort: { DateIso: -1 } }]);
 
-  return { value, total: total.length };
+  return { value, next: total.length != 0 };
 };
 
 const get_all_Plans_addon = async (req) => {
@@ -79,10 +79,16 @@ const get_all_Plans_addon = async (req) => {
   const value = await Streamplan.aggregate([
     { $match: { planType: { $eq: 'addon' } } },
     { $sort: { DateIso: -1 } },
-    { $skip: 10 * page },
-    { $limit: 10 },
+    { $skip: 12 * page },
+    { $limit: 12 },
   ]);
-  return value;
+  const total = await Streamplan.aggregate([
+    { $match: { planType: { $eq: 'addon' } } },
+    { $sort: { DateIso: -1 } },
+    { $skip: 12 * (page + 1) },
+    { $limit: 12 },
+  ]);
+  return { value, next: total.length != 0 };
 };
 
 const get_all_Plans_normal = async (req) => {
@@ -90,10 +96,16 @@ const get_all_Plans_normal = async (req) => {
   const value = await Streamplan.aggregate([
     { $match: { planType: { $ne: 'addon' }, planmode: { $eq: 'Public' } } },
     { $sort: { DateIso: -1 } },
-    { $skip: 10 * page },
-    { $limit: 10 },
+    { $skip: 12 * page },
+    { $limit: 12 },
   ]);
-  return value;
+  const total = await Streamplan.aggregate([
+    { $match: { planType: { $ne: 'addon' }, planmode: { $eq: 'Public' } } },
+    { $sort: { DateIso: -1 } },
+    { $skip: 12 * (page + 1) },
+    { $limit: 12 },
+  ]);
+  return { value, next: total.length != 0 };
 };
 
 const get_one_Plans = async (req) => {
@@ -1842,7 +1854,7 @@ const get_all_streams = async (req) => {
     },
     {
       $lookup: {
-        from: 'suppliers',
+        from: 'sellers',
         localField: 'suppierId',
         foreignField: '_id',
         as: 'suppliers',
@@ -1890,7 +1902,7 @@ const get_all_streams = async (req) => {
     },
     {
       $lookup: {
-        from: 'subhosts',
+        from: 'sellers',
         localField: 'allot_chat',
         foreignField: '_id',
         as: 'allot_chat_lookup',
@@ -1904,12 +1916,12 @@ const get_all_streams = async (req) => {
     },
     {
       $addFields: {
-        allot_chat_name: { $ifNull: ['$allot_chat_lookup.Name', '$allot_chat'] },
+        allot_chat_name: { $ifNull: ['$allot_chat_lookup.contactName', '$allot_chat'] },
       },
     },
     {
       $lookup: {
-        from: 'subhosts',
+        from: 'sellers',
         localField: 'allot_host_1',
         foreignField: '_id',
         as: 'allot_host_1_lookup',
@@ -1923,12 +1935,12 @@ const get_all_streams = async (req) => {
     },
     {
       $addFields: {
-        allot_host_1_name: { $ifNull: ['$allot_host_1_lookup.Name', '$allot_host_1'] },
+        allot_host_1_name: { $ifNull: ['$allot_host_1_lookup.contactName', '$allot_host_1'] },
       },
     },
     {
       $lookup: {
-        from: 'subhosts',
+        from: 'sellers',
         localField: 'allot_host_2',
         foreignField: '_id',
         as: 'allot_host_2_lookup',
@@ -1942,12 +1954,12 @@ const get_all_streams = async (req) => {
     },
     {
       $addFields: {
-        allot_host_2_name: { $ifNull: ['$allot_host_2_lookup.Name', '$allot_host_2'] },
+        allot_host_2_name: { $ifNull: ['$allot_host_2_lookup.contactName', '$allot_host_2'] },
       },
     },
     {
       $lookup: {
-        from: 'subhosts',
+        from: 'sellers',
         localField: 'allot_host_3',
         foreignField: '_id',
         as: 'allot_host_3_lookup',
@@ -1961,13 +1973,13 @@ const get_all_streams = async (req) => {
     },
     {
       $addFields: {
-        allot_host_3_name: { $ifNull: ['$allot_host_3_lookup.Name', '$allot_host_3'] },
+        allot_host_3_name: { $ifNull: ['$allot_host_3_lookup.contactName', '$allot_host_3'] },
       },
     },
     {
       $project: {
         _id: 1,
-        supplierName: '$suppliers.primaryContactName',
+        supplierName: '$suppliers.contactName',
         active: 1,
         archive: 1,
         post: 1,
@@ -2278,7 +2290,7 @@ const go_live_stream_host = async (req, userId) => {
     },
     {
       $lookup: {
-        from: 'suppliers',
+        from: 'sellers',
         localField: 'suppierId',
         foreignField: '_id',
         as: 'suppliers',
@@ -2371,7 +2383,7 @@ const go_live_stream_host = async (req, userId) => {
     {
       $project: {
         _id: 1,
-        supplierName: '$suppliers.primaryContactName',
+        supplierName: '$suppliers.contactName',
         active: 1,
         archive: 1,
         post: 1,
@@ -3334,7 +3346,7 @@ const get_stream_alert = async (req) => {
     },
     {
       $lookup: {
-        from: 'subhosts',
+        from: 'sellers',
         localField: 'allot_chat',
         foreignField: '_id',
         as: 'allot_chat_lookup',
@@ -3348,12 +3360,12 @@ const get_stream_alert = async (req) => {
     },
     {
       $addFields: {
-        allot_chat_name: { $ifNull: ['$allot_chat_lookup.Name', null] },
+        allot_chat_name: { $ifNull: ['$allot_chat_lookup.contactName', null] },
       },
     },
     {
       $lookup: {
-        from: 'subhosts',
+        from: 'sellers',
         localField: 'allot_host_1',
         foreignField: '_id',
         as: 'allot_host_1_lookup',
@@ -3367,12 +3379,12 @@ const get_stream_alert = async (req) => {
     },
     {
       $addFields: {
-        allot_host_1_name: { $ifNull: ['$allot_host_1_lookup.Name', null] },
+        allot_host_1_name: { $ifNull: ['$allot_host_1_lookup.contactName', null] },
       },
     },
     {
       $lookup: {
-        from: 'subhosts',
+        from: 'sellers',
         localField: 'allot_host_2',
         foreignField: '_id',
         as: 'allot_host_2_lookup',
@@ -3386,12 +3398,12 @@ const get_stream_alert = async (req) => {
     },
     {
       $addFields: {
-        allot_host_2_name: { $ifNull: ['$allot_host_2_lookup.Name', null] },
+        allot_host_2_name: { $ifNull: ['$allot_host_2_lookup.contactName', null] },
       },
     },
     {
       $lookup: {
-        from: 'subhosts',
+        from: 'sellers',
         localField: 'allot_host_3',
         foreignField: '_id',
         as: 'allot_host_3_lookup',
@@ -3405,7 +3417,7 @@ const get_stream_alert = async (req) => {
     },
     {
       $addFields: {
-        allot_host_3_name: { $ifNull: ['$allot_host_3_lookup.Name', null] },
+        allot_host_3_name: { $ifNull: ['$allot_host_3_lookup.contactName', null] },
       },
     },
   ]);
@@ -3869,7 +3881,7 @@ const get_completed_stream_byid = async (req) => {
     },
     {
       $lookup: {
-        from: 'subhosts',
+        from: 'sellers',
         localField: 'allot_chat',
         foreignField: '_id',
         as: 'allot_chat_lookup',
@@ -3883,12 +3895,12 @@ const get_completed_stream_byid = async (req) => {
     },
     {
       $addFields: {
-        allot_chat_name: { $ifNull: ['$allot_chat_lookup.Name', null] },
+        allot_chat_name: { $ifNull: ['$allot_chat_lookup.contactName', null] },
       },
     },
     {
       $lookup: {
-        from: 'subhosts',
+        from: 'sellers',
         localField: 'allot_host_1',
         foreignField: '_id',
         as: 'allot_host_1_lookup',
@@ -3902,12 +3914,12 @@ const get_completed_stream_byid = async (req) => {
     },
     {
       $addFields: {
-        allot_host_1_name: { $ifNull: ['$allot_host_1_lookup.Name', null] },
+        allot_host_1_name: { $ifNull: ['$allot_host_1_lookup.contactName', null] },
       },
     },
     {
       $lookup: {
-        from: 'subhosts',
+        from: 'sellers',
         localField: 'allot_host_2',
         foreignField: '_id',
         as: 'allot_host_2_lookup',
@@ -3921,12 +3933,12 @@ const get_completed_stream_byid = async (req) => {
     },
     {
       $addFields: {
-        allot_host_2_name: { $ifNull: ['$allot_host_2_lookup.Name', null] },
+        allot_host_2_name: { $ifNull: ['$allot_host_2_lookup.contactName', null] },
       },
     },
     {
       $lookup: {
-        from: 'subhosts',
+        from: 'sellers',
         localField: 'allot_host_3',
         foreignField: '_id',
         as: 'allot_host_3_lookup',
@@ -3940,7 +3952,7 @@ const get_completed_stream_byid = async (req) => {
     },
     {
       $addFields: {
-        allot_host_3_name: { $ifNull: ['$allot_host_3_lookup.Name', null] },
+        allot_host_3_name: { $ifNull: ['$allot_host_3_lookup.contactName', null] },
       },
     },
     {
@@ -3972,7 +3984,7 @@ const get_completed_stream_byid = async (req) => {
     {
       $project: {
         _id: 1,
-        supplierName: '$suppliers.primaryContactName',
+        supplierName: '$suppliers.contactName',
         active: 1,
         archive: 1,
         post: 1,
@@ -4095,7 +4107,7 @@ const get_completed_stream_upcommming = async (req) => {
     },
     {
       $lookup: {
-        from: 'suppliers',
+        from: 'sellers',
         localField: 'suppierId',
         foreignField: '_id',
         as: 'suppliers',
@@ -4143,7 +4155,7 @@ const get_completed_stream_upcommming = async (req) => {
     },
     {
       $lookup: {
-        from: 'subhosts',
+        from: 'sellers',
         localField: 'allot_chat',
         foreignField: '_id',
         as: 'allot_chat_lookup',
@@ -4157,12 +4169,12 @@ const get_completed_stream_upcommming = async (req) => {
     },
     {
       $addFields: {
-        allot_chat_name: { $ifNull: ['$allot_chat_lookup.Name', null] },
+        allot_chat_name: { $ifNull: ['$allot_chat_lookup.contactName', null] },
       },
     },
     {
       $lookup: {
-        from: 'subhosts',
+        from: 'sellers',
         localField: 'allot_host_1',
         foreignField: '_id',
         as: 'allot_host_1_lookup',
@@ -4176,12 +4188,12 @@ const get_completed_stream_upcommming = async (req) => {
     },
     {
       $addFields: {
-        allot_host_1_name: { $ifNull: ['$allot_host_1_lookup.Name', null] },
+        allot_host_1_name: { $ifNull: ['$allot_host_1_lookup.contactName', null] },
       },
     },
     {
       $lookup: {
-        from: 'subhosts',
+        from: 'sellers',
         localField: 'allot_host_2',
         foreignField: '_id',
         as: 'allot_host_2_lookup',
@@ -4195,12 +4207,12 @@ const get_completed_stream_upcommming = async (req) => {
     },
     {
       $addFields: {
-        allot_host_2_name: { $ifNull: ['$allot_host_2_lookup.Name', null] },
+        allot_host_2_name: { $ifNull: ['$allot_host_2_lookup.contactName', null] },
       },
     },
     {
       $lookup: {
-        from: 'subhosts',
+        from: 'sellers',
         localField: 'allot_host_3',
         foreignField: '_id',
         as: 'allot_host_3_lookup',
@@ -4214,7 +4226,7 @@ const get_completed_stream_upcommming = async (req) => {
     },
     {
       $addFields: {
-        allot_host_3_name: { $ifNull: ['$allot_host_3_lookup.Name', null] },
+        allot_host_3_name: { $ifNull: ['$allot_host_3_lookup.contactName', null] },
       },
     },
     {
@@ -4246,7 +4258,7 @@ const get_completed_stream_upcommming = async (req) => {
     {
       $project: {
         _id: 1,
-        supplierName: '$suppliers.primaryContactName',
+        supplierName: '$suppliers.contactName',
         active: 1,
         archive: 1,
         post: 1,
@@ -4431,7 +4443,7 @@ const get_completed_stream_live = async (req) => {
     },
     {
       $lookup: {
-        from: 'subhosts',
+        from: 'sellers',
         localField: 'allot_chat',
         foreignField: '_id',
         as: 'allot_chat_lookup',
@@ -4445,12 +4457,12 @@ const get_completed_stream_live = async (req) => {
     },
     {
       $addFields: {
-        allot_chat_name: { $ifNull: ['$allot_chat_lookup.Name', null] },
+        allot_chat_name: { $ifNull: ['$allot_chat_lookup.contactName', null] },
       },
     },
     {
       $lookup: {
-        from: 'subhosts',
+        from: 'sellers',
         localField: 'allot_host_1',
         foreignField: '_id',
         as: 'allot_host_1_lookup',
@@ -4464,12 +4476,12 @@ const get_completed_stream_live = async (req) => {
     },
     {
       $addFields: {
-        allot_host_1_name: { $ifNull: ['$allot_host_1_lookup.Name', null] },
+        allot_host_1_name: { $ifNull: ['$allot_host_1_lookup.contactName', null] },
       },
     },
     {
       $lookup: {
-        from: 'subhosts',
+        from: 'sellers',
         localField: 'allot_host_2',
         foreignField: '_id',
         as: 'allot_host_2_lookup',
@@ -4483,12 +4495,12 @@ const get_completed_stream_live = async (req) => {
     },
     {
       $addFields: {
-        allot_host_2_name: { $ifNull: ['$allot_host_2_lookup.Name', null] },
+        allot_host_2_name: { $ifNull: ['$allot_host_2_lookup.contactName', null] },
       },
     },
     {
       $lookup: {
-        from: 'subhosts',
+        from: 'sellers',
         localField: 'allot_host_3',
         foreignField: '_id',
         as: 'allot_host_3_lookup',
@@ -4502,7 +4514,7 @@ const get_completed_stream_live = async (req) => {
     },
     {
       $addFields: {
-        allot_host_3_name: { $ifNull: ['$allot_host_3_lookup.Name', null] },
+        allot_host_3_name: { $ifNull: ['$allot_host_3_lookup.contactName', null] },
       },
     },
     {
@@ -4534,7 +4546,7 @@ const get_completed_stream_live = async (req) => {
     {
       $project: {
         _id: 1,
-        supplierName: '$suppliers.primaryContactName',
+        supplierName: '$suppliers.contactName',
         active: 1,
         archive: 1,
         post: 1,
@@ -4719,7 +4731,7 @@ const get_completed_stream_completed = async (req) => {
     },
     {
       $lookup: {
-        from: 'subhosts',
+        from: 'sellers',
         localField: 'allot_chat',
         foreignField: '_id',
         as: 'allot_chat_lookup',
@@ -4733,12 +4745,12 @@ const get_completed_stream_completed = async (req) => {
     },
     {
       $addFields: {
-        allot_chat_name: { $ifNull: ['$allot_chat_lookup.Name', null] },
+        allot_chat_name: { $ifNull: ['$allot_chat_lookup.contactName', null] },
       },
     },
     {
       $lookup: {
-        from: 'subhosts',
+        from: 'sellers',
         localField: 'allot_host_1',
         foreignField: '_id',
         as: 'allot_host_1_lookup',
@@ -4752,12 +4764,12 @@ const get_completed_stream_completed = async (req) => {
     },
     {
       $addFields: {
-        allot_host_1_name: { $ifNull: ['$allot_host_1_lookup.Name', null] },
+        allot_host_1_name: { $ifNull: ['$allot_host_1_lookup.contactName', null] },
       },
     },
     {
       $lookup: {
-        from: 'subhosts',
+        from: 'sellers',
         localField: 'allot_host_2',
         foreignField: '_id',
         as: 'allot_host_2_lookup',
@@ -4771,12 +4783,12 @@ const get_completed_stream_completed = async (req) => {
     },
     {
       $addFields: {
-        allot_host_2_name: { $ifNull: ['$allot_host_2_lookup.Name', null] },
+        allot_host_2_name: { $ifNull: ['$allot_host_2_lookup.contactName', null] },
       },
     },
     {
       $lookup: {
-        from: 'subhosts',
+        from: 'sellers',
         localField: 'allot_host_3',
         foreignField: '_id',
         as: 'allot_host_3_lookup',
@@ -4790,7 +4802,7 @@ const get_completed_stream_completed = async (req) => {
     },
     {
       $addFields: {
-        allot_host_3_name: { $ifNull: ['$allot_host_3_lookup.Name', null] },
+        allot_host_3_name: { $ifNull: ['$allot_host_3_lookup.contactName', null] },
       },
     },
     {
@@ -4822,7 +4834,7 @@ const get_completed_stream_completed = async (req) => {
     {
       $project: {
         _id: 1,
-        supplierName: '$suppliers.primaryContactName',
+        supplierName: '$suppliers.contactName',
         active: 1,
         archive: 1,
         post: 1,
@@ -5000,7 +5012,7 @@ const get_completed_stream_expired = async (req) => {
     },
     {
       $lookup: {
-        from: 'subhosts',
+        from: 'sellers',
         localField: 'allot_chat',
         foreignField: '_id',
         as: 'allot_chat_lookup',
@@ -5014,12 +5026,12 @@ const get_completed_stream_expired = async (req) => {
     },
     {
       $addFields: {
-        allot_chat_name: { $ifNull: ['$allot_chat_lookup.Name', null] },
+        allot_chat_name: { $ifNull: ['$allot_chat_lookup.contactName', null] },
       },
     },
     {
       $lookup: {
-        from: 'subhosts',
+        from: 'sellers',
         localField: 'allot_host_1',
         foreignField: '_id',
         as: 'allot_host_1_lookup',
@@ -5033,12 +5045,12 @@ const get_completed_stream_expired = async (req) => {
     },
     {
       $addFields: {
-        allot_host_1_name: { $ifNull: ['$allot_host_1_lookup.Name', null] },
+        allot_host_1_name: { $ifNull: ['$allot_host_1_lookup.contactName', null] },
       },
     },
     {
       $lookup: {
-        from: 'subhosts',
+        from: 'sellers',
         localField: 'allot_host_2',
         foreignField: '_id',
         as: 'allot_host_2_lookup',
@@ -5052,12 +5064,12 @@ const get_completed_stream_expired = async (req) => {
     },
     {
       $addFields: {
-        allot_host_2_name: { $ifNull: ['$allot_host_2_lookup.Name', null] },
+        allot_host_2_name: { $ifNull: ['$allot_host_2_lookup.contactName', null] },
       },
     },
     {
       $lookup: {
-        from: 'subhosts',
+        from: 'sellers',
         localField: 'allot_host_3',
         foreignField: '_id',
         as: 'allot_host_3_lookup',
@@ -5071,7 +5083,7 @@ const get_completed_stream_expired = async (req) => {
     },
     {
       $addFields: {
-        allot_host_3_name: { $ifNull: ['$allot_host_3_lookup.Name', null] },
+        allot_host_3_name: { $ifNull: ['$allot_host_3_lookup.contactName', null] },
       },
     },
     {
@@ -5103,7 +5115,7 @@ const get_completed_stream_expired = async (req) => {
     {
       $project: {
         _id: 1,
-        supplierName: '$suppliers.primaryContactName',
+        supplierName: '$suppliers.contactName',
         active: 1,
         archive: 1,
         post: 1,
@@ -5286,7 +5298,7 @@ const get_completed_stream_cancelled = async (req) => {
     },
     {
       $lookup: {
-        from: 'subhosts',
+        from: 'sellers',
         localField: 'allot_chat',
         foreignField: '_id',
         as: 'allot_chat_lookup',
@@ -5300,12 +5312,12 @@ const get_completed_stream_cancelled = async (req) => {
     },
     {
       $addFields: {
-        allot_chat_name: { $ifNull: ['$allot_chat_lookup.Name', null] },
+        allot_chat_name: { $ifNull: ['$allot_chat_lookup.contactName', null] },
       },
     },
     {
       $lookup: {
-        from: 'subhosts',
+        from: 'sellers',
         localField: 'allot_host_1',
         foreignField: '_id',
         as: 'allot_host_1_lookup',
@@ -5319,12 +5331,12 @@ const get_completed_stream_cancelled = async (req) => {
     },
     {
       $addFields: {
-        allot_host_1_name: { $ifNull: ['$allot_host_1_lookup.Name', null] },
+        allot_host_1_name: { $ifNull: ['$allot_host_1_lookup.contactName', null] },
       },
     },
     {
       $lookup: {
-        from: 'subhosts',
+        from: 'sellers',
         localField: 'allot_host_2',
         foreignField: '_id',
         as: 'allot_host_2_lookup',
@@ -5338,12 +5350,12 @@ const get_completed_stream_cancelled = async (req) => {
     },
     {
       $addFields: {
-        allot_host_2_name: { $ifNull: ['$allot_host_2_lookup.Name', null] },
+        allot_host_2_name: { $ifNull: ['$allot_host_2_lookup.contactName', null] },
       },
     },
     {
       $lookup: {
-        from: 'subhosts',
+        from: 'sellers',
         localField: 'allot_host_3',
         foreignField: '_id',
         as: 'allot_host_3_lookup',
@@ -5357,7 +5369,7 @@ const get_completed_stream_cancelled = async (req) => {
     },
     {
       $addFields: {
-        allot_host_3_name: { $ifNull: ['$allot_host_3_lookup.Name', null] },
+        allot_host_3_name: { $ifNull: ['$allot_host_3_lookup.contactName', null] },
       },
     },
     {
@@ -5389,7 +5401,7 @@ const get_completed_stream_cancelled = async (req) => {
     {
       $project: {
         _id: 1,
-        supplierName: '$suppliers.primaryContactName',
+        supplierName: '$suppliers.contactName',
         active: 1,
         archive: 1,
         post: 1,

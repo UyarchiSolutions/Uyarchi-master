@@ -4,6 +4,7 @@ const ApiError = require('../utils/ApiError');
 const { OTP, sellerOTP } = require('../models/saveOtp.model');
 const sentOTP = require('../config/seller.config');
 const moment = require('moment')
+const { Streamplan, StreamPost, Streamrequest, StreamrequestPost, StreamPreRegister } = require('../models/ecomplan.model');
 const createSeller = async (req) => {
   let body = req.body;
   let value = await Seller.findOne({ $or: [{ email: body.email }, { mobileNumber: body.mobileNumber }] });
@@ -183,6 +184,81 @@ const getsubhostAll = async (req) => {
   return values;
 
 };
+
+const subhost_free_users = async (req) => {
+  let streamId = req.query.id
+
+  let hostTime = await Streamrequest.findById(req.query.id);
+
+
+  let host = await Seller.aggregate([
+    { $match: { $and: [{ sellerType: { $eq: "sub-host" } }, { mainSeller: { $eq: req.userId } }, { $or: [{ sellerRole: { $eq: ["chat/stream"] } }, { sellerRole: { $eq: ["stream"] } }] }] } },
+    {
+      $lookup: {
+        from: 'streamrequests',
+        let: { hostId: '$_id' },
+        pipeline: [
+          {
+            $match: {
+              $expr: { $or: [{ $eq: ["$allot_host_1", "$$hostId"] }, { $eq: ["$allot_host_2", "$$hostId"] }, { $eq: ["$allot_host_3", "$$hostId"] }] },
+              $and: [{ status: { $ne: "Completed" } }, { _id: { $ne: streamId } }, { $or: [{ $and: [{ startTime: { $lte: hostTime.startTime } }, { endTime: { $gte: hostTime.startTime } }] }, { $and: [{ startTime: { $lte: hostTime.endTime } }, { endTime: { $gte: hostTime.endTime } }] }] }],
+            }
+          },
+          { $group: { _id: null, count: { $sum: 1 } } }
+
+        ],
+        as: 'streamrequests',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$streamrequests',
+      },
+    },
+    {
+      $addFields: {
+        busy: { $ifNull: ['$streamrequests.count', 0] },
+      },
+    },
+    { $match: { busy: { $eq: 0 } } }
+  ])
+
+  let chat = await Seller.aggregate([
+    { $match: { $and: [{ sellerType: { $eq: "sub-host" } }, { mainSeller: { $eq: req.userId } }, { $or: [{ sellerRole: { $eq: ["chat/stream"] } }, { sellerRole: { $eq: ["chat"] } }] }] } },
+    {
+      $lookup: {
+        from: 'streamrequests',
+        let: { hostId: '$_id' },
+        pipeline: [
+          {
+            $match: {
+              $expr: { $or: [{ $eq: ["$allot_host_1", "$$hostId"] }, { $eq: ["$allot_host_2", "$$hostId"] }, { $eq: ["$allot_host_3", "$$hostId"] }] },
+              $and: [{ status: { $ne: "Completed" } }, { _id: { $ne: streamId } }, { $or: [{ $and: [{ startTime: { $lte: hostTime.startTime } }, { endTime: { $gte: hostTime.startTime } }] }, { $and: [{ startTime: { $lte: hostTime.endTime } }, { endTime: { $gte: hostTime.endTime } }] }] }],
+            }
+          },
+          { $group: { _id: null, count: { $sum: 1 } } }
+
+        ],
+        as: 'streamrequests',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$streamrequests',
+      },
+    },
+    {
+      $addFields: {
+        busy: { $ifNull: ['$streamrequests.count', 0] },
+      },
+    },
+    { $match: { busy: { $eq: 0 } } }
+  ])
+  return { host, chat };
+
+};
 const getsubuserAll = async (req) => {
   let sellerID = req.userId;
   let values = await Seller.aggregate([
@@ -205,5 +281,6 @@ module.exports = {
   createSubUser,
   mydetails,
   getsubhostAll,
-  getsubuserAll
+  getsubuserAll,
+  subhost_free_users
 };

@@ -6081,7 +6081,7 @@ const update_Status_For_StreamingOrders = async (id, body) => {
   return values;
 };
 
-const fetch_streaming_Details_Approval = async (id, query) => {
+const fetch_streaming_Details_Approval = async (id, query,req) => {
   let buyerSearch = { _id: { $ne: null } };
   let statusSearch = { _id: { $ne: null } };
   let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;

@@ -38,7 +38,7 @@ const SetPass = async (req, res, next) => {
       return res.send(httpStatus.UNAUTHORIZED, 'Seller Not Found');
     }
 
-    req.sellerID = payload['_id'];
+    req.userId = payload['_id'];
     req.seller = payload.userRole;
     return next();
   } catch {

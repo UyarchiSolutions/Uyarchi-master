@@ -21,6 +21,12 @@ const SellerAuth = async (req, res, next) => {
     }
     req.userId = payload['_id'];
     req.seller = payload.userRole;
+    if (userss.mainSeller == 'admin') {
+      req.accessBy = userss._id;
+    }
+    else {
+      req.accessBy = userss.mainSeller;
+    }
     return next();
   } catch {
     return res.send(httpStatus.UNAUTHORIZED, 'Invalid Access val');

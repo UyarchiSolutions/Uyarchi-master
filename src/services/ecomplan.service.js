@@ -6081,9 +6081,10 @@ const update_Status_For_StreamingOrders = async (id, body) => {
   return values;
 };
 
-const fetch_streaming_Details_Approval = async (id, product, query) => {
+const fetch_streaming_Details_Approval = async (id, query) => {
   let buyerSearch = { _id: { $ne: null } };
   let statusSearch = { _id: { $ne: null } };
+  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
 
   if (!query.buyer == '' && query.buyer) {
     buyerSearch = { name: { $regex: query.buyer, $options: 'i' } };
@@ -6095,13 +6096,10 @@ const fetch_streaming_Details_Approval = async (id, product, query) => {
   } else {
     statusSearch;
   }
-  console.log(product);
-
   let values = await streamingorderProduct.aggregate([
     {
       $match: {
-        streamId: id,
-        productId: product,
+        postId: id,
       },
     },
     {
@@ -6182,7 +6180,7 @@ const fetch_streaming_Details_Approval = async (id, product, query) => {
     },
 
     {
-      $skip: 10 * query.page,
+      $skip: 10 * page
     },
     {
       $limit: 10,
@@ -6192,8 +6190,7 @@ const fetch_streaming_Details_Approval = async (id, product, query) => {
   let total = await streamingorderProduct.aggregate([
     {
       $match: {
-        streamId: id,
-        productId: product,
+        postId: id,
       },
     },
     {
@@ -6256,6 +6253,12 @@ const fetch_streaming_Details_Approval = async (id, product, query) => {
     },
     {
       $match: { $or: [buyerSearch] },
+    },
+    {
+      $skip: 10 * (page + 1),
+    },
+    {
+      $limit: 10,
     },
   ]);
   let ordered = await streamingorderProduct.aggregate([
@@ -6325,7 +6328,7 @@ const fetch_streaming_Details_Approval = async (id, product, query) => {
     confirmedKg: confirmed.length > 0 ? confirmed[0].orderedKg : 0,
     cancelledKg: cancelled.length > 0 ? cancelled[0].orderedKg : 0,
     deniedKg: denied.length > 0 ? denied[0].orderedKg : 0,
-    total: total.length,
+    next: total.length != 0,
   };
 };
 

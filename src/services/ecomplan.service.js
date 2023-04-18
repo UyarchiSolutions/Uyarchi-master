@@ -5550,12 +5550,14 @@ const get_completed_stream_cancelled = async (req) => {
 
 // completed Stream Supplier Side Flow
 
-const getStock_Manager = async (page) => {
+const getStock_Manager = async (req) => {
+  let page = req.params.page == '' || req.params.page == null || req.params.page == null ? 0 : req.params.page
+  let accessBy = req.accessBy;
   let currentTime = new Date().getTime();
   let values = await Streamrequest.aggregate([
     // endTime: { $lt: currentTime }
     {
-      $match: { $or: [{ endTime: { $lt: currentTime } }, { status: 'Completed' }] },
+      $match: { $or: [{ endTime: { $lt: currentTime }, suppierId: { $eq: accessBy } }, { status: 'Completed', suppierId: { $eq: accessBy } }] },
     },
     {
       $sort: { created: -1 },
@@ -5590,7 +5592,7 @@ const getStock_Manager = async (page) => {
   ]);
   let total = await Streamrequest.aggregate([
     {
-      $match: { endTime: { $lt: currentTime } },
+      $match: { $or: [{ endTime: { $lt: currentTime }, suppierId: { $eq: accessBy } }, { status: 'Completed', suppierId: { $eq: accessBy } }] },
     },
     {
       $sort: { created: -1 },
@@ -5603,8 +5605,14 @@ const getStock_Manager = async (page) => {
         as: 'buyers',
       },
     },
+    {
+      $skip: 10 * (page + 1),
+    },
+    {
+      $limit: 10,
+    }
   ]);
-  return { values: values, total: total.length };
+  return { values: values, next: total.length != 0 };
 };
 
 const getPosted_Details_By_Stream = async (id) => {

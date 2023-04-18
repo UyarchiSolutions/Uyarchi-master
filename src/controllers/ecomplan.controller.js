@@ -363,7 +363,7 @@ const update_slab = catchAsync(async (req, res) => {
 });
 
 const getStock_Manager = catchAsync(async (req, res) => {
-  const data = await Ecomserive.getStock_Manager(req.params.page);
+  const data = await Ecomserive.getStock_Manager(req.params.page, req);
   res.send(data);
 });
 
@@ -388,7 +388,7 @@ const update_Status_For_StreamingOrders = catchAsync(async (req, res) => {
 });
 
 const fetch_streaming_Details_Approval = catchAsync(async (req, res) => {
-  const data = await Ecomserive.fetch_streaming_Details_Approval(req.query.post, req.query,req);
+  const data = await Ecomserive.fetch_streaming_Details_Approval(req.query.post, req.query, req);
   res.send(data);
 });
 

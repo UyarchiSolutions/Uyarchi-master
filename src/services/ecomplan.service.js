@@ -5571,6 +5571,85 @@ const getStock_Manager = async (req) => {
       },
     },
     {
+      $lookup: {
+        from: 'streamrequestposts',
+        localField: '_id',
+        foreignField: 'streamRequest',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'streamposts',
+              localField: 'postId',
+              foreignField: '_id',
+              pipeline: [
+                {
+                  $lookup: {
+                    from: 'products',
+                    localField: 'productId',
+                    foreignField: '_id',
+                    as: 'products',
+                  },
+                },
+                {
+                  $unwind: {
+                    preserveNullAndEmptyArrays: true,
+                    path: '$products',
+                  },
+                },
+              ],
+              as: 'streamPost',
+            },
+          },
+          {
+            $unwind: {
+              preserveNullAndEmptyArrays: true,
+              path: '$streamPost',
+            },
+          },
+          {
+            $lookup: {
+              from: 'streamingorderproducts',
+              localField: '_id',
+              foreignField: 'postId',
+              pipeline: [{ $group: { _id: null, sumValue: { $sum: '$purchase_quantity' } } }],
+              as: 'orderProducts',
+            },
+          },
+          {
+            $unwind: {
+              preserveNullAndEmptyArrays: true,
+              path: '$orderProducts',
+            },
+          },
+          {
+            $lookup: {
+              from: 'streamrequests',
+              localField: 'streamRequest',
+              foreignField: '_id',
+              as: 'Stream',
+            },
+          },
+          {
+            $unwind: {
+              preserveNullAndEmptyArrays: true,
+              path: '$Stream',
+            },
+          },
+          {
+            $project: {
+              _id: 1,
+              postId: 1,
+              productName: '$streamPost.products.productTitle',
+              PostedKg: '$streamPost.quantity',
+              Bookedkg: { $ifNull: ['$orderProducts.sumValue', 0] },
+              streamName: '$Stream.streamName',
+            },
+          },
+        ],
+        as: 'streamPost',
+      }
+    },
+    {
       $project: {
         _id: 1,
         streamName: 1,
@@ -5581,6 +5660,7 @@ const getStock_Manager = async (req) => {
         endTime: 1,
         created: 1,
         status: 'Pending',
+        streamPost: "$streamPost"
       },
     },
     {

@@ -6455,6 +6455,7 @@ const fetch_streaming_Details_Approval = async (id, query, req) => {
     cancelledKg: cancelled.length > 0 ? cancelled[0].orderedKg : 0,
     deniedKg: denied.length > 0 ? denied[0].orderedKg : 0,
     next: total.length != 0,
+    streamdetails
   };
 };
 

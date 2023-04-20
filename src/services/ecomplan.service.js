@@ -6186,6 +6186,46 @@ const fetch_streaming_Details_Approval = async (id, query, req) => {
   } else {
     statusSearch;
   }
+  let streamdetails = await StreamrequestPost.aggregate([
+    { $match: { $and: [{ _id: { $eq: id } }] } },
+    {
+      $lookup: {
+        from: 'streamposts',
+        localField: 'postId',
+        foreignField: '_id',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'products',
+              localField: 'orderId',
+              foreignField: '_id',
+              as: 'products',
+            },
+          },
+          { $unwind: "$products" }
+        ],
+        as: 'streamposts',
+      },
+    },
+    { $unwind: "$streamposts" },
+    {
+      $lookup: {
+        from: 'streamrequests',
+        localField: 'streamRequest',
+        foreignField: '_id',
+        as: 'streamrequests',
+      },
+    },
+    { $unwind: "$streamrequests" },
+    {
+      $project: {
+        _id: 1,
+        streamName: "$streamrequests.streamName",
+        startTime: "$streamrequests.startTime",
+        productTitle: "$streamposts.products.productTitle"
+      }
+    }
+  ])
   let values = await streamingorderProduct.aggregate([
     {
       $match: {

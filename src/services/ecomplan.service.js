@@ -5776,6 +5776,7 @@ const getPosted_Details_By_Stream = async (id) => {
 // fetch specific streaming details
 
 const fetchStream_Details_ById = async (id) => {
+  let stream = await Streamrequest.findById(id)
   let values = await StreamrequestPost.aggregate([
     {
       $match: {
@@ -5951,7 +5952,8 @@ const fetchStream_Details_ById = async (id) => {
       },
     },
   ]);
-  return values;
+
+  return { values, stream };
 };
 
 // Intimation Buyer Flow

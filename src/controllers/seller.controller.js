@@ -46,16 +46,43 @@ const getsubhostAll = catchAsync(async (req, res) => {
   res.send(data);
 });
 
-const subhost_free_users= catchAsync(async (req, res) => {
+const subhost_free_users = catchAsync(async (req, res) => {
   const data = await SellerService.subhost_free_users(req);
   res.send(data);
 });
+
+const disabled_hosts = catchAsync(async (req, res) => {
+  const data = await SellerService.disabled_hosts(req);
+  res.send(data);
+});
+const get_single_host = catchAsync(async (req, res) => {
+  const data = await SellerService.get_single_host(req);
+  res.send(data);
+});
+
+const update_single_host = catchAsync(async (req, res) => {
+  const data = await SellerService.update_single_host(req);
+  res.send(data);
+});
+
 
 const getsubuserAll = catchAsync(async (req, res) => {
   const data = await SellerService.getsubuserAll(req);
   res.send(data);
 });
 
+const disabled_subuser = catchAsync(async (req, res) => {
+  const data = await SellerService.disabled_subuser(req);
+  res.send(data);
+});
+const get_single_user = catchAsync(async (req, res) => {
+  const data = await SellerService.get_single_user(req);
+  res.send(data);
+});
+const update_single_user = catchAsync(async (req, res) => {
+  const data = await SellerService.update_single_user(req);
+  res.send(data);
+});
 
 
 const createSubUser = catchAsync(async (req, res) => {
@@ -101,6 +128,11 @@ module.exports = {
   mydetails,
   getsubhostAll,
   getsubuserAll,
-  subhost_free_users
-
+  subhost_free_users,
+  disabled_hosts,
+  disabled_subuser,
+  get_single_host,
+  update_single_host,
+  get_single_user,
+  update_single_user
 };

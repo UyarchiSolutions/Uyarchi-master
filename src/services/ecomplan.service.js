@@ -5961,6 +5961,7 @@ const fetchStream_Details_ById = async (id) => {
 const fetch_Stream_Ordered_Details = async (id, query) => {
   let buyerSearch = { _id: { $ne: null } };
   let statusSearch = { _id: { $ne: null } };
+  let page = query.page == '' || query.page == null || query.page == null ? 0 : query.page;
 
   if (!query.buyer == '' && query.buyer) {
     buyerSearch = {
@@ -5974,6 +5975,7 @@ const fetch_Stream_Ordered_Details = async (id, query) => {
   } else {
     statusSearch;
   }
+  let stream = await Streamrequest.findById(id);
   let values = await streamingOrder.aggregate([
     {
       $match: {
@@ -6073,7 +6075,7 @@ const fetch_Stream_Ordered_Details = async (id, query) => {
       },
     },
     {
-      $skip: 10 * query.page,
+      $skip: 10 * page,
     },
     {
       $limit: 10,
@@ -6158,8 +6160,14 @@ const fetch_Stream_Ordered_Details = async (id, query) => {
         as: 'Actions',
       },
     },
+    {
+      $skip: 10 * (page + 1),
+    },
+    {
+      $limit: 10,
+    }
   ]);
-  return { values: values, total: total.length };
+  return { values: values, total: total.length, stream };
 };
 
 const update_Status_For_StreamingOrders = async (id, body) => {
@@ -6197,7 +6205,7 @@ const fetch_streaming_Details_Approval = async (id, query, req) => {
           {
             $lookup: {
               from: 'products',
-              localField: 'orderId',
+              localField: 'productId',
               foreignField: '_id',
               as: 'products',
             },
@@ -6222,7 +6230,8 @@ const fetch_streaming_Details_Approval = async (id, query, req) => {
         _id: 1,
         streamName: "$streamrequests.streamName",
         startTime: "$streamrequests.startTime",
-        productTitle: "$streamposts.products.productTitle"
+        productTitle: "$streamposts.products.productTitle",
+        streamEnd_Time: "$streamrequests.streamEnd_Time"
       }
     }
   ])
@@ -6455,7 +6464,7 @@ const fetch_streaming_Details_Approval = async (id, query, req) => {
     cancelledKg: cancelled.length > 0 ? cancelled[0].orderedKg : 0,
     deniedKg: denied.length > 0 ? denied[0].orderedKg : 0,
     next: total.length != 0,
-    streamdetails
+    streamdetails: streamdetails[0]
   };
 };
 

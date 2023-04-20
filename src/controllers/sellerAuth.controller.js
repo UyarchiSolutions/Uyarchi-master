@@ -19,6 +19,9 @@ const SellerAuth = async (req, res, next) => {
     if (!userss) {
       return res.send(httpStatus.UNAUTHORIZED, 'Seller Not Found');
     }
+    if (!userss.active) {
+      return res.send(httpStatus.UNAUTHORIZED, 'User Disabled');
+    }
     req.userId = payload['_id'];
     req.seller = payload.userRole;
     if (userss.mainSeller == 'admin') {

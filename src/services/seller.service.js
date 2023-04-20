@@ -83,12 +83,16 @@ const loginseller = async (req) => {
   if (!userName) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Invalid User');
   }
+  if (!userName.active) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User Disabled');
+  }
   if (!userName.registered) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Seller Not Registered');
   }
   if (!(await userName.isPasswordMatch(password))) {
     throw new ApiError(httpStatus.NOT_FOUND, "Invalid Password");
   }
+
   return userName;
 };
 
@@ -186,13 +190,68 @@ const UpdateSellerById = async (id, body) => {
 
 
 const getsubhostAll = async (req) => {
+  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
   let sellerID = req.userId;
   let values = await Seller.aggregate([
-    { $match: { $and: [{ mainSeller: { $eq: sellerID } }, { sellerType: { $eq: "sub-host" } }] } }
+    { $match: { $and: [{ mainSeller: { $eq: sellerID } }, { sellerType: { $eq: "sub-host" } }] } },
+    {
+      $skip: 10 * page
+    },
+    {
+      $limit: 10,
+    },
   ])
-  return values;
+  let next = await Seller.aggregate([
+    { $match: { $and: [{ mainSeller: { $eq: sellerID } }, { sellerType: { $eq: "sub-host" } }] } },
+    {
+      $skip: 10 * (page + 1)
+    },
+    {
+      $limit: 10,
+    },
+  ])
+  return { values, next: next.length != 0 };
 
 };
+
+const disabled_hosts = async (req) => {
+
+  let host = await Seller.findById(req.query.id)
+  if (!host) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Sellar Not Found');
+  }
+  if (host.mainSeller != req.userId) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Sellar Not Found');
+  }
+  host.active = !host.active;
+  host.save()
+  return host;
+}
+
+const get_single_host = async (req) => {
+
+  let host = await Seller.findById(req.query.id)
+  if (!host) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Sellar Not Found');
+  }
+  if (host.mainSeller != req.userId) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Sellar Not Found');
+  }
+  return host;
+}
+
+const update_single_host = async (req) => {
+
+  let host = await Seller.findById(req.query.id)
+  if (!host) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Sellar Not Found');
+  }
+  if (host.mainSeller != req.userId) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Sellar Not Found');
+  }
+  host = await Seller.findByIdAndUpdate({ _id: host._id }, req.body, { new: true })
+  return host;
+}
 
 const subhost_free_users = async (req) => {
   let streamId = req.query.id
@@ -269,12 +328,68 @@ const subhost_free_users = async (req) => {
 
 };
 const getsubuserAll = async (req) => {
+
+  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
   let sellerID = req.userId;
   let values = await Seller.aggregate([
-    { $match: { $and: [{ mainSeller: { $eq: sellerID } }, { sellerType: { $eq: "sub-user" } }] } }
+    { $match: { $and: [{ mainSeller: { $eq: sellerID } }, { sellerType: { $eq: "sub-user" } }] } },
+    {
+      $skip: 10 * page
+    },
+    {
+      $limit: 10,
+    },
   ])
-  return values;
+  let next = await Seller.aggregate([
+    { $match: { $and: [{ mainSeller: { $eq: sellerID } }, { sellerType: { $eq: "sub-user" } }] } },
+    {
+      $skip: 10 * (page + 1)
+    },
+    {
+      $limit: 10,
+    },
+  ])
+  return { values, next: next.length != 0 };
 };
+const disabled_subuser = async (req) => {
+
+  let host = await Seller.findById(req.query.id)
+  if (!host) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Sellar Not Found');
+  }
+  if (host.mainSeller != req.userId) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Sellar Not Found');
+  }
+  host.active = !host.active;
+  host.save()
+  return host;
+}
+
+
+const get_single_user = async (req) => {
+
+  let host = await Seller.findById(req.query.id)
+  if (!host) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Sellar Not Found');
+  }
+  if (host.mainSeller != req.userId) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Sellar Not Found');
+  }
+  return host;
+}
+
+const update_single_user = async (req) => {
+
+  let host = await Seller.findById(req.query.id)
+  if (!host) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Sellar Not Found');
+  }
+  if (host.mainSeller != req.userId) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Sellar Not Found');
+  }
+  host = await Seller.findByIdAndUpdate({ _id: host._id }, req.body, { new: true })
+  return host;
+}
 
 module.exports = {
   createSeller,
@@ -291,5 +406,11 @@ module.exports = {
   mydetails,
   getsubhostAll,
   getsubuserAll,
-  subhost_free_users
+  subhost_free_users,
+  disabled_hosts,
+  disabled_subuser,
+  get_single_host,
+  update_single_host,
+  get_single_user,
+  update_single_user
 };

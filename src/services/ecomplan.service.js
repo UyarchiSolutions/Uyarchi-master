@@ -36,14 +36,14 @@ const create_Plans_addon = async (req) => {
 };
 
 const get_all_Plans = async (req) => {
-  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
+  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : parseInt(req.query.page);
   const value = await Streamplan.aggregate([{ $sort: { DateIso: -1 } }, { $skip: 10 * page }, { $limit: 10 }]);
 
   return value;
 };
 
 const get_all_Plans_pagination = async (req) => {
-  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
+  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : parseInt(req.query.page);
   const value = await Streamplan.aggregate([
     {
       $lookup: {
@@ -75,7 +75,7 @@ const get_all_Plans_pagination = async (req) => {
 };
 
 const get_all_Plans_addon = async (req) => {
-  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
+  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : parseInt(req.query.page);
   const value = await Streamplan.aggregate([
     { $match: { planType: { $eq: 'addon' } } },
     { $sort: { DateIso: -1 } },
@@ -92,7 +92,7 @@ const get_all_Plans_addon = async (req) => {
 };
 
 const get_all_Plans_normal = async (req) => {
-  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
+  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : parseInt(req.query.page);
   const value = await Streamplan.aggregate([
     { $match: { planType: { $ne: 'addon' }, planmode: { $eq: 'Public' } } },
     { $sort: { DateIso: -1 } },
@@ -204,7 +204,7 @@ const get_all_Post = async (req) => {
 };
 
 const get_all_Post_with_page_live = async (req) => {
-  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
+  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : parseInt(req.query.page);
   var date_now = new Date().getTime();
   let filterdate = req.query.date;
   dateMatch = { active: true };
@@ -377,7 +377,7 @@ const get_all_Post_with_page_live = async (req) => {
 };
 
 const get_all_Post_with_page_completed = async (req) => {
-  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
+  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : parseInt(req.query.page);
   var date_now = new Date().getTime();
   let filterdate = req.query.date;
   dateMatch = { active: true };
@@ -568,7 +568,7 @@ const get_all_Post_with_page_completed = async (req) => {
 };
 
 const get_all_Post_with_page_exhausted = async (req) => {
-  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
+  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : parseInt(req.query.page);
   var date_now = new Date().getTime();
   let filterdate = req.query.date;
   dateMatch = { active: true };
@@ -642,7 +642,7 @@ const get_all_Post_with_page_exhausted = async (req) => {
 };
 
 const get_all_Post_with_page_removed = async (req) => {
-  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
+  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : parseInt(req.query.page);
   var date_now = new Date().getTime();
   let filterdate = req.query.date;
   dateMatch = { active: true };
@@ -807,7 +807,7 @@ const get_all_Post_with_page_removed = async (req) => {
 
 const get_all_Post_with_page_all = async (req, status) => {
   console.log('asda');
-  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
+  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : parseInt(req.query.page);
   var date_now = new Date().getTime();
   let filterdate = req.query.date;
   dateMatch = { active: true };
@@ -947,11 +947,12 @@ const get_all_Post_with_page_all = async (req, status) => {
     { $skip: 10 * (page + 1) },
     { $limit: 10 },
   ]);
-  return { value, next: total.length != 0 };
+  console.log((10 * (page + 1)))
+  return { value, next: total.length != 0, total: total.length };
 };
 
 const get_all_Post_with_page = async (req, status) => {
-  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
+  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : parseInt(req.query.page);
   var date_now = new Date().getTime();
   let filterdate = req.query.date;
   dateMatch = { active: true };
@@ -1096,7 +1097,7 @@ const get_all_Post_with_page = async (req, status) => {
 };
 
 const get_all_Post_with_page_assigned = async (req) => {
-  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
+  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : parseInt(req.query.page);
   var date_now = new Date().getTime();
   let filterdate = req.query.date;
   dateMatch = { active: true };
@@ -1409,7 +1410,7 @@ const create_stream_two = async (req) => {
   return { message: 'deleted' };
 };
 const get_all_stream = async (req) => {
-  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
+  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : parseInt(req.query.page);
   console.log(req.userId);
   const value = await Streamrequest.aggregate([
     { $match: { $and: [{ suppierId: { $eq: req.userId } }] } },
@@ -1638,7 +1639,7 @@ const delete_one_stream = async (req) => {
 };
 
 const get_all_admin = async (req) => {
-  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
+  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : parseInt(req.query.page);
   const value = await Streamrequest.aggregate([
     {
       $lookup: {
@@ -1786,7 +1787,7 @@ const end_stream = async (req) => {
 };
 
 const get_all_streams = async (req) => {
-  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
+  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : parseInt(req.query.page);
   console.log(req.userId);
   const value = await Streamrequest.aggregate([
     { $match: { $and: [{ suppierId: { $eq: req.userId } }, { adminApprove: { $eq: 'Approved' } }] } },
@@ -2042,7 +2043,7 @@ const get_all_streams = async (req) => {
 };
 
 const get_subhost_streams = async (req) => {
-  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
+  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : parseInt(req.query.page);
   console.log(req.userId);
   const value = await Streamrequest.aggregate([
     {
@@ -3028,7 +3029,7 @@ const get_watch_live_steams_upcoming_byid = async (req) => {
 
 };
 const get_watch_live_steams_upcoming = async (req) => {
-  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
+  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 :parseInt(req.query.page);
   var date_now = new Date().getTime();
   let registeredFilter = { registerStatus: { $in: ['Not Registered', 'Unregistered'] } };
   let statusFilter = { startTime: { $gt: date_now } };
@@ -3350,7 +3351,7 @@ const get_watch_live_steams_upcoming = async (req) => {
   return { value, next: total.length != 0 };
 };
 const get_watch_live_steams_interested = async (req) => {
-  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
+  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : parseInt(req.query.page);
   let registeredFilter = { registerStatus: { $eq: 'Registered' } };
   let value = await Streamrequest.aggregate([
     { $sort: { streamingDate: -1 } },
@@ -3626,7 +3627,7 @@ const get_watch_live_steams_completed = async (req) => {
 };
 
 const get_watch_live_steams = async (req) => {
-  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
+  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : parseInt(req.query.page);
   let statusFilter = { active: false };
   let status = req.query.status;
   var date_now = new Date().getTime();
@@ -4072,7 +4073,7 @@ const single_stream_details = async (req) => {
 
 const purchase_details = async (req) => {
   let planId = req.query.id;
-  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
+  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 :parseInt(req.query.page);
   let date = req.query.date;
   let supplier = req.query.supplier;
   dateMatch = { active: { $in: [true, false] } };
@@ -4375,7 +4376,7 @@ const get_stream_alert = async (req) => {
 };
 
 const get_cancel_stream = async (req) => {
-  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
+  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : parseInt(req.query.page);
   var date_now = new Date().getTime();
   const value = await Streamrequest.aggregate([
     {
@@ -4551,7 +4552,7 @@ const get_by_slab = async (req) => {
 };
 
 const getallslab = async (req) => {
-  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
+  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : parseInt(req.query.page);
   const value = await Slab.aggregate([{ $sort: { DateIso: -1 } }, { $skip: 10 * page }, { $limit: 10 }]);
 
   return value;
@@ -4979,7 +4980,7 @@ const get_completed_stream_byid = async (req) => {
   return { value };
 };
 const get_completed_stream_upcommming = async (req) => {
-  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
+  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : parseInt(req.query.page);
   var date_now = new Date().getTime();
   let filterdate = req.query.date;
   dateMatch = { active: true };
@@ -5258,7 +5259,7 @@ const get_completed_stream_upcommming = async (req) => {
 };
 
 const get_completed_stream_live = async (req) => {
-  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
+  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : parseInt(req.query.page);
   var date_now = new Date().getTime();
   let filterdate = req.query.date;
   dateMatch = { active: true };
@@ -5555,7 +5556,7 @@ const get_completed_stream_live = async (req) => {
 };
 
 const get_completed_stream_completed = async (req) => {
-  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
+  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : parseInt(req.query.page);
   var date_now = new Date().getTime();
   let filterdate = req.query.date;
   dateMatch = { active: true };
@@ -5834,7 +5835,7 @@ const get_completed_stream_completed = async (req) => {
 };
 
 const get_completed_stream_expired = async (req) => {
-  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
+  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : parseInt(req.query.page);
   var today = new Date();
   var date_now = new Date(new Date().setDate(today.getDate() + 30)).getTime();
   let filterdate = req.query.date;
@@ -6120,7 +6121,7 @@ const get_completed_stream_removed = async (req) => {
 };
 
 const get_completed_stream_cancelled = async (req) => {
-  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
+  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : parseInt(req.query.page);
   var today = new Date();
   var date_now = new Date(new Date().setDate(today.getDate() + 30)).getTime();
   let filterdate = req.query.date;
@@ -7032,7 +7033,7 @@ const update_Status_For_StreamingOrders = async (id, body) => {
 const fetch_streaming_Details_Approval = async (id, query, req) => {
   let buyerSearch = { _id: { $ne: null } };
   let statusSearch = { _id: { $ne: null } };
-  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
+  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : parseInt(req.query.page);
 
   if (!query.buyer == '' && query.buyer) {
     buyerSearch = { name: { $regex: query.buyer, $options: 'i' } };
@@ -8292,7 +8293,7 @@ const get_notification_viewed = async (req) => {
 };
 
 const get_notification_getall = async (req) => {
-  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
+  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 :parseInt(req.query.page);
   let notification = await shopNotification
     .find({ shopId: req.shopId })
     .sort({ DateIso: -1 })
@@ -8306,6 +8307,7 @@ const get_notification_getall = async (req) => {
 const fs = require('fs');
 const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 const ffmpeg = require('fluent-ffmpeg');
+const { parse } = require('path');
 ffmpeg.setFfmpegPath(ffmpegPath);
 
 const get_stream_post_after_live_stream = async (req) => {

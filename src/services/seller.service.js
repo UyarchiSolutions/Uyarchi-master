@@ -20,6 +20,7 @@ const createSeller = async (req) => {
   else {
     value = await Seller.create({ ...body, ...{ mainSeller: 'admin', sellerType: "MainSeller", sellerRole: "admin" } })
     value.roleNum = [1]
+    value.save()
     const otp = await sentOTP(value.mobileNumber, value);
   }
   return value;

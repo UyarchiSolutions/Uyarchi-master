@@ -941,13 +941,13 @@ const get_all_Post_with_page_all = async (req, status) => {
     { $skip: 10 * page },
     { $limit: 10 },
   ]);
+  console.log(10 * (page + 1) )
   const total = await StreamPost.aggregate([
     { $match: { $and: [dateMatch, { suppierId: { $eq: req.userId } }] } },
     { $sort: { DateIso: -1 } },
     { $skip: 10 * (page + 1) },
     { $limit: 10 },
   ]);
-  console.log((10 * (page + 1)))
   return { value, next: total.length != 0, total: total.length };
 };
 

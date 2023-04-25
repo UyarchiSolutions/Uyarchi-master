@@ -252,6 +252,29 @@ const get_watch_live_steams = catchAsync(async (req, res) => {
   res.send(value);
 });
 
+const get_watch_live_steams_upcoming = catchAsync(async (req, res) => {
+  console.log('sdas');
+  const value = await Ecomserive.get_watch_live_steams_upcoming(req);
+  res.send(value);
+});
+
+const get_watch_live_steams_upcoming_byid= catchAsync(async (req, res) => {
+  console.log('sdas');
+  const value = await Ecomserive.get_watch_live_steams_upcoming_byid(req);
+  res.send(value);
+});
+
+const get_watch_live_steams_interested = catchAsync(async (req, res) => {
+  console.log('sdas');
+  const value = await Ecomserive.get_watch_live_steams_interested(req);
+  res.send(value);
+});
+const get_watch_live_steams_completed = catchAsync(async (req, res) => {
+  console.log('sdas');
+  const value = await Ecomserive.get_watch_live_steams_completed(req);
+  res.send(value);
+});
+
 const get_watch_live_steams_admin_watch = catchAsync(async (req, res) => {
   console.log('sdas');
   const value = await Ecomserive.get_watch_live_steams_admin_watch(req);
@@ -601,4 +624,11 @@ module.exports = {
   video_upload_post,
   get_video_link,
   get_order_details_by_stream,
+
+
+
+  get_watch_live_steams_upcoming,
+  get_watch_live_steams_interested,
+  get_watch_live_steams_completed,
+  get_watch_live_steams_upcoming_byid
 };

@@ -604,7 +604,7 @@ const get_sub_golive = async (req) => {
           },
           {
             $lookup: {
-              from: 'subhosts',
+              from: 'sellers',
               localField: 'supplierId',
               foreignField: '_id',
               as: 'subhosts',
@@ -618,7 +618,7 @@ const get_sub_golive = async (req) => {
           },
           {
             $lookup: {
-              from: 'suppliers',
+              from: 'sellers',
               localField: 'supplierId',
               foreignField: '_id',
               as: 'suppliers',

@@ -5425,13 +5425,55 @@ const finalmap_view = async (req) => {
   if (req.query.status != '' && req.query.status != null && req.query.status != 'null') {
     status = { $or: [{ $and: [{ daStatus: { $eq: req.query.status } }] }, { $and: [{ Re_daStatus: { $eq: req.query.status } }] }] }
   }
-  if (req.query.pincode != null && req.query.pincode != '' && req.query.pincode != "null") {
+  if (req.query.pincode != null && req.query.pincode != '' && req.query.pincode != "null" && req.query.status != '' && req.query.status != null && req.query.status != 'null') {
+    req.query.pincode = parseInt(req.query.pincode)
+    console.log(req.query.pincode, 2)
+
     status = { $or: [{ $and: [{ daStatus: { $eq: req.query.status } }, { Pincode: { $eq: req.query.pincode } }] }, { $and: [{ Re_daStatus: { $eq: req.query.status } }, { Re_Pincode: { $eq: req.query.pincode } }] }] }
+
+  }
+  else if (req.query.pincode != null && req.query.pincode != '' && req.query.pincode != "null") {
+    req.query.pincode = parseInt(req.query.pincode)
+    console.log(req.query.pincode, 3)
+
+    status = { $or: [{ Pincode: { $eq: req.query.pincode } }, { Re_Pincode: { $eq: req.query.pincode } }] }
+
   }
   let shop = await Shop.aggregate([
     {
       $match: { $and: [status] },
     },
+  ]);
+  return shop;
+};
+
+
+const finalmap_view_picode = async (req) => {
+
+  let status = { $or: [{ $and: [{ daStatus: { $in: ['ModeratelyInterested', 'HighlyInterested'] } }] }, { $and: [{ Re_daStatus: { $in: ['ModeratelyInterested', 'HighlyInterested'] } }] }] }
+  let shop = await Shop.aggregate([
+    {
+      $match: { $and: [status] },
+    },
+    {
+      $addFields: {
+        newpin: { $ifNull: ['$Re_Pincode', '$Pincode'] },
+      },
+    },
+    {
+      $group: {
+        _id: { Pincode: '$newpin' },
+        count: { $sum: 1 },
+      },
+    },
+    {
+      $project: {
+        _id: 'aa',
+        Pincode: '$_id.Pincode',
+        count: 1,
+      },
+    },
+    { $sort: { Pincode: 1 } },
   ]);
   return shop;
 };
@@ -5504,5 +5546,6 @@ module.exports = {
   getRevertShops,
   DummySort,
   getShopByPincode,
-  finalmap_view
+  finalmap_view,
+  finalmap_view_picode
 };

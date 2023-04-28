@@ -74,6 +74,7 @@ router.route('/golive/subhost/view').get(SellerAuth, Ecomcontroller.go_live_stre
 
 router.route('/getAll/shop/live/stream').get(shopverify, Ecomcontroller.get_watch_live_steams);
 router.route('/getAll/shop/live/stream/upcoming').get(shopverify, Ecomcontroller.get_watch_live_steams_upcoming);
+router.route('/getAll/shop/live/stream/current').get(shopverify, Ecomcontroller.get_watch_live_steams_current);
 router.route('/getAll/shop/live/stream/upcoming/byid').get(shopverify, Ecomcontroller.get_watch_live_steams_upcoming_byid);
 router.route('/getAll/shop/live/stream/interested').get(shopverify, Ecomcontroller.get_watch_live_steams_interested);
 router.route('/getAll/shop/live/stream/completed').get(shopverify, Ecomcontroller.get_watch_live_steams_completed);

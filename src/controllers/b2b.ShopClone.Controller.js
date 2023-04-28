@@ -569,6 +569,11 @@ const getShopByPincode = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const finalmap_view = catchAsync(async (req, res) => {
+  const data = await b2bCloneService.finalmap_view(req);
+  res.send(data);
+});
+
 module.exports = {
   createB2bShopClone,
   getAllB2BshopClone,
@@ -638,4 +643,5 @@ module.exports = {
   ChangeOneMap_to_AnotherMap,
   getRevertShops,
   DummySort,
+  finalmap_view
 };

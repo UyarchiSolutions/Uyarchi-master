@@ -258,6 +258,12 @@ const get_watch_live_steams_upcoming = catchAsync(async (req, res) => {
   res.send(value);
 });
 
+const get_watch_live_steams_current= catchAsync(async (req, res) => {
+  console.log('sdas');
+  const value = await Ecomserive.get_watch_live_steams_current(req);
+  res.send(value);
+});
+
 const get_watch_live_steams_upcoming_byid = catchAsync(async (req, res) => {
   console.log('sdas');
   const value = await Ecomserive.get_watch_live_steams_upcoming_byid(req);
@@ -637,5 +643,6 @@ module.exports = {
   get_watch_live_steams_interested,
   get_watch_live_steams_completed,
   get_watch_live_steams_upcoming_byid,
-  getall_homeage_streams
+  getall_homeage_streams,
+  get_watch_live_steams_current
 };

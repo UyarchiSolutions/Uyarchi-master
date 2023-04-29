@@ -58,7 +58,7 @@ const DisableCart = async (id) => {
 };
 
 const getScvCarts = async () => {
-  let values = await ScvCart.find();
+  let values = await ScvCart.find({ active: true });
   return values;
 };
 

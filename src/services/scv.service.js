@@ -48,6 +48,15 @@ const AddCart = async (body) => {
   return values;
 };
 
+const DisableCart = async (id) => {
+  let values = await ScvCart.findById(id);
+  if (!values) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Cart Nat Available');
+  }
+  values = await ScvCart.findByIdAndUpdate({ _id: id }, { active: false }, { new: true });
+  return values;
+};
+
 module.exports = {
   createSCV,
   getAllSCV,
@@ -55,4 +64,5 @@ module.exports = {
   updateSCVById,
   deleteSCVById,
   AddCart,
+  DisableCart,
 };

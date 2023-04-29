@@ -5,4 +5,5 @@ const router = express.Router();
 router.route('/').post(scvController.createSCV).get(scvController.gertAllSCV);
 router.route('/:scvId').get(scvController.getSCVById).put(scvController.updateSCV).delete(scvController.deletescv);
 router.route('/Add/cart').post(partnerCart.single('image'), scvController.AddCart);
+router.route('/DisableCart').get(scvController.DisableCart);
 module.exports = router;

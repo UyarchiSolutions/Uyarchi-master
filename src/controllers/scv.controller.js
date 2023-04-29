@@ -58,6 +58,11 @@ const AddCart = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).send(data);
 });
 
+const DisableCart = catchAsync(async (req, res) => {
+  const data = await scvService.DisableCart(req.params.id);
+  res.send(data);
+});
+
 module.exports = {
   createSCV,
   getSCVById,
@@ -65,4 +70,5 @@ module.exports = {
   updateSCV,
   deletescv,
   AddCart,
+  DisableCart,
 };

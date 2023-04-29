@@ -156,6 +156,9 @@ const get_myDetails = async (req) => {
         shop: 1,
         _id: 1,
         shopTypename: '$shoplists.shopList',
+        email: 1,
+        Pincode: 1,
+
       },
     },
   ]);
@@ -1795,6 +1798,21 @@ const getissuedOrders = async (page) => {
   return { values: values, total: total.length };
 };
 
+const update_profile = async (req) => {
+  let value = await Shop.findById(req.shopId);
+
+  if (!value) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Shop Not Fount');
+
+  }
+
+  value = await Shop.findByIdAndUpdate({ _id: req.shopId }, req.body, { new: true });
+
+  return value;
+
+
+}
+
 module.exports = {
   register_shop,
   verify_otp,
@@ -1819,4 +1837,5 @@ module.exports = {
   imageUpload_For_Issues,
   getIssuedProduct,
   getissuedOrders,
+  update_profile
 };

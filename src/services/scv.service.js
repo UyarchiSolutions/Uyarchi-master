@@ -68,6 +68,7 @@ const updateSCVCart = async (id, body) => {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Cart Not Availbale');
   }
   values = await ScvCart.findByIdAndUpdate({ _id: id }, body, { new: true });
+  return values;
 };
 
 module.exports = {

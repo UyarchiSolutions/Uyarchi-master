@@ -1108,13 +1108,13 @@ const queryProduct = async (filter, options) => {
         from: 'categories',
         localField: 'category',
         foreignField: '_id',
-        as: 'category',
+        as: 'categories',
       },
     },
     {
       $unwind: {
         preserveNullAndEmptyArrays: true,
-        path: '$category',
+        path: '$categories',
       },
     },
     {
@@ -1123,8 +1123,8 @@ const queryProduct = async (filter, options) => {
         description: 1,
         productTitle: 1,
         image: 1,
-        category: 1,
-        categoryName: '$category.categoryName',
+        categoryId:'$category',
+        categoryName: '$categories.categoryName',
       },
     },
   ]);

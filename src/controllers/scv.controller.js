@@ -70,6 +70,12 @@ const getScvCarts = catchAsync(async (req, res) => {
 
 const updateSCVCart = catchAsync(async (req, res) => {
   const data = await scvService.updateSCVCart(req.params.id, req.body);
+  let path = '';
+  path = 'images/partnercart/';
+  if (req.file != null) {
+    data.image = path + req.file.filename;
+  }
+  await data.save();
   res.send(data);
 });
 

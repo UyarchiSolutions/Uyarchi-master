@@ -251,6 +251,9 @@ const shopSchema = mongoose.Schema({
   },
   location_add: {
     type: Object,
+  },
+  email: {
+    type: String,
   }
 });
 

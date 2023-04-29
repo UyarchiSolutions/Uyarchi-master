@@ -28,5 +28,6 @@ router.route('/cancel/byorder').put(shopverify, shopregister.cancelbyorder);
 router.route('/imageUpload/:id').put(Issue.array('image'), shopregister.imageUpload_For_Issues);
 router.route('/getIssuedProduct/:id').get(shopregister.getIssuedProduct);
 router.route('/getissuedOrders/:page').get(shopregister.getissuedOrders);
+router.route('/update/myprofile').put(shopverify, shopregister.update_profile);
 
 module.exports = router;

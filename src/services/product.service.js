@@ -1123,7 +1123,7 @@ const queryProduct = async (filter, options) => {
         description: 1,
         productTitle: 1,
         image: 1,
-        categoryId: '$category._id',
+        categoryId: '$categories._id',
         categoryName: '$categories.categoryName',
       },
     },

@@ -236,7 +236,7 @@ const go_live_stream_host = catchAsync(async (req, res) => {
 
 const get_subhost_token = catchAsync(async (req, res) => {
   console.log('sdas');
-  const value = await Ecomserive.get_subhost_token(req, req.subhostId);
+  const value = await Ecomserive.get_subhost_token(req, req.userId);
   res.send(value);
 });
 
@@ -252,6 +252,35 @@ const get_watch_live_steams = catchAsync(async (req, res) => {
   res.send(value);
 });
 
+const get_watch_live_steams_upcoming = catchAsync(async (req, res) => {
+  console.log('sdas');
+  const value = await Ecomserive.get_watch_live_steams_upcoming(req);
+  res.send(value);
+});
+
+const get_watch_live_steams_current= catchAsync(async (req, res) => {
+  console.log('sdas');
+  const value = await Ecomserive.get_watch_live_steams_current(req);
+  res.send(value);
+});
+
+const get_watch_live_steams_upcoming_byid = catchAsync(async (req, res) => {
+  console.log('sdas');
+  const value = await Ecomserive.get_watch_live_steams_upcoming_byid(req);
+  res.send(value);
+});
+
+const get_watch_live_steams_interested = catchAsync(async (req, res) => {
+  console.log('sdas');
+  const value = await Ecomserive.get_watch_live_steams_interested(req);
+  res.send(value);
+});
+const get_watch_live_steams_completed = catchAsync(async (req, res) => {
+  console.log('sdas');
+  const value = await Ecomserive.get_watch_live_steams_completed(req);
+  res.send(value);
+});
+
 const get_watch_live_steams_admin_watch = catchAsync(async (req, res) => {
   console.log('sdas');
   const value = await Ecomserive.get_watch_live_steams_admin_watch(req);
@@ -261,6 +290,12 @@ const get_watch_live_steams_admin_watch = catchAsync(async (req, res) => {
 const get_watch_live_token = catchAsync(async (req, res) => {
   console.log('sdas');
   const value = await Ecomserive.get_watch_live_token(req);
+  res.send(value);
+});
+
+const getall_homeage_streams = catchAsync(async (req, res) => {
+  console.log('sdas');
+  const value = await Ecomserive.getall_homeage_streams(req);
   res.send(value);
 });
 
@@ -363,7 +398,7 @@ const update_slab = catchAsync(async (req, res) => {
 });
 
 const getStock_Manager = catchAsync(async (req, res) => {
-  const data = await Ecomserive.getStock_Manager(req.params.page);
+  const data = await Ecomserive.getStock_Manager(req);
   res.send(data);
 });
 
@@ -388,7 +423,7 @@ const update_Status_For_StreamingOrders = catchAsync(async (req, res) => {
 });
 
 const fetch_streaming_Details_Approval = catchAsync(async (req, res) => {
-  const data = await Ecomserive.fetch_streaming_Details_Approval(req.params.id, req.params.product, req.query);
+  const data = await Ecomserive.fetch_streaming_Details_Approval(req.query.post, req.query, req);
   res.send(data);
 });
 
@@ -601,4 +636,13 @@ module.exports = {
   video_upload_post,
   get_video_link,
   get_order_details_by_stream,
+
+
+
+  get_watch_live_steams_upcoming,
+  get_watch_live_steams_interested,
+  get_watch_live_steams_completed,
+  get_watch_live_steams_upcoming_byid,
+  getall_homeage_streams,
+  get_watch_live_steams_current
 };

@@ -3781,8 +3781,7 @@ const get_userbased_dataapproved = async (query) => {
   for (let i = 0; i < shops.length; i++) {
     if (shops[i].distanceStatus != 'updated') {
       let response = await axios.get(
-        `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${
-          shops[i].Slat + ',' + shops[i].Slong
+        `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${shops[i].Slat + ',' + shops[i].Slong
         }&destinations=${shops[i].da_lot + ',' + shops[i].da_long}&key=AIzaSyDoYhbYhtl9HpilAZSy8F_JHmzvwVDoeHI`
       );
       if (i == 0) {
@@ -3790,8 +3789,7 @@ const get_userbased_dataapproved = async (query) => {
         long = shops[i].Slong;
       }
       let dis = await axios.get(
-        `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${lat + ',' + long}&destinations=${
-          shops[i].Slat + ',' + shops[i].Slong
+        `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${lat + ',' + long}&destinations=${shops[i].Slat + ',' + shops[i].Slong
         }&key=AIzaSyDoYhbYhtl9HpilAZSy8F_JHmzvwVDoeHI`
       );
       // console.log(dis.data.rows[0].elements[0].distance.text);
@@ -5421,6 +5419,65 @@ const getShopByPincode = async (pincode) => {
   return shop;
 };
 
+const finalmap_view = async (req) => {
+
+  let status = { $or: [{ $and: [{ daStatus: { $in: ['ModeratelyInterested', 'HighlyInterested'] } }] }, { $and: [{ Re_daStatus: { $in: ['ModeratelyInterested', 'HighlyInterested'] } }] }] }
+  if (req.query.status != '' && req.query.status != null && req.query.status != 'null') {
+    status = { $or: [{ $and: [{ daStatus: { $eq: req.query.status } }] }, { $and: [{ Re_daStatus: { $eq: req.query.status } }] }] }
+  }
+  if (req.query.pincode != null && req.query.pincode != '' && req.query.pincode != "null" && req.query.status != '' && req.query.status != null && req.query.status != 'null') {
+    req.query.pincode = parseInt(req.query.pincode)
+    console.log(req.query.pincode, 2)
+
+    status = { $or: [{ $and: [{ daStatus: { $eq: req.query.status } }, { Pincode: { $eq: req.query.pincode } }] }, { $and: [{ Re_daStatus: { $eq: req.query.status } }, { Re_Pincode: { $eq: req.query.pincode } }] }] }
+
+  }
+  else if (req.query.pincode != null && req.query.pincode != '' && req.query.pincode != "null") {
+    req.query.pincode = parseInt(req.query.pincode)
+    console.log(req.query.pincode, 3)
+
+    status = { $or: [{ Pincode: { $eq: req.query.pincode } }, { Re_Pincode: { $eq: req.query.pincode } }] }
+
+  }
+  let shop = await Shop.aggregate([
+    {
+      $match: { $and: [status] },
+    },
+  ]);
+  return shop;
+};
+
+
+const finalmap_view_picode = async (req) => {
+
+  let status = { $or: [{ $and: [{ daStatus: { $in: ['ModeratelyInterested', 'HighlyInterested'] } }] }, { $and: [{ Re_daStatus: { $in: ['ModeratelyInterested', 'HighlyInterested'] } }] }] }
+  let shop = await Shop.aggregate([
+    {
+      $match: { $and: [status] },
+    },
+    {
+      $addFields: {
+        newpin: { $ifNull: ['$Re_Pincode', '$Pincode'] },
+      },
+    },
+    {
+      $group: {
+        _id: { Pincode: '$newpin' },
+        count: { $sum: 1 },
+      },
+    },
+    {
+      $project: {
+        _id: 'aa',
+        Pincode: '$_id.Pincode',
+        count: 1,
+      },
+    },
+    { $sort: { Pincode: 1 } },
+  ]);
+  return shop;
+};
+
 module.exports = {
   createShopClone,
   getAllShopClone,
@@ -5489,4 +5546,6 @@ module.exports = {
   getRevertShops,
   DummySort,
   getShopByPincode,
+  finalmap_view,
+  finalmap_view_picode
 };

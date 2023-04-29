@@ -604,7 +604,7 @@ const get_sub_golive = async (req) => {
           },
           {
             $lookup: {
-              from: 'subhosts',
+              from: 'sellers',
               localField: 'supplierId',
               foreignField: '_id',
               as: 'subhosts',
@@ -618,7 +618,7 @@ const get_sub_golive = async (req) => {
           },
           {
             $lookup: {
-              from: 'suppliers',
+              from: 'sellers',
               localField: 'supplierId',
               foreignField: '_id',
               as: 'suppliers',
@@ -693,7 +693,7 @@ const remove_host_live = async (req) => {
 };
 
 const create_subhost_token = async (req) => {
-  let supplierId = req.subhostId;
+  let supplierId = req.userId;
   let streamId = req.body.streamId;
   console.log(streamId)
   let stream = await Streamrequest.findById(streamId)

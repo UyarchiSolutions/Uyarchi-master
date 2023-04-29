@@ -120,4 +120,6 @@ router.route('/ChangeOneMap/AnotherMap').post(b2bShopCloneController.ChangeOneMa
 router.route('/getRevertShops/onlyMap').get(b2bShopCloneController.getRevertShops);
 router.route('/DummySort').post(b2bShopCloneController.DummySort);
 router.route('/getShopByPincode/:pincode').get(b2bShopCloneController.getShopByPincode);
+router.route('/get/final/map/view').get(b2bShopCloneController.finalmap_view);
+router.route('/get/final/map/view/pincode').get(b2bShopCloneController.finalmap_view_picode);
 module.exports = router;

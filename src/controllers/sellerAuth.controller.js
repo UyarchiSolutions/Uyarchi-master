@@ -19,8 +19,17 @@ const SellerAuth = async (req, res, next) => {
     if (!userss) {
       return res.send(httpStatus.UNAUTHORIZED, 'Seller Not Found');
     }
-    req.sellerID = payload['_id'];
+    if (!userss.active) {
+      return res.send(httpStatus.UNAUTHORIZED, 'User Disabled');
+    }
+    req.userId = payload['_id'];
     req.seller = payload.userRole;
+    if (userss.mainSeller == 'admin') {
+      req.accessBy = userss._id;
+    }
+    else {
+      req.accessBy = userss.mainSeller;
+    }
     return next();
   } catch {
     return res.send(httpStatus.UNAUTHORIZED, 'Invalid Access val');
@@ -38,7 +47,7 @@ const SetPass = async (req, res, next) => {
       return res.send(httpStatus.UNAUTHORIZED, 'Seller Not Found');
     }
 
-    req.sellerID = payload['_id'];
+    req.userId = payload['_id'];
     req.seller = payload.userRole;
     return next();
   } catch {

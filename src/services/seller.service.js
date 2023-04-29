@@ -4,6 +4,7 @@ const ApiError = require('../utils/ApiError');
 const { OTP, sellerOTP } = require('../models/saveOtp.model');
 const sentOTP = require('../config/seller.config');
 const moment = require('moment')
+const { Streamplan, StreamPost, Streamrequest, StreamrequestPost, StreamPreRegister } = require('../models/ecomplan.model');
 const createSeller = async (req) => {
   let body = req.body;
   let value = await Seller.findOne({ $or: [{ email: body.email }, { mobileNumber: body.mobileNumber }] });
@@ -18,6 +19,8 @@ const createSeller = async (req) => {
   }
   else {
     value = await Seller.create({ ...body, ...{ mainSeller: 'admin', sellerType: "MainSeller", sellerRole: "admin" } })
+    value.roleNum = [1]
+    value.save()
     const otp = await sentOTP(value.mobileNumber, value);
   }
   return value;
@@ -48,7 +51,8 @@ const verifyOTP = async (req) => {
 
 const setPassword = async (req) => {
   let body = req.body;
-  let sellerId = req.sellerID;
+  let sellerId = req.userId;
+  console.log(sellerId)
   let seller = await Seller.findById(sellerId);
 
   if (!seller) {
@@ -80,12 +84,16 @@ const loginseller = async (req) => {
   if (!userName) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Invalid User');
   }
+  if (!userName.active) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User Disabled');
+  }
   if (!userName.registered) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Seller Not Registered');
   }
   if (!(await userName.isPasswordMatch(password))) {
     throw new ApiError(httpStatus.NOT_FOUND, "Invalid Password");
   }
+
   return userName;
 };
 
@@ -105,7 +113,7 @@ const alreadyUser = async (req) => {
 
 const createSubhost = async (req) => {
   let body = req.body;
-  let sellerID = req.sellerID;
+  let sellerID = req.userId;
   let value = await Seller.findOne({ $or: [{ email: body.email }, { mobileNumber: body.mobileNumber }] });
 
   if (value) {
@@ -123,7 +131,7 @@ const createSubhost = async (req) => {
 
 const createSubUser = async (req) => {
   let body = req.body;
-  let sellerID = req.sellerID;
+  let sellerID = req.userId;
   let value = await Seller.findOne({ $or: [{ email: body.email }, { mobileNumber: body.mobileNumber }] });
 
   if (value) {
@@ -135,11 +143,18 @@ const createSubUser = async (req) => {
     }
   }
   let returnval = await Seller.create({ ...body, ...{ mainSeller: sellerID, sellerType: "sub-user", sellerRole: body.sellerRole } })
+  let rolesNumeric = [];
+  let roles = { 'admin': 1, "Stock-Manager": 2, "Account-Manager": 3, "Delivery-Excutive": 4, "Loading-Manager": 5, };
+  body.sellerRole.forEach(element => {
+    rolesNumeric.push(roles[element])
+  });
+  returnval.roleNum = rolesNumeric;
+  returnval.save();
   return returnval;
 };
 
 const mydetails = async (req) => {
-  let sellerID = req.sellerID;
+  let sellerID = req.userId;
   let value = await Seller.findById(sellerID)
 
   if (!value) {
@@ -176,20 +191,206 @@ const UpdateSellerById = async (id, body) => {
 
 
 const getsubhostAll = async (req) => {
-  let sellerID = req.sellerID;
+  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
+  let sellerID = req.userId;
   let values = await Seller.aggregate([
-    { $match: { $and: [{ mainSeller: { $eq: sellerID } }, { sellerType: { $eq: "sub-host" } }] } }
+    { $match: { $and: [{ mainSeller: { $eq: sellerID } }, { sellerType: { $eq: "sub-host" } }] } },
+    {
+      $skip: 10 * page
+    },
+    {
+      $limit: 10,
+    },
   ])
-  return values;
+  let next = await Seller.aggregate([
+    { $match: { $and: [{ mainSeller: { $eq: sellerID } }, { sellerType: { $eq: "sub-host" } }] } },
+    {
+      $skip: 10 * (page + 1)
+    },
+    {
+      $limit: 10,
+    },
+  ])
+  return { values, next: next.length != 0 };
+
+};
+
+const disabled_hosts = async (req) => {
+
+  let host = await Seller.findById(req.query.id)
+  if (!host) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Sellar Not Found');
+  }
+  if (host.mainSeller != req.userId) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Sellar Not Found');
+  }
+  host.active = !host.active;
+  host.save()
+  return host;
+}
+
+const get_single_host = async (req) => {
+
+  let host = await Seller.findById(req.query.id)
+  if (!host) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Sellar Not Found');
+  }
+  if (host.mainSeller != req.userId) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Sellar Not Found');
+  }
+  return host;
+}
+
+const update_single_host = async (req) => {
+
+  let host = await Seller.findById(req.query.id)
+  if (!host) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Sellar Not Found');
+  }
+  if (host.mainSeller != req.userId) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Sellar Not Found');
+  }
+  host = await Seller.findByIdAndUpdate({ _id: host._id }, req.body, { new: true })
+  return host;
+}
+
+const subhost_free_users = async (req) => {
+  let streamId = req.query.id
+
+  let hostTime = await Streamrequest.findById(req.query.id);
+
+
+  let host = await Seller.aggregate([
+    { $match: { $and: [{ sellerType: { $eq: "sub-host" } }, { mainSeller: { $eq: req.userId } }, { $or: [{ sellerRole: { $eq: ["chat/stream"] } }, { sellerRole: { $eq: ["stream"] } }] }] } },
+    {
+      $lookup: {
+        from: 'streamrequests',
+        let: { hostId: '$_id' },
+        pipeline: [
+          {
+            $match: {
+              $expr: { $or: [{ $eq: ["$allot_host_1", "$$hostId"] }, { $eq: ["$allot_host_2", "$$hostId"] }, { $eq: ["$allot_host_3", "$$hostId"] }] },
+              $and: [{ status: { $ne: "Completed" } }, { _id: { $ne: streamId } }, { $or: [{ $and: [{ startTime: { $lte: hostTime.startTime } }, { endTime: { $gte: hostTime.startTime } }] }, { $and: [{ startTime: { $lte: hostTime.endTime } }, { endTime: { $gte: hostTime.endTime } }] }] }],
+            }
+          },
+          { $group: { _id: null, count: { $sum: 1 } } }
+
+        ],
+        as: 'streamrequests',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$streamrequests',
+      },
+    },
+    {
+      $addFields: {
+        busy: { $ifNull: ['$streamrequests.count', 0] },
+      },
+    },
+    { $match: { busy: { $eq: 0 } } }
+  ])
+
+  let chat = await Seller.aggregate([
+    { $match: { $and: [{ sellerType: { $eq: "sub-host" } }, { mainSeller: { $eq: req.userId } }, { $or: [{ sellerRole: { $eq: ["chat/stream"] } }, { sellerRole: { $eq: ["chat"] } }] }] } },
+    {
+      $lookup: {
+        from: 'streamrequests',
+        let: { hostId: '$_id' },
+        pipeline: [
+          {
+            $match: {
+              $expr: { $or: [{ $eq: ["$allot_host_1", "$$hostId"] }, { $eq: ["$allot_host_2", "$$hostId"] }, { $eq: ["$allot_host_3", "$$hostId"] }] },
+              $and: [{ status: { $ne: "Completed" } }, { _id: { $ne: streamId } }, { $or: [{ $and: [{ startTime: { $lte: hostTime.startTime } }, { endTime: { $gte: hostTime.startTime } }] }, { $and: [{ startTime: { $lte: hostTime.endTime } }, { endTime: { $gte: hostTime.endTime } }] }] }],
+            }
+          },
+          { $group: { _id: null, count: { $sum: 1 } } }
+
+        ],
+        as: 'streamrequests',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$streamrequests',
+      },
+    },
+    {
+      $addFields: {
+        busy: { $ifNull: ['$streamrequests.count', 0] },
+      },
+    },
+    { $match: { busy: { $eq: 0 } } }
+  ])
+  return { host, chat };
 
 };
 const getsubuserAll = async (req) => {
-  let sellerID = req.sellerID;
+
+  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
+  let sellerID = req.userId;
   let values = await Seller.aggregate([
-    { $match: { $and: [{ mainSeller: { $eq: sellerID } }, { sellerType: { $eq: "sub-user" } }] } }
+    { $match: { $and: [{ mainSeller: { $eq: sellerID } }, { sellerType: { $eq: "sub-user" } }] } },
+    {
+      $skip: 10 * page
+    },
+    {
+      $limit: 10,
+    },
   ])
-  return values;
+  let next = await Seller.aggregate([
+    { $match: { $and: [{ mainSeller: { $eq: sellerID } }, { sellerType: { $eq: "sub-user" } }] } },
+    {
+      $skip: 10 * (page + 1)
+    },
+    {
+      $limit: 10,
+    },
+  ])
+  return { values, next: next.length != 0 };
 };
+const disabled_subuser = async (req) => {
+
+  let host = await Seller.findById(req.query.id)
+  if (!host) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Sellar Not Found');
+  }
+  if (host.mainSeller != req.userId) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Sellar Not Found');
+  }
+  host.active = !host.active;
+  host.save()
+  return host;
+}
+
+
+const get_single_user = async (req) => {
+
+  let host = await Seller.findById(req.query.id)
+  if (!host) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Sellar Not Found');
+  }
+  if (host.mainSeller != req.userId) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Sellar Not Found');
+  }
+  return host;
+}
+
+const update_single_user = async (req) => {
+
+  let host = await Seller.findById(req.query.id)
+  if (!host) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Sellar Not Found');
+  }
+  if (host.mainSeller != req.userId) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Sellar Not Found');
+  }
+  host = await Seller.findByIdAndUpdate({ _id: host._id }, req.body, { new: true })
+  return host;
+}
 
 module.exports = {
   createSeller,
@@ -205,5 +406,12 @@ module.exports = {
   createSubUser,
   mydetails,
   getsubhostAll,
-  getsubuserAll
+  getsubuserAll,
+  subhost_free_users,
+  disabled_hosts,
+  disabled_subuser,
+  get_single_host,
+  update_single_host,
+  get_single_user,
+  update_single_user
 };

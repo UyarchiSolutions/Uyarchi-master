@@ -64,6 +64,9 @@ const SellerSchema = new mongoose.Schema(
     password: {
       type: String,
     },
+    roleNum: {
+      type: Array,
+    }
   },
   {
     timestamps: { createdAt: 'createdDate', updatedAt: 'updatedDate' },

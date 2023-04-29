@@ -7,5 +7,5 @@ router.route('/:scvId').get(scvController.getSCVById).put(scvController.updateSC
 router.route('/Add/cart').post(partnerCart.single('image'), scvController.AddCart);
 router.route('/DisableCart/:id').get(scvController.DisableCart);
 router.route('/getScvCarts/All').get(scvController.getScvCarts);
-router.route('/updateSCVCart/:id').put(scvController.updateSCVCart);
+router.route('/updateSCVCart/:id').put(partnerCart.single('image'), scvController.updateSCVCart);
 module.exports = router;

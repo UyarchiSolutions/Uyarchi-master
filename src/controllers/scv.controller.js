@@ -68,6 +68,11 @@ const getScvCarts = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const updateSCVCart = catchAsync(async (req, res) => {
+  const data = await scvService.updateSCVCart(req.params.id, req.body);
+  res.send(data);
+});
+
 module.exports = {
   createSCV,
   getSCVById,
@@ -77,4 +82,5 @@ module.exports = {
   AddCart,
   DisableCart,
   getScvCarts,
+  updateSCVCart,
 };

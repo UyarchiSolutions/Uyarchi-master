@@ -62,6 +62,14 @@ const getScvCarts = async () => {
   return values;
 };
 
+const updateSCVCart = async (id, body) => {
+  let values = await ScvCart.findById(id);
+  if (!values) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Cart Not Availbale');
+  }
+  values = await ScvCart.findByIdAndUpdate({ _id: id }, body, { new: true });
+};
+
 module.exports = {
   createSCV,
   getAllSCV,
@@ -71,4 +79,5 @@ module.exports = {
   AddCart,
   DisableCart,
   getScvCarts,
+  updateSCVCart,
 };

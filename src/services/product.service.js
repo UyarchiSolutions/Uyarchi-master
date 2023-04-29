@@ -1102,7 +1102,32 @@ const getAllBillRaised = async () => {
 };
 
 const queryProduct = async (filter, options) => {
-  return Product.find();
+  return Product.aggregate([
+    {
+      $lookup: {
+        from: 'categories',
+        localField: 'category',
+        foreignField: '_id',
+        as: 'category',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$category',
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        description: 1,
+        productTitle: 1,
+        image: 1,
+        category: 1,
+        categoryName: '$category.categoryName',
+      },
+    },
+  ]);
 };
 
 const getAllManageBill = async () => {

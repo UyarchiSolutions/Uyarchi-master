@@ -57,6 +57,11 @@ const DisableCart = async (id) => {
   return values;
 };
 
+const getScvCarts = async () => {
+  let values = await ScvCart.find();
+  return values;
+};
+
 module.exports = {
   createSCV,
   getAllSCV,
@@ -65,4 +70,5 @@ module.exports = {
   deleteSCVById,
   AddCart,
   DisableCart,
+  getScvCarts,
 };

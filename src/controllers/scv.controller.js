@@ -4,6 +4,7 @@ const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
 const scvService = require('../services/scv.service');
 const { relativeTimeRounding } = require('moment');
+const ScvPartnerService = require('../services/scv.service');
 
 const createSCV = catchAsync(async (req, res) => {
   const scv = await scvService.createSCV(req.body);
@@ -46,10 +47,22 @@ const deletescv = catchAsync(async (req, res) => {
   res.status(httpStatus.NO_CONTENT).send();
 });
 
+const AddCart = catchAsync(async (req, res) => {
+  const data = await scvService.AddCart(req.body);
+  let path = '';
+  path = 'images/partnercart/';
+  if (req.file != null) {
+    data.image = path + req.file.filename;
+  }
+  await data.save();
+  res.status(httpStatus.CREATED).send(data);
+});
+
 module.exports = {
   createSCV,
   getSCVById,
   gertAllSCV,
   updateSCV,
   deletescv,
+  AddCart,
 };

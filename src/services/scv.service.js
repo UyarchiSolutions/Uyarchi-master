@@ -2,6 +2,8 @@ const httpStatus = require('http-status');
 const { SCVPurchase } = require('../models');
 const ApiError = require('../utils/ApiError');
 
+const { ScvCart } = require('../models/Scv.mode');
+
 const createSCV = async (scvBody) => {
   return SCVPurchase.create(scvBody);
 };
@@ -39,10 +41,18 @@ const deleteSCVById = async (scvId) => {
   return scv;
 };
 
+// Scv Partner Flow
+
+const AddCart = async (body) => {
+  let values = await ScvCart.create(body);
+  return values;
+};
+
 module.exports = {
   createSCV,
   getAllSCV,
   getSCVById,
   updateSCVById,
   deleteSCVById,
+  AddCart,
 };

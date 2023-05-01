@@ -107,7 +107,14 @@ const getAllScvByPartners = async () => {
 };
 
 const getcarts_Allocation = async (req, res) => {
-  const unAllocatedCart = await ScvCart.aggregate([{}]);
+  const unAllocatedCart = await ScvCart.aggregate([
+    {
+      $match: {
+        active: true,
+      },
+    },
+  ]);
+  return { unAllocatedCart: unAllocatedCart };
 };
 
 module.exports = {
@@ -124,4 +131,5 @@ module.exports = {
   updateSCVByPartner,
   active_Inactive_Scv_ByPartner,
   getAllScvByPartners,
+  getcarts_Allocation,
 };

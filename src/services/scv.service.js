@@ -101,6 +101,11 @@ const active_Inactive_Scv_ByPartner = async (id, body) => {
   return values;
 };
 
+const getAllScvByPartners = async () => {
+  const values = await Scv.find();
+  return values;
+};
+
 module.exports = {
   createSCV,
   getAllSCV,
@@ -113,5 +118,6 @@ module.exports = {
   updateSCVCart,
   addScv,
   updateSCVByPartner,
-  active_Inactive_Scv_ByPartner
+  active_Inactive_Scv_ByPartner,
+  getAllScvByPartners,
 };

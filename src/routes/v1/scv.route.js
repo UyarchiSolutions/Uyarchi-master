@@ -19,4 +19,6 @@ router
 router
   .route('/update/scv/byPartner.:id')
   .put(scvAdress.fields([{ name: 'addreddProof' }, { name: 'idProof' }]), scvController.updateSCVByPartner);
+router.route('/getAllScvByPartners').get(scvController.getAllScvByPartners);
+
 module.exports = router;

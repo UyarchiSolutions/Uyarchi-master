@@ -142,7 +142,7 @@ const AllocationScv_ToCart = async (body) => {
   }
   let allocateTime = moment().toDate();
   getCart = await ScvCart.findByIdAndUpdate(
-    { _id: id },
+    { _id: cartId },
     {
       closeStock: 'activated',
       allocatedScv: scvId,

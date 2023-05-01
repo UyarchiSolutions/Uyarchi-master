@@ -106,6 +106,10 @@ const getAllScvByPartners = async () => {
   return values;
 };
 
+const getcarts_Allocation = async (req, res) => {
+  const unAllocatedCart = await ScvCart.aggregate([{}]);
+};
+
 module.exports = {
   createSCV,
   getAllSCV,

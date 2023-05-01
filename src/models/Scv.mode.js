@@ -21,6 +21,23 @@ const CartSchema = new mongoose.Schema(
     cartLocation: {
       type: String,
     },
+    allocationHistory: {
+      type: Array,
+      default: [],
+    },
+    allocatedUser: {
+      type: String,
+    },
+    allocatedTime: {
+      type: Date,
+    },
+    closeStock: {
+      type: String,
+      default: 'notClosed',
+    },
+    closedDate: {
+      type: Date,
+    },
     image: {
       type: String,
     },

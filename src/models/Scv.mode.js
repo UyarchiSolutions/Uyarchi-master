@@ -33,7 +33,7 @@ const CartSchema = new mongoose.Schema(
     },
     closeStock: {
       type: String,
-      default: 'notClosed',
+      default: 'new',
     },
     closedDate: {
       type: Date,

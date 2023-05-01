@@ -17,7 +17,7 @@ router
   .route('/add/scv/byPartner')
   .post(scvAdress.fields([{ name: 'addreddProof' }, { name: 'idProof' }]), scvController.addScv);
 router
-  .route('/update/scv/byPartner.:id')
+  .route('/update/scv/byPartner/:id')
   .put(scvAdress.fields([{ name: 'addreddProof' }, { name: 'idProof' }]), scvController.updateSCVByPartner);
 router.route('/getAllScv/ByPartners').get(scvController.getAllScvByPartners);
 router.route('/active/Inactive/Scv/ByPartner/:id').put(scvController.active_Inactive_Scv_ByPartner);

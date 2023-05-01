@@ -1,7 +1,7 @@
 const httpStatus = require('http-status');
 const { SCVPurchase } = require('../models');
 const ApiError = require('../utils/ApiError');
-
+const moment = require('moment');
 const { ScvCart, Scv } = require('../models/Scv.mode');
 
 const createSCV = async (scvBody) => {
@@ -130,6 +130,31 @@ const getAvailable_Scv = async () => {
   return data;
 };
 
+const AllocationScv_ToCart = async (body) => {
+  const { scvId, cartId, scvName } = body;
+  let getScv = await Scv.findById(scvId);
+  let getCart = await ScvCart.findById(cartId);
+  if (!getScv) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Scv Not Found');
+  }
+  if (!getCart) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Cart Not Found');
+  }
+  let allocateTime = moment().toDate();
+  getCart = await ScvCart.findByIdAndUpdate(
+    { _id: id },
+    {
+      closeStock: 'activated',
+      allocatedScv: scvId,
+      allocatedTime: allocateTime,
+      allocationHistory: { $push: { scvId: scvId, scvName: scvName, date: allocateTime } },
+    },
+    { new: true }
+  );
+  getScv = await Scv.findByIdAndUpdate({ _id: scvId }, { workingStatus: 'yes' }, { new: true });
+  return getCart;
+};
+
 module.exports = {
   createSCV,
   getAllSCV,
@@ -146,4 +171,5 @@ module.exports = {
   getAllScvByPartners,
   getcarts_Allocation,
   getAvailable_Scv,
+  AllocationScv_ToCart,
 };

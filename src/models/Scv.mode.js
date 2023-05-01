@@ -25,7 +25,7 @@ const CartSchema = new mongoose.Schema(
       type: Array,
       default: [],
     },
-    allocatedUser: {
+    allocatedScv: {
       type: String,
     },
     allocatedTime: {

@@ -111,6 +111,11 @@ const updateSCVByPartner = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const active_Inactive_Scv_ByPartner = catchAsync(async (req, res) => {
+  const data = await scvService.active_Inactive_Scv_ByPartner(req.params.id, req.body);
+  res.send(data);
+});
+
 const getAllScvByPartners = catchAsync(async (req, res) => {
   const data = await scvService.getAllScvByPartners();
   res.send(data);
@@ -129,4 +134,5 @@ module.exports = {
   addScv,
   updateSCVByPartner,
   getAllScvByPartners,
+  active_Inactive_Scv_ByPartner,
 };

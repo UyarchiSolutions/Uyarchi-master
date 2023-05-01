@@ -2,7 +2,7 @@ const httpStatus = require('http-status');
 const { SCVPurchase } = require('../models');
 const ApiError = require('../utils/ApiError');
 
-const { ScvCart } = require('../models/Scv.mode');
+const { ScvCart, Scv } = require('../models/Scv.mode');
 
 const createSCV = async (scvBody) => {
   return SCVPurchase.create(scvBody);
@@ -71,6 +71,36 @@ const updateSCVCart = async (id, body) => {
   return values;
 };
 
+// Manage Scv Flow
+
+const addScv = async (body) => {
+  let values = await Scv.create(body);
+  return values;
+};
+
+const updateSCVByPartner = async (id, body) => {
+  let values = await Scv.findById(id);
+  if (!values) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'scv Not Available');
+  }
+  values = await Scv.findByIdAndUpdate({ _id: id }, body, { new: true });
+  return values;
+};
+
+const active_Inactive_Scv_ByPartner = async (id, body) => {
+  const { type } = body;
+  let values = await Scv.findById(id);
+  if (!values) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'scv Not Available');
+  }
+  if (type == 'active') {
+    values = await Scv.findByIdAndUpdate({ _id: id }, { active: true }, { new: true });
+  } else {
+    values = await Scv.findByIdAndUpdate({ _id: id }, { active: false }, { new: true });
+  }
+  return values;
+};
+
 module.exports = {
   createSCV,
   getAllSCV,
@@ -81,4 +111,7 @@ module.exports = {
   DisableCart,
   getScvCarts,
   updateSCVCart,
+  addScv,
+  updateSCVByPartner,
+  active_Inactive_Scv_ByPartner
 };

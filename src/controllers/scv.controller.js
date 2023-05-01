@@ -79,6 +79,41 @@ const updateSCVCart = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const addScv = catchAsync(async (req, res) => {
+  const data = await scvService.addScv(req.body);
+  if (req.files != null) {
+    if (req.files.addreddProof != null) {
+      let path = 'images/scvAdress/';
+      data.addreddProof = path + req.files.addreddProof[0].filename;
+    }
+    if (req.files.idProof != null) {
+      let path = 'images/scvAdress/';
+      data.idProof = path + req.files.idProof[0].filename;
+    }
+  }
+  await data.save();
+  res.send(data);
+});
+
+const updateSCVByPartner = catchAsync(async (req, res) => {
+  const data = await scvService.updateSCVByPartner(req.params.id, req.body);
+  if (req.files != null) {
+    if (req.files.addreddProof != null) {
+      let path = 'images/scvAdress/';
+      data.addreddProof = path + req.files.addreddProof[0].filename;
+    }
+    if (req.files.idProof != null) {
+      let path = 'images/scvAdress/';
+      data.idProof = path + req.files.idProof[0].filename;
+    }
+  }
+  await data.save();
+  res.send(data);
+});
+
+
+
+
 module.exports = {
   createSCV,
   getSCVById,
@@ -89,4 +124,6 @@ module.exports = {
   DisableCart,
   getScvCarts,
   updateSCVCart,
+  addScv,
+  updateSCVByPartner,
 };

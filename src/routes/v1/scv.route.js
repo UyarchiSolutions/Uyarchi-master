@@ -1,6 +1,8 @@
 const express = require('express');
 const scvController = require('../../controllers/scv.controller');
 const partnerCart = require('../../middlewares/partner.cart');
+const scvAdress = require('../../middlewares/scvAdress');
+
 const router = express.Router();
 router.route('/').post(scvController.createSCV).get(scvController.gertAllSCV);
 router.route('/:scvId').get(scvController.getSCVById).put(scvController.updateSCV).delete(scvController.deletescv);
@@ -8,4 +10,13 @@ router.route('/Add/cart').post(partnerCart.single('image'), scvController.AddCar
 router.route('/DisableCart/:id').get(scvController.DisableCart);
 router.route('/getScvCarts/All').get(scvController.getScvCarts);
 router.route('/updateSCVCart/:id').put(partnerCart.single('image'), scvController.updateSCVCart);
+
+// SCV Manage
+
+router
+  .route('/add/scv/byPartner')
+  .post(scvAdress.fields([{ name: 'addreddProof' }, { name: 'idProof' }]), scvController.addScv);
+router
+  .route('/update/scv/byPartner.:id')
+  .put(scvAdress.fields([{ name: 'addreddProof' }, { name: 'idProof' }]), scvController.updateSCVByPartner);
 module.exports = router;

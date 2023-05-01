@@ -34,6 +34,50 @@ const CartSchema = new mongoose.Schema(
 
 const ScvCart = mongoose.model('scvCart', CartSchema);
 
+const SCVSchema = new mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
+    },
+    Name: {
+      type: String,
+    },
+    email: {
+      type: String,
+    },
+    phoneNumber: {
+      type: Number,
+    },
+    address: {
+      type: String,
+    },
+    landMark: {
+      type: String,
+    },
+    pinCode: {
+      type: String,
+    },
+    addreddProof: {
+      type: String,
+    },
+    idProof: {
+      type: String,
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
+    createdBy: {
+      type: String,
+    },
+  },
+  { timestamps: true }
+);
+
+const Scv = mongoose.model('scv', SCVSchema);
+
 module.exports = {
   ScvCart,
+  Scv,
 };

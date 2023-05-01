@@ -106,7 +106,9 @@ const getAllScvByPartners = async () => {
   return values;
 };
 
-const getcarts_Allocation = async (req, res) => {
+// Cart Allocation Flow
+
+const getcarts_Allocation = async () => {
   const unAllocatedCart = await ScvCart.aggregate([
     {
       $match: {
@@ -115,6 +117,17 @@ const getcarts_Allocation = async (req, res) => {
     },
   ]);
   return { unAllocatedCart: unAllocatedCart };
+};
+
+const getAvailable_Scv = async () => {
+  const data = await Scv.aggregate([
+    {
+      $match: {
+        workingStatus: { $in: ['no'] },
+      },
+    },
+  ]);
+  return data;
 };
 
 module.exports = {
@@ -132,4 +145,5 @@ module.exports = {
   active_Inactive_Scv_ByPartner,
   getAllScvByPartners,
   getcarts_Allocation,
+  getAvailable_Scv,
 };

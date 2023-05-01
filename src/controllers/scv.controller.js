@@ -126,6 +126,11 @@ const getcarts_Allocation = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const getAvailable_Scv = catchAsync(async (req, res) => {
+  const data = await scvService.getAvailable_Scv();
+  res.send(data);
+});
+
 module.exports = {
   createSCV,
   getSCVById,
@@ -141,4 +146,5 @@ module.exports = {
   getAllScvByPartners,
   active_Inactive_Scv_ByPartner,
   getcarts_Allocation,
+  getAvailable_Scv,
 };

@@ -85,6 +85,10 @@ const SCVSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    workingStatus: {
+      type: String,
+      default: 'no',
+    },
     createdBy: {
       type: String,
     },

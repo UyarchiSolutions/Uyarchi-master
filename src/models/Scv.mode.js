@@ -92,6 +92,10 @@ const SCVSchema = new mongoose.Schema(
     createdBy: {
       type: String,
     },
+    attendance: {
+      type: Boolean,
+      default: true,
+    },
   },
   { timestamps: true }
 );

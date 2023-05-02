@@ -113,6 +113,7 @@ const getcarts_Allocation = async () => {
     {
       $match: {
         active: true,
+        closeStock: { $nin: ['activated'] },
       },
     },
   ]);
@@ -147,9 +148,12 @@ const AllocationScv_ToCart = async (body) => {
       closeStock: 'activated',
       allocatedScv: scvId,
       allocatedTime: allocateTime,
-      allocationHistory: { $push: { scvId: scvId, scvName: scvName, date: allocateTime } },
     },
     { new: true }
+  );
+  await ScvCart.findByIdAndUpdate(
+    { _id: id },
+    { $push: { allocationHistory: { scvId: scvId, scvName: scvName, date: allocateTime } } }
   );
   getScv = await Scv.findByIdAndUpdate({ _id: scvId }, { workingStatus: 'yes' }, { new: true });
   return getCart;

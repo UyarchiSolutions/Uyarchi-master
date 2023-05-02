@@ -117,7 +117,65 @@ const getcarts_Allocation = async () => {
       },
     },
   ]);
-  return { unAllocatedCart: unAllocatedCart };
+
+  const AllocatedSCV = await ScvCart.aggregate([
+    {
+      $match: {
+        active: true,
+        closeStock: { $in: ['activated'] },
+      },
+    },
+
+    {
+      $lookup: {
+        from: 'scvs',
+        localField: 'allocatedScv',
+        foreignField: '_id',
+        as: 'scv',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$scv',
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        allocationHistory: 1,
+        closeStock: 1,
+        active: 1,
+        vehicleName: 1,
+        vehicleNumber: 1,
+        cartName: 1,
+        cartLocation: 1,
+        createdAt: 1,
+        image: 1,
+        allocatedScv: 1,
+        allocatedTime: 1,
+        scvName: '$scv.Name',
+        scvActive: '$scv.active',
+        scvworkingStatus: '$scv.workingStatus',
+        scvemail: '$scv.email',
+        scvphoneNumber: '$scv.phoneNumber',
+        scvaddress: '$address',
+        scvpinCode: '$scv.pinCode',
+        scvlandMark: '$scv.landMark',
+        scvcreatedAt: '$scv.createdAt',
+        scvaddreddProof: '$scv.addreddProof',
+        scvidProof: '$scv.idProof',
+      },
+    },
+    {
+      $match: {
+        scvActive: true,
+        scvworkingStatus: 'yes',
+      },
+    },
+  ]);
+
+  return { unAllocatedCart: unAllocatedCart, AllocatedSCV: AllocatedSCV };
 };
 
 const getAvailable_Scv = async () => {

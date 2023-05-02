@@ -170,7 +170,7 @@ const getcarts_Allocation = async () => {
     {
       $match: {
         scvActive: true,
-        // scvworkingStatus: 'yes',
+        scvworkingStatus: 'yes',
       },
     },
   ]);

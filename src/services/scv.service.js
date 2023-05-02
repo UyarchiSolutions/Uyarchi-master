@@ -211,7 +211,7 @@ const AllocationScv_ToCart = async (body) => {
   );
   await Scv.findByIdAndUpdate({ _id: scvId }, { workingStatus: 'yes' }, { new: true });
   await ScvCart.updateOne(
-    { _id: id },
+    { _id: cartId },
     { $push: { allocationHistory: { scvId: scvId, scvName: scvName, date: allocateTime } } },
     { new: true }
   );

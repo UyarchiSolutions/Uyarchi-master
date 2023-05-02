@@ -218,6 +218,26 @@ const AllocationScv_ToCart = async (body) => {
   return getCart;
 };
 
+const SCVAttendance = async () => {
+  let values = await Scv.aggregate([
+    {
+      $lookup: {
+        from: 'scvcarts',
+        localField: '_id',
+        foreignField: 'allocatedScv',
+        as: 'cart',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$cart',
+      },
+    },
+  ]);
+  return values;
+};
+
 module.exports = {
   createSCV,
   getAllSCV,
@@ -235,4 +255,5 @@ module.exports = {
   getcarts_Allocation,
   getAvailable_Scv,
   AllocationScv_ToCart,
+  SCVAttendance,
 };

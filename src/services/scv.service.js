@@ -209,12 +209,12 @@ const AllocationScv_ToCart = async (body) => {
     },
     { new: true }
   );
-  await ScvCart.findByIdAndUpdate(
+  await Scv.findByIdAndUpdate({ _id: scvId }, { workingStatus: 'yes' }, { new: true });
+  await ScvCart.updateOne(
     { _id: id },
     { $push: { allocationHistory: { scvId: scvId, scvName: scvName, date: allocateTime } } },
     { new: true }
   );
-  getScv = await Scv.findByIdAndUpdate({ _id: scvId }, { workingStatus: 'yes' }, { new: true });
   return getCart;
 };
 

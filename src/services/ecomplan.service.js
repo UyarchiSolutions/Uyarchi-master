@@ -2785,7 +2785,7 @@ const get_watch_live_steams_upcoming_byid = async (req) => {
   let streamId = req.query.id;
   let value = await Streamrequest.aggregate([
     { $sort: { startTime: 1 } },
-    { $match: { $and: [{ _id: { $eq: streamId } }, statusFilter, { adminApprove: { $eq: 'Approved' } }] } },
+    { $match: { $and: [{ _id: { $eq: streamId } }, { adminApprove: { $eq: 'Approved' } }] } },
     {
       $lookup: {
         from: 'joinedusers',

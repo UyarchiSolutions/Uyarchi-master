@@ -8,6 +8,7 @@ const { OTP } = require('../models/saveOtp.model');
 const bcrypt = require('bcryptjs');
 const { ShopOrder, ProductorderSchema, ShopOrderClone, ProductorderClone } = require('../models/shopOrder.model');
 const OrderPayment = require('../models/orderpayment.model');
+const { streamingOrder, streamingorderProduct, streamingorderPayments } = require('../models/liveStreaming/checkout.model');
 
 const register_shop = async (body) => {
   const mobileNumber = body.mobile;
@@ -81,6 +82,7 @@ const change_password = async (body, shopId) => {
 };
 
 const login_now = async (body) => {
+  const salt = await bcrypt.genSalt(10);
   const { mobile, password } = body;
   let userName = await Shop.findOne({ mobile: mobile });
   if (!userName) {
@@ -1813,6 +1815,154 @@ const update_profile = async (req) => {
 
 }
 
+const update_changepassword = async (req) => {
+  let value = await Shop.findById(req.shopId);
+
+  if (!value) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Shop Not Fount');
+
+  }
+
+  if (!(await value.isPasswordMatch(req.body.oldpassword))) {
+    throw new ApiError(403, "Password Doesn't Match");
+  }
+  const salt = await bcrypt.genSalt(10);
+
+  let password = await bcrypt.hash(req.body.password, salt);
+  value = await Shop.findByIdAndUpdate({ _id: req.shopId }, { password: password }, { new: true });
+
+  return value;
+
+
+}
+
+const get_my_orders_all = async (req) => {
+  let page = req.query.page == '' || req.query.page == null ? 0 : parseInt(req.query.page);
+  let shopId = req.shopId;
+  let value = await streamingOrder.aggregate([
+    { $match: { $and: [{ shopId: { $eq: shopId } }] } },
+    {
+      $lookup: {
+        from: 'streamingorderproducts',
+        localField: '_id',
+        foreignField: 'orderId',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'products',
+              localField: 'productId',
+              foreignField: '_id',
+              as: 'products',
+            },
+          },
+          { $unwind: "$products" },
+          {
+            $project: {
+              _id: 1,
+              purchase_quantity: 1,
+              purchase_price: 1,
+              status: 1,
+              productTitle: "$products.productTitle",
+              OrderAmount: { $multiply: ["$purchase_quantity", "$purchase_price"] }
+            }
+          },
+          {
+            $group: {
+              _id: null,
+              productTitle: { $push: "$productTitle" },
+              orderAmount: { $sum: "$OrderAmount" }
+            }
+          }
+        ],
+        as: 'streamingorderproducts',
+      },
+    },
+    { $unwind: "$streamingorderproducts" },
+
+    {
+      $lookup: {
+        from: 'streamingorderpayments',
+        localField: '_id',
+        foreignField: 'orderId',
+        pipeline: [
+          {
+            $group: {
+              _id: null,
+              totalPaidAmound: { $sum: "$paidAmt" }
+            }
+          }
+        ],
+        as: 'streamingorderpayments',
+      },
+    },
+    { $unwind: "$streamingorderpayments" },
+    {
+      $lookup: {
+        from: 'streamrequests',
+        localField: 'streamId',
+        foreignField: '_id',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'sellers',
+              localField: 'suppierId',
+              foreignField: '_id',
+              as: 'sellers',
+            },
+          },
+          { $unwind: "$sellers" },
+          {
+            $project: {
+              _id: 1,
+              contactName: "$sellers.contactName",
+              mobileNumber: "$sellers.mobileNumber",
+              streamName: 1,
+              created: 1,
+            }
+          }
+        ],
+        as: 'streamrequests',
+      },
+    },
+    { $unwind: "$streamrequests" },
+    {
+      $project: {
+        _id: 1,
+        status: 1,
+        orderStatus: 1,
+        approvalStatus: 1,
+        orderId: 1,
+        name: 1,
+        state: 1,
+        city: 1,
+        pincode: 1,
+        address: 1,
+        Amount: 1,
+        DateIso: 1,
+        created: 1,
+        productTitle: "$streamingorderproducts.productTitle",
+        // productTitle: "$streamingorderproducts",
+        orderAmount: "$streamingorderproducts.orderAmount",
+        totalPaidAmound: "$streamingorderpayments.totalPaidAmound",
+        contactName: "$streamrequests.contactName",
+        mobileNumber: "$streamrequests.mobileNumber",
+        streamName: "$streamrequests.streamName",
+        streamDate: "$streamrequests.created",
+      }
+    },
+    { $skip: 10 * page },
+    { $limit: 10 },
+  ])
+  let total = await streamingOrder.aggregate([
+    { $match: { $and: [{ shopId: { $eq: shopId } }] } },
+    { $skip: 10 * (page + 1) },
+    { $limit: 10 },
+  ])
+  return { value, next: total != 0 };
+}
+
+
+
 module.exports = {
   register_shop,
   verify_otp,
@@ -1837,5 +1987,7 @@ module.exports = {
   imageUpload_For_Issues,
   getIssuedProduct,
   getissuedOrders,
-  update_profile
+  update_profile,
+  update_changepassword,
+  get_my_orders_all
 };

@@ -29,5 +29,8 @@ router.route('/imageUpload/:id').put(Issue.array('image'), shopregister.imageUpl
 router.route('/getIssuedProduct/:id').get(shopregister.getIssuedProduct);
 router.route('/getissuedOrders/:page').get(shopregister.getissuedOrders);
 router.route('/update/myprofile').put(shopverify, shopregister.update_profile);
+router.route('/update/changepassword').put(shopverify, shopregister.update_changepassword);
+router.route('/getmy/orders/all').get(shopverify, shopregister.get_my_orders_all);
+router.route('/getmy/orders/single').get(shopverify, shopregister.get_my_orders_single);
 
 module.exports = router;

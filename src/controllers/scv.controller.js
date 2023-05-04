@@ -5,6 +5,7 @@ const catchAsync = require('../utils/catchAsync');
 const scvService = require('../services/scv.service');
 const { relativeTimeRounding } = require('moment');
 const ScvPartnerService = require('../services/scv.service');
+const { tokenService } = require('../services');
 
 const createSCV = catchAsync(async (req, res) => {
   const scv = await scvService.createSCV(req.body);
@@ -158,7 +159,8 @@ const setPassword = catchAsync(async (req, res) => {
 
 const LoginCustomer = catchAsync(async (req, res) => {
   const data = await scvService.LoginCustomer(req.body);
-  res.send(data);
+  const token = await tokenService.generateAuthTokens(data);
+  res.send({ data: data, token: token });
 });
 
 module.exports = {

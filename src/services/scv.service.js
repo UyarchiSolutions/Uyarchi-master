@@ -259,8 +259,8 @@ const Otpverify = async (body) => {
 };
 
 const setPassword = async (body) => {
-  let { email, Password } = body;
-  let findByemail = await Customer.findOne({ email: email });
+  let { mobileNumber, Password } = body;
+  let findByemail = await Customer.findOne({ mobileNumber: mobileNumber });
   if (!findByemail) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Email Not Registered');
   }

@@ -102,7 +102,57 @@ const SCVSchema = new mongoose.Schema(
 
 const Scv = mongoose.model('scv', SCVSchema);
 
+const scvCustomerSchema = new mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
+    },
+    userName: {
+      type: String,
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    mobileNumber: {
+      type: Number,
+      unique: true,
+    },
+    password: {
+      type: String,
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  { timestamps: true }
+);
+
+/**
+ * Check if password matches the user's password
+ * @param {string} password
+ * @returns {Promise<boolean>}
+ */
+scvCustomerSchema.methods.isPasswordMatch = async function (password) {
+  const user = this;
+  return bcrypt.compare(password, user.password);
+};
+
+scvCustomerSchema.pre('save', async function (next) {
+  const user = this;
+  if (user.isModified('password')) {
+    user.password = await bcrypt.hash(user.password, 8);
+  }
+  next();
+});
+
+const Customer = mongoose.model('scvcustomer', scvCustomerSchema);
+
 module.exports = {
   ScvCart,
   Scv,
+  Customer,
 };

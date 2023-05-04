@@ -2,7 +2,10 @@ const httpStatus = require('http-status');
 const { SCVPurchase } = require('../models');
 const ApiError = require('../utils/ApiError');
 const moment = require('moment');
-const { ScvCart, Scv } = require('../models/Scv.mode');
+const { ScvCart, Scv, Customer } = require('../models/Scv.mode');
+const CustomerOTP = require('../models/customer.otp.model');
+const { Otp } = require('../config/customer.OTP');
+const bcrypt = require('bcrypt');
 
 const createSCV = async (scvBody) => {
   return SCVPurchase.create(scvBody);
@@ -238,6 +241,43 @@ const SCVAttendance = async () => {
   return values;
 };
 
+// Customer Work Flow
+
+const RegisterScv = async (body) => {
+  const { userName, email, mobileNumber } = body;
+  const data = await Customer.create(body);
+  return Otp(data);
+};
+
+const Otpverify = async (body) => {
+  let findByOTP = await CustomerOTP.findOne({ OTP: body.OTP, active: true });
+  if (!findByOTP) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid OTP');
+  }
+  findByOTP = await CustomerOTP.findByIdAndUpdate({ _id: findByOTP._id }, { active: false }, { new: true });
+  return { message: 'OTP Verfication Success...........' };
+};
+
+const setPassword = async (body) => {
+  let { email, Password } = body;
+  let findByemail = await Customer.findOne({ email: email });
+  if (!findByemail) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Email Not Registered');
+  }
+  Password = await bcrypt.hash(Password, 8);
+  findByemail = await Customer.findByIdAndUpdate({ _id: findByemail._id }, { password: Password }, { new: true });
+  return findByemail;
+};
+
+const LoginCustomer = async (body) => {
+  const { mobileNumber, password } = body;
+  let findByemail = await Customer.findOne({ mobileNumber: mobileNumber });
+  if (!findByemail || !(await findByemail.isPasswordMatch(password))) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect email or password');
+  }
+  return findByemail;
+};
+
 module.exports = {
   createSCV,
   getAllSCV,
@@ -256,4 +296,8 @@ module.exports = {
   getAvailable_Scv,
   AllocationScv_ToCart,
   SCVAttendance,
+  RegisterScv,
+  Otpverify,
+  setPassword,
+  LoginCustomer,
 };

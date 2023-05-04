@@ -141,6 +141,26 @@ const SCVAttendance = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const RegisterScv = catchAsync(async (req, res) => {
+  const data = await scvService.RegisterScv(req.body);
+  res.send(data);
+});
+
+const Otpverify = catchAsync(async (req, res) => {
+  const data = await scvService.Otpverify(req.body);
+  res.send(data);
+});
+
+const setPassword = catchAsync(async (req, res) => {
+  const data = await scvService.setPassword(req.body);
+  res.send(data);
+});
+
+const LoginCustomer = catchAsync(async (req, res) => {
+  const data = await scvService.LoginCustomer(req.body);
+  res.send(data);
+});
+
 module.exports = {
   createSCV,
   getSCVById,
@@ -159,4 +179,8 @@ module.exports = {
   getAvailable_Scv,
   AllocationScv_ToCart,
   SCVAttendance,
+  RegisterScv,
+  Otpverify,
+  setPassword,
+  LoginCustomer,
 };

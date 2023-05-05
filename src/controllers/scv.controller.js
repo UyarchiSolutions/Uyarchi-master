@@ -5,6 +5,7 @@ const catchAsync = require('../utils/catchAsync');
 const scvService = require('../services/scv.service');
 const { relativeTimeRounding } = require('moment');
 const ScvPartnerService = require('../services/scv.service');
+const { tokenService } = require('../services');
 
 const createSCV = catchAsync(async (req, res) => {
   const scv = await scvService.createSCV(req.body);
@@ -141,6 +142,27 @@ const SCVAttendance = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const RegisterScv = catchAsync(async (req, res) => {
+  const data = await scvService.RegisterScv(req.body);
+  res.send(data);
+});
+
+const Otpverify = catchAsync(async (req, res) => {
+  const data = await scvService.Otpverify(req.body);
+  res.send(data);
+});
+
+const setPassword = catchAsync(async (req, res) => {
+  const data = await scvService.setPassword(req.body);
+  res.send(data);
+});
+
+const LoginCustomer = catchAsync(async (req, res) => {
+  const data = await scvService.LoginCustomer(req.body);
+  const token = await tokenService.generateAuthTokens(data);
+  res.send({ data: data, token: token });
+});
+
 module.exports = {
   createSCV,
   getSCVById,
@@ -159,4 +181,8 @@ module.exports = {
   getAvailable_Scv,
   AllocationScv_ToCart,
   SCVAttendance,
+  RegisterScv,
+  Otpverify,
+  setPassword,
+  LoginCustomer,
 };

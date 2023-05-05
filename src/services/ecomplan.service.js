@@ -3170,7 +3170,6 @@ const get_watch_live_steams_current = async (req) => {
               localField: 'postId',
               foreignField: '_id',
               pipeline: [
-                { $match: { $and: [{ afterStreaming: { $eq: 'yes' } }] } },
                 {
                   $lookup: {
                     from: 'products',

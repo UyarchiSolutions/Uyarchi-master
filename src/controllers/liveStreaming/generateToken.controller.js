@@ -95,6 +95,12 @@ const get_participents_limit = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).send(tokens);
 });
 
+const get_current_live_stream= catchAsync(async (req, res) => {
+  let tokens = await generateTokenService.get_current_live_stream(req);
+  res.status(httpStatus.CREATED).send(tokens);
+});
+
+
 const remove_host_live = catchAsync(async (req, res) => {
   let tokens = await generateTokenService.remove_host_live(req);
   // req.io.emit('subscriberjoined', { user: 'sd' });
@@ -168,5 +174,6 @@ module.exports = {
   production_supplier_token_cloudrecording,
   production_supplier_token_watchamin,
   get_stream_complete_videos,
-  videoConverter
+  videoConverter,
+  get_current_live_stream
 };

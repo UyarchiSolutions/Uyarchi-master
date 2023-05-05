@@ -4549,7 +4549,6 @@ const getall_homeage_streams = async (req) => {
               localField: 'postId',
               foreignField: '_id',
               pipeline: [
-                { $match: { $and: [{ afterStreaming: { $eq: 'yes' } }] } },
                 {
                   $lookup: {
                     from: 'products',
@@ -4771,7 +4770,6 @@ const getall_homeage_streams = async (req) => {
               localField: 'postId',
               foreignField: '_id',
               pipeline: [
-                { $match: { $and: [{ afterStreaming: { $eq: 'yes' } }] } },
                 {
                   $lookup: {
                     from: 'products',

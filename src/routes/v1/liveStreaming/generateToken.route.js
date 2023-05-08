@@ -29,6 +29,7 @@ router.route('/getsub/token/user').get(shopverify, generateToken.get_sub_token);
 router.route('/getsub/token/golive').get(shopverify, generateToken.get_sub_golive);
 router.route('/getsub/token/single').get(shopverify, generateToken.get_sub_token_single);
 router.route('/participents/limit/all').get(generateToken.get_participents_limit);
+router.route('/get/current/live/stream').get(shopverify, generateToken.get_current_live_stream);
 
 
 router.route('/remove/hostlive/now').get(generateToken.remove_host_live);

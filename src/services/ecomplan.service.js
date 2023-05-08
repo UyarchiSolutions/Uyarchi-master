@@ -3170,7 +3170,6 @@ const get_watch_live_steams_current = async (req) => {
               localField: 'postId',
               foreignField: '_id',
               pipeline: [
-                { $match: { $and: [{ afterStreaming: { $eq: 'yes' } }] } },
                 {
                   $lookup: {
                     from: 'products',
@@ -4550,7 +4549,6 @@ const getall_homeage_streams = async (req) => {
               localField: 'postId',
               foreignField: '_id',
               pipeline: [
-                { $match: { $and: [{ afterStreaming: { $eq: 'yes' } }] } },
                 {
                   $lookup: {
                     from: 'products',
@@ -4772,7 +4770,6 @@ const getall_homeage_streams = async (req) => {
               localField: 'postId',
               foreignField: '_id',
               pipeline: [
-                { $match: { $and: [{ afterStreaming: { $eq: 'yes' } }] } },
                 {
                   $lookup: {
                     from: 'products',
@@ -4945,7 +4942,6 @@ const getall_homeage_streams = async (req) => {
         viewstatus: { $ifNull: ['$streampreregister.viewstatus', ''] },
       },
     },
-    { $match: { $and: [{ registerStatus: { $in: ['Not Registered', 'Unregistered'] } }] } },
     {
       $lookup: {
         from: 'streamrequestposts',
@@ -4992,7 +4988,7 @@ const getall_homeage_streams = async (req) => {
               localField: 'postId',
               foreignField: '_id',
               pipeline: [
-                { $match: { $and: [{ afterStreaming: { $eq: 'yes' } }] } },
+                // { $match: { $and: [{ afterStreaming: { $eq: 'yes' } }] } },
                 {
                   $lookup: {
                     from: 'products',
@@ -5069,7 +5065,8 @@ const getall_homeage_streams = async (req) => {
         status: 1,
         streamrequestposts_count: 1,
         streamEnd_Time: 1,
-        productArray: "$streamrequestposts.productTitle"
+        productArray: "$streamrequestposts.productTitle",
+        // streamrequestposts:"$streamrequestposts"
 
       },
     },

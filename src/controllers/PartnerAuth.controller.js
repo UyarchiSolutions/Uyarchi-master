@@ -15,11 +15,11 @@ const authorization = async (req, res, next) => {
   try {
     const payload = jwt.verify(token, config.jwt.secret);
     console.log(payload);
-    const userss = await Customer.findOne({ _id: payload.sub });
+    const userss = await Customer.findOne({ _id: payload._id });
     if (!userss) {
       return res.send(httpStatus.UNAUTHORIZED, 'User Not Available');
     }
-    req.userId = payload.sub;
+    req.userId = payload._id;
 
     return next();
   } catch {

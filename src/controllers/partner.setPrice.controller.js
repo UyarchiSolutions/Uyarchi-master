@@ -11,7 +11,7 @@ const SetPartnerPrice = catchAsync(async (req, res) => {
 
 const AddProductByPartner = catchAsync(async (req, res) => {
   let userId = req.userId;
-  const data = await partnersetpriceService.AddProductByPartner(userId);
+  const data = await partnersetpriceService.AddProductByPartner(req.body, userId);
   res.send(data);
 });
 

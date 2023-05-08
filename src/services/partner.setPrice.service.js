@@ -2,6 +2,7 @@ const httpStatus = require('http-status');
 const bcrypt = require('bcryptjs');
 const ApiError = require('../utils/ApiError');
 const { partnerPrice, PartnerProduct } = require('../models/partner.setPrice.models');
+const { Product } = require('../models/product.model');
 const moment = require('moment');
 
 const SetPartnerPrice = async (body) => {
@@ -28,7 +29,18 @@ const FetchProductbyPartner = async (partnerId) => {
       },
     },
   ]);
-  return data;
+
+  let arr = [];
+
+  if (data.length != 0) {
+    let val = data[0].product;
+    for (let i = 0; i < val.length; i++) {
+      let id = val[i];
+      const productData = await Product.findById(id);
+      arr.push(productData);
+    }
+  }
+  return arr;
 };
 
 module.exports = {

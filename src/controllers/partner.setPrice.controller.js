@@ -15,7 +15,13 @@ const AddProductByPartner = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const FetchProductbyPartner = catchAsync(async (req, res) => {
+  const data = await partnersetpriceService.FetchProductbyPartner(req.userId);
+  res.send(data);
+});
+
 module.exports = {
   SetPartnerPrice,
   AddProductByPartner,
+  FetchProductbyPartner,
 };

@@ -20,7 +20,19 @@ const AddProductByPartner = async (body, partnerId) => {
   return creation;
 };
 
+const FetchProductbyPartner = async (partnerId) => {
+  const data = await PartnerProduct.aggregate([
+    {
+      $match: {
+        partnerId: partnerId,
+      },
+    },
+  ]);
+  return data;
+};
+
 module.exports = {
   SetPartnerPrice,
   AddProductByPartner,
+  FetchProductbyPartner,
 };

@@ -51,7 +51,7 @@ const PartnerProductSchema = new mongoose.Schema(
     partnerId: {
       type: String,
     },
-    products: {
+    product: {
       type: Array,
       default: [],
     },

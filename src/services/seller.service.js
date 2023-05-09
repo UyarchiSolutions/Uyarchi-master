@@ -394,7 +394,7 @@ const update_single_user = async (req) => {
 }
 
 
-const change_password = async () => {
+const change_password = async (req) => {
   let value = await Seller.findById(req.userId);
 
   if (!value) {

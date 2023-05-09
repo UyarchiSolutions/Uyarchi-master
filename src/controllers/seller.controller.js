@@ -113,7 +113,7 @@ const UpdateSellerById = catchAsync(async (req, res) => {
   res.send(data);
 });
 const change_password = catchAsync(async (req, res) => {
-  const data = await SellerService.change_password(req.params.id, req.body);
+  const data = await SellerService.change_password(req);
   res.send(data);
 });
 module.exports = {

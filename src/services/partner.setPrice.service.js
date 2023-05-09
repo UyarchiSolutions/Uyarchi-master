@@ -42,8 +42,12 @@ const FetchProductbyPartner = async (partnerId) => {
     let val = data[0].product;
     for (let i = 0; i < val.length; i++) {
       let id = val[i];
-      const productData = await Product.findById(id);
-      arr.push(productData);
+      const productData = await Product.aggregate([
+        {
+          $match: { _id: id },
+        },
+      ]);
+      arr.push(productData[0]);
     }
   }
   return arr;

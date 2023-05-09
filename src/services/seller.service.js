@@ -3,6 +3,7 @@ const { Seller } = require('../models/seller.models');
 const ApiError = require('../utils/ApiError');
 const { OTP, sellerOTP } = require('../models/saveOtp.model');
 const sentOTP = require('../config/seller.config');
+const bcrypt = require('bcryptjs');
 const moment = require('moment')
 const { Streamplan, StreamPost, Streamrequest, StreamrequestPost, StreamPreRegister } = require('../models/ecomplan.model');
 const createSeller = async (req) => {
@@ -392,6 +393,26 @@ const update_single_user = async (req) => {
   return host;
 }
 
+
+const change_password = async () => {
+  let value = await Seller.findById(req.userId);
+
+  if (!value) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Shop Not Fount');
+
+  }
+
+  if (!(await value.isPasswordMatch(req.body.oldpassword))) {
+    throw new ApiError(403, "Password Doesn't Match");
+  }
+  const salt = await bcrypt.genSalt(10);
+
+  let password = await bcrypt.hash(req.body.password, salt);
+  value = await Seller.findByIdAndUpdate({ _id: req.userId }, { password: password }, { new: true });
+
+  return value;
+}
+
 module.exports = {
   createSeller,
   verifyOTP,
@@ -413,5 +434,6 @@ module.exports = {
   get_single_host,
   update_single_host,
   get_single_user,
-  update_single_user
+  update_single_user,
+  change_password
 };

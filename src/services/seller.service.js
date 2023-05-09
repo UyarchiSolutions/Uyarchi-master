@@ -412,7 +412,16 @@ const change_password = async (req) => {
 
   return value;
 }
+const update_my_profile = async (req) => {
+  let value = await Seller.findById(req.userId);
 
+  if (!value) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Shop Not Fount');
+  }
+  value = await Seller.findByIdAndUpdate({ _id: req.userId }, req.body, { new: true });
+
+  return value;
+}
 module.exports = {
   createSeller,
   verifyOTP,
@@ -435,5 +444,6 @@ module.exports = {
   update_single_host,
   get_single_user,
   update_single_user,
-  change_password
+  change_password,
+  update_my_profile
 };

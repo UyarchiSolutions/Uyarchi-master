@@ -90,8 +90,72 @@ const ActveCartSchema = new mongoose.Schema(
 
 const ActiveCArt = mongoose.model('activeCart', ActveCartSchema);
 
+const PartnerPostOrder = new mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
+    },
+    orderId: {
+      tye: String,
+    },
+    products: {
+      type: Array,
+    },
+    cartId: {
+      type: String,
+    },
+    partnerId: {
+      type: String,
+    },
+    date: {
+      type: String,
+    },
+    active: {
+      type: Boolean,
+      default: v4,
+    },
+    status: {
+      type: String,
+      default: 'Pending',
+    },
+  },
+  { timestamps: true }
+);
+
+const PartnercartPostOrder = mongoose.model('PartnerPostOrder', PartnerPostOrder);
+
+const partnerOrderProducts = new mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
+    },
+    orderId: {
+      type: String,
+    },
+    cartId: {
+      type: String,
+    },
+    productId: {
+      type: String,
+    },
+    productName: {
+      type: String,
+    },
+    QTY: {
+      type: String,
+    },
+  },
+  { timestamps: true }
+);
+
+const partnerCartOrderProducts = mongoose.model('partnerorderproducts', partnerOrderProducts);
+
 module.exports = {
   partnerPrice,
   PartnerProduct,
   ActiveCArt,
+  PartnercartPostOrder,
+  partnerCartOrderProducts,
 };

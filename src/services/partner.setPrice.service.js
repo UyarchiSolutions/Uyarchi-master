@@ -1,7 +1,13 @@
 const httpStatus = require('http-status');
 const bcrypt = require('bcryptjs');
 const ApiError = require('../utils/ApiError');
-const { partnerPrice, PartnerProduct, ActiveCArt } = require('../models/partner.setPrice.models');
+const {
+  partnerPrice,
+  PartnerProduct,
+  ActiveCArt,
+  PartnercartPostOrder,
+  partnerCartOrderProducts,
+} = require('../models/partner.setPrice.models');
 const { Product } = require('../models/product.model');
 const moment = require('moment');
 
@@ -66,10 +72,45 @@ const getActiveCartBy_partner = async (partnerId) => {
   return data;
 };
 
+const create_PartnerShopOrder = async (body, partnerId) => {
+  const { products, cartId, date } = body;
+  let findOrders = await PartnercartPostOrder.find({ date: date }).count();
+  let center = '';
+  if (findOrders < 9) {
+    center = '0000';
+  }
+  if (findOrders < 99 && findOrders >= 9) {
+    center = '000';
+  }
+  if (findOrders < 999 && findOrders >= 99) {
+    center = '00';
+  }
+  if (findOrders < 9999 && findOrders >= 999) {
+    center = '0';
+  }
+  let count = findOrders + 1;
+  let orderId = `OD${center}${count}`;
+  let createOrders = { ...body, ...{ orderId: orderId, partnerId: partnerId } };
+  let orderCreations = await PartnercartPostOrder.create(createOrders);
+  orderCreations.products.foreEach(async (e) => {
+    let values;
+    values = {
+      orderId: orderCreations.orderId,
+      productId: e._id,
+      productName: e.ProductTitle,
+      cartId: cartId,
+      QTY: parseInt(e.qty),
+    };
+    await partnerCartOrderProducts.create(values);
+  });
+  return orderCreations;
+};
+
 module.exports = {
   SetPartnerPrice,
   AddProductByPartner,
   FetchProductbyPartner,
   create_Active_cart,
   getActiveCartBy_partner,
+  create_PartnerShopOrder,
 };

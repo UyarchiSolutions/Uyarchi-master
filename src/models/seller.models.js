@@ -66,6 +66,9 @@ const SellerSchema = new mongoose.Schema(
     },
     roleNum: {
       type: Array,
+    },
+    Pincode: {
+      type: Number,
     }
   },
   {

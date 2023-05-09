@@ -31,6 +31,7 @@ router.route('/mydetails/profile').get(SellerAuth, SellerController.mydetails)
 
 
 router.route('/mydetails/profile/changepassword').put(SellerAuth, SellerController.change_password)
+router.route('/mydetails/profile').put(SellerAuth, SellerController.update_my_profile)
 
 
 router.route('/:id').get(SellerController.GetSellerById).put(SellerController.UpdateSellerById);

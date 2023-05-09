@@ -116,6 +116,10 @@ const change_password = catchAsync(async (req, res) => {
   const data = await SellerService.change_password(req);
   res.send(data);
 });
+const update_my_profile = catchAsync(async (req, res) => {
+  const data = await SellerService.update_my_profile(req);
+  res.send(data);
+});
 module.exports = {
   createSeller,
   verifyOTP,
@@ -138,5 +142,6 @@ module.exports = {
   update_single_host,
   get_single_user,
   update_single_user,
-  change_password
+  change_password,
+  update_my_profile
 };

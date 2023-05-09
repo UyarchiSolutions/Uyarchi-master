@@ -92,7 +92,7 @@ const create_PartnerShopOrder = async (body, partnerId) => {
   let orderId = `OD${center}${count}`;
   let createOrders = { ...body, ...{ orderId: orderId, partnerId: partnerId } };
   let orderCreations = await PartnercartPostOrder.create(createOrders);
-  orderCreations.products.foreEach(async (e) => {
+  orderCreations.products.map(async (e) => {
     let values;
     values = {
       orderId: orderCreations.orderId,
@@ -103,7 +103,7 @@ const create_PartnerShopOrder = async (body, partnerId) => {
     };
     await partnerCartOrderProducts.create(values);
   });
-  return orderCreations;
+  return { created: 'asdfsadf' };
 };
 
 module.exports = {

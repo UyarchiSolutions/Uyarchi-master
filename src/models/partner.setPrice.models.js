@@ -97,7 +97,7 @@ const PartnerPostOrder = new mongoose.Schema(
       default: v4,
     },
     orderId: {
-      tye: String,
+      type: String,
     },
     products: {
       type: Array,

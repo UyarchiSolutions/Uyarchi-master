@@ -95,7 +95,7 @@ const create_PartnerShopOrder = async (body, partnerId) => {
   orderCreations.products.map(async (e) => {
     let values;
     values = {
-      orderId: orderCreations.orderId,
+      orderId: orderCreations._id,
       productId: e._id,
       productName: e.ProductTitle,
       cartId: cartId,

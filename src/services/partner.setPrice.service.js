@@ -1,7 +1,7 @@
 const httpStatus = require('http-status');
 const bcrypt = require('bcryptjs');
 const ApiError = require('../utils/ApiError');
-const { partnerPrice, PartnerProduct } = require('../models/partner.setPrice.models');
+const { partnerPrice, PartnerProduct, ActiveCArt } = require('../models/partner.setPrice.models');
 const { Product } = require('../models/product.model');
 const moment = require('moment');
 
@@ -43,8 +43,15 @@ const FetchProductbyPartner = async (partnerId) => {
   return arr;
 };
 
+const create_Active_cart = async (body, partnerId) => {
+  await ActiveCArt.deleteOne({ partnerId: partnerId });
+  let values = await ActiveCArt.create(body);
+  return values;
+};
+
 module.exports = {
   SetPartnerPrice,
   AddProductByPartner,
   FetchProductbyPartner,
+  create_Active_cart,
 };

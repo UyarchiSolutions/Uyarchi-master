@@ -20,8 +20,15 @@ const FetchProductbyPartner = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const create_Active_cart = catchAsync(async (req, res) => {
+  let userId = req.userId;
+  const data = await partnersetpriceService.create_Active_cart(req.body, userId);
+  res.send(data);
+});
+
 module.exports = {
   SetPartnerPrice,
   AddProductByPartner,
   FetchProductbyPartner,
+  create_Active_cart,
 };

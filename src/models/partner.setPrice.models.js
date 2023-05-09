@@ -69,7 +69,26 @@ const PartnerProductSchema = new mongoose.Schema(
 
 const PartnerProduct = mongoose.model('partnerProduct', PartnerProductSchema);
 
+const ActveCartSchema = new mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
+    },
+    partnerId: {
+      type: String,
+    },
+    cartId: {
+      type: String,
+    },
+  },
+  { timestamps: true }
+);
+
+const ActiveCArt = mongoose.model('activeCart', ActveCartSchema);
+
 module.exports = {
   partnerPrice,
   PartnerProduct,
+  ActiveCArt,
 };

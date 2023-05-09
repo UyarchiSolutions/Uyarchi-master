@@ -113,7 +113,7 @@ const PartnerPostOrder = new mongoose.Schema(
     },
     active: {
       type: Boolean,
-      default: v4,
+      default: true,
     },
     status: {
       type: String,

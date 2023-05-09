@@ -21,11 +21,12 @@ const AddProductByPartner = async (body, partnerId) => {
   return creation;
 };
 
-const FetchProductbyPartner = async (partnerId) => {
+const FetchProductbyPartner = async (partnerId, cartId) => {
   const data = await PartnerProduct.aggregate([
     {
       $match: {
         partnerId: partnerId,
+        cartId: cartId,
       },
     },
     {

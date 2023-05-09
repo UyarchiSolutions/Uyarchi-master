@@ -103,7 +103,7 @@ const create_PartnerShopOrder = async (body, partnerId) => {
     };
     await partnerCartOrderProducts.create(values);
   });
-  return { created: 'asdfsadf' };
+  return orderCreations;
 };
 
 module.exports = {

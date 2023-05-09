@@ -2036,6 +2036,7 @@ const get_my_orders_single = async (req) => {
         as: 'streamingorderproducts_orders',
       },
     },
+    { $unwind: "$streamingorderproducts_orders" },
     {
       $lookup: {
         from: 'streamingorderpayments',

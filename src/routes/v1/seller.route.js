@@ -30,6 +30,9 @@ router.route('/update/single/user').put(SellerAuth, SellerController.update_sing
 router.route('/mydetails/profile').get(SellerAuth, SellerController.mydetails)
 
 
+router.route('/mydetails/profile/changepassword').put(SellerAuth, SellerController.change_password)
+
+
 router.route('/:id').get(SellerController.GetSellerById).put(SellerController.UpdateSellerById);
 
 module.exports = router;

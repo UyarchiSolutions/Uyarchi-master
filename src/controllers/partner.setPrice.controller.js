@@ -26,9 +26,16 @@ const create_Active_cart = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const getActiveCartBy_partner = catchAsync(async (req, res) => {
+  let userId = req.userId;
+  const data = await partnersetpriceService.getActiveCartBy_partner(userId);
+  res.send(data);
+});
+
 module.exports = {
   SetPartnerPrice,
   AddProductByPartner,
   FetchProductbyPartner,
   create_Active_cart,
+  getActiveCartBy_partner,
 };

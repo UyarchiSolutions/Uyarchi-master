@@ -58,6 +58,9 @@ const PartnerProductSchema = new mongoose.Schema(
     date: {
       type: String,
     },
+    cartId: {
+      type: String,
+    },
     time: String,
     active: {
       type: Boolean,

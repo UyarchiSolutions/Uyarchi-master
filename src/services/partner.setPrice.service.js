@@ -28,6 +28,12 @@ const FetchProductbyPartner = async (partnerId) => {
         partnerId: partnerId,
       },
     },
+    {
+      $sort: { createdAt: -1 },
+    },
+    {
+      $limit: 1,
+    },
   ]);
 
   let arr = [];
@@ -50,9 +56,15 @@ const create_Active_cart = async (body, partnerId) => {
   return values;
 };
 
+const getActiveCartBy_partner = async (partnerId) => {
+  const data = await ActiveCArt.findOne({ partnerId: partnerId });
+  return data;
+};
+
 module.exports = {
   SetPartnerPrice,
   AddProductByPartner,
   FetchProductbyPartner,
   create_Active_cart,
+  getActiveCartBy_partner,
 };

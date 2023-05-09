@@ -7,4 +7,5 @@ router.route('/AddProductByPartner').post(PartnerAuth, PartnerSetPriceController
 router.route('/Fetch/Productby/Partner/:id').get(PartnerAuth, PartnerSetPriceController.FetchProductbyPartner);
 router.route('/create/Active/Cart').post(PartnerAuth, PartnerSetPriceController.create_Active_cart);
 router.route('/get/Active/CartBy_partner').get(PartnerAuth, PartnerSetPriceController.getActiveCartBy_partner);
+router.route('/create/Partner/ShopOrder').post(PartnerAuth, PartnerSetPriceController.create_PartnerShopOrder);
 module.exports = router;

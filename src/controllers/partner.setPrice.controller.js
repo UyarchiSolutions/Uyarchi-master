@@ -32,10 +32,17 @@ const getActiveCartBy_partner = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const create_PartnerShopOrder = catchAsync(async (req, res) => {
+  let userId = req.userId;
+  const data = await partnersetpriceService.create_PartnerShopOrder(req.body, userId);
+  res.send(data);
+});
+
 module.exports = {
   SetPartnerPrice,
   AddProductByPartner,
   FetchProductbyPartner,
   create_Active_cart,
   getActiveCartBy_partner,
+  create_PartnerShopOrder,
 };

@@ -146,6 +146,9 @@ const partnerOrderProducts = new mongoose.Schema(
     QTY: {
       type: String,
     },
+    date: {
+      type: String,
+    },
   },
   { timestamps: true }
 );

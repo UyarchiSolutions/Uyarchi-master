@@ -101,6 +101,7 @@ const create_PartnerShopOrder = async (body, partnerId) => {
       productName: e.ProductTitle,
       cartId: cartId,
       QTY: parseInt(e.qty),
+      date: date,
     };
     await partnerCartOrderProducts.create(values);
   });
@@ -131,6 +132,41 @@ const getOrdersbycart = async (cartId) => {
   return { orders: orders, cartDetails: cartDetails };
 };
 
+const getOrderedProducts = async (cartId) => {
+  let data = await partnerCartOrderProducts.distinct('productId');
+  let values = [];
+  for (let i = 0; i < data.length; i++) {
+    let id = data[i];
+    let datas = await partnerCartOrderProducts.aggregate([
+      {
+        $match: {
+          cartId: cartId,
+          productId: id,
+        },
+      },
+      {
+        $lookup: {
+          from: 'products',
+          localField: 'productId',
+          foreignField: '_id',
+          as: 'products',
+        },
+      },
+      {
+        $unwind: {
+          preserveNullAndEmptyArrays: true,
+          path: '$products',
+        },
+      },
+    ]);
+    values.push(datas[0]);
+  }
+
+  let cartDetails = await ScvCart.findById(cartId);
+
+  return { values: values, cartDetails: cartDetails };
+};
+
 module.exports = {
   SetPartnerPrice,
   AddProductByPartner,
@@ -139,4 +175,5 @@ module.exports = {
   getActiveCartBy_partner,
   create_PartnerShopOrder,
   getOrdersbycart,
+  getOrderedProducts,
 };

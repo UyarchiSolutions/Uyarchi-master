@@ -132,7 +132,7 @@ const getOrdersbycart = async (cartId) => {
   return { orders: orders, cartDetails: cartDetails };
 };
 
-const getOrderedProducts = async (cartId) => {
+const getOrderedProducts = async (cartId, date) => {
   let data = await partnerCartOrderProducts.distinct('productId');
   let values = [];
   for (let i = 0; i < data.length; i++) {
@@ -142,6 +142,7 @@ const getOrderedProducts = async (cartId) => {
         $match: {
           cartId: cartId,
           productId: id,
+          date: date,
         },
       },
       {

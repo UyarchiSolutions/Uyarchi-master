@@ -8,6 +8,7 @@ const {
   PartnercartPostOrder,
   partnerCartOrderProducts,
 } = require('../models/partner.setPrice.models');
+const { ScvCart } = require('../models/Scv.mode');
 const { Product } = require('../models/product.model');
 const moment = require('moment');
 
@@ -106,6 +107,27 @@ const create_PartnerShopOrder = async (body, partnerId) => {
   return orderCreations;
 };
 
+const getOrdersbycart = async (cartId) => {
+  const orders = await PartnercartPostOrder.aggregate([
+    {
+      $match: {
+        cartId: cartId,
+      },
+    },
+    {
+      $lookup: {
+        from: 'scvcarts',
+        localField: 'cartId',
+        foreignField: '_id',
+        as: 'carts',
+      },
+    },
+  ]);
+
+  const cartDetails = await ScvCart.findById(cartId);
+  return { orders: orders, cartDetails: cartDetails };
+};
+
 module.exports = {
   SetPartnerPrice,
   AddProductByPartner,
@@ -113,4 +135,5 @@ module.exports = {
   create_Active_cart,
   getActiveCartBy_partner,
   create_PartnerShopOrder,
+  getOrdersbycart,
 };

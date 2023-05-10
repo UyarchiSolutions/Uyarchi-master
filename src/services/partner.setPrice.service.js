@@ -115,6 +115,9 @@ const getOrdersbycart = async (cartId) => {
       },
     },
     {
+      $sort: { createdAt: -1 },
+    },
+    {
       $lookup: {
         from: 'scvcarts',
         localField: 'cartId',

@@ -44,7 +44,7 @@ const getOrdersbycart = catchAsync(async (req, res) => {
 });
 
 const getOrderedProducts = catchAsync(async (req, res) => {
-  const data = await partnersetpriceService.getOrderedProducts(req.params.id, req.params.date);
+  const data = await partnersetpriceService.getOrderedProducts(req.params.id,req.query.date);
   res.send(data);
 });
 

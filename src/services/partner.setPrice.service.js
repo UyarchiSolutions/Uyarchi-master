@@ -133,6 +133,7 @@ const getOrdersbycart = async (cartId) => {
 };
 
 const getOrderedProducts = async (cartId, date) => {
+  console.log(date)
   let data = await partnerCartOrderProducts.distinct('productId');
   let values = [];
   for (let i = 0; i < data.length; i++) {

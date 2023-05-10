@@ -9,5 +9,5 @@ router.route('/create/Active/Cart').post(PartnerAuth, PartnerSetPriceController.
 router.route('/get/Active/CartBy_partner').get(PartnerAuth, PartnerSetPriceController.getActiveCartBy_partner);
 router.route('/create/Partner/ShopOrder').post(PartnerAuth, PartnerSetPriceController.create_PartnerShopOrder);
 router.route('/getOrdersbycart/:id').get(PartnerSetPriceController.getOrdersbycart);
-router.route('/getOrdered/Products/:id/:date').get(PartnerSetPriceController.getOrderedProducts);
+router.route('/getOrdered/Products/:id').get(PartnerSetPriceController.getOrderedProducts);
 module.exports = router;

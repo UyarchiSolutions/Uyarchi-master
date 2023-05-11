@@ -173,8 +173,8 @@ const getOrderedProducts = async (cartId, date) => {
 };
 
 const updateAddOnStock = async (body) => {
-  const date = moment().format('dd-MM-YYYY');
-  const time = moment().format('HH:mm a');
+  const date = moment().format('DD-MM-YYYY');
+  const time = moment().format('hh:mm a');
 
   if (body.message) {
     body.arr.forEach(async (e) => {
@@ -188,7 +188,7 @@ const updateAddOnStock = async (body) => {
         orderProductId: e._id,
         cartId: e.cartId,
         givenQTY: e.givenQTY,
-        balanceQTY: e.balanceQTY,
+        balanceQTY: e.balanceqty,
       });
     });
   } else {

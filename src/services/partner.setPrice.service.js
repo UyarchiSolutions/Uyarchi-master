@@ -133,7 +133,7 @@ const getOrdersbycart = async (cartId) => {
 };
 
 const getOrderedProducts = async (cartId, date) => {
-  console.log(date)
+  console.log(date);
   let data = await partnerCartOrderProducts.distinct('productId');
   let values = [];
   for (let i = 0; i < data.length; i++) {
@@ -161,7 +161,9 @@ const getOrderedProducts = async (cartId, date) => {
         },
       },
     ]);
-    values.push(datas[0]);
+    if (datas[0] != null) {
+      values.push(datas[0]);
+    }
   }
 
   let cartDetails = await ScvCart.findById(cartId);

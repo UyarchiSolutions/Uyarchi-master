@@ -185,6 +185,8 @@ const updateAddOnStock = async (body) => {
         { balanceQTY: totalvalue, lastBalanceTime: time },
         { new: true }
       );
+      // latestUpdateStock
+      await ScvCart.findByIdAndUpdate({ _id: e.cartId }, { latestUpdateStock: time }, { new: true });
       await UpdateStock.create({
         date: date,
         time: time,

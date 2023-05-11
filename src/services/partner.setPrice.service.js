@@ -173,7 +173,9 @@ const getOrderedProducts = async (cartId, date) => {
 
 const updateAddOnStock = async (body) => {
   body.forEach(async (e) => {
-    await partnerCartOrderProducts.findByIdAndUpdate({ _id: e._id }, { givenQTY: e.given }, { new: true });
+    let getValues = await partnerCartOrderProducts.findById(e);
+    let totalvalue = parseInt(getValues.givenQTY + e.given);
+    await partnerCartOrderProducts.findByIdAndUpdate({ _id: e._id }, { givenQTY: totalvalue }, { new: true });
   });
 
   return { message: 'Add On Stock Succeeded' };

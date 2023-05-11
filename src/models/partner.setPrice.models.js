@@ -146,7 +146,7 @@ const partnerOrderProducts = new mongoose.Schema(
     QTY: {
       type: String,
     },
-    given: {
+    givenQTY: {
       type: Number,
     },
     date: {

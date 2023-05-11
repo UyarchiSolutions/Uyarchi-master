@@ -172,13 +172,11 @@ const getOrderedProducts = async (cartId, date) => {
 };
 
 const updateAddOnStock = async (body) => {
-  const { given, _id } = body;
-  let values = await partnerCartOrderProducts.findById(_id);
-  if (!values) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Products Not Availeble Any Orders');
-  }
-  values = await partnerCartOrderProducts.findByIdAndUpdate({ _id: _id }, { given: given }, { new: true });
-  return given;
+  body.forEach(async (e) => {
+    await partnerCartOrderProducts.findByIdAndUpdate({ _id: e._id }, { givenQTY: e.given }, { new: true });
+  });
+
+  return { message: 'Add On Stock Succeeded' };
 };
 
 module.exports = {

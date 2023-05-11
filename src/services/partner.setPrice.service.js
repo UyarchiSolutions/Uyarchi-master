@@ -171,6 +171,16 @@ const getOrderedProducts = async (cartId, date) => {
   return { values: values, cartDetails: cartDetails };
 };
 
+const updateAddOnStock = async (body) => {
+  const { given, _id } = body;
+  let values = await partnerCartOrderProducts.findById(_id);
+  if (!values) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Products Not Availeble Any Orders');
+  }
+  values = await partnerCartOrderProducts.findByIdAndUpdate({ _id: _id }, { given: given }, { new: true });
+  return given;
+};
+
 module.exports = {
   SetPartnerPrice,
   AddProductByPartner,
@@ -180,4 +190,5 @@ module.exports = {
   create_PartnerShopOrder,
   getOrdersbycart,
   getOrderedProducts,
+  updateAddOnStock,
 };

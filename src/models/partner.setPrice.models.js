@@ -155,6 +155,9 @@ const partnerOrderProducts = new mongoose.Schema(
     date: {
       type: String,
     },
+    lastBalanceTime: {
+      type: String,
+    },
   },
   { timestamps: true }
 );

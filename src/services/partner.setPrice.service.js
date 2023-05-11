@@ -180,7 +180,11 @@ const updateAddOnStock = async (body) => {
     body.arr.forEach(async (e) => {
       let getValues = await partnerCartOrderProducts.findById(e._id);
       let totalvalue = getValues.balanceQTY ? getValues.balanceQTY : 0 + e.balanceqty;
-      await partnerCartOrderProducts.findByIdAndUpdate({ _id: e._id }, { balanceQTY: totalvalue }, { new: true });
+      await partnerCartOrderProducts.findByIdAndUpdate(
+        { _id: e._id },
+        { balanceQTY: totalvalue, lastBalanceTime: time },
+        { new: true }
+      );
       await UpdateStock.create({
         date: date,
         time: time,

@@ -7,6 +7,7 @@ const {
   ActiveCArt,
   PartnercartPostOrder,
   partnerCartOrderProducts,
+  UpdateStock,
 } = require('../models/partner.setPrice.models');
 const { ScvCart } = require('../models/Scv.mode');
 const { Product } = require('../models/product.model');
@@ -172,11 +173,31 @@ const getOrderedProducts = async (cartId, date) => {
 };
 
 const updateAddOnStock = async (body) => {
-  body.forEach(async (e) => {
-    let getValues = await partnerCartOrderProducts.findById(e);
-    let totalvalue = parseInt(getValues.givenQTY + e.given);
-    await partnerCartOrderProducts.findByIdAndUpdate({ _id: e._id }, { givenQTY: totalvalue }, { new: true });
-  });
+  const date = moment().format('dd-MM-YYYY');
+  const time = moment().format('HH:mm a');
+
+  if (body.message) {
+    body.arr.forEach(async (e) => {
+      let getValues = await partnerCartOrderProducts.findById(e._id);
+      let totalvalue = getValues.balanceQTY ? getValues.balanceQTY : 0 + e.balanceqty;
+      await partnerCartOrderProducts.findByIdAndUpdate({ _id: e._id }, { balanceQTY: totalvalue }, { new: true });
+      await UpdateStock.create({
+        date: date,
+        time: time,
+        orderId: e.orderId,
+        orderProductId: e._id,
+        cartId: e.cartId,
+        givenQTY: e.givenQTY,
+        balanceQTY: e.balanceQTY,
+      });
+    });
+  } else {
+    body.forEach(async (e) => {
+      let getValues = await partnerCartOrderProducts.findById(e._id);
+      let totalvalue = parseInt(getValues.givenQTY ? getValues.givenQTY : 0 + e.given);
+      await partnerCartOrderProducts.findByIdAndUpdate({ _id: e._id }, { givenQTY: totalvalue }, { new: true });
+    });
+  }
 
   return { message: 'Add On Stock Succeeded' };
 };

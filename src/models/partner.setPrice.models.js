@@ -149,6 +149,9 @@ const partnerOrderProducts = new mongoose.Schema(
     givenQTY: {
       type: Number,
     },
+    balanceQTY: {
+      type: Number,
+    },
     date: {
       type: String,
     },
@@ -158,10 +161,51 @@ const partnerOrderProducts = new mongoose.Schema(
 
 const partnerCartOrderProducts = mongoose.model('partnerorderproducts', partnerOrderProducts);
 
+const UpdateStockSchema = new mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
+    },
+    cartId: {
+      type: String,
+    },
+    productId: {
+      type: String,
+    },
+    orderId: {
+      type: String,
+    },
+    orderProductId: {
+      type: String,
+    },
+    balanceQTY: {
+      type: Number,
+    },
+    givenQTY: {
+      type: Number,
+    },
+    date: {
+      type: String,
+    },
+    time: {
+      type: String,
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  { timestamps: true }
+);
+
+const UpdateStock = mongoose.model('updateStock', UpdateStockSchema);
+
 module.exports = {
   partnerPrice,
   PartnerProduct,
   ActiveCArt,
   PartnercartPostOrder,
   partnerCartOrderProducts,
+  UpdateStock,
 };

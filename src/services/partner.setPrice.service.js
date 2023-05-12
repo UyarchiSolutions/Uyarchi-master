@@ -25,8 +25,18 @@ const AddProductByPartner = async (body, partnerId) => {
   let date = moment().format('YYYY-MM-dd');
   let time = moment().format('HH:mm a');
   let data = { ...body, ...{ date: date, time: time, partnerId: partnerId } };
-  const creation = await PartnerProduct.create(data);
-  return creation;
+  let findAlreadyExist = await PartnerProduct.findOne({ partnerId: partnerId });
+  if (!findAlreadyExist) {
+    await PartnerProduct.create(data);
+  } else {
+    body.product.forEach(async (e) => {
+      let i = findAlreadyExist.product.indexOf(e);
+      if (i == -1) {
+        await PartnerProduct.findOneAndUpdate({ partnerId: partnerId }, { $push: { product: e } }, { new: true });
+      }
+    });
+  }
+  return { message: 'ProductAdded' };
 };
 
 const FetchProductbyPartner = async (partnerId, cartId) => {
@@ -92,7 +102,9 @@ const create_PartnerShopOrder = async (body, partnerId) => {
   }
   let count = findOrders + 1;
   let orderId = `OD${center}${count}`;
+
   let createOrders = { ...body, ...{ orderId: orderId, partnerId: partnerId } };
+
   let orderCreations = await PartnercartPostOrder.create(createOrders);
   orderCreations.products.map(async (e) => {
     let values;

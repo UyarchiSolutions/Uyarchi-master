@@ -22,8 +22,12 @@ const getAllSCV = async () => {
   return SCVPurchase.find();
 };
 
-const querySCV = async (filter, options) => {
-  return SCVPurchase.paginate(filter, options);
+const getScvCartbyId = async (id) => {
+  const data = await ScvCart.findById(id);
+  if (!data) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Cart Not Found');
+  }
+  return data;
 };
 
 const updateSCVById = async (scvId, updateBody) => {
@@ -281,6 +285,7 @@ const LoginCustomer = async (body) => {
 module.exports = {
   createSCV,
   getAllSCV,
+  getScvCartbyId,
   getSCVById,
   updateSCVById,
   deleteSCVById,

@@ -105,20 +105,25 @@ const create_PartnerShopOrder = async (body, partnerId) => {
 
   let createOrders = { ...body, ...{ orderId: orderId, partnerId: partnerId } };
 
-  let orderCreations = await PartnercartPostOrder.create(createOrders);
-  orderCreations.products.map(async (e) => {
-    let values;
-    values = {
-      orderId: orderCreations._id,
-      productId: e._id,
-      productName: e.ProductTitle,
-      cartId: cartId,
-      QTY: parseInt(e.qty),
-      date: date,
-    };
-    await partnerCartOrderProducts.create(values);
-  });
-  return orderCreations;
+  let existCartOrder = await PartnercartPostOrder.findOne({ date: date, cartId: cartId });
+  if (existCartOrder) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Already Ordered In this Date for this cart');
+  } else {
+    let orderCreations = await PartnercartPostOrder.create(createOrders);
+    orderCreations.products.map(async (e) => {
+      let values;
+      values = {
+        orderId: orderCreations._id,
+        productId: e._id,
+        productName: e.ProductTitle,
+        cartId: cartId,
+        QTY: parseInt(e.qty),
+        date: date,
+      };
+      await partnerCartOrderProducts.create(values);
+    });
+    return orderCreations;
+  }
 };
 
 const getOrdersbycart = async (cartId) => {

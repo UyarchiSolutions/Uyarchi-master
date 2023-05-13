@@ -225,6 +225,30 @@ const updateAddOnStock = async (body) => {
   return { message: 'Add On Stock Succeeded' };
 };
 
+const Return_Wastage_inCloseStock = async (body) => {
+  const { arr, cartId } = body;
+
+  arr.forEach(async (e) => {
+    let oneData = await partnerCartOrderProducts.findOne({ _id: e._id });
+    let wastage;
+    let returnq;
+    if (e.wastageqty) {
+      wastage = oneData.wastageQTY ? oneData.wastageQTY : 0 + e.wastageqty;
+    }
+    if (e.returnqty) {
+      returnq = oneData.returnQTY ? oneData.returnQTY : 0 + e.returnqty;
+    }
+    await partnerCartOrderProducts.findByIdAndUpdate(
+      { _id: e._id },
+      { wastageQTY: wastage, returnQTY: returnq },
+      { new: true }
+    );
+  });
+
+  await ScvCart.findByIdAndUpdate({ _id: cartId }, { cartOnDate: '' }, { new: true });
+  return { message: 'Cart Closed' };
+};
+
 module.exports = {
   SetPartnerPrice,
   AddProductByPartner,
@@ -235,4 +259,5 @@ module.exports = {
   getOrdersbycart,
   getOrderedProducts,
   updateAddOnStock,
+  Return_Wastage_inCloseStock,
 };

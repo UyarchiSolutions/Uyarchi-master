@@ -53,6 +53,11 @@ const updateAddOnStock = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const Return_Wastage_inCloseStock = catchAsync(async (req, res) => {
+  const data = await partnersetpriceService.Return_Wastage_inCloseStock(req.body);
+  res.send(data);
+});
+
 module.exports = {
   SetPartnerPrice,
   AddProductByPartner,
@@ -63,4 +68,5 @@ module.exports = {
   getOrdersbycart,
   getOrderedProducts,
   updateAddOnStock,
+  Return_Wastage_inCloseStock,
 };

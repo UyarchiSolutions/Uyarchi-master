@@ -11,4 +11,5 @@ router.route('/create/Partner/ShopOrder').post(PartnerAuth, PartnerSetPriceContr
 router.route('/getOrdersbycart/:id').get(PartnerSetPriceController.getOrdersbycart);
 router.route('/getOrdered/Products/:id').get(PartnerSetPriceController.getOrderedProducts);
 router.route('/updateAddOnStock').post(PartnerSetPriceController.updateAddOnStock);
+router.route('/Return_Wastage_inCloseStock').post(PartnerSetPriceController.Return_Wastage_inCloseStock);
 module.exports = router;

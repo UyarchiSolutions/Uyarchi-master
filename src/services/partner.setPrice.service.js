@@ -25,7 +25,7 @@ const AddProductByPartner = async (body, partnerId) => {
   let date = moment().format('YYYY-MM-dd');
   let time = moment().format('HH:mm a');
   let data = { ...body, ...{ date: date, time: time, partnerId: partnerId } };
-  let findAlreadyExist = await PartnerProduct.findOne({ partnerId: partnerId });
+  let findAlreadyExist = await PartnerProduct.findOne({ cartId: body.cartId });
   if (!findAlreadyExist) {
     await PartnerProduct.create(data);
   } else {

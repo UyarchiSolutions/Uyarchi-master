@@ -73,7 +73,7 @@ const FetchProductbyPartner = async (partnerId, cartId) => {
 };
 
 const create_Active_cart = async (body, partnerId) => {
-  await ActiveCArt.deleteOne({ partnerId: partnerId });
+  await ActiveCArt.deleteMany({ _id: { ne: null } });
   let data = { ...body, ...{ partnerId: partnerId } };
   let values = await ActiveCArt.create(data);
   return values;

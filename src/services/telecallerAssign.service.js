@@ -2181,10 +2181,11 @@ const my_assigned_shops = async (id, query) => {
         reAssignTime: 1,
         created: "$b2bshopclonesData.created",
         date: "$b2bshopclonesData.date",
-        _id: 1,
+        _id: "$b2bshopclonesData._id",
         Slat: "$b2bshopclonesData.Slat",
         Slong: "$b2bshopclonesData.Slong",
-        photoCapture: "$b2bshopclonesData.photoCapture"
+        photoCapture: "$b2bshopclonesData.photoCapture",
+        mobile:"$b2bshopclonesData.mobile"
       },
     },
     {

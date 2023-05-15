@@ -163,6 +163,11 @@ const LoginCustomer = catchAsync(async (req, res) => {
   res.send({ data: data, token: token });
 });
 
+const getScvCartbyId = catchAsync(async (req, res) => {
+  const data = await scvService.getScvCartbyId(req.params.id);
+  res.send(data);
+});
+
 module.exports = {
   createSCV,
   getSCVById,
@@ -185,4 +190,5 @@ module.exports = {
   Otpverify,
   setPassword,
   LoginCustomer,
+  getScvCartbyId,
 };

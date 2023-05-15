@@ -38,6 +38,26 @@ const create_PartnerShopOrder = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const getOrdersbycart = catchAsync(async (req, res) => {
+  const data = await partnersetpriceService.getOrdersbycart(req.params.id);
+  res.send(data);
+});
+
+const getOrderedProducts = catchAsync(async (req, res) => {
+  const data = await partnersetpriceService.getOrderedProducts(req.params.id, req.query.date);
+  res.send(data);
+});
+
+const updateAddOnStock = catchAsync(async (req, res) => {
+  const data = await partnersetpriceService.updateAddOnStock(req.body);
+  res.send(data);
+});
+
+const Return_Wastage_inCloseStock = catchAsync(async (req, res) => {
+  const data = await partnersetpriceService.Return_Wastage_inCloseStock(req.body);
+  res.send(data);
+});
+
 module.exports = {
   SetPartnerPrice,
   AddProductByPartner,
@@ -45,4 +65,8 @@ module.exports = {
   create_Active_cart,
   getActiveCartBy_partner,
   create_PartnerShopOrder,
+  getOrdersbycart,
+  getOrderedProducts,
+  updateAddOnStock,
+  Return_Wastage_inCloseStock,
 };

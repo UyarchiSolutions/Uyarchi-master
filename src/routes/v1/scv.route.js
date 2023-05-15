@@ -13,6 +13,7 @@ router.route('/updateSCVCart/:id').put(partnerCart.single('image'), scvControlle
 router.route('/getcarts/Allocation').get(scvController.getcarts_Allocation);
 router.route('/getAvailable/Scv').get(scvController.getAvailable_Scv);
 router.route('/Cart/Allocation/Scv').post(scvController.AllocationScv_ToCart);
+router.route('/getScvCartbyId/:id').get(scvController.getScvCartbyId);
 // SCV Manage
 
 router

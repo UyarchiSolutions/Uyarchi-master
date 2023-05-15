@@ -47,7 +47,7 @@ const getAllAttendance = async () => {
 
 const groupMap = async (from, to) => {
   let response = await axios.get(
-    `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${from}&destinations=${to}&key=AIzaSyDoYhbYhtl9HpilAZSy8F_JHmzvwVDoeHI`
+    `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${from}&destinations=${to}&key=AIzaSyC4f71KgUy-ocpdfmadcNPy-wrVks4YSdY`
   );
   // console.log(response.data)
   return response.data;
@@ -55,7 +55,7 @@ const groupMap = async (from, to) => {
 
 const latitudeMap = async (location, radius, type, keyword) => {
   let response = await axios.get(
-    `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${location}&radius=${radius}&&type=${type}&keyword=${keyword}&key=AIzaSyDoYhbYhtl9HpilAZSy8F_JHmzvwVDoeHI`
+    `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${location}&radius=${radius}&&type=${type}&keyword=${keyword}&key=AIzaSyC4f71KgUy-ocpdfmadcNPy-wrVks4YSdY`
   );
 
   return response.data;
@@ -63,14 +63,14 @@ const latitudeMap = async (location, radius, type, keyword) => {
 
 const WardNoApi = async (location) => {
   let response = await axios.get(
-    `https://maps.googleapis.com/maps/api/geocode/json?latlng=${location}&key=AIzaSyDoYhbYhtl9HpilAZSy8F_JHmzvwVDoeHI`
+    `https://maps.googleapis.com/maps/api/geocode/json?latlng=${location}&key=AIzaSyC4f71KgUy-ocpdfmadcNPy-wrVks4YSdY`
   );
   return response.data;
 };
 
 const WardApi = async (location) => {
   let response = await axios.get(
-    `https://maps.googleapis.com/maps/api/geocode/json?address=${location}&key=AIzaSyDoYhbYhtl9HpilAZSy8F_JHmzvwVDoeHI`
+    `https://maps.googleapis.com/maps/api/geocode/json?address=${location}&key=AIzaSyC4f71KgUy-ocpdfmadcNPy-wrVks4YSdY`
   );
   return response.data;
 };
@@ -112,14 +112,14 @@ const WardApi2 = async (longi, lati, data1) => {
 
 const streetSearchApi = async (searchArea) => {
   let response = await axios.get(
-    `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${searchArea}&inputtype=textquery&fields=formatted_address%2Cname%2Crating%2Copening_hours%2Cgeometry&key=AIzaSyDoYhbYhtl9HpilAZSy8F_JHmzvwVDoeHI`
+    `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${searchArea}&inputtype=textquery&fields=formatted_address%2Cname%2Crating%2Copening_hours%2Cgeometry&key=AIzaSyC4f71KgUy-ocpdfmadcNPy-wrVks4YSdY`
   );
   return response.data;
 };
 
 const streetSearchApi2 = async (searchArea) => {
   let response = await axios.get(
-    `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${searchArea}&key=AIzaSyDoYhbYhtl9HpilAZSy8F_JHmzvwVDoeHI`
+    `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${searchArea}&key=AIzaSyC4f71KgUy-ocpdfmadcNPy-wrVks4YSdY`
   );
   return response.data;
 };
@@ -135,9 +135,9 @@ const getAllStreetLatLang = async () => {
   //   let t = "tamilnadu"
   //   let i = "india"
   //   // let response = await axios.get(
-  //   //   `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${streets, area, t, i}&inputtype=textquery&fields=formatted_address%2Cname%2Crating%2Copening_hours%2Cgeometry&key=AIzaSyDoYhbYhtl9HpilAZSy8F_JHmzvwVDoeHI`
+  //   //   `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${streets, area, t, i}&inputtype=textquery&fields=formatted_address%2Cname%2Crating%2Copening_hours%2Cgeometry&key=AIzaSyC4f71KgUy-ocpdfmadcNPy-wrVks4YSdY`
   //   // );
-  //   axios.get(`https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${streets + " " + area + " ," + t + " ," + i}&inputtype=textquery&fields=formatted_address%2Cname%2Crating%2Copening_hours%2Cgeometry&key=AIzaSyDoYhbYhtl9HpilAZSy8F_JHmzvwVDoeHI`).then(resp => {
+  //   axios.get(`https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${streets + " " + area + " ," + t + " ," + i}&inputtype=textquery&fields=formatted_address%2Cname%2Crating%2Copening_hours%2Cgeometry&key=AIzaSyC4f71KgUy-ocpdfmadcNPy-wrVks4YSdY`).then(resp => {
   //     // console.log(resp.data.candidates[0]);
   //     count++;
   //     if (resp.data.candidates[0].geometry.location.lat != undefined) {

@@ -22,8 +22,12 @@ const getAllSCV = async () => {
   return SCVPurchase.find();
 };
 
-const querySCV = async (filter, options) => {
-  return SCVPurchase.paginate(filter, options);
+const getScvCartbyId = async (id) => {
+  const data = await ScvCart.findById(id);
+  if (!data) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Cart Not Found');
+  }
+  return data;
 };
 
 const updateSCVById = async (scvId, updateBody) => {
@@ -237,6 +241,26 @@ const SCVAttendance = async () => {
         path: '$cart',
       },
     },
+    {
+      $project: {
+        _id: 1,
+        active: 1,
+        workingStatus: 1,
+        attendance: 1,
+        Name: 1,
+        email: 1,
+        phoneNumber: 1,
+        address: 1,
+        pinCode: 1,
+        landMark: 1,
+        addreddProof: 1,
+        idProof: 1,
+        createdAt: 1,
+        cartName: '$cart.cartName',
+        vehicleName: '$cart.vehicleName',
+        vehicleNumber: '$cart.vehicleNumber',
+      },
+    },
   ]);
   return values;
 };
@@ -281,6 +305,7 @@ const LoginCustomer = async (body) => {
 module.exports = {
   createSCV,
   getAllSCV,
+  getScvCartbyId,
   getSCVById,
   updateSCVById,
   deleteSCVById,

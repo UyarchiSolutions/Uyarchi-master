@@ -9,7 +9,7 @@ const { Shop, AttendanceClone, AttendanceClonenew } = require('../models/b2b.Sho
 
 const createManagePickupLocation = async (body, userId) => {
   // let latlan = await axios.get(
-  //   `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${body.address}&key=AIzaSyDoYhbYhtl9HpilAZSy8F_JHmzvwVDoeHI`
+  //   `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${body.address}&key=AIzaSyC4f71KgUy-ocpdfmadcNPy-wrVks4YSdY`
   // );
   let servertime = moment().format('HHmmss');
   let serverdate = moment().format('YYYY-MM-DD');

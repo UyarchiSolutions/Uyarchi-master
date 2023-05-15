@@ -41,6 +41,12 @@ const CartSchema = new mongoose.Schema(
     image: {
       type: String,
     },
+    cartOnDate: {
+      type: String,
+    },
+    latestUpdateStock: {
+      type: String,
+    },
     active: {
       type: Boolean,
       default: true,

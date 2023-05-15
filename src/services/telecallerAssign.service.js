@@ -2111,6 +2111,30 @@ const my_assigned_shops = async (id, query) => {
         from: 'b2bshopclones',
         localField: 'shopId',
         foreignField: '_id',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'streets',
+              localField: 'Strid',
+              foreignField: '_id',
+              as: 'streets',
+            },
+          },
+          {
+            $unwind: '$streets',
+          },
+          {
+            $lookup: {
+              from: 'shoplists',
+              localField: 'SType',
+              foreignField: '_id',
+              as: 'shoptype',
+            },
+          },
+          {
+            $unwind: '$shoptype',
+          },
+        ],
         as: 'b2bshopclonesData',
       },
     },
@@ -2141,8 +2165,12 @@ const my_assigned_shops = async (id, query) => {
     },
     {
       $project: {
-        shopname: '$b2bshopclonesData.SName',
+        SName: '$b2bshopclonesData.SName',
         salesmanname: '$b2busersData.name',
+        street: "$b2bshopclonesData.streets.street",
+        SOwner: "$b2bshopclonesData.SOwner",
+        address: "$b2bshopclonesData.address",
+        shoptype: "$b2bshopclonesData.shoptype",
         salesmanOrderteamId: 1,
         fromsalesmanOrderteamId: 1,
         shopId: 1,
@@ -2151,9 +2179,12 @@ const my_assigned_shops = async (id, query) => {
         status: 1,
         reAssignDate: 1,
         reAssignTime: 1,
-        date: 1,
-        time: 1,
+        created: "$b2bshopclonesData.created",
+        date: "$b2bshopclonesData.date",
         _id: 1,
+        Slat: "$b2bshopclonesData.Slat",
+        Slong: "$b2bshopclonesData.Slong",
+        photoCapture: "$b2bshopclonesData.photoCapture"
       },
     },
     {

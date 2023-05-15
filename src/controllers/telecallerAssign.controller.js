@@ -127,7 +127,7 @@ const getsalesmanOrderAssignedShops = catchAsync(async (req, res) => {
 });
 
 const get_my_shops_assigned = catchAsync(async (req, res) => {
-  const data = await telecallerService.my_assigned_shops(req.userId);
+  const data = await telecallerService.my_assigned_shops(req.userId,req.query);
   res.send(data);
 });
 

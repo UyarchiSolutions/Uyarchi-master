@@ -2081,14 +2081,17 @@ const getsalesmanOrderAssignedShops = async (id) => {
 
 
 
-const my_assigned_shops = async (id) => {
+const my_assigned_shops = async (id, query) => {
+
+  let page = query.page == '' || query.page == null || query.page == null ? 0 : parseInt(query.page);
+  console.log(page)
   const name = await Users.findById(id);
   let data = await SalesmanOrderShop.aggregate([
     {
       $match: {
         $or: [
           { $and: [{ fromsalesmanOrderteamId: { $eq: id } }, { status: { $eq: 'Assign' } }] },
-          { $and: [{ salesmanOrderteamId: { $eq: id } }, { status: { $eq: 'tempReassign' } }] },
+          // { $and: [{ salesmanOrderteamId: { $eq: id } }, { status: { $eq: 'tempReassign' } }] },
         ],
       },
     },
@@ -2165,7 +2168,7 @@ const my_assigned_shops = async (id) => {
       $match: {
         $or: [
           { $and: [{ fromsalesmanOrderteamId: { $eq: id } }, { status: { $eq: 'Assign' } }] },
-          { $and: [{ salesmanOrderteamId: { $eq: id } }, { status: { $eq: 'tempReassign' } }] },
+          // { $and: [{ salesmanOrderteamId: { $eq: id } }, { status: { $eq: 'tempReassign' } }] },
         ],
       },
     },

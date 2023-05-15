@@ -2079,6 +2079,170 @@ const getsalesmanOrderAssignedShops = async (id) => {
   return { data: data, salesmanName: name.name, count: total.length, lastdata };
 };
 
+
+
+const my_assigned_shops = async (id) => {
+  const name = await Users.findById(id);
+  let data = await SalesmanOrderShop.aggregate([
+    {
+      $match: {
+        $or: [
+          { $and: [{ fromsalesmanOrderteamId: { $eq: id } }, { status: { $eq: 'Assign' } }] },
+          { $and: [{ salesmanOrderteamId: { $eq: id } }, { status: { $eq: 'tempReassign' } }] },
+        ],
+      },
+    },
+    {
+      $lookup: {
+        from: 'b2busers',
+        localField: 'salesmanOrderteamId',
+        foreignField: '_id',
+        as: 'b2busersData',
+      },
+    },
+    {
+      $unwind: '$b2busersData',
+    },
+    {
+      $lookup: {
+        from: 'b2bshopclones',
+        localField: 'shopId',
+        foreignField: '_id',
+        as: 'b2bshopclonesData',
+      },
+    },
+    {
+      $unwind: '$b2bshopclonesData',
+    },
+    {
+      $lookup: {
+        from: 'wards',
+        localField: 'b2bshopclonesData.Wardid',
+        foreignField: '_id',
+        as: 'wardsData',
+      },
+    },
+    {
+      $unwind: '$wardsData',
+    },
+    {
+      $lookup: {
+        from: 'zones',
+        localField: 'wardsData.zoneId',
+        foreignField: '_id',
+        as: 'zonesData',
+      },
+    },
+    {
+      $unwind: '$zonesData',
+    },
+    {
+      $project: {
+        shopname: '$b2bshopclonesData.SName',
+        salesmanname: '$b2busersData.name',
+        salesmanOrderteamId: 1,
+        fromsalesmanOrderteamId: 1,
+        shopId: 1,
+        ward: '$wardsData.ward',
+        zone: '$zonesData.zone',
+        status: 1,
+        reAssignDate: 1,
+        reAssignTime: 1,
+        date: 1,
+        time: 1,
+        _id: 1,
+      },
+    },
+    {
+      $skip: 10 * parseInt(page),
+    },
+    {
+      $limit: 10,
+    },
+  ]);
+  let total = await SalesmanOrderShop.aggregate([
+    {
+      $match: {
+        $or: [
+          { $and: [{ fromsalesmanOrderteamId: { $eq: id } }, { status: { $eq: 'Assign' } }] },
+          { $and: [{ salesmanOrderteamId: { $eq: id } }, { status: { $eq: 'tempReassign' } }] },
+        ],
+      },
+    },
+    {
+      $lookup: {
+        from: 'b2busers',
+        localField: 'salesmanOrderteamId',
+        foreignField: '_id',
+        as: 'b2busersData',
+      },
+    },
+    {
+      $unwind: '$b2busersData',
+    },
+    {
+      $lookup: {
+        from: 'b2bshopclones',
+        localField: 'shopId',
+        foreignField: '_id',
+        as: 'b2bshopclonesData',
+      },
+    },
+    {
+      $unwind: '$b2bshopclonesData',
+    },
+    {
+      $lookup: {
+        from: 'wards',
+        localField: 'b2bshopclonesData.Wardid',
+        foreignField: '_id',
+        as: 'wardsData',
+      },
+    },
+    {
+      $unwind: '$wardsData',
+    },
+    {
+      $lookup: {
+        from: 'zones',
+        localField: 'wardsData.zoneId',
+        foreignField: '_id',
+        as: 'zonesData',
+      },
+    },
+    {
+      $unwind: '$zonesData',
+    },
+    {
+      $project: {
+        shopname: '$b2bshopclonesData.SName',
+        salesmanname: '$b2busersData.name',
+        salesmanOrderteamId: 1,
+        fromsalesmanOrderteamId: 1,
+        shopId: 1,
+        ward: '$wardsData.ward',
+        zone: '$zonesData.zone',
+        status: 1,
+        reAssignDate: 1,
+        reAssignTime: 1,
+        date: 1,
+        time: 1,
+        _id: 1,
+      },
+    },
+    {
+      $skip: 10 * (parseInt(page) + 1)
+    },
+    {
+      $limit: 10,
+    },
+
+  ]);
+  return { data: data, salesmanName: name.name, next: total.length != 0 };
+};
+
+
+
 const getnotAssignsalesmanOrderShops = async (zone, id, street, page, limit, uid, date, dastatus, pincode, Da) => {
   let capture;
   let match;
@@ -3808,4 +3972,5 @@ module.exports = {
   history_Assign_Reaasign_datasalesman,
   pincode,
   getnotAssignsalesmanOrderShops_lat,
+  my_assigned_shops
 };

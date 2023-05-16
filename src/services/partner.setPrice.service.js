@@ -9,6 +9,7 @@ const {
   partnerCartOrderProducts,
   UpdateStock,
   PartnerOrder,
+  PartnerOrderedProductsSeperate,
 } = require('../models/partner.setPrice.models');
 const { ScvCart } = require('../models/Scv.mode');
 const { Product } = require('../models/product.model');
@@ -296,6 +297,43 @@ const getCart_Ordered_Products = async (date) => {
   return values;
 };
 
+const createPartnerOrder_FromAdmin = async (body, userId) => {
+  const { arr, todayDate, tomorrowDate } = body;
+  let findOrders = await PartnerOrder.find({ OrderedTo: tomorrowDate }).count();
+  let center = '';
+  if (findOrders < 9) {
+    center = '0000';
+  }
+  if (findOrders < 99 && findOrders >= 9) {
+    center = '000';
+  }
+  if (findOrders < 999 && findOrders >= 99) {
+    center = '00';
+  }
+  if (findOrders < 9999 && findOrders >= 999) {
+    center = '0';
+  }
+  let count = findOrders + 1;
+  let orderId = `OD${center}${count}`;
+
+  let data = { products: arr, Posted_date: todayDate, OrderedTo: tomorrowDate, partnerId: userId, orderId: orderId };
+  let creation = await PartnerOrder.create(data);
+
+  arr.forEach(async (e) => {
+    let datas = {
+      productId: e.productId,
+      scvOrders: scvKG,
+      totalQty: totalqty,
+      Posted_date: todayDate,
+      OrderedTo: tomorrowDate,
+      partnerOrderId: creation._id,
+      partnerId: userId,
+    };
+    await PartnerOrderedProductsSeperate.create(datas);
+  });
+  return creation;
+};
+
 module.exports = {
   SetPartnerPrice,
   AddProductByPartner,
@@ -308,4 +346,5 @@ module.exports = {
   updateAddOnStock,
   Return_Wastage_inCloseStock,
   getCart_Ordered_Products,
+  createPartnerOrder_FromAdmin,
 };

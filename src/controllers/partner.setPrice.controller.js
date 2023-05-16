@@ -63,6 +63,11 @@ const getCart_Ordered_Products = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const createPartnerOrder_FromAdmin = catchAsync(async (req, res) => {
+  const data = await partnersetpriceService.createPartnerOrder_FromAdmin(req.body, req.userId);
+  res.send(data);
+});
+
 module.exports = {
   SetPartnerPrice,
   AddProductByPartner,
@@ -75,4 +80,5 @@ module.exports = {
   updateAddOnStock,
   Return_Wastage_inCloseStock,
   getCart_Ordered_Products,
+  createPartnerOrder_FromAdmin,
 };

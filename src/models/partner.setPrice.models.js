@@ -295,7 +295,7 @@ const PartnerOrderSeperationSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const PartnerOrderedProductsSeperate = mongoose.model('partnerorderedproductsind', PartnerOrderSeperationSchema);
+const PartnerOrderedProductsSeperate = mongoose.model('partneradminorders', PartnerOrderSeperationSchema);
 
 module.exports = {
   partnerPrice,

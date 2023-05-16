@@ -331,7 +331,7 @@ const createPartnerOrder_FromAdmin = async (body, userId) => {
     };
     await PartnerOrderedProductsSeperate.create(datas);
   });
-  return creation;
+  return {message:"OrderCreated"};
 };
 
 module.exports = {

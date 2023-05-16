@@ -8,6 +8,7 @@ const {
   PartnercartPostOrder,
   partnerCartOrderProducts,
   UpdateStock,
+  PartnerOrder,
 } = require('../models/partner.setPrice.models');
 const { ScvCart } = require('../models/Scv.mode');
 const { Product } = require('../models/product.model');
@@ -244,9 +245,57 @@ const Return_Wastage_inCloseStock = async (body) => {
       { new: true }
     );
   });
-
   await ScvCart.findByIdAndUpdate({ _id: cartId }, { cartOnDate: '' }, { new: true });
   return { message: 'Cart Closed' };
+};
+
+// partner Request order tot admin Flow
+
+const getCart_Ordered_Products = async () => {
+  let date = '17/05/2023';
+  let values = await partnerCartOrderProducts.aggregate([
+    {
+      $match: {
+        date: date,
+      },
+    },
+    {
+      $project: {
+        productId: 1,
+        QTY: { $toDouble: '$QTY' },
+        orderId: 1,
+      },
+    },
+    {
+      $group: {
+        _id: '$productId',
+        totalQTY: { $sum: '$QTY' },
+      },
+    },
+    {
+      $lookup: {
+        from: 'products',
+        localField: '_id',
+        foreignField: '_id',
+        as: 'products',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$products',
+      },
+    },
+    {
+      $project: {
+        productId: '$_id',
+        scvKG: '$totalQTY',
+        productName: '$products.productTitle',
+        orderId: '$count',
+      },
+    },
+  ]);
+  return values;
 };
 
 module.exports = {
@@ -260,4 +309,5 @@ module.exports = {
   getOrderedProducts,
   updateAddOnStock,
   Return_Wastage_inCloseStock,
+  getCart_Ordered_Products,
 };

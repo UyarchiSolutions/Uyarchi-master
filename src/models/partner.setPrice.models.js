@@ -210,6 +210,40 @@ const UpdateStockSchema = new mongoose.Schema(
 
 const UpdateStock = mongoose.model('updateStock', UpdateStockSchema);
 
+const PartnerOrderSchema = new mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
+    },
+
+    productId: {
+      type: String,
+    },
+    closingStock: {
+      type: String,
+    },
+    scvOrders: {
+      type: Number,
+    },
+    AdditionalStock: {
+      type: String,
+    },
+    totalQty: {
+      type: String,
+    },
+    date: {
+      type: String,
+    },
+    time: {
+      type: String,
+    },
+  },
+  { timestamps: true }
+);
+
+const PartnerOrder = mongoose.model('partnerorders', PartnerOrderSchema);
+
 module.exports = {
   partnerPrice,
   PartnerProduct,
@@ -217,4 +251,5 @@ module.exports = {
   PartnercartPostOrder,
   partnerCartOrderProducts,
   UpdateStock,
+  PartnerOrder,
 };

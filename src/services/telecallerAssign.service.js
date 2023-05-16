@@ -2185,7 +2185,8 @@ const my_assigned_shops = async (id, query) => {
         Slat: "$b2bshopclonesData.Slat",
         Slong: "$b2bshopclonesData.Slong",
         photoCapture: "$b2bshopclonesData.photoCapture",
-        mobile:"$b2bshopclonesData.mobile"
+        mobile: "$b2bshopclonesData.mobile",
+        new_re_approve:"$b2bshopclonesData.new_re_approve",
       },
     },
     {

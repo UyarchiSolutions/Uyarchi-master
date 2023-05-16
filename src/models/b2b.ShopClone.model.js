@@ -275,8 +275,10 @@ const shopSchema = mongoose.Schema({
   },
   customer_final_TIME: {
     type: Number,
-  }
+  },
+  
 });
+
 
 // assignSchema.plugin(toJSON);
 // assignSchema.plugin(paginate);

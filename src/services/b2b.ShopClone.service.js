@@ -1886,11 +1886,12 @@ const update_reverification = async (id, status, bodyData, userID) => {
   return shop;
 };
 
-const update_reverification_custmer = async (id, status, bodyData, userID) => {
+const update_reverification_custmer = async (id, bodyData, userID) => {
   let shop = await getShopById(id);
   if (!shop) {
     throw new ApiError(httpStatus.NOT_FOUND, 'shop Not Found');
   }
+
   let servertime = moment().format('HHmm');
   let serverdate = moment().format('YYYY-MM-DD');
   shop = await Shop.findByIdAndUpdate(
@@ -5594,6 +5595,14 @@ const get_final_customer_shops = async (req) => {
         active: 1,
         mobile: 1,
         date: 1,
+        customer_final_date: 1,
+        customer_final_USER: 1,
+        customer_final_CREATED: 1,
+        customer_final_TIME: 1,
+        new_re_long: 1,
+        new_re_lat: 1,
+        new_re_approve: 1,
+        Pincode: 1
       },
     },
 

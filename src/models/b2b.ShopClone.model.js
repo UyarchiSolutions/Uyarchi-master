@@ -254,8 +254,31 @@ const shopSchema = mongoose.Schema({
   },
   email: {
     type: String,
-  }
+  },
+  new_re_approve: {
+    type: String,
+  },
+  new_re_lat: {
+    type: Number,
+  },
+  new_re_long: {
+    type: Number,
+  },
+  customer_final_date: {
+    type: String,
+  },
+  customer_final_USER: {
+    type: String,
+  },
+  customer_final_CREATED: {
+    type: Date,
+  },
+  customer_final_TIME: {
+    type: Number,
+  },
+  
 });
+
 
 // assignSchema.plugin(toJSON);
 // assignSchema.plugin(paginate);

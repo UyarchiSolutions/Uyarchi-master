@@ -126,6 +126,11 @@ const getsalesmanOrderAssignedShops = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const get_my_shops_assigned = catchAsync(async (req, res) => {
+  const data = await telecallerService.my_assigned_shops(req.userId,req.query);
+  res.send(data);
+});
+
 const getnotAssignsalesmanOrderShops = catchAsync(async (req, res) => {
   const data = await telecallerService.getnotAssignsalesmanOrderShops(
     req.params.zone,
@@ -234,4 +239,5 @@ module.exports = {
   history_Assign_Reaasign_datasalesman,
   pincode,
   getnotAssignsalesmanOrderShops_lat,
+  get_my_shops_assigned
 };

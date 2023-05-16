@@ -74,6 +74,7 @@ router
 
 router.route('/update/data/approved/:id').put(authorization, b2bShopCloneController.updateShopStatusdataapproved);
 router.route('/re/update/data/approved/:id').put(authorization, b2bShopCloneController.update_reverification);
+router.route('/customer/update/data/approved/:id').put(authorization, b2bShopCloneController.update_reverification_custmer);
 router.route('/update/phone/approved/:id').put(b2bShopCloneController.updateShopStatusphoneapproved);
 router.route('/update/kyc/approved/:id').put(b2bShopCloneController.updateShopStatuskycapproved);
 router.route('/getshopData/:id').get(b2bShopCloneController.getshopDataById);
@@ -122,4 +123,5 @@ router.route('/DummySort').post(b2bShopCloneController.DummySort);
 router.route('/getShopByPincode/:pincode').get(b2bShopCloneController.getShopByPincode);
 router.route('/get/final/map/view').get(b2bShopCloneController.finalmap_view);
 router.route('/get/final/map/view/pincode').get(b2bShopCloneController.finalmap_view_picode);
+router.route('/get/final/customer/final').get(b2bShopCloneController.get_final_customer_shops);
 module.exports = router;

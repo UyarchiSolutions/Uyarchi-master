@@ -1,6 +1,7 @@
 const express = require('express');
 const telecallerAssignController = require('../../controllers/telecallerAssign.controller');
 const router = express.Router();
+const authorization = require('../../controllers/tokenVerify.controller');
 // telecallerheadAssings
 router.route('/createtelecallerAssignReassign').post(telecallerAssignController.createtelecallerAssignReassign);
 
@@ -34,6 +35,7 @@ router.route('/getsalemanOrderSalesman/:id').get(telecallerAssignController.gets
 router.route('/createsalesmanOrderShop').post(telecallerAssignController.createsalesmanOrderShop);
 router.route('/getAllSalesman').get(telecallerAssignController.getAllSalesman);
 router.route('/getsalesmanOrderAssignedShops/:id').get(telecallerAssignController.getsalesmanOrderAssignedShops);
+router.route('/get_my_shops/assigned').get(authorization, telecallerAssignController.get_my_shops_assigned);
 router.route('/getnotAssignsalesmanOrderShops/:zone/:id/:street/:page/:limit/:uid/:date/:dastatus/:pincode/:Da').get(telecallerAssignController.getnotAssignsalesmanOrderShops);
 router.route('/getUserssalesmanWith_skiped/:id').get(telecallerAssignController.getUserssalesmanWith_skiped);
 router.route('/Return_Assign_To_salesmanOrder/:id').put(telecallerAssignController.Return_Assign_To_salesmanOrder);

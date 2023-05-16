@@ -20,7 +20,7 @@ const createManagePickupLocation = async (body, userId) => {
   // let latitude = locations.location.lat;
   // let langitude = locations.location.lng;
 
-  let values = { ...body, ...{ location: { color: "#"+Math.floor(Math.random() * 16777215).toString(16), type: 'Point', coordinates: [parseFloat(body.latitude), parseFloat(body.langitude)] }, date: serverdate, time: servertime, created: moment(), userId: userId } };
+  let values = { ...body, ...{ color: "#" + Math.floor(Math.random() * 16777215).toString(16), location: { type: 'Point', coordinates: [parseFloat(body.latitude), parseFloat(body.langitude)] }, date: serverdate, time: servertime, created: moment(), userId: userId } };
 
   console.log(values)
   const createpickuplocations = await PickupLocation.create(values);
@@ -257,7 +257,7 @@ const getallPickuplocation_orders = async () => {
   return values;
 }
 const getNearbypickuplocation = async (req) => {
-  
+
   let values = await PickupLocation.aggregate([
     {
       $geoNear: {

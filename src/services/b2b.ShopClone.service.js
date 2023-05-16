@@ -1886,6 +1886,25 @@ const update_reverification = async (id, status, bodyData, userID) => {
   return shop;
 };
 
+const update_reverification_custmer = async (id, bodyData, userID) => {
+  let shop = await getShopById(id);
+  if (!shop) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'shop Not Found');
+  }
+
+  let servertime = moment().format('HHmm');
+  let serverdate = moment().format('YYYY-MM-DD');
+  shop = await Shop.findByIdAndUpdate(
+    { _id: id },
+    {
+      ...bodyData,
+      ...{ customer_final_date: serverdate, customer_final_USER: userID, customer_final_CREATED: moment(), customer_final_TIME: servertime },
+    },
+    { new: true }
+  );
+  return shop;
+};
+
 // register user
 
 const craeteRegister = async (shopBody) => {
@@ -5478,6 +5497,128 @@ const finalmap_view_picode = async (req) => {
   return shop;
 };
 
+
+const get_final_customer_shops = async (req) => {
+
+  let page = req.query.page == '' || req.query.page == null ? 0 : parseInt(req.query.page);
+  let shop = await Shop.aggregate([
+    {
+      $match: { $and: [{ new_re_approve: { $ne: null } }] },
+    },
+    {
+      $lookup: {
+        from: 'b2busers',
+        localField: 'Uid',
+        foreignField: '_id',
+        pipeline: [
+          {
+            $project: {
+              name: 1,
+            },
+          },
+        ],
+        as: 'UsersData',
+      },
+    },
+    {
+      $unwind: '$UsersData',
+    },
+    {
+      $lookup: {
+        from: 'wards',
+        localField: 'Wardid',
+        foreignField: '_id',
+        pipeline: [
+          {
+            $project: {
+              ward: 1,
+            },
+          },
+        ],
+        as: 'WardData',
+      },
+    },
+    {
+      $unwind: '$WardData',
+    },
+    {
+      $lookup: {
+        from: 'streets',
+        localField: 'Strid',
+        foreignField: '_id',
+        pipeline: [
+          {
+            $project: {
+              street: 1,
+              area: 1,
+              locality: 1,
+            },
+          },
+        ],
+        as: 'StreetData',
+      },
+    },
+    {
+      $unwind: '$StreetData',
+    },
+    // shoplists
+    {
+      $lookup: {
+        from: 'shoplists',
+        localField: 'SType',
+        foreignField: '_id',
+        as: 'shoptype',
+      },
+    },
+    {
+      $unwind: '$shoptype',
+    },
+    {
+      $project: {
+        // _id:1,
+        // created:1,
+        street: '$StreetData.street',
+        Area: '$StreetData.area',
+        Locality: '$StreetData.locality',
+        ward: '$WardData.ward',
+        username: '$UsersData.name',
+        shoptype: '$shoptype.shopList',
+        photoCapture: 1,
+        SName: 1,
+        address: 1,
+        Slat: 1,
+        Slong: 1,
+        status: 1,
+        created: 1,
+        SOwner: 1,
+        kyc_status: 1,
+        active: 1,
+        mobile: 1,
+        date: 1,
+        customer_final_date: 1,
+        customer_final_USER: 1,
+        customer_final_CREATED: 1,
+        customer_final_TIME: 1,
+        new_re_long: 1,
+        new_re_lat: 1,
+        new_re_approve: 1,
+        Pincode: 1
+      },
+    },
+
+    { $skip: 10 * page },
+    { $limit: 10 },
+  ]);
+
+  let next = await Shop.aggregate([
+    {
+      $match: { $and: [{ new_re_approve: { $ne: null } }] },
+    },
+    { $skip: 10 * (page + 1) },
+    { $limit: 10 },
+  ]);
+  return { shop, next: next.length != 0 };
+}
 module.exports = {
   createShopClone,
   getAllShopClone,
@@ -5547,5 +5688,7 @@ module.exports = {
   DummySort,
   getShopByPincode,
   finalmap_view,
-  finalmap_view_picode
+  finalmap_view_picode,
+  update_reverification_custmer,
+  get_final_customer_shops
 };

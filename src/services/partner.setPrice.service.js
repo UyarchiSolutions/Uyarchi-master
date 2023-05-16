@@ -251,8 +251,7 @@ const Return_Wastage_inCloseStock = async (body) => {
 
 // partner Request order tot admin Flow
 
-const getCart_Ordered_Products = async () => {
-  let date = '17/05/2023';
+const getCart_Ordered_Products = async (date) => {
   let values = await partnerCartOrderProducts.aggregate([
     {
       $match: {
@@ -263,7 +262,6 @@ const getCart_Ordered_Products = async () => {
       $project: {
         productId: 1,
         QTY: { $toDouble: '$QTY' },
-        orderId: 1,
       },
     },
     {
@@ -291,10 +289,10 @@ const getCart_Ordered_Products = async () => {
         productId: '$_id',
         scvKG: '$totalQTY',
         productName: '$products.productTitle',
-        orderId: '$count',
       },
     },
   ]);
+
   return values;
 };
 

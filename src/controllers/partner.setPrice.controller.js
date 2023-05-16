@@ -59,7 +59,7 @@ const Return_Wastage_inCloseStock = catchAsync(async (req, res) => {
 });
 
 const getCart_Ordered_Products = catchAsync(async (req, res) => {
-  const data = await partnersetpriceService.getCart_Ordered_Products();
+  const data = await partnersetpriceService.getCart_Ordered_Products(req.params.date);
   res.send(data);
 });
 

@@ -319,7 +319,7 @@ const createPartnerOrder_FromAdmin = async (body, userId) => {
   let data = { products: arr, Posted_date: todayDate, OrderedTo: tomorrowDate, partnerId: userId, orderId: orderId };
   let creation = await PartnerOrder.create(data);
 
-  arr.forEach(async (e) => {
+  arr.map(async (e) => {
     let datas = {
       productId: e.productId,
       scvOrders: scvKG,
@@ -331,7 +331,7 @@ const createPartnerOrder_FromAdmin = async (body, userId) => {
     };
     await PartnerOrderedProductsSeperate.create(datas);
   });
-  return {message:"OrderCreated"};
+  return { message: 'OrderCreated' };
 };
 
 module.exports = {

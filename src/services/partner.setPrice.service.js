@@ -319,7 +319,7 @@ const createPartnerOrder_FromAdmin = async (body, userId) => {
   let data = { products: arr, Posted_date: todayDate, OrderedTo: tomorrowDate, partnerId: userId, orderId: orderId };
   let creation = await PartnerOrder.create(data);
 
-  arr.map(async (e) => {
+  arr.forEach(async (e) => {
     let datas = {
       productId: e.productId,
       scvOrders: scvKG,

@@ -8,6 +8,8 @@ const {
   PartnercartPostOrder,
   partnerCartOrderProducts,
   UpdateStock,
+  PartnerOrder,
+  PartnerOrderedProductsSeperate,
 } = require('../models/partner.setPrice.models');
 const { ScvCart } = require('../models/Scv.mode');
 const { Product } = require('../models/product.model');
@@ -244,9 +246,92 @@ const Return_Wastage_inCloseStock = async (body) => {
       { new: true }
     );
   });
-
   await ScvCart.findByIdAndUpdate({ _id: cartId }, { cartOnDate: '' }, { new: true });
   return { message: 'Cart Closed' };
+};
+
+// partner Request order tot admin Flow
+
+const getCart_Ordered_Products = async (date) => {
+  let values = await partnerCartOrderProducts.aggregate([
+    {
+      $match: {
+        date: date,
+      },
+    },
+    {
+      $project: {
+        productId: 1,
+        QTY: { $toDouble: '$QTY' },
+      },
+    },
+    {
+      $group: {
+        _id: '$productId',
+        totalQTY: { $sum: '$QTY' },
+      },
+    },
+    {
+      $lookup: {
+        from: 'products',
+        localField: '_id',
+        foreignField: '_id',
+        as: 'products',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$products',
+      },
+    },
+    {
+      $project: {
+        productId: '$_id',
+        scvKG: '$totalQTY',
+        productName: '$products.productTitle',
+      },
+    },
+  ]);
+
+  return values;
+};
+
+const createPartnerOrder_FromAdmin = async (body, userId) => {
+  const { arr, todayDate, tomorrowDate } = body;
+  let findOrders = await PartnerOrder.find({ OrderedTo: tomorrowDate }).count();
+  let center = '';
+  if (findOrders < 9) {
+    center = '0000';
+  }
+  if (findOrders < 99 && findOrders >= 9) {
+    center = '000';
+  }
+  if (findOrders < 999 && findOrders >= 99) {
+    center = '00';
+  }
+  if (findOrders < 9999 && findOrders >= 999) {
+    center = '0';
+  }
+  let count = findOrders + 1;
+  let orderId = `OD${center}${count}`;
+
+  let data = { products: arr, Posted_date: todayDate, OrderedTo: tomorrowDate, partnerId: userId, orderId: orderId };
+  let creation = await PartnerOrder.create(data);
+
+  arr.forEach(async (e) => {
+    let datas = {
+      productId: e.productId,
+      scvOrders: scvKG,
+      totalQty: totalqty,
+      Posted_date: todayDate,
+      OrderedTo: tomorrowDate,
+      partnerOrderId: creation._id,
+      partnerId: userId,
+    };
+    await PartnerOrderedProductsSeperate.create(datas);
+  });
+  return { message: 'OrderCreated' };
 };
 
 module.exports = {
@@ -260,4 +345,6 @@ module.exports = {
   getOrderedProducts,
   updateAddOnStock,
   Return_Wastage_inCloseStock,
+  getCart_Ordered_Products,
+  createPartnerOrder_FromAdmin,
 };

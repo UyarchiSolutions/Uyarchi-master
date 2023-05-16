@@ -210,6 +210,93 @@ const UpdateStockSchema = new mongoose.Schema(
 
 const UpdateStock = mongoose.model('updateStock', UpdateStockSchema);
 
+const PartnerOrderSchema = new mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
+    },
+    orderId: {
+      type: String,
+    },
+    productId: {
+      type: String,
+    },
+    products: {
+      type: Array,
+    },
+    closingStock: {
+      type: String,
+    },
+    scvOrders: {
+      type: Number,
+    },
+    AdditionalStock: {
+      type: String,
+    },
+    totalQty: {
+      type: String,
+    },
+    Posted_date: {
+      type: String,
+    },
+    time: {
+      type: String,
+    },
+    OrderedTo: {
+      type: String,
+    },
+    partnerId: {
+      type: String,
+    },
+  },
+  { timestamps: true }
+);
+
+const PartnerOrder = mongoose.model('partnerorders', PartnerOrderSchema);
+
+const PartnerOrderSeperationSchema = new mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
+    },
+    productId: {
+      type: String,
+    },
+    closingStock: {
+      type: String,
+    },
+    scvOrders: {
+      type: String,
+    },
+    AdditionalStock: {
+      type: String,
+    },
+    partnerOrderId: {
+      type: String,
+    },
+    totalQty: {
+      type: String,
+    },
+    Posted_date: {
+      type: String,
+    },
+    time: {
+      type: String,
+    },
+    OrderedTo: {
+      type: String,
+    },
+    partnerId: {
+      type: String,
+    },
+  },
+  { timestamps: true }
+);
+
+const PartnerOrderedProductsSeperate = mongoose.model('partneradminorders', PartnerOrderSeperationSchema);
+
 module.exports = {
   partnerPrice,
   PartnerProduct,
@@ -217,4 +304,6 @@ module.exports = {
   PartnercartPostOrder,
   partnerCartOrderProducts,
   UpdateStock,
+  PartnerOrder,
+  PartnerOrderedProductsSeperate,
 };

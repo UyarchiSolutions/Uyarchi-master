@@ -342,6 +342,15 @@ const getOrdersByPartner = async (id) => {
         partnerId: id,
       },
     },
+    { $sort: { createdAt: -1 } },
+    {
+      $lookup: {
+        from: 'partneradminorders',
+        localField: '_id',
+        foreignField: 'partnerOrderId',
+        as: 'orderProducts',
+      },
+    },
   ]);
   return values;
 };

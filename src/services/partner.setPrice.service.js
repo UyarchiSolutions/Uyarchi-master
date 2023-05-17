@@ -324,6 +324,7 @@ const createPartnerOrder_FromAdmin = async (body, userId) => {
       productId: e.productId,
       scvOrders: e.scvKG,
       totalQty: e.totalqty,
+      agreedPrice: e.price,
       Posted_date: todayDate,
       OrderedTo: tomorrowDate,
       partnerOrderId: creation._id,

@@ -282,6 +282,9 @@ const PartnerOrderSeperationSchema = new mongoose.Schema(
     Posted_date: {
       type: String,
     },
+    agreedPrice: {
+      type: Number,
+    },
     time: {
       type: String,
     },

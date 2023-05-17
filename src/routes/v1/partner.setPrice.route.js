@@ -14,6 +14,6 @@ router.route('/updateAddOnStock').post(PartnerSetPriceController.updateAddOnStoc
 router.route('/Return_Wastage_inCloseStock').post(PartnerSetPriceController.Return_Wastage_inCloseStock);
 router.route('/getCart/Ordered/Products/').get(PartnerSetPriceController.getCart_Ordered_Products);
 // partner request order to Admin
-router.route('/createPartnerOrder/FromAdmin').post(PartnerSetPriceController.createPartnerOrder_FromAdmin);
+router.route('/createPartnerOrder/FromAdmin').post(PartnerAuth, PartnerSetPriceController.createPartnerOrder_FromAdmin);
 
 module.exports = router;

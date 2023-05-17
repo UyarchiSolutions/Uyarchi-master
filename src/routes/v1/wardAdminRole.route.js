@@ -64,6 +64,9 @@ router.route('/getuser/target/byusers').get(authorization, wardAdminRoleControll
 // map view
 router.route('/get/Assign/shops/BySalesman').get(authorization, wardAdminRoleController.getAssign_bySalesman);
 router.route('/mycapture/re/get/Assign/shops/BySalesman').get(authorization, wardAdminRoleController.re_getAssign_bySalesman);
+router.route('/mycapture/re/get/Assign/shops/BySalesman/final/customer').get(authorization, wardAdminRoleController.re_getAssign_bySalesman_final_customer);
+
+
 
 // 26-11-2022
 router.route('/overall_Count_And_Data/:id/:uid').get(wardAdminRoleController.overall_Count_And_Data);

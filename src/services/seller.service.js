@@ -73,6 +73,8 @@ const forgotPass = async (req) => {
   if (!value) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Not Registered');
   }
+
+  await sellerOTP.updateMany({ mobileNumber: body.mobileNumber }, { $set: { active: false } });
   const otp = await sentOTP(value.mobileNumber, value);
   return value;
 };

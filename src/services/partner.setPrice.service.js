@@ -322,8 +322,8 @@ const createPartnerOrder_FromAdmin = async (body, userId) => {
   arr.forEach(async (e) => {
     let datas = {
       productId: e.productId,
-      scvOrders: scvKG,
-      totalQty: totalqty,
+      scvOrders: e.scvKG,
+      totalQty: e.totalqty,
       Posted_date: todayDate,
       OrderedTo: tomorrowDate,
       partnerOrderId: creation._id,

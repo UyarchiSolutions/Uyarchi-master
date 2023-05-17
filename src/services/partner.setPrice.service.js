@@ -335,6 +335,17 @@ const createPartnerOrder_FromAdmin = async (body, userId) => {
   return { message: 'OrderCreated' };
 };
 
+const getOrdersByPartner = async (id) => {
+  let values = await PartnerOrder.aggregate([
+    {
+      $match: {
+        partnerId: id,
+      },
+    },
+  ]);
+  return values;
+};
+
 module.exports = {
   SetPartnerPrice,
   AddProductByPartner,
@@ -348,4 +359,5 @@ module.exports = {
   Return_Wastage_inCloseStock,
   getCart_Ordered_Products,
   createPartnerOrder_FromAdmin,
+  getOrdersByPartner,
 };

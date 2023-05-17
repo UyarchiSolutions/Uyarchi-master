@@ -2994,7 +2994,7 @@ const re_getAssign_bySalesman_final_customer = async (userId) => {
         localField: 'shopId',
         foreignField: '_id',
         pipeline: [
-          { $and: [{ new_re_approve: { $ne: null } }] },
+          { $match: { $and: [{ new_re_approve: { $ne: null } }] } },
           {
             $lookup: {
               from: 'streets',
@@ -3074,7 +3074,7 @@ const re_getAssign_bySalesman_final_customer = async (userId) => {
         localField: 'shopId',
         foreignField: '_id',
         pipeline: [
-          { $and: [{ new_re_approve: { $eq: null } }] },
+          { $match: { $and: [{ new_re_approve: { $eq: null } }] } },
           {
             $lookup: {
               from: 'streets',
@@ -3156,7 +3156,7 @@ const re_getAssign_bySalesman_final_customer = async (userId) => {
         localField: 'shopId',
         foreignField: '_id',
         pipeline: [
-          { $and: [{ new_re_approve: { $ne: null } }, { customer_final_date: { $eq: todaydate } }] },
+          { $match: { $and: [{ new_re_approve: { $ne: null } }, { customer_final_date: { $eq: todaydate } }] } },
           {
             $lookup: {
               from: 'streets',

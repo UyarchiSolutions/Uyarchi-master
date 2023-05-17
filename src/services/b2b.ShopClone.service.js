@@ -5574,6 +5574,17 @@ const get_final_customer_shops = async (req) => {
       $unwind: '$shoptype',
     },
     {
+      $lookup: {
+        from: 'b2busers',
+        localField: 'customer_final_USER',
+        foreignField: '_id',
+        as: 'b2busers',
+      },
+    },
+    {
+      $unwind: '$b2busers',
+    },
+    {
       $project: {
         // _id:1,
         // created:1,
@@ -5602,7 +5613,10 @@ const get_final_customer_shops = async (req) => {
         new_re_long: 1,
         new_re_lat: 1,
         new_re_approve: 1,
-        Pincode: 1
+        Pincode: 1,
+        customer_final_approved_user: "$b2busers.name",
+        da_long: 1,
+        da_lot: 1
       },
     },
 

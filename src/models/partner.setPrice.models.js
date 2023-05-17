@@ -249,6 +249,10 @@ const PartnerOrderSchema = new mongoose.Schema(
     partnerId: {
       type: String,
     },
+    status: {
+      type: String,
+      default: 'Pending',
+    },
   },
   { timestamps: true }
 );

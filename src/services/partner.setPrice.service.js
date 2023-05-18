@@ -348,7 +348,61 @@ const getOrdersByPartner = async (id) => {
         from: 'partneradminorders',
         localField: '_id',
         foreignField: 'partnerOrderId',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'products',
+              localField: 'productId',
+              foreignField: '_id',
+              as: 'products',
+            },
+          },
+          {
+            $unwind: {
+              preserveNullAndEmptyArrays: true,
+              path: '$products',
+            },
+          },
+        ],
         as: 'orderProducts',
+      },
+    },
+  ]);
+  return values;
+};
+
+const getOrder_For_CurrentDateByCart = async (query) => {
+  const { cartId, date } = query;
+  let values = await partnerCartOrderProducts.aggregate([
+    {
+      $match: {
+        cartId: cartId,
+        date: date,
+      },
+    },
+    {
+      $lookup: {
+        from: 'products',
+        localField: 'productId',
+        foreignField: '_id',
+        as: 'products',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$products',
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        orderId: 1,
+        productId: 1,
+        cartId: 1,
+        QTY: 1,
+        date: 1,
+        productName: '$products.productTitle',
       },
     },
   ]);
@@ -369,4 +423,5 @@ module.exports = {
   getCart_Ordered_Products,
   createPartnerOrder_FromAdmin,
   getOrdersByPartner,
+  getOrder_For_CurrentDateByCart,
 };

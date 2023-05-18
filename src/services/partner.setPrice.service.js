@@ -34,7 +34,7 @@ const AddProductByPartner = async (body, partnerId) => {
     body.product.forEach(async (e) => {
       let i = findAlreadyExist.product.indexOf(e);
       if (i == -1) {
-        await PartnerProduct.findOneAndUpdate({ partnerId: partnerId }, { $push: { product: e } }, { new: true });
+        await PartnerProduct.findByIdAndUpdate({ _id: findAlreadyExist._id }, { $push: { product: e } }, { new: true });
       }
     });
   }

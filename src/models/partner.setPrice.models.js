@@ -149,6 +149,11 @@ const partnerOrderProducts = new mongoose.Schema(
     givenQTY: {
       type: Number,
     },
+
+    dQTY: {
+      type: Number,
+    },
+
     balanceQTY: {
       type: Number,
     },

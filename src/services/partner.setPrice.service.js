@@ -409,6 +409,14 @@ const getOrder_For_CurrentDateByCart = async (query) => {
   return values;
 };
 
+const DistributeGIven = async (body) => {
+  let { arr } = body;
+  arr.forEach(async (e) => {
+    await partnerCartOrderProducts.findByIdAndUpdate({ _id: e._id }, { dQTY: e.dQty }, { new: true });
+  });
+  return { message: 'Ditribution work success.............' };
+};
+
 module.exports = {
   SetPartnerPrice,
   AddProductByPartner,
@@ -424,4 +432,5 @@ module.exports = {
   createPartnerOrder_FromAdmin,
   getOrdersByPartner,
   getOrder_For_CurrentDateByCart,
+  DistributeGIven,
 };

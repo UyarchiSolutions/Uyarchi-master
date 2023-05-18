@@ -68,6 +68,21 @@ const createPartnerOrder_FromAdmin = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const getOrdersByPartner = catchAsync(async (req, res) => {
+  const data = await partnersetpriceService.getOrdersByPartner(req.userId);
+  res.send(data);
+});
+
+const getOrder_For_CurrentDateByCart = catchAsync(async (req, res) => {
+  const data = await partnersetpriceService.getOrder_For_CurrentDateByCart(req.query);
+  res.send(data);
+});
+
+const DistributeGIven = catchAsync(async (req, res) => {
+  const data = await partnersetpriceService.DistributeGIven(req.body);
+  res.send(data);
+});
+
 module.exports = {
   SetPartnerPrice,
   AddProductByPartner,
@@ -81,4 +96,7 @@ module.exports = {
   Return_Wastage_inCloseStock,
   getCart_Ordered_Products,
   createPartnerOrder_FromAdmin,
+  getOrdersByPartner,
+  getOrder_For_CurrentDateByCart,
+  DistributeGIven,
 };

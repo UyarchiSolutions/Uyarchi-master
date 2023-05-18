@@ -34,7 +34,7 @@ const AddProductByPartner = async (body, partnerId) => {
     body.product.forEach(async (e) => {
       let i = findAlreadyExist.product.indexOf(e);
       if (i == -1) {
-        await PartnerProduct.findOneAndUpdate({ partnerId: partnerId }, { $push: { product: e } }, { new: true });
+        await PartnerProduct.findByIdAndUpdate({ _id: findAlreadyExist._id }, { $push: { product: e } }, { new: true });
       }
     });
   }
@@ -322,8 +322,9 @@ const createPartnerOrder_FromAdmin = async (body, userId) => {
   arr.forEach(async (e) => {
     let datas = {
       productId: e.productId,
-      scvOrders: scvKG,
-      totalQty: totalqty,
+      scvOrders: e.scvKG,
+      totalQty: e.totalqty,
+      agreedPrice: e.price,
       Posted_date: todayDate,
       OrderedTo: tomorrowDate,
       partnerOrderId: creation._id,
@@ -332,6 +333,88 @@ const createPartnerOrder_FromAdmin = async (body, userId) => {
     await PartnerOrderedProductsSeperate.create(datas);
   });
   return { message: 'OrderCreated' };
+};
+
+const getOrdersByPartner = async (id) => {
+  let values = await PartnerOrder.aggregate([
+    {
+      $match: {
+        partnerId: id,
+      },
+    },
+    { $sort: { createdAt: -1 } },
+    {
+      $lookup: {
+        from: 'partneradminorders',
+        localField: '_id',
+        foreignField: 'partnerOrderId',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'products',
+              localField: 'productId',
+              foreignField: '_id',
+              as: 'products',
+            },
+          },
+          {
+            $unwind: {
+              preserveNullAndEmptyArrays: true,
+              path: '$products',
+            },
+          },
+        ],
+        as: 'orderProducts',
+      },
+    },
+  ]);
+  return values;
+};
+
+const getOrder_For_CurrentDateByCart = async (query) => {
+  const { cartId, date } = query;
+  let values = await partnerCartOrderProducts.aggregate([
+    {
+      $match: {
+        cartId: cartId,
+        date: date,
+      },
+    },
+    {
+      $lookup: {
+        from: 'products',
+        localField: 'productId',
+        foreignField: '_id',
+        as: 'products',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$products',
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        orderId: 1,
+        productId: 1,
+        cartId: 1,
+        QTY: 1,
+        date: 1,
+        productName: '$products.productTitle',
+      },
+    },
+  ]);
+  return values;
+};
+
+const DistributeGIven = async (body) => {
+  let { arr } = body;
+  arr.forEach(async (e) => {
+    await partnerCartOrderProducts.findByIdAndUpdate({ _id: e._id }, { dQTY: e.dQty }, { new: true });
+  });
+  return { message: 'Ditribution work success.............' };
 };
 
 module.exports = {
@@ -347,4 +430,7 @@ module.exports = {
   Return_Wastage_inCloseStock,
   getCart_Ordered_Products,
   createPartnerOrder_FromAdmin,
+  getOrdersByPartner,
+  getOrder_For_CurrentDateByCart,
+  DistributeGIven,
 };

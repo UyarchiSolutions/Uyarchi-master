@@ -149,6 +149,11 @@ const partnerOrderProducts = new mongoose.Schema(
     givenQTY: {
       type: Number,
     },
+
+    dQTY: {
+      type: Number,
+    },
+
     balanceQTY: {
       type: Number,
     },
@@ -249,6 +254,10 @@ const PartnerOrderSchema = new mongoose.Schema(
     partnerId: {
       type: String,
     },
+    status: {
+      type: String,
+      default: 'Pending',
+    },
   },
   { timestamps: true }
 );
@@ -268,7 +277,7 @@ const PartnerOrderSeperationSchema = new mongoose.Schema(
       type: String,
     },
     scvOrders: {
-      type: String,
+      type: Number,
     },
     AdditionalStock: {
       type: String,
@@ -277,10 +286,13 @@ const PartnerOrderSeperationSchema = new mongoose.Schema(
       type: String,
     },
     totalQty: {
-      type: String,
+      type: Number,
     },
     Posted_date: {
       type: String,
+    },
+    agreedPrice: {
+      type: Number,
     },
     time: {
       type: String,

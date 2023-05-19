@@ -899,6 +899,8 @@ const get_current_live_stream = async (req) => {
         streamrequestposts_count: 1,
         streamEnd_Time: 1,
         productArray: "$streamrequestposts.productTitle",
+        image: 1,
+        teaser: 1,
         // streamrequestposts:"$streamrequestposts"
 
       },

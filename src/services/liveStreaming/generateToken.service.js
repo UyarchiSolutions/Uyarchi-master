@@ -683,11 +683,12 @@ const get_participents_limit = async (req) => {
 };
 
 const get_current_live_stream = async (req) => {
-  let stream = req.query.stream
+  let stream = await Joinusers.findById(req.query.stream);
+  let streamId = stream.streamId;
   var date_now = new Date().getTime();
   let currentLives = await Streamrequest.aggregate([
     { $sort: { startTime: 1 } },
-    { $match: { $and: [{ _id: { $ne: stream } }, { startTime: { $lt: date_now } }, { streamEnd_Time: { $gt: date_now } }, { adminApprove: { $eq: 'Approved' } }] } },
+    { $match: { $and: [{ _id: { $ne: streamId } }, { startTime: { $lt: date_now } }, { streamEnd_Time: { $gt: date_now } }, { adminApprove: { $eq: 'Approved' } }] } },
     {
       $lookup: {
         from: 'joinedusers',

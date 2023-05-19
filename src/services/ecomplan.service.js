@@ -3933,6 +3933,56 @@ const get_watch_live_steams_interested = async (req) => {
         streamrequestposts_count: { $ifNull: ['$streamrequestposts_count.count', 0] },
       },
     },
+
+    {
+      $lookup: {
+        from: 'streamrequestposts',
+        localField: '_id',
+        foreignField: 'streamRequest',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'streamposts',
+              localField: 'postId',
+              foreignField: '_id',
+              pipeline: [
+                {
+                  $lookup: {
+                    from: 'products',
+                    localField: 'productId',
+                    foreignField: '_id',
+                    as: 'products',
+                  },
+                },
+                { $unwind: '$products' },
+                {
+                  $addFields: {
+                    productTitle: "$products.productTitle"
+                  },
+                },
+                {
+                  $project: {
+                    _id: 1,
+                    productTitle: 1
+                  }
+                }
+              ],
+              as: 'streamposts',
+            },
+          },
+          { $unwind: '$streamposts' },
+
+          {
+            $group: {
+              _id: null,
+              productTitle: { $push: "$streamposts.productTitle" },
+            }
+          },
+        ],
+        as: 'streamrequestposts',
+      },
+    },
+    { $unwind: "$streamrequestposts" },
     {
       $project: {
         _id: 1,
@@ -3972,7 +4022,9 @@ const get_watch_live_steams_interested = async (req) => {
         viewstatus: 1,
         status: 1,
         streamrequestposts_count: 1,
-        streamEnd_Time: 1
+        streamEnd_Time: 1,
+        productArray: "$streamrequestposts.productTitle"
+
       },
     },
     { $skip: 10 * page },

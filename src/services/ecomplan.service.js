@@ -2917,7 +2917,6 @@ const get_watch_live_steams_upcoming_byid = async (req) => {
               localField: 'postId',
               foreignField: '_id',
               pipeline: [
-                { $match: { $and: [{ afterStreaming: { $eq: 'yes' } }] } },
                 {
                   $lookup: {
                     from: 'products',
@@ -2936,7 +2935,7 @@ const get_watch_live_steams_upcoming_byid = async (req) => {
               as: 'streamposts',
             },
           },
-          // { $unwind: '$streamposts' },
+          { $unwind: '$streamposts' },
           {
             $project: {
               DateIso: "$streamposts.DateIso",
@@ -2965,6 +2964,7 @@ const get_watch_live_steams_upcoming_byid = async (req) => {
               suppierId: "$streamposts.suppierId",
               video: "$streamposts.video",
               postId: "$streamposts._id",
+              // streamposts:"$streamposts",
               _id: 1
             }
           }
@@ -2972,7 +2972,7 @@ const get_watch_live_steams_upcoming_byid = async (req) => {
         as: 'streamrequestposts',
       },
     },
-    // { $unwind: "$streamrequestposts" },
+    { $unwind: "$streamrequestposts" },
     {
       $project: {
         _id: 1,

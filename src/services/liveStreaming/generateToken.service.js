@@ -808,7 +808,7 @@ const get_current_live_stream = async (req) => {
       },
     },
 
-    { $match: { $and: [{ registerStatus: { $in: ['Not Registered', 'Unregistered'] } }] } },
+    // { $match: { $and: [{ registerStatus: { $in: ['Not Registered', 'Unregistered'] } }] } },
     {
       $lookup: {
         from: 'streamrequestposts',

@@ -3030,9 +3030,9 @@ const getnotAssignsalesmanOrderShops = async (zone, id, street, page, limit, uid
     {
       $project: {
         // SOwner: 1,
-        // SName: 1,
+        SName: 1,
         // mobile: 1,
-        // address: 1,
+        address: 1,
         Slat: 1,
         Slong: 1,
         // Uid:1,

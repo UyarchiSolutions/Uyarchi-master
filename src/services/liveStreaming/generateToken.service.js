@@ -683,11 +683,12 @@ const get_participents_limit = async (req) => {
 };
 
 const get_current_live_stream = async (req) => {
-  let stream = req.query.stream
+  let stream = await Joinusers.findById(req.query.stream);
+  let streamId = stream.streamId;
   var date_now = new Date().getTime();
   let currentLives = await Streamrequest.aggregate([
     { $sort: { startTime: 1 } },
-    { $match: { $and: [{ _id: { $ne: stream } }, { startTime: { $lt: date_now } }, { streamEnd_Time: { $gt: date_now } }, { adminApprove: { $eq: 'Approved' } }] } },
+    { $match: { $and: [{ _id: { $ne: streamId } }, { startTime: { $lt: date_now } }, { streamEnd_Time: { $gt: date_now } }, { adminApprove: { $eq: 'Approved' } }] } },
     {
       $lookup: {
         from: 'joinedusers',
@@ -808,7 +809,7 @@ const get_current_live_stream = async (req) => {
       },
     },
 
-    { $match: { $and: [{ registerStatus: { $in: ['Not Registered', 'Unregistered'] } }] } },
+    // { $match: { $and: [{ registerStatus: { $in: ['Not Registered', 'Unregistered'] } }] } },
     {
       $lookup: {
         from: 'streamrequestposts',
@@ -899,6 +900,8 @@ const get_current_live_stream = async (req) => {
         streamrequestposts_count: 1,
         streamEnd_Time: 1,
         productArray: "$streamrequestposts.productTitle",
+        image: 1,
+        teaser: 1,
         // streamrequestposts:"$streamrequestposts"
 
       },

@@ -528,22 +528,23 @@ const getnotAssignShops = async (zone, id, street, page, limit, uid, date, dasta
     // },
     {
       $match: {
-        $or: [
-          {
-            $and: [
-              { telecallerStatus: { $ne: 'Assign' } },
-              { telecallerStatus: { $ne: 'tempReassign' } },
-              { telecallerStatus: { $eq: 'Reassign' } },
-            ],
-          },
-          {
-            $and: [
-              { telecallerStatus: { $ne: 'Assign' } },
-              { telecallerStatus: { $ne: 'tempReassign' } },
-              { telecallerStatus: { $eq: null } },
-            ],
-          },
-        ],
+        // $and: [
+        // {
+        //   $and: [
+        //     { telecallerStatus: { $ne: 'Assign' } },
+        //     { telecallerStatus: { $ne: 'tempReassign' } },
+        //     { telecallerStatus: { $eq: 'Reassign' } },
+        //   ],
+        // },
+        // {
+        //   $and: [
+        //     { telecallerStatus: { $ne: 'Assign' } },
+        //     { telecallerStatus: { $ne: 'tempReassign' } },
+        //     { telecallerStatus: { $eq: null } },
+        //   ],
+        // },
+        // ],
+        telecallerStatus: { $nin: ['Assign', 'tempReassign', 'Reassign'] },
       },
     },
     {
@@ -2079,12 +2080,9 @@ const getsalesmanOrderAssignedShops = async (id) => {
   return { data: data, salesmanName: name.name, count: total.length, lastdata };
 };
 
-
-
 const my_assigned_shops = async (id, query) => {
-
   let page = query.page == '' || query.page == null || query.page == null ? 0 : parseInt(query.page);
-  console.log(page)
+  console.log(page);
   const name = await Users.findById(id);
   let data = await SalesmanOrderShop.aggregate([
     {
@@ -2167,10 +2165,10 @@ const my_assigned_shops = async (id, query) => {
       $project: {
         SName: '$b2bshopclonesData.SName',
         salesmanname: '$b2busersData.name',
-        street: "$b2bshopclonesData.streets.street",
-        SOwner: "$b2bshopclonesData.SOwner",
-        address: "$b2bshopclonesData.address",
-        shoptype: "$b2bshopclonesData.shoptype",
+        street: '$b2bshopclonesData.streets.street',
+        SOwner: '$b2bshopclonesData.SOwner',
+        address: '$b2bshopclonesData.address',
+        shoptype: '$b2bshopclonesData.shoptype',
         salesmanOrderteamId: 1,
         fromsalesmanOrderteamId: 1,
         shopId: 1,
@@ -2179,14 +2177,14 @@ const my_assigned_shops = async (id, query) => {
         status: 1,
         reAssignDate: 1,
         reAssignTime: 1,
-        created: "$b2bshopclonesData.created",
-        date: "$b2bshopclonesData.date",
-        _id: "$b2bshopclonesData._id",
-        Slat: "$b2bshopclonesData.Slat",
-        Slong: "$b2bshopclonesData.Slong",
-        photoCapture: "$b2bshopclonesData.photoCapture",
-        mobile: "$b2bshopclonesData.mobile",
-        new_re_approve:"$b2bshopclonesData.new_re_approve",
+        created: '$b2bshopclonesData.created',
+        date: '$b2bshopclonesData.date',
+        _id: '$b2bshopclonesData._id',
+        Slat: '$b2bshopclonesData.Slat',
+        Slong: '$b2bshopclonesData.Slong',
+        photoCapture: '$b2bshopclonesData.photoCapture',
+        mobile: '$b2bshopclonesData.mobile',
+        new_re_approve: '$b2bshopclonesData.new_re_approve',
       },
     },
     {
@@ -2267,17 +2265,14 @@ const my_assigned_shops = async (id, query) => {
       },
     },
     {
-      $skip: 10 * (parseInt(page) + 1)
+      $skip: 10 * (parseInt(page) + 1),
     },
     {
       $limit: 10,
     },
-
   ]);
   return { data: data, salesmanName: name.name, next: total.length != 0 };
 };
-
-
 
 const getnotAssignsalesmanOrderShops = async (zone, id, street, page, limit, uid, date, dastatus, pincode, Da) => {
   let capture;
@@ -2349,12 +2344,8 @@ const getnotAssignsalesmanOrderShops = async (zone, id, street, page, limit, uid
       ],
     };
   } else {
-    ;
     daUser1 = {
-      $and: [
-        { active: { $eq: true } },
-        { $or: [{ status: { $eq: 'Assign' } }, { status: { $eq: 'tempReassign' } }] },
-      ],
+      $and: [{ active: { $eq: true } }, { $or: [{ status: { $eq: 'Assign' } }, { status: { $eq: 'tempReassign' } }] }],
     };
     //  daUser1 = [{ active: { $eq: true } }];
   }
@@ -3048,6 +3039,7 @@ const getnotAssignsalesmanOrderShops = async (zone, id, street, page, limit, uid
         // displaycount: 1,
         // Pincode:1,
         // DA_USER:1,
+        salesmanOrderStatus: 1,
       },
     },
   ]);
@@ -4008,5 +4000,5 @@ module.exports = {
   history_Assign_Reaasign_datasalesman,
   pincode,
   getnotAssignsalesmanOrderShops_lat,
-  my_assigned_shops
+  my_assigned_shops,
 };

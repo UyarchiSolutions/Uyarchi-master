@@ -9839,18 +9839,19 @@ const get_order_details_by_stream = async (id, query) => {
 };
 
 const get_post_view = async (req) => {
+  console.log(req.query.id)
   let value = await StreamPost.aggregate([
     { $match: { $and: [{ _id: req.query.id },] } },
     {
       $lookup: {
-        from: 'pruducts',
+        from: 'products',
         localField: 'productId',
         foreignField: '_id',
-        as: 'pruducts',
+        as: 'products',
       },
     },
     {
-      $unwind: '$pruducts',
+      $unwind: '$products',
     },
     {
       $project: {
@@ -9868,10 +9869,13 @@ const get_post_view = async (req) => {
         location: 1,
         afterStreaming: 1,
         DateIso: 1,
-        productTitle: "$pruducts.productTitle"
+        productTitle: "$products.productTitle",
+        video: 1,
+
       }
     }
   ])
+  console.log(value)
 
   return value[0];
 }

@@ -5534,14 +5534,14 @@ const get_final_customer_shops = async (req) => {
   }
 
   if (req.query.date1 && req.query.date2) {
-    if (req.query.date1 == 'null' || req.query.date2 != 'null') {
+    if (req.query.date1 == 'null' || req.query.date2 == 'null') {
       statusMatch;
     } else {
+      console.log(req.query.date1, req.query.date2)
       dateMatch = { customer_final_date: { $gte: req.query.date1, $lte: req.query.date2 } };
     }
   }
   if (req.query.status && req.query.status != 'null') {
-    console.log(req.query.status);
     if (req.query.status == '1') {
       statusMatch = { new_re_approve: 'Recognised & Fence Sitter' };
     } else if (req.query.status == '2') {

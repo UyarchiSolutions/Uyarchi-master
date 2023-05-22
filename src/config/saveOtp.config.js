@@ -1,4 +1,5 @@
-const OTP = require('../models/chatBot.OTP.model');
+// const OTP = require('../models/chatBot.OTP.model');
+const { OTP } = require('../models/saveOtp.model');
 const moment = require('moment');
 const CustomerOTP = require('../models/customer.otp.model');
 

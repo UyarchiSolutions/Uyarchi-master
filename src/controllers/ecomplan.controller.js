@@ -538,6 +538,11 @@ const get_order_details_by_stream = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const get_post_view = catchAsync(async (req, res) => {
+  const data = await Ecomserive.get_post_view(req);
+  res.send(data);
+});
+
 module.exports = {
   create_Plans,
   create_Plans_addon,
@@ -582,6 +587,7 @@ module.exports = {
   get_completed_stream_byid,
   get_completed_stream_buyer,
   end_stream,
+  get_post_view,
 
   go_live_stream_host,
   get_watch_live_steams,

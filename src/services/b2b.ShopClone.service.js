@@ -5524,8 +5524,6 @@ const finalmap_view_picode = async (req) => {
 
 const get_final_customer_shops = async (req) => {
   let page = req.query.page == '' || req.query.page == null ? 0 : parseInt(req.query.page);
-  const { sales, date, status } = req.query;
-
   // match for filters
 
   let salesMatch = { active: true };
@@ -5535,8 +5533,8 @@ const get_final_customer_shops = async (req) => {
     salesMatch = { customer_final_USER: req.query.sales };
   }
 
-  if (req.query.date) {
-    dateMatch = { customer_final_date: req.query.date };
+  if (req.query.date1 && req.query.date2) {
+    dateMatch = { customer_final_date: { $gte: req.query.date1, $lte: req.query.date2 } };
   }
   if (req.query.status) {
     statusMatch = { new_re_approve: req.query.status };
@@ -5545,7 +5543,9 @@ const get_final_customer_shops = async (req) => {
   console.log(req.query.status);
   let shop = await Shop.aggregate([
     {
-      $match: { $and: [{ new_re_approve: { $ne: null } }, salesMatch, dateMatch, statusMatch] },
+      $match: {
+        $and: [{ new_re_approve: { $ne: null } }, salesMatch, dateMatch, statusMatch],
+      },
     },
     {
       $lookup: {

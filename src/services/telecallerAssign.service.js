@@ -621,8 +621,10 @@ const getnotAssignShops = async (zone, id, street, page, limit, uid, date, dasta
         _id: 1,
         displaycount: 1,
         Pincode: 1,
+        salesmanOrderStatus: 1,
       },
     },
+    { $match: { salesmanOrderStatus: { $nin: ['Assign'] } } },
     {
       $skip: parseInt(limit) * parseInt(page),
     },
@@ -744,8 +746,15 @@ const getnotAssignShops = async (zone, id, street, page, limit, uid, date, dasta
         displaycount: 1,
       },
     },
+    { $match: { salesmanOrderStatus: { $nin: ['Assign'] } } },
+
   ]);
   let total = await Shop.aggregate([
+    {
+      $match: {
+        $and: pincodeMatch,
+      },
+    },
     {
       $match: {
         $and: match,
@@ -761,11 +770,6 @@ const getnotAssignShops = async (zone, id, street, page, limit, uid, date, dasta
         $and: dastatusMatch,
       },
     },
-    {
-      $match: {
-        $and: pincodeMatch,
-      },
-    },
     // {
     //   $match: {
     //     $or: [
@@ -778,22 +782,23 @@ const getnotAssignShops = async (zone, id, street, page, limit, uid, date, dasta
     // },
     {
       $match: {
-        $or: [
-          {
-            $and: [
-              { telecallerStatus: { $ne: 'Assign' } },
-              { telecallerStatus: { $ne: 'tempReassign' } },
-              { telecallerStatus: { $eq: 'Reassign' } },
-            ],
-          },
-          {
-            $and: [
-              { telecallerStatus: { $ne: 'Assign' } },
-              { telecallerStatus: { $ne: 'tempReassign' } },
-              { telecallerStatus: { $eq: null } },
-            ],
-          },
-        ],
+        // $and: [
+        // {
+        //   $and: [
+        //     { telecallerStatus: { $ne: 'Assign' } },
+        //     { telecallerStatus: { $ne: 'tempReassign' } },
+        //     { telecallerStatus: { $eq: 'Reassign' } },
+        //   ],
+        // },
+        // {
+        //   $and: [
+        //     { telecallerStatus: { $ne: 'Assign' } },
+        //     { telecallerStatus: { $ne: 'tempReassign' } },
+        //     { telecallerStatus: { $eq: null } },
+        //   ],
+        // },
+        // ],
+        telecallerStatus: { $nin: ['Assign', 'tempReassign', 'Reassign'] },
       },
     },
     {
@@ -869,8 +874,11 @@ const getnotAssignShops = async (zone, id, street, page, limit, uid, date, dasta
         locality: '$streets.locality',
         _id: 1,
         displaycount: 1,
+        Pincode: 1,
+        salesmanOrderStatus: 1,
       },
     },
+    { $match: { salesmanOrderStatus: { $nin: ['Assign'] } } },
   ]);
   return { data: data, total: total.length, overall: allnoAssing.length };
 };

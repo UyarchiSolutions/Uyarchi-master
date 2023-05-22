@@ -211,6 +211,7 @@ const otpVerfiy = async (body) => {
   if (!users) {
     throw new ApiError(httpStatus.NOT_FOUND, 'user not Found');
   }
+  console.log(users)
   return await Verfy.verfiy(body, users);
 };
 

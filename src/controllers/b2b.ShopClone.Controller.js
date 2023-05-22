@@ -342,7 +342,7 @@ const updateShopStatusdataapproved = catchAsync(async (req, res) => {
 });
 
 const update_reverification = catchAsync(async (req, res) => {
-  const shops = await b2bCloneService.update_reverification(req.params.id,'data_approved', req.body, req.userId);
+  const shops = await b2bCloneService.update_reverification(req.params.id, 'data_approved', req.body, req.userId);
   res.send(shops);
 });
 const update_reverification_custmer = catchAsync(async (req, res) => {
@@ -578,12 +578,17 @@ const finalmap_view = catchAsync(async (req, res) => {
   res.send(data);
 });
 
-const finalmap_view_picode= catchAsync(async (req, res) => {
+const finalmap_view_picode = catchAsync(async (req, res) => {
   const data = await b2bCloneService.finalmap_view_picode(req);
   res.send(data);
 });
-const get_final_customer_shops= catchAsync(async (req, res) => {
+const get_final_customer_shops = catchAsync(async (req, res) => {
   const data = await b2bCloneService.get_final_customer_shops(req);
+  res.send(data);
+});
+
+const getSalesExecutives = catchAsync(async (req, res) => {
+  const data = await b2bCloneService.getSalesExecutives();
   res.send(data);
 });
 
@@ -659,5 +664,6 @@ module.exports = {
   finalmap_view,
   finalmap_view_picode,
   update_reverification_custmer,
-  get_final_customer_shops
+  get_final_customer_shops,
+  getSalesExecutives,
 };

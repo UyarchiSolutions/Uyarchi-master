@@ -5529,14 +5529,19 @@ const get_final_customer_shops = async (req) => {
   let salesMatch = { active: true };
   let dateMatch = { active: true };
   let statusMatch = { active: true };
-  if (req.query.sales) {
+  if (req.query.sales && req.query.sales != 'null') {
     salesMatch = { customer_final_USER: req.query.sales };
   }
 
   if (req.query.date1 && req.query.date2) {
-    dateMatch = { customer_final_date: { $gte: req.query.date1, $lte: req.query.date2 } };
+    if (req.query.date1 == 'null' || req.query.date2 != 'null') {
+      statusMatch;
+    } else {
+      dateMatch = { customer_final_date: { $gte: req.query.date1, $lte: req.query.date2 } };
+    }
   }
-  if (req.query.status) {
+  if (req.query.status && req.query.status != 'null') {
+    console.log(req.query.status);
     statusMatch = { new_re_approve: req.query.status };
   }
 

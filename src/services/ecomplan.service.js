@@ -9840,7 +9840,7 @@ const get_order_details_by_stream = async (id, query) => {
 
 const get_post_view = async (req) => {
   let value = await StreamPost.aggregate([
-    { _id: req.query.id },
+    { $match: { $and: [{ _id: req.query.id },] } },
     {
       $lookup: {
         from: 'pruducts',

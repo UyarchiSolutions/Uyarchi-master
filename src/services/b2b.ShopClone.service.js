@@ -5542,7 +5542,7 @@ const get_final_customer_shops = async (req) => {
   }
   if (req.query.status && req.query.status != 'null') {
     console.log(req.query.status);
-    statusMatch = { new_re_approve: req.query.status };
+    statusMatch = { new_re_approve: { $regex: req.query.status, $options: 'i' } };
   }
 
   console.log(req.query.status);

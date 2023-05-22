@@ -5542,7 +5542,15 @@ const get_final_customer_shops = async (req) => {
   }
   if (req.query.status && req.query.status != 'null') {
     console.log(req.query.status);
-    statusMatch = { new_re_approve: { $regex: req.query.status, $options: 'i' } };
+    if (req.query.status == '1') {
+      statusMatch = { new_re_approve: 'Recognised & Fence Sitter' };
+    } else if (req.query.status == '2') {
+      statusMatch = { new_re_approve: 'Recognised & Interested' };
+    } else if (req.query.status == '3') {
+      statusMatch = { new_re_approve: 'Shop Closed/ Shifted' };
+    } else {
+      statusMatch;
+    }
   }
 
   console.log(req.query.status);

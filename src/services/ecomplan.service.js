@@ -4666,7 +4666,7 @@ const getall_homeage_streams = async (req) => {
         planId: 1,
         tokenDetails: 1,
         golive: { $gt: ['$noOfParticipants', '$joinedusers.count'] },
-        goLive: 1,
+        // goLive: 1,
         joinedusers_user: '$joinedusers_user',
         alreadyJoined: 1,
         suppliersName: '$suppliers.contactName',
@@ -9833,9 +9833,46 @@ const get_order_details_by_stream = async (id, query) => {
         Buyer: '$shop.SName',
       },
     },
+
   ]);
   return values;
 };
+
+const get_post_view = async (req) => {
+  let value = await StreamPost.aggregate([
+    { _id: req.query.id },
+    {
+      $lookup: {
+        from: 'pruducts',
+        localField: 'productId',
+        foreignField: '_id',
+        as: 'pruducts',
+      },
+    },
+    {
+      $unwind: '$pruducts',
+    },
+    {
+      $project: {
+        _id: 1,
+        pendingQTY: 1,
+        images: 1,
+        status: 1,
+        marketPlace: 1,
+        offerPrice: 1,
+        bookingAmount: 1,
+        postLiveStreamingPirce: 1,
+        minLots: 1,
+        incrementalLots: 1,
+        discription: 1,
+        location: 1,
+        afterStreaming: 1,
+        DateIso: 1,
+        productTitle: "$pruducts.productTitle"
+      }
+    }
+  ])
+}
 
 module.exports = {
   create_Plans,
@@ -9949,5 +9986,6 @@ module.exports = {
   get_watch_live_steams_interested,
   get_watch_live_steams_completed,
   getall_homeage_streams,
-  get_watch_live_steams_current
+  get_watch_live_steams_current,
+  get_post_view
 };

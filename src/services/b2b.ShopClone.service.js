@@ -5537,7 +5537,7 @@ const get_final_customer_shops = async (req) => {
     if (req.query.date1 == 'null' || req.query.date2 == 'null') {
       statusMatch;
     } else {
-      console.log(req.query.date1, req.query.date2)
+      console.log(req.query.date1, req.query.date2);
       dateMatch = { customer_final_date: { $gte: req.query.date1, $lte: req.query.date2 } };
     }
   }
@@ -5553,7 +5553,6 @@ const get_final_customer_shops = async (req) => {
     }
   }
 
-  console.log(req.query.status);
   let shop = await Shop.aggregate([
     {
       $match: {

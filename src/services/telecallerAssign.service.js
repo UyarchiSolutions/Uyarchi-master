@@ -747,7 +747,6 @@ const getnotAssignShops = async (zone, id, street, page, limit, uid, date, dasta
       },
     },
     { $match: { salesmanOrderStatus: { $nin: ['Assign'] } } },
-
   ]);
   let total = await Shop.aggregate([
     {
@@ -881,6 +880,197 @@ const getnotAssignShops = async (zone, id, street, page, limit, uid, date, dasta
     { $match: { salesmanOrderStatus: { $nin: ['Assign'] } } },
   ]);
   return { data: data, total: total.length, overall: allnoAssing.length };
+};
+
+const getnotAssignShops_without_Page = async (zone, id, street, uid, date, dastatus, pincode) => {
+  let match;
+  let zoneMatch;
+  let wardMatch;
+  let streetMatch;
+  let dastatusMatch;
+  let pincodeMatch;
+  if (dastatus != 'null') {
+    dastatusMatch = [{ daStatus: { $eq: dastatus } }];
+  } else {
+    dastatusMatch = [{ active: { $eq: true } }];
+  }
+  if (pincode != 'null') {
+    pincodeMatch = [{ Pincode: { $eq: parseInt(pincode) } }];
+  } else {
+    pincodeMatch = [{ active: { $eq: true } }];
+  }
+  // console.log(pincodeMatch)
+  if (zone != 'null') {
+    zoneMatch = [{ _id: { $eq: zone } }];
+  } else {
+    zoneMatch = [{ active: { $eq: true } }];
+  }
+  // console.log(zoneMatch)
+  if (id != 'null') {
+    wardMatch = [{ _id: { $eq: id } }];
+  } else {
+    wardMatch = [{ active: { $eq: true } }];
+  }
+  //  console.log(wardMatch)
+  if (street != 'null') {
+    streetMatch = [{ _id: { $eq: street } }];
+  } else {
+    streetMatch = [{ active: { $eq: true } }];
+  }
+  // console.log(streetMatch)
+
+  if (uid != 'null' && date == 'null') {
+    match = [{ Uid: { $eq: uid } }];
+  } else if (date != 'null' && uid == 'null') {
+    match = [{ date: { $eq: date } }];
+  } else if (uid != 'null' && date != 'null') {
+    match = [{ Uid: { $eq: uid } }, { date: { $eq: date } }];
+  } else {
+    match = [{ active: { $eq: true } }];
+  }
+
+  // let match;
+  // if (uid != 'null' && date == 'null') {
+  //   match = [{ Wardid: { $eq: id } }, { Uid: { $eq: uid } }];
+  // } else if (uid != 'null' && date != 'null') {
+  //   match = [{ Wardid: { $eq: id } }, { Uid: { $eq: uid } }, { date: { $eq: date } }];
+  // } else if (uid == 'null' && date != 'null') {
+  //   match = [{ Wardid: { $eq: id } }, { date: { $eq: date } }];
+  // } else {
+  //   match = [{ Wardid: { $eq: id } }];
+  // }
+  // console.log(match)
+  let data = await Shop.aggregate([
+    {
+      $match: {
+        $and: pincodeMatch,
+      },
+    },
+    {
+      $match: {
+        $and: match,
+      },
+    },
+    {
+      $match: {
+        $and: [{ status: { $eq: 'data_approved' } }],
+      },
+    },
+    {
+      $match: {
+        $and: dastatusMatch,
+      },
+    },
+    // {
+    //   $match: {
+    //     $or: [
+    //       { salesManStatus: { $ne: 'Assign' } },
+    //       { salesManStatus: { $eq: null } },
+    //       { salesManStatus: { $eq: 'Reassign' } },
+    //       { salesManStatus: { $ne: 'tempReassign' } },
+    //     ],
+    //   },
+    // },
+    {
+      $match: {
+        // $and: [
+        // {
+        //   $and: [
+        //     { telecallerStatus: { $ne: 'Assign' } },
+        //     { telecallerStatus: { $ne: 'tempReassign' } },
+        //     { telecallerStatus: { $eq: 'Reassign' } },
+        //   ],
+        // },
+        // {
+        //   $and: [
+        //     { telecallerStatus: { $ne: 'Assign' } },
+        //     { telecallerStatus: { $ne: 'tempReassign' } },
+        //     { telecallerStatus: { $eq: null } },
+        //   ],
+        // },
+        // ],
+        telecallerStatus: { $nin: ['Assign', 'tempReassign', 'Reassign'] },
+      },
+    },
+    {
+      $lookup: {
+        from: 'streets',
+        localField: 'Strid',
+        foreignField: '_id',
+        pipeline: [
+          {
+            $match: {
+              $and: streetMatch,
+            },
+          },
+        ],
+        as: 'streets',
+      },
+    },
+    {
+      $unwind: '$streets',
+    },
+    {
+      $lookup: {
+        from: 'wards',
+        localField: 'Wardid',
+        foreignField: '_id',
+        pipeline: [
+          {
+            $match: {
+              $and: wardMatch,
+            },
+          },
+        ],
+        as: 'wards',
+      },
+    },
+    {
+      $unwind: '$wards',
+    },
+    {
+      $lookup: {
+        from: 'zones',
+        localField: 'wards.zoneId',
+        foreignField: '_id',
+        pipeline: [
+          {
+            $match: {
+              $and: zoneMatch,
+            },
+          },
+        ],
+        as: 'zones',
+      },
+    },
+    {
+      $unwind: '$zones',
+    },
+    {
+      $project: {
+        SOwner: 1,
+        SName: 1,
+        mobile: 1,
+        address: 1,
+        Slat: 1,
+        Slong: 1,
+        Uid: 1,
+        date: 1,
+        ward: '$wards.ward',
+        Wardid: 1,
+        zoneId: '$wards.zoneId',
+        zone: '$zones.zone',
+        streetId: '$streets._id',
+        streetname: '$streets.street',
+        locality: '$streets.locality',
+        _id: 1,
+        displaycount: 1,
+        Pincode: 1,
+        salesmanOrderStatus: 1,
+      },
+    },
+    { $match: { salesmanOrderStatus: { $nin: ['Assign'] } } },
+  ]);
 };
 
 const getUsersWith_skiped = async (id) => {
@@ -4009,4 +4199,5 @@ module.exports = {
   pincode,
   getnotAssignsalesmanOrderShops_lat,
   my_assigned_shops,
+  getnotAssignShops_without_Page,
 };

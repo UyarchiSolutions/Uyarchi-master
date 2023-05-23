@@ -49,7 +49,20 @@ const getnotAssignShops = catchAsync(async (req, res) => {
     req.params.uid,
     req.params.date,
     req.params.dastatus,
-    req.params.pincode,
+    req.params.pincode
+  );
+  res.send(data);
+});
+
+const getnotAssignShops_without_Page = catchAsync(async (req, res) => {
+  const data = await telecallerService.getnotAssignShops_without_Page(
+    req.params.zone,
+    req.params.id,
+    req.params.street,
+    req.params.uid,
+    req.params.date,
+    req.params.dastatus,
+    req.params.pincode
   );
   res.send(data);
 });
@@ -127,7 +140,7 @@ const getsalesmanOrderAssignedShops = catchAsync(async (req, res) => {
 });
 
 const get_my_shops_assigned = catchAsync(async (req, res) => {
-  const data = await telecallerService.my_assigned_shops(req.userId,req.query);
+  const data = await telecallerService.my_assigned_shops(req.userId, req.query);
   res.send(data);
 });
 
@@ -198,10 +211,7 @@ const pincode = catchAsync(async (req, res) => {
 });
 
 const getnotAssignsalesmanOrderShops_lat = catchAsync(async (req, res) => {
-  const data = await telecallerService.getnotAssignsalesmanOrderShops_lat(
-    req.params.zone,
-    req.params.id,
-  );
+  const data = await telecallerService.getnotAssignsalesmanOrderShops_lat(req.params.zone, req.params.id);
   res.send(data);
 });
 module.exports = {
@@ -239,5 +249,6 @@ module.exports = {
   history_Assign_Reaasign_datasalesman,
   pincode,
   getnotAssignsalesmanOrderShops_lat,
-  get_my_shops_assigned
+  get_my_shops_assigned,
+  getnotAssignShops_without_Page,
 };

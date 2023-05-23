@@ -2176,7 +2176,7 @@ const my_assigned_shops = async (id, query) => {
         street: '$b2bshopclonesData.streets.street',
         SOwner: '$b2bshopclonesData.SOwner',
         address: '$b2bshopclonesData.address',
-        shoptype: '$b2bshopclonesData.shoptype',
+        shoptype: '$b2bshopclonesData.shoptype.shopList',
         salesmanOrderteamId: 1,
         fromsalesmanOrderteamId: 1,
         shopId: 1,

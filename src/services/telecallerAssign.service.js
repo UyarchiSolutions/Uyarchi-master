@@ -2486,7 +2486,7 @@ const getnotAssignsalesmanOrderShops = async (zone, id, street, page, limit, uid
   if (dastatus != 'null') {
     dastatusMatch = [{ daStatus: { $eq: dastatus } }];
   } else {
-    dastatusMatch = [{ active: { $eq: true } }];
+    dastatusMatch = [{ daStatus: { $nin: ['Cannot Spot the Shop', 'Not Interested'] } }];
   }
   if (pincode != 'null') {
     pincodeMatch = [{ Pincode: { $eq: parseInt(pincode) } }];

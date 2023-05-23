@@ -1071,7 +1071,7 @@ const getnotAssignShops_without_Page = async (zone, id, street, uid, date, dasta
     },
     { $match: { salesmanOrderStatus: { $nin: ['Assign'] } } },
   ]);
-  return data
+  return data;
 };
 
 const getUsersWith_skiped = async (id) => {
@@ -2280,8 +2280,8 @@ const getsalesmanOrderAssignedShops = async (id) => {
 };
 
 const my_assigned_shops = async (id, query) => {
+  console.log(id);
   let page = query.page == '' || query.page == null || query.page == null ? 0 : parseInt(query.page);
-  console.log(page);
   const name = await Users.findById(id);
   let data = await SalesmanOrderShop.aggregate([
     {
@@ -4164,6 +4164,37 @@ const getnotAssignsalesmanOrderShops_lat = async (zone, id) => {
   ]);
   return { data: data };
 };
+
+const AssignedData_By_users = async (userId) => {
+  let values = await SalesmanOrderShop.aggregate([
+    {
+      $match: {
+        fromsalesmanOrderteamId: userId,
+      },
+    },
+    {
+      $lookup: {
+        from: 'b2bshopclones',
+        localField: 'shopId',
+        foreignField: '_id',
+        pipeline: [{ $match: { new_re_approve: { $eq: null } } }],
+        as: 'shops',
+      },
+    },
+    {
+      $unwind: '$shops',
+    },
+  ]);
+
+  let approved = await Shop.aggregate([
+    {
+      $match: { customer_final_USER: userId },
+    },
+  ]);
+
+  return { AssignOnly: values, approvedOnly: approved };
+};
+
 module.exports = {
   createtelecallerAssignReassign,
   getAllTelecallerHead,
@@ -4201,4 +4232,5 @@ module.exports = {
   getnotAssignsalesmanOrderShops_lat,
   my_assigned_shops,
   getnotAssignShops_without_Page,
+  AssignedData_By_users,
 };

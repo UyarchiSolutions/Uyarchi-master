@@ -68,4 +68,5 @@ router
 router
   .route('/getnotAssignShops/without/Page/map/view/:zone/:id/:street/:uid/:date/:dastatus/:pincode')
   .get(telecallerAssignController.getnotAssignShops_without_Page);
+router.route('/AssignedData/By/users/:id').get(telecallerAssignController.AssignedData_By_users);
 module.exports = router;

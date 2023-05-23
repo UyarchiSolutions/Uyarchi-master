@@ -66,6 +66,6 @@ router
   .route('/getnotAssignsalesmanOrderShops_lat/:zone/:id')
   .get(telecallerAssignController.getnotAssignsalesmanOrderShops_lat);
 router
-  .route('/getnotAssignShops/without/Page/:zone/:id/:street/:uid/:date/:dastatus/:pincode')
+  .route('/getnotAssignShops/without/Page/map/view/:zone/:id/:street/:uid/:date/:dastatus/:pincode')
   .get(telecallerAssignController.getnotAssignShops_without_Page);
 module.exports = router;

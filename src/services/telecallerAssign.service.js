@@ -1071,6 +1071,7 @@ const getnotAssignShops_without_Page = async (zone, id, street, uid, date, dasta
     },
     { $match: { salesmanOrderStatus: { $nin: ['Assign'] } } },
   ]);
+  return data
 };
 
 const getUsersWith_skiped = async (id) => {

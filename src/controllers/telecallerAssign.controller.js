@@ -206,7 +206,7 @@ const history_Assign_Reaasign_datasalesman = catchAsync(async (req, res) => {
 });
 
 const pincode = catchAsync(async (req, res) => {
-  const data = await telecallerService.pincode();
+  const data = await telecallerService.pincode(req.query);
   res.send(data);
 });
 

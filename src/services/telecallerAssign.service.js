@@ -4027,24 +4027,35 @@ const history_Assign_Reaasign_datasalesman = async (id) => {
   return { data, name: name.name };
 };
 
-const pincode = async () => {
+const pincode = async (query) => {
+  const { status } = query;
+  let statusMatch = { daStatus: { $nin: ['Not Interested', 'Cannot Spot the Shop'] } };
+  if (status != 'null') {
+    statusMatch = { daStatus: status };
+  } else {
+    statusMatch;
+  }
   return await Shop.aggregate([
-    // {
-    //   $sort:{pincode:{$ne:null}}
-    // },
     {
       $match: {
-        $and: [{ status: { $eq: 'data_approved' } }, { Pincode: { $ne: null } }],
+        $and: [{ status: { $eq: 'data_approved' } }, { Pincode: { $ne: null } }, statusMatch],
       },
     },
+    // {
+    //   $group: {
+    //     _id: { Pincode: '$Pincode' },
+    //   },
+    // },
     {
       $group: {
-        _id: { Pincode: '$Pincode' },
+        _id: '$Pincode',
+        count: { $sum: 1 },
       },
     },
     {
       $project: {
-        Pincode: '$_id.Pincode',
+        Pincode: '$_id',
+        count: '$count',
       },
     },
   ]);

@@ -220,6 +220,11 @@ const AssignedData_By_users = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const getLat_long = catchAsync(async (req, res) => {
+  const data = await telecallerService.getLat_long(req.body);
+  res.send(data);
+});
+
 module.exports = {
   createtelecallerAssignReassign,
   getAllTelecallerHead,
@@ -258,4 +263,5 @@ module.exports = {
   get_my_shops_assigned,
   getnotAssignShops_without_Page,
   AssignedData_By_users,
+  getLat_long,
 };

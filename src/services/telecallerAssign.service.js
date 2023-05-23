@@ -6,6 +6,7 @@ const { Telecallerteam, TelecallerShop, SalesmanOrder, SalesmanOrderShop } = req
 const { Users } = require('../models/B2Busers.model');
 const Ward = require('../models/ward.model');
 const moment = require('moment');
+const e = require('express');
 const createtelecallerAssignReassign = async (body) => {
   let { arr } = body;
   let serverdate = moment().format('yyy-MM-DD');
@@ -4209,6 +4210,16 @@ const AssignedData_By_users = async (userId) => {
   return { AssignOnly: values, approvedOnly: approved };
 };
 
+const getLat_long = async (body) => {
+  const { arr } = body;
+  let arr1 = [];
+  arr.forEach(async (e) => {
+    let findByIdDatas = await Shop.findById(e);
+    arr1.push(findByIdDatas);
+  });
+  return arr1;
+};
+
 module.exports = {
   createtelecallerAssignReassign,
   getAllTelecallerHead,
@@ -4247,4 +4258,5 @@ module.exports = {
   my_assigned_shops,
   getnotAssignShops_without_Page,
   AssignedData_By_users,
+  getLat_long,
 };

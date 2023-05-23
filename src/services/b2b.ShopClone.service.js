@@ -1898,7 +1898,12 @@ const update_reverification_custmer = async (id, bodyData, userID) => {
     { _id: id },
     {
       ...bodyData,
-      ...{ customer_final_date: serverdate, customer_final_USER: userID, customer_final_CREATED: moment(), customer_final_TIME: servertime },
+      ...{
+        customer_final_date: serverdate,
+        customer_final_USER: userID,
+        customer_final_CREATED: moment(),
+        customer_final_TIME: servertime,
+      },
     },
     { new: true }
   );
@@ -3800,7 +3805,8 @@ const get_userbased_dataapproved = async (query) => {
   for (let i = 0; i < shops.length; i++) {
     if (shops[i].distanceStatus != 'updated') {
       let response = await axios.get(
-        `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${shops[i].Slat + ',' + shops[i].Slong
+        `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${
+          shops[i].Slat + ',' + shops[i].Slong
         }&destinations=${shops[i].da_lot + ',' + shops[i].da_long}&key=AIzaSyC4f71KgUy-ocpdfmadcNPy-wrVks4YSdY`
       );
       if (i == 0) {
@@ -3808,7 +3814,8 @@ const get_userbased_dataapproved = async (query) => {
         long = shops[i].Slong;
       }
       let dis = await axios.get(
-        `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${lat + ',' + long}&destinations=${shops[i].Slat + ',' + shops[i].Slong
+        `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${lat + ',' + long}&destinations=${
+          shops[i].Slat + ',' + shops[i].Slong
         }&key=AIzaSyC4f71KgUy-ocpdfmadcNPy-wrVks4YSdY`
       );
       // console.log(dis.data.rows[0].elements[0].distance.text);
@@ -5439,24 +5446,39 @@ const getShopByPincode = async (pincode) => {
 };
 
 const finalmap_view = async (req) => {
-
-  let status = { $or: [{ $and: [{ daStatus: { $in: ['ModeratelyInterested', 'HighlyInterested'] } }] }, { $and: [{ Re_daStatus: { $in: ['ModeratelyInterested', 'HighlyInterested'] } }] }] }
+  let status = {
+    $or: [
+      { $and: [{ daStatus: { $in: ['ModeratelyInterested', 'HighlyInterested'] } }] },
+      { $and: [{ Re_daStatus: { $in: ['ModeratelyInterested', 'HighlyInterested'] } }] },
+    ],
+  };
   if (req.query.status != '' && req.query.status != null && req.query.status != 'null') {
-    status = { $or: [{ $and: [{ daStatus: { $eq: req.query.status } }] }, { $and: [{ Re_daStatus: { $eq: req.query.status } }] }] }
+    status = {
+      $or: [{ $and: [{ daStatus: { $eq: req.query.status } }] }, { $and: [{ Re_daStatus: { $eq: req.query.status } }] }],
+    };
   }
-  if (req.query.pincode != null && req.query.pincode != '' && req.query.pincode != "null" && req.query.status != '' && req.query.status != null && req.query.status != 'null') {
-    req.query.pincode = parseInt(req.query.pincode)
-    console.log(req.query.pincode, 2)
+  if (
+    req.query.pincode != null &&
+    req.query.pincode != '' &&
+    req.query.pincode != 'null' &&
+    req.query.status != '' &&
+    req.query.status != null &&
+    req.query.status != 'null'
+  ) {
+    req.query.pincode = parseInt(req.query.pincode);
+    console.log(req.query.pincode, 2);
 
-    status = { $or: [{ $and: [{ daStatus: { $eq: req.query.status } }, { Pincode: { $eq: req.query.pincode } }] }, { $and: [{ Re_daStatus: { $eq: req.query.status } }, { Re_Pincode: { $eq: req.query.pincode } }] }] }
+    status = {
+      $or: [
+        { $and: [{ daStatus: { $eq: req.query.status } }, { Pincode: { $eq: req.query.pincode } }] },
+        { $and: [{ Re_daStatus: { $eq: req.query.status } }, { Re_Pincode: { $eq: req.query.pincode } }] },
+      ],
+    };
+  } else if (req.query.pincode != null && req.query.pincode != '' && req.query.pincode != 'null') {
+    req.query.pincode = parseInt(req.query.pincode);
+    console.log(req.query.pincode, 3);
 
-  }
-  else if (req.query.pincode != null && req.query.pincode != '' && req.query.pincode != "null") {
-    req.query.pincode = parseInt(req.query.pincode)
-    console.log(req.query.pincode, 3)
-
-    status = { $or: [{ Pincode: { $eq: req.query.pincode } }, { Re_Pincode: { $eq: req.query.pincode } }] }
-
+    status = { $or: [{ Pincode: { $eq: req.query.pincode } }, { Re_Pincode: { $eq: req.query.pincode } }] };
   }
   let shop = await Shop.aggregate([
     {
@@ -5466,10 +5488,13 @@ const finalmap_view = async (req) => {
   return shop;
 };
 
-
 const finalmap_view_picode = async (req) => {
-
-  let status = { $or: [{ $and: [{ daStatus: { $in: ['ModeratelyInterested', 'HighlyInterested'] } }] }, { $and: [{ Re_daStatus: { $in: ['ModeratelyInterested', 'HighlyInterested'] } }] }] }
+  let status = {
+    $or: [
+      { $and: [{ daStatus: { $in: ['ModeratelyInterested', 'HighlyInterested'] } }] },
+      { $and: [{ Re_daStatus: { $in: ['ModeratelyInterested', 'HighlyInterested'] } }] },
+    ],
+  };
   let shop = await Shop.aggregate([
     {
       $match: { $and: [status] },
@@ -5497,13 +5522,42 @@ const finalmap_view_picode = async (req) => {
   return shop;
 };
 
-
 const get_final_customer_shops = async (req) => {
-
   let page = req.query.page == '' || req.query.page == null ? 0 : parseInt(req.query.page);
+  // match for filters
+
+  let salesMatch = { active: true };
+  let dateMatch = { active: true };
+  let statusMatch = { active: true };
+  if (req.query.sales && req.query.sales != 'null') {
+    salesMatch = { customer_final_USER: req.query.sales };
+  }
+
+  if (req.query.date1 && req.query.date2) {
+    if (req.query.date1 == 'null' || req.query.date2 == 'null') {
+      statusMatch;
+    } else {
+      console.log(req.query.date1, req.query.date2);
+      dateMatch = { customer_final_date: { $gte: req.query.date1, $lte: req.query.date2 } };
+    }
+  }
+  if (req.query.status && req.query.status != 'null') {
+    if (req.query.status == '1') {
+      statusMatch = { new_re_approve: 'Recognised & Fence Sitter' };
+    } else if (req.query.status == '2') {
+      statusMatch = { new_re_approve: 'Recognised & Interested' };
+    } else if (req.query.status == '3') {
+      statusMatch = { new_re_approve: 'Shop Closed/ Shifted' };
+    } else {
+      statusMatch;
+    }
+  }
+
   let shop = await Shop.aggregate([
     {
-      $match: { $and: [{ new_re_approve: { $ne: null } }] },
+      $match: {
+        $and: [{ new_re_approve: { $ne: null } }, salesMatch, dateMatch, statusMatch],
+      },
     },
     {
       $lookup: {
@@ -5614,9 +5668,9 @@ const get_final_customer_shops = async (req) => {
         new_re_lat: 1,
         new_re_approve: 1,
         Pincode: 1,
-        customer_final_approved_user: "$b2busers.name",
+        customer_final_approved_user: '$b2busers.name',
         da_long: 1,
-        da_lot: 1
+        da_lot: 1,
       },
     },
 
@@ -5632,7 +5686,19 @@ const get_final_customer_shops = async (req) => {
     { $limit: 10 },
   ]);
   return { shop, next: next.length != 0 };
-}
+};
+
+const getSalesExecutives = async () => {
+  let values = await Users.aggregate([
+    {
+      $match: {
+        userRole: 'fb0dd028-c608-4caa-a7a9-b700389a098d',
+      },
+    },
+  ]);
+  return values;
+};
+
 module.exports = {
   createShopClone,
   getAllShopClone,
@@ -5704,5 +5770,6 @@ module.exports = {
   finalmap_view,
   finalmap_view_picode,
   update_reverification_custmer,
-  get_final_customer_shops
+  get_final_customer_shops,
+  getSalesExecutives,
 };

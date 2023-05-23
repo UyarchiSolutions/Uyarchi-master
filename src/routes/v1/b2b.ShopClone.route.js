@@ -124,4 +124,5 @@ router.route('/getShopByPincode/:pincode').get(b2bShopCloneController.getShopByP
 router.route('/get/final/map/view').get(b2bShopCloneController.finalmap_view);
 router.route('/get/final/map/view/pincode').get(b2bShopCloneController.finalmap_view_picode);
 router.route('/get/final/customer/final').get(b2bShopCloneController.get_final_customer_shops);
+router.route('/getSales/Executives').get(b2bShopCloneController.getSalesExecutives);
 module.exports = router;

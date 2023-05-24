@@ -34,6 +34,7 @@ router.route('/create/post').post(SellerAuth, uploadimage.fields([{ name: 'galle
 router.route('/create/post/teaser').post(upload, Ecomcontroller.create_post_teaser);
 router.route('/get/all/post').get(SellerAuth, Ecomcontroller.get_all_post);
 router.route('/get/all/post').get(SellerAuth, Ecomcontroller.get_all_post);
+router.route('/get/all/post/pagenation').get(SellerAuth, Ecomcontroller.get_all_Post_with_page);
 router.route('/get/stream/post/view').get(shopverify, Ecomcontroller.get_post_view);
 
 

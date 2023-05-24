@@ -2390,7 +2390,7 @@ const my_assigned_shops = async (id, query) => {
         new_re_approve: '$b2bshopclonesData.new_re_approve',
       },
     },
-    { $sort: { new_re_approve: -1 } },
+    { $sort: { new_re_approve: 1 } },
     {
       $skip: 10 * parseInt(page),
     },

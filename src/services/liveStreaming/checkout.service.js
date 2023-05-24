@@ -17,6 +17,7 @@ const Dates = require('../Date.serive');
 const paymentgatway = require('../paymentgatway.service');
 
 const addTocart = async (req) => {
+  // console.log("asdas",2321312)
   let shopId = req.shopId;
   let streamId = req.body.streamId;
   let cart = req.body.cart;
@@ -50,6 +51,8 @@ const addTocart = async (req) => {
       cartproduct.add_to_cart = a.add_to_cart;
       cartproduct.save();
     })
+    // console.log(value)
+
     value.save();
   }
   return value;

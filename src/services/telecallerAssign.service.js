@@ -6,6 +6,7 @@ const { Telecallerteam, TelecallerShop, SalesmanOrder, SalesmanOrderShop } = req
 const { Users } = require('../models/B2Busers.model');
 const Ward = require('../models/ward.model');
 const moment = require('moment');
+const e = require('express');
 const createtelecallerAssignReassign = async (body) => {
   let { arr } = body;
   let serverdate = moment().format('yyy-MM-DD');
@@ -2172,6 +2173,9 @@ const getsalesmanOrderAssignedShops = async (id) => {
         reAssignTime: 1,
         date: 1,
         time: 1,
+        lat: '$b2bshopclonesData.da_lot',
+        long: '$b2bshopclonesData.da_long',
+        verifyStatus: '$b2bshopclonesData.new_re_approve',
         _id: 1,
       },
     },
@@ -2487,7 +2491,7 @@ const getnotAssignsalesmanOrderShops = async (zone, id, street, page, limit, uid
   if (dastatus != 'null') {
     dastatusMatch = [{ daStatus: { $eq: dastatus } }];
   } else {
-    dastatusMatch = [{ active: { $eq: true } }];
+    dastatusMatch = [{ daStatus: { $nin: ['Cannot Spot the Shop', 'Not Interested'] } }];
   }
   if (pincode != 'null') {
     pincodeMatch = [{ Pincode: { $eq: parseInt(pincode) } }];
@@ -4028,24 +4032,35 @@ const history_Assign_Reaasign_datasalesman = async (id) => {
   return { data, name: name.name };
 };
 
-const pincode = async () => {
+const pincode = async (query) => {
+  const { status } = query;
+  let statusMatch = { daStatus: { $nin: ['Not Interested', 'Cannot Spot the Shop'] } };
+  if (status != 'null') {
+    statusMatch = { daStatus: status };
+  } else {
+    statusMatch;
+  }
   return await Shop.aggregate([
-    // {
-    //   $sort:{pincode:{$ne:null}}
-    // },
     {
       $match: {
-        $and: [{ status: { $eq: 'data_approved' } }, { Pincode: { $ne: null } }],
+        $and: [{ status: { $eq: 'data_approved' } }, { Pincode: { $ne: null } }, statusMatch],
       },
     },
+    // {
+    //   $group: {
+    //     _id: { Pincode: '$Pincode' },
+    //   },
+    // },
     {
       $group: {
-        _id: { Pincode: '$Pincode' },
+        _id: '$Pincode',
+        count: { $sum: 1 },
       },
     },
     {
       $project: {
-        Pincode: '$_id.Pincode',
+        Pincode: '$_id',
+        count: '$count',
       },
     },
   ]);
@@ -4196,6 +4211,16 @@ const AssignedData_By_users = async (userId) => {
   return { AssignOnly: values, approvedOnly: approved };
 };
 
+const getLat_long = async (body) => {
+  const { arr } = body;
+  let arr1 = [];
+  arr.forEach(async (e) => {
+    let findByIdDatas = await Shop.findById(e);
+    arr1.push(findByIdDatas);
+  });
+  return arr1;
+};
+
 module.exports = {
   createtelecallerAssignReassign,
   getAllTelecallerHead,
@@ -4234,4 +4259,5 @@ module.exports = {
   my_assigned_shops,
   getnotAssignShops_without_Page,
   AssignedData_By_users,
+  getLat_long,
 };

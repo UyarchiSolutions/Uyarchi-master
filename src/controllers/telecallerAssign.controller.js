@@ -206,7 +206,7 @@ const history_Assign_Reaasign_datasalesman = catchAsync(async (req, res) => {
 });
 
 const pincode = catchAsync(async (req, res) => {
-  const data = await telecallerService.pincode();
+  const data = await telecallerService.pincode(req.query);
   res.send(data);
 });
 
@@ -217,6 +217,11 @@ const getnotAssignsalesmanOrderShops_lat = catchAsync(async (req, res) => {
 
 const AssignedData_By_users = catchAsync(async (req, res) => {
   const data = await telecallerService.AssignedData_By_users(req.params.id);
+  res.send(data);
+});
+
+const getLat_long = catchAsync(async (req, res) => {
+  const data = await telecallerService.getLat_long(req.body);
   res.send(data);
 });
 
@@ -258,4 +263,5 @@ module.exports = {
   get_my_shops_assigned,
   getnotAssignShops_without_Page,
   AssignedData_By_users,
+  getLat_long,
 };

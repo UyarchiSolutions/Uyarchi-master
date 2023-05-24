@@ -2286,6 +2286,12 @@ const getsalesmanOrderAssignedShops = async (id) => {
 const my_assigned_shops = async (id, query) => {
   console.log(id);
   let page = query.page == '' || query.page == null || query.page == null ? 0 : parseInt(query.page);
+
+  let serach = { active: true }
+
+  if (query.search != null && query.search != 'null' && query.search != '') {
+    serach = { $or: [{ SName: { $regex: query.search, $options: 'i' } }, { mobile: { $regex: query.search, $options: 'i' } }] }
+  }
   const name = await Users.findById(id);
   let data = await SalesmanOrderShop.aggregate([
     {
@@ -2313,6 +2319,7 @@ const my_assigned_shops = async (id, query) => {
         localField: 'shopId',
         foreignField: '_id',
         pipeline: [
+          { $match: { $and: [serach] } },
           {
             $lookup: {
               from: 'streets',
@@ -2390,6 +2397,7 @@ const my_assigned_shops = async (id, query) => {
         new_re_approve: '$b2bshopclonesData.new_re_approve',
       },
     },
+    { $sort: { new_re_approve: 1 } },
     {
       $skip: 10 * parseInt(page),
     },

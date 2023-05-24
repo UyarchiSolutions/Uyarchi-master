@@ -4212,12 +4212,12 @@ const AssignedData_By_users = async (userId) => {
 
 const getLat_long = async (body) => {
   const { arr } = body;
-  let arr1 = [];
-  arr.forEach(async (e) => {
-    let findByIdDatas = await Shop.findById(e);
-    arr1.push(findByIdDatas);
-  });
-  return arr1;
+  let findByIdDatas = await Shop.aggregate([
+    {
+      $match: { $and: [{ _id: { $in: arr } }] },
+    },
+  ]);
+  return findByIdDatas;
 };
 
 module.exports = {

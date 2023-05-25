@@ -2074,9 +2074,10 @@ const createsalesmanOrderShop = async (body) => {
     arr.forEach(async (e) => {
       let data = await SalesmanOrderShop.find({
         salesmanOrderteamId: body.salesmanOrderteamId,
-        shopId: e.shopId,
+        shopId: e,
         status: { $in: ['Assign', 'tempReassign'] },
       });
+      console.log(data)
       data.forEach(async (f) => {
         await Shop.findByIdAndUpdate({ _id: f.shopId }, { salesmanOrderStatus: body.status }, { new: true });
         await SalesmanOrderShop.findByIdAndUpdate(

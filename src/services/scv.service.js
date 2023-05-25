@@ -273,8 +273,7 @@ const RegisterScv = async (body) => {
   if (!findOnebyNumber) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Mobile Number Invalid');
   }
-  const data = await Customer.create(body);
-  return Otp(data);
+  return Otp(findOnebyNumber);
 };
 
 const Otpverify = async (body) => {

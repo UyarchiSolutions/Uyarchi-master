@@ -4202,7 +4202,7 @@ const AssignedData_By_users = async (userId) => {
         from: 'b2bshopclones',
         localField: 'shopId',
         foreignField: '_id',
-        pipeline: [{ $match: { salesmanOrderStatus: { $eq: null } } }],
+        pipeline: [{ $match: { salesmanOrderStatus: { $eq: 'Assign' } } }],
         as: 'shops',
       },
     },

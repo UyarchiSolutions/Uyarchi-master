@@ -70,4 +70,5 @@ router
   .get(telecallerAssignController.getnotAssignShops_without_Page);
 router.route('/AssignedData/By/users/:id').get(telecallerAssignController.AssignedData_By_users);
 router.route('/getLat/long').post(telecallerAssignController.getLat_long);
+router.route('/tempAssign').post(telecallerAssignController.tempAssign);
 module.exports = router;

@@ -4256,6 +4256,27 @@ const getLat_long = async (body) => {
   return findByIdDatas;
 };
 
+const tempAssign = async (body) => {
+  const { arr, fromsalesman, tosalesman, status } = body;
+  let today = moment().format('dd-MM-YYYY');
+  let time = moment().format('hh:mm a');
+  arr.forEach(async (e) => {
+    await Shop.findByIdAndUpdate({ _id: e }, { salesmanOrderStatus: status }, { new: true });
+
+    await SalesmanOrderShop.findOneAndUpdate(
+      {
+        salesmanOrderteamId: fromsalesman,
+        shopId: e,
+        status: { $in: ['Assign', 'tempReassign'] },
+      },
+
+      { reAssignDate: today, reAssignTime: time, status: body.status, salesmanOrderteamId: tosalesman },
+      { new: true }
+    );
+  });
+  return 'works';
+};
+
 module.exports = {
   createtelecallerAssignReassign,
   getAllTelecallerHead,
@@ -4295,4 +4316,5 @@ module.exports = {
   getnotAssignShops_without_Page,
   AssignedData_By_users,
   getLat_long,
+  tempAssign,
 };

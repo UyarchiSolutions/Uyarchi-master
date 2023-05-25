@@ -180,7 +180,12 @@ const addPartner = catchAsync(async (req, res) => {
       data.idProof = path + req.files.idProof[0].filename;
     }
   }
-  await data.save()
+  await data.save();
+  res.send(data);
+});
+
+const getPartners = catchAsync(async (req, res) => {
+  const data = await scvService.getPartners();
   res.send(data);
 });
 
@@ -208,4 +213,5 @@ module.exports = {
   LoginCustomer,
   getScvCartbyId,
   addPartner,
+  getPartners,
 };

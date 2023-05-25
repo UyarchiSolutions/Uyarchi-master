@@ -31,4 +31,5 @@ router.route('/RegisterScv').post(scvController.RegisterScv);
 router.route('/Otpverify').post(scvController.Otpverify);
 router.route('/setPassword').post(scvController.setPassword);
 router.route('/LoginCustomer').post(scvController.LoginCustomer);
+router.route('/addPartner').post(scvController.addPartner);
 module.exports = router;

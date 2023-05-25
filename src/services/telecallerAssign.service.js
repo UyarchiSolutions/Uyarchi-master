@@ -2074,7 +2074,7 @@ const createsalesmanOrderShop = async (body) => {
     arr.forEach(async (e) => {
       let data = await SalesmanOrderShop.find({
         salesmanOrderteamId: body.salesmanOrderteamId,
-        shopId: e,
+        shopId: e.shopId,
         status: { $in: ['Assign', 'tempReassign'] },
       });
       data.forEach(async (f) => {
@@ -2287,10 +2287,12 @@ const my_assigned_shops = async (id, query) => {
   console.log(id);
   let page = query.page == '' || query.page == null || query.page == null ? 0 : parseInt(query.page);
 
-  let serach = { active: true }
+  let serach = { active: true };
 
   if (query.search != null && query.search != 'null' && query.search != '') {
-    serach = { $or: [{ SName: { $regex: query.search, $options: 'i' } }, { mobile: { $regex: query.search, $options: 'i' } }] }
+    serach = {
+      $or: [{ SName: { $regex: query.search, $options: 'i' } }, { mobile: { $regex: query.search, $options: 'i' } }],
+    };
   }
   const name = await Users.findById(id);
   let data = await SalesmanOrderShop.aggregate([

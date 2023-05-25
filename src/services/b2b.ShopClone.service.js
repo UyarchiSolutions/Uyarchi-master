@@ -5548,6 +5548,10 @@ const get_final_customer_shops = async (req) => {
       statusMatch = { new_re_approve: 'Recognised & Interested' };
     } else if (req.query.status == '3') {
       statusMatch = { new_re_approve: 'Shop Closed/ Shifted' };
+    } else if (req.query.status == '4') {
+      statusMatch = { new_re_approve: 'Cannot Spot the shop' };
+    } else if (req.query.status == '5') {
+      statusMatch = { new_re_approve: 'Not interested' };
     } else {
       statusMatch;
     }

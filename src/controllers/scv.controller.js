@@ -168,6 +168,22 @@ const getScvCartbyId = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const addPartner = catchAsync(async (req, res) => {
+  const data = await scvService.addPartner(req.body);
+  if (req.files != null) {
+    if (req.files.addressProof != null) {
+      let path = 'images/partnerAddress/';
+      data.addressProof = path + req.files.addressProof[0].filename;
+    }
+    if (req.files.idProof != null) {
+      let path = 'images/partnerAddress/';
+      data.idProof = path + req.files.idProof[0].filename;
+    }
+  }
+  await data.save()
+  res.send(data);
+});
+
 module.exports = {
   createSCV,
   getSCVById,
@@ -191,4 +207,5 @@ module.exports = {
   setPassword,
   LoginCustomer,
   getScvCartbyId,
+  addPartner,
 };

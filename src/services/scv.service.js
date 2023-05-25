@@ -302,6 +302,11 @@ const LoginCustomer = async (body) => {
   return findByemail;
 };
 
+const addPartner = async (body) => {
+  const createPartner = await Customer.create(body);
+  return createPartner;
+};
+
 module.exports = {
   createSCV,
   getAllSCV,
@@ -325,4 +330,5 @@ module.exports = {
   Otpverify,
   setPassword,
   LoginCustomer,
+  addPartner,
 };

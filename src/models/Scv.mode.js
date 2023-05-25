@@ -127,6 +127,21 @@ const scvCustomerSchema = new mongoose.Schema(
     password: {
       type: String,
     },
+    address: {
+      type: String,
+    },
+    landMark: {
+      type: String,
+    },
+    pinCode: {
+      type: String,
+    },
+    addressProof: {
+      type: String,
+    },
+    idProof: {
+      type: String,
+    },
     active: {
       type: Boolean,
       default: true,

@@ -180,6 +180,7 @@ const addPartner = catchAsync(async (req, res) => {
       data.idProof = path + req.files.idProof[0].filename;
     }
   }
+  await data.save()
   res.send(data);
 });
 

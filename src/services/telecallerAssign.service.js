@@ -2070,6 +2070,31 @@ const createsalesmanOrderShop = async (body) => {
         createdTime: creat1,
       });
     });
+  } else if(body.status == 'tempReassign'){
+    arr.forEach(async (e) => {
+      let data = await SalesmanOrderShop.find({
+        salesmanOrderteamId: body.salesmanOrderteamId,
+        shopId: e,
+        status: { $in: ['Assign', 'tempReassign'] },
+      });
+      console.log(data)
+      data.forEach(async (f) => {
+        await Shop.findByIdAndUpdate({ _id: f.shopId }, { salesmanOrderStatus: body.status }, { new: true });
+        await SalesmanOrderShop.findByIdAndUpdate(
+          { _id: f._id },
+          {
+            salesmanOrderteamId: f.salesmanOrderteamId,
+            fromsalesmanOrderteamId: f.fromsalesmanOrderteamId,
+            shopId: f.shopId,
+            status: body.status,
+            reAssignDate: serverdate,
+            reAssignTime: time,
+          },
+          { new: true }
+        );
+      });
+    });
+
   } else {
     arr.forEach(async (e) => {
       let data = await SalesmanOrderShop.find({

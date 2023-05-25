@@ -3325,7 +3325,7 @@ const createsalesmantemperaryAssigndata = async (body) => {
   let serverdate = moment().format('YYYY-MM-DD');
   let time = moment().format('hh:mm a');
   body.arr.forEach(async (e) => {
-    let data = await SalesmanOrderShop.find({ shopId: e, status: { $in: ['Assign', 'tempReassign'] } });
+    let data = await SalesmanOrderShop.find({ _id: e, status: { $in: ['Assign', 'tempReassign'] } });
     // console.log(data);
     if (data.length != 0) {
       data.forEach(async (f) => {

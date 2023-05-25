@@ -3325,7 +3325,7 @@ const createsalesmantemperaryAssigndata = async (body) => {
   let serverdate = moment().format('YYYY-MM-DD');
   let time = moment().format('hh:mm a');
   body.arr.forEach(async (e) => {
-    let data = await SalesmanOrderShop.find({ shopId: e, status: { $in: ['Assign', 'tempReassign'] } });
+    let data = await SalesmanOrderShop.find({ _id: e, status: { $in: ['Assign', 'tempReassign'] } });
     // console.log(data);
     if (data.length != 0) {
       data.forEach(async (f) => {
@@ -4194,7 +4194,7 @@ const AssignedData_By_users = async (userId) => {
   let values = await SalesmanOrderShop.aggregate([
     {
       $match: {
-        fromsalesmanOrderteamId: userId,
+        salesmanOrderteamId: userId,
       },
     },
     {
@@ -4202,7 +4202,7 @@ const AssignedData_By_users = async (userId) => {
         from: 'b2bshopclones',
         localField: 'shopId',
         foreignField: '_id',
-        pipeline: [{ $match: { new_re_approve: { $eq: null } } }],
+        pipeline: [{ $match: { salesmanOrderStatus: { $in: ['Assign', 'tempReassign'] } } }],
         as: 'shops',
       },
     },

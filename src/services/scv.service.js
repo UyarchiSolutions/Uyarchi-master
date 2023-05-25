@@ -269,6 +269,10 @@ const SCVAttendance = async () => {
 
 const RegisterScv = async (body) => {
   const { userName, email, mobileNumber } = body;
+  const findOnebyNumber = await Customer.findOne({ mobileNumber: mobileNumber });
+  if (!findOnebyNumber) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Mobile Number Invalid');
+  }
   const data = await Customer.create(body);
   return Otp(data);
 };
@@ -307,6 +311,11 @@ const addPartner = async (body) => {
   return createPartner;
 };
 
+const getPartners = async () => {
+  const getAllPartner = await Customer.find();
+  return getAllPartner;
+};
+
 module.exports = {
   createSCV,
   getAllSCV,
@@ -331,4 +340,5 @@ module.exports = {
   setPassword,
   LoginCustomer,
   addPartner,
+  getPartners
 };

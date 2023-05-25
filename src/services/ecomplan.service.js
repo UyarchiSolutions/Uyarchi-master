@@ -4899,7 +4899,9 @@ const getall_homeage_streams = async (req) => {
         status: 1,
         streamrequestposts_count: 1,
         streamEnd_Time: 1,
-        productArray: "$streamrequestposts.productTitle"
+        productArray: "$streamrequestposts.productTitle",
+        image: 1,
+        teaser: 1,
 
       },
     },
@@ -5119,7 +5121,9 @@ const getall_homeage_streams = async (req) => {
         streamrequestposts_count: 1,
         streamEnd_Time: 1,
         productArray: "$streamrequestposts.productTitle",
-        // streamrequestposts:"$streamrequestposts"
+        // streamrequestposts:"$streamrequestposts",
+        image: 1,
+        teaser: 1,
 
       },
     },

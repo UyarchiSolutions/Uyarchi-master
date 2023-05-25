@@ -2,6 +2,7 @@ const express = require('express');
 const scvController = require('../../controllers/scv.controller');
 const partnerCart = require('../../middlewares/partner.cart');
 const scvAdress = require('../../middlewares/scvAdress');
+const partnerAddress = require('../../middlewares/partnerProof')
 
 const router = express.Router();
 router.route('/').post(scvController.createSCV).get(scvController.gertAllSCV);
@@ -31,5 +32,5 @@ router.route('/RegisterScv').post(scvController.RegisterScv);
 router.route('/Otpverify').post(scvController.Otpverify);
 router.route('/setPassword').post(scvController.setPassword);
 router.route('/LoginCustomer').post(scvController.LoginCustomer);
-router.route('/addPartner').post(scvController.addPartner);
+router.route('/addPartner').post(partnerAddress.fields([{ name: 'addressProof' }, { name: 'idProof' }]), scvController.addPartner);
 module.exports = router;

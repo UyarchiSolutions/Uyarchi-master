@@ -4194,7 +4194,7 @@ const AssignedData_By_users = async (userId) => {
   let values = await SalesmanOrderShop.aggregate([
     {
       $match: {
-        fromsalesmanOrderteamId: userId,
+        salesmanOrderteamId: userId,
       },
     },
     {
@@ -4202,7 +4202,7 @@ const AssignedData_By_users = async (userId) => {
         from: 'b2bshopclones',
         localField: 'shopId',
         foreignField: '_id',
-        pipeline: [{ $match: { salesmanOrderStatus: { $eq: 'Assign' } } }],
+        pipeline: [{ $match: { salesmanOrderStatus: { $in: ['Assign', 'tempReassign'] } } }],
         as: 'shops',
       },
     },

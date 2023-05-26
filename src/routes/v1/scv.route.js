@@ -12,7 +12,7 @@ router.route('/DisableCart/:id').get(scvController.DisableCart);
 router.route('/getScvCarts/All').get(PartnerAuth, scvController.getScvCarts);
 router.route('/updateSCVCart/:id').put(partnerCart.single('image'), scvController.updateSCVCart);
 router.route('/getcarts/Allocation').get(PartnerAuth, scvController.getcarts_Allocation);
-router.route('/getAvailable/Scv').get(scvController.getAvailable_Scv);
+router.route('/getAvailable/Scv').get(PartnerAuth, scvController.getAvailable_Scv);
 router.route('/Cart/Allocation/Scv').post(scvController.AllocationScv_ToCart);
 router.route('/getScvCartbyId/:id').get(scvController.getScvCartbyId);
 // SCV Manage

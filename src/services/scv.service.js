@@ -189,10 +189,11 @@ const getcarts_Allocation = async (userId) => {
   return { unAllocatedCart: unAllocatedCart, AllocatedSCV: AllocatedSCV };
 };
 
-const getAvailable_Scv = async () => {
+const getAvailable_Scv = async (userId) => {
   const data = await Scv.aggregate([
     {
       $match: {
+        createdBy: userId,
         workingStatus: { $in: ['no'] },
       },
     },

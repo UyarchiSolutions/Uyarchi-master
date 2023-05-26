@@ -148,7 +148,8 @@ const getcarts_Allocation = catchAsync(async (req, res) => {
 });
 
 const getAvailable_Scv = catchAsync(async (req, res) => {
-  const data = await scvService.getAvailable_Scv();
+  let userId = req.userId;
+  const data = await scvService.getAvailable_Scv(userId);
   res.send(data);
 });
 

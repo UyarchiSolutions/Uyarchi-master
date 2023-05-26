@@ -9,7 +9,7 @@ router.route('/').post(scvController.createSCV).get(scvController.gertAllSCV);
 router.route('/:scvId').get(scvController.getSCVById).put(scvController.updateSCV).delete(scvController.deletescv);
 router.route('/Add/cart').post(PartnerAuth, partnerCart.single('image'), scvController.AddCart);
 router.route('/DisableCart/:id').get(scvController.DisableCart);
-router.route('/getScvCarts/All').get(scvController.getScvCarts);
+router.route('/getScvCarts/All').get(PartnerAuth, scvController.getScvCarts);
 router.route('/updateSCVCart/:id').put(partnerCart.single('image'), scvController.updateSCVCart);
 router.route('/getcarts/Allocation').get(scvController.getcarts_Allocation);
 router.route('/getAvailable/Scv').get(scvController.getAvailable_Scv);

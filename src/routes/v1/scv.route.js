@@ -26,7 +26,7 @@ router
   .put(scvAdress.fields([{ name: 'addreddProof' }, { name: 'idProof' }]), scvController.updateSCVByPartner);
 router.route('/getAllScv/ByPartners').get(PartnerAuth, scvController.getAllScvByPartners);
 router.route('/active/Inactive/Scv/ByPartner/:id').put(scvController.active_Inactive_Scv_ByPartner);
-router.route('/SCV/Attendance/mange').get(scvController.SCVAttendance);
+router.route('/SCV/Attendance/mange').get(PartnerAuth, scvController.SCVAttendance);
 
 // scv
 router.route('/RegisterScv').post(scvController.RegisterScv);

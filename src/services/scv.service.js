@@ -229,8 +229,9 @@ const AllocationScv_ToCart = async (body) => {
   return getCart;
 };
 
-const SCVAttendance = async () => {
+const SCVAttendance = async (userId) => {
   let values = await Scv.aggregate([
+    { $match: { createdBy: userId } },
     {
       $lookup: {
         from: 'scvcarts',

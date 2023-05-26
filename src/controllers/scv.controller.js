@@ -158,7 +158,8 @@ const AllocationScv_ToCart = catchAsync(async (req, res) => {
 });
 
 const SCVAttendance = catchAsync(async (req, res) => {
-  const data = await scvService.SCVAttendance();
+  let userId = req.userId;
+  const data = await scvService.SCVAttendance(userId);
   res.send(data);
 });
 

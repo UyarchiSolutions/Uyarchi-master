@@ -98,6 +98,9 @@ const SCVSchema = new mongoose.Schema(
     createdBy: {
       type: String,
     },
+    gender: {
+      type: String,
+    },
     attendance: {
       type: Boolean,
       default: true,

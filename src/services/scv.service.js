@@ -276,6 +276,11 @@ const RegisterScv = async (body) => {
   return Otp(findOnebyNumber);
 };
 
+const create_scv = async (body) => {
+  const scvCreate = await Scv.create(body);
+  return scvCreate;
+};
+
 const Otpverify = async (body) => {
   let findByOTP = await CustomerOTP.findOne({ OTP: body.OTP, active: true });
   if (!findByOTP) {
@@ -365,4 +370,5 @@ module.exports = {
   getPartners,
   updatePartner,
   enable_disable_partner,
+  create_scv,
 };

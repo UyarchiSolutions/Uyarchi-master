@@ -112,6 +112,22 @@ const updateSCVByPartner = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const create_scv = catchAsync(async (req, res) => {
+  const data = await scvService.create_scv(req.body);
+  if (req.files != null) {
+    if (req.files.addreddProof != null) {
+      let path = 'images/scvAdress/';
+      data.addreddProof = path + req.files.addreddProof[0].filename;
+    }
+    if (req.files.idProof != null) {
+      let path = 'images/scvAdress/';
+      data.idProof = path + req.files.idProof[0].filename;
+    }
+  }
+  await data.save();
+  res.send(data);
+});
+
 const active_Inactive_Scv_ByPartner = catchAsync(async (req, res) => {
   const data = await scvService.active_Inactive_Scv_ByPartner(req.params.id, req.body);
   res.send(data);
@@ -237,4 +253,5 @@ module.exports = {
   getPartners,
   updatePartner,
   enable_disable_partner,
+  create_scv,
 };

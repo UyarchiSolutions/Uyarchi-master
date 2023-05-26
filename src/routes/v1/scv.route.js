@@ -20,6 +20,7 @@ router.route('/getScvCartbyId/:id').get(scvController.getScvCartbyId);
 router
   .route('/add/scv/byPartner')
   .post(scvAdress.fields([{ name: 'addreddProof' }, { name: 'idProof' }]), scvController.addScv);
+router.route('/createScv').post(scvAdress.fields([{ name: 'addreddProof' }, { name: 'idProof' }]), scvController.create_scv);
 router
   .route('/update/scv/byPartner/:id')
   .put(scvAdress.fields([{ name: 'addreddProof' }, { name: 'idProof' }]), scvController.updateSCVByPartner);
@@ -40,4 +41,5 @@ router
   .put(partnerAddress.fields([{ name: 'addressProof' }, { name: 'idProof' }]), scvController.updatePartner);
 router.route('/getPartners/all').get(scvController.getPartners);
 router.route('/enable/disable/partner/:id').put(scvController.enable_disable_partner);
+
 module.exports = router;

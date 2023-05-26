@@ -81,8 +81,9 @@ const updateSCVCart = async (id, body) => {
 
 // Manage Scv Flow
 
-const addScv = async (body) => {
-  let values = await Scv.create(body);
+const addScv = async (body, userId) => {
+  const data = { ...body, ...{ createdBy: userId } };
+  let values = await Scv.create(data);
   return values;
 };
 

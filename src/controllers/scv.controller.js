@@ -82,7 +82,8 @@ const updateSCVCart = catchAsync(async (req, res) => {
 });
 
 const addScv = catchAsync(async (req, res) => {
-  const data = await scvService.addScv(req.body);
+  let userId = req.userId;
+  const data = await scvService.addScv(req.body, userId);
   if (req.files != null) {
     if (req.files.addreddProof != null) {
       let path = 'images/scvAdress/';

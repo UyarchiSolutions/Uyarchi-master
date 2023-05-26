@@ -19,7 +19,7 @@ router.route('/getScvCartbyId/:id').get(scvController.getScvCartbyId);
 
 router
   .route('/add/scv/byPartner')
-  .post(scvAdress.fields([{ name: 'addreddProof' }, { name: 'idProof' }]), scvController.addScv);
+  .post(PartnerAuth, scvAdress.fields([{ name: 'addreddProof' }, { name: 'idProof' }]), scvController.addScv);
 router.route('/createScv').post(scvAdress.fields([{ name: 'addreddProof' }, { name: 'idProof' }]), scvController.create_scv);
 router
   .route('/update/scv/byPartner/:id')

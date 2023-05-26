@@ -35,5 +35,8 @@ router.route('/LoginCustomer').post(scvController.LoginCustomer);
 router
   .route('/addPartner')
   .post(partnerAddress.fields([{ name: 'addressProof' }, { name: 'idProof' }]), scvController.addPartner);
+router
+  .route('/updatePartner/:id')
+  .put(partnerAddress.fields([{ name: 'addressProof' }, { name: 'idProof' }]), scvController.updatePartner);
 router.route('/getPartners/all').get(scvController.getPartners);
 module.exports = router;

@@ -315,6 +315,15 @@ const getPartners = async () => {
   return getAllPartner;
 };
 
+const updatePartner = async (id, body) => {
+  let getExistPartner = await Customer.findById(id);
+  if (!getExistPartner) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Partner Not Found');
+  }
+  getExistPartner = await Customer.findByIdAndUpdate({ _id: id }, body, { new: true });
+  return getExistPartner;
+};
+
 module.exports = {
   createSCV,
   getAllSCV,
@@ -339,5 +348,6 @@ module.exports = {
   setPassword,
   LoginCustomer,
   addPartner,
-  getPartners
+  getPartners,
+  updatePartner,
 };

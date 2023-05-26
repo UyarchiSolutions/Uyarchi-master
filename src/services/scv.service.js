@@ -116,11 +116,12 @@ const getAllScvByPartners = async () => {
 
 // Cart Allocation Flow
 
-const getcarts_Allocation = async () => {
+const getcarts_Allocation = async (userId) => {
   const unAllocatedCart = await ScvCart.aggregate([
     {
       $match: {
         active: true,
+        partnerId: userId,
         closeStock: { $nin: ['activated'] },
       },
     },
@@ -130,6 +131,7 @@ const getcarts_Allocation = async () => {
     {
       $match: {
         active: true,
+        partnerId: userId,
         closeStock: { $in: ['activated'] },
       },
     },

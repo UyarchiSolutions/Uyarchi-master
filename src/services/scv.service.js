@@ -109,8 +109,8 @@ const active_Inactive_Scv_ByPartner = async (id, body) => {
   return values;
 };
 
-const getAllScvByPartners = async () => {
-  const values = await Scv.find();
+const getAllScvByPartners = async (userId) => {
+  const values = await Scv.find({ createdBy: userId });
   return values;
 };
 

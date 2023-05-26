@@ -135,7 +135,8 @@ const active_Inactive_Scv_ByPartner = catchAsync(async (req, res) => {
 });
 
 const getAllScvByPartners = catchAsync(async (req, res) => {
-  const data = await scvService.getAllScvByPartners();
+  const userId = req.userId;
+  const data = await scvService.getAllScvByPartners(userId);
   res.send(data);
 });
 

@@ -24,7 +24,7 @@ router.route('/createScv').post(scvAdress.fields([{ name: 'addreddProof' }, { na
 router
   .route('/update/scv/byPartner/:id')
   .put(scvAdress.fields([{ name: 'addreddProof' }, { name: 'idProof' }]), scvController.updateSCVByPartner);
-router.route('/getAllScv/ByPartners').get(scvController.getAllScvByPartners);
+router.route('/getAllScv/ByPartners').get(PartnerAuth, scvController.getAllScvByPartners);
 router.route('/active/Inactive/Scv/ByPartner/:id').put(scvController.active_Inactive_Scv_ByPartner);
 router.route('/SCV/Attendance/mange').get(scvController.SCVAttendance);
 

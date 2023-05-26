@@ -4281,7 +4281,7 @@ const getLat_long = async (body) => {
 
 const tempAssign = async (body) => {
   const { arr, fromsalesman, tosalesman, status } = body;
-  let today = moment().format('dd-MM-YYYY');
+  let today = moment().format('DD-MM-YYYY');
   let time = moment().format('hh:mm a');
   arr.forEach(async (e) => {
     await Shop.findByIdAndUpdate({ _id: e }, { salesmanOrderStatus: status }, { new: true });

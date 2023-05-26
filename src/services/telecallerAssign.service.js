@@ -3436,6 +3436,14 @@ const getAssignData_by_SalesmanOrders = async (page) => {
       },
     },
     {
+      $lookup: {
+        from: 'b2bshopclones',
+        localField: '_id',
+        foreignField: 'customer_final_USER',
+        as: 'shops',
+      },
+    },
+    {
       $project: {
         _id: 1,
         name: 1,
@@ -3446,6 +3454,7 @@ const getAssignData_by_SalesmanOrders = async (page) => {
         no_of_shop: { $size: '$salesMan' },
         no_of_temperory: { $size: '$salesMandata' },
         temp: { $size: '$salesmanshopsdata' },
+        verifiedCount: { $size: '$shops' },
       },
     },
     { $skip: 10 * page },

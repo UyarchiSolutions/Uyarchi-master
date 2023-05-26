@@ -2325,7 +2325,7 @@ const my_assigned_shops = async (id, query) => {
       $match: {
         $or: [
           { $and: [{ fromsalesmanOrderteamId: { $eq: id } }, { status: { $eq: 'Assign' } }] },
-          // { $and: [{ salesmanOrderteamId: { $eq: id } }, { status: { $eq: 'tempReassign' } }] },
+          { $and: [{ salesmanOrderteamId: { $eq: id } }, { status: { $eq: 'tempReassign' } }] },
         ],
       },
     },

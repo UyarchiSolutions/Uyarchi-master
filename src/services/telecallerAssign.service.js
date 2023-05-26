@@ -4246,9 +4246,23 @@ const AssignedData_By_users = async (userId) => {
     },
   ]);
 
-  let approved = await Shop.aggregate([
+  let approved = await SalesmanOrderShop.aggregate([
     {
-      $match: { customer_final_USER: userId },
+      $match: {
+        salesmanOrderteamId: userId,
+      },
+    },
+    {
+      $lookup: {
+        from: 'b2bshopclones',
+        localField: 'shopId',
+        foreignField: '_id',
+        pipeline: [{ $match: { new_re_approve: { $ne: null } } }],
+        as: 'shops',
+      },
+    },
+    {
+      $unwind: '$shops',
     },
   ]);
 

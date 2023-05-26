@@ -39,4 +39,5 @@ router
   .route('/updatePartner/:id')
   .put(partnerAddress.fields([{ name: 'addressProof' }, { name: 'idProof' }]), scvController.updatePartner);
 router.route('/getPartners/all').get(scvController.getPartners);
+router.route('/enable/disable/partner/:id').put(scvController.enable_disable_partner);
 module.exports = router;

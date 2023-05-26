@@ -324,6 +324,20 @@ const updatePartner = async (id, body) => {
   return getExistPartner;
 };
 
+const enable_disable_partner = async (id, body) => {
+  const { status } = body;
+  let findpartner = await Customer.findById(id);
+  if (!findpartner) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Partner Not Found');
+  }
+  if (status == 'enable') {
+    findpartner = await Customer.findByIdAndUpdate({ _id: id }, { active: true }, { new: true });
+  } else {
+    findpartner = await Customer.findByIdAndUpdate({ _id: id }, { active: false }, { new: true });
+  }
+  return findpartner;
+};
+
 module.exports = {
   createSCV,
   getAllSCV,
@@ -350,4 +364,5 @@ module.exports = {
   addPartner,
   getPartners,
   updatePartner,
+  enable_disable_partner,
 };

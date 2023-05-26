@@ -47,6 +47,9 @@ const CartSchema = new mongoose.Schema(
     latestUpdateStock: {
       type: String,
     },
+    partnerId: {
+      type: String,
+    },
     active: {
       type: Boolean,
       default: true,

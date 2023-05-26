@@ -49,7 +49,8 @@ const deletescv = catchAsync(async (req, res) => {
 });
 
 const AddCart = catchAsync(async (req, res) => {
-  const data = await scvService.AddCart(req.body);
+  const userId = req.userId;
+  const data = await scvService.AddCart(req.body, userId);
   let path = '';
   path = 'images/partnercart/';
   if (req.file != null) {

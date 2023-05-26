@@ -3,11 +3,11 @@ const scvController = require('../../controllers/scv.controller');
 const partnerCart = require('../../middlewares/partner.cart');
 const scvAdress = require('../../middlewares/scvAdress');
 const partnerAddress = require('../../middlewares/partnerProof');
-
+const PartnerAuth = require('../../controllers/PartnerAuth.controller');
 const router = express.Router();
 router.route('/').post(scvController.createSCV).get(scvController.gertAllSCV);
 router.route('/:scvId').get(scvController.getSCVById).put(scvController.updateSCV).delete(scvController.deletescv);
-router.route('/Add/cart').post(partnerCart.single('image'), scvController.AddCart);
+router.route('/Add/cart').post(PartnerAuth, partnerCart.single('image'), scvController.AddCart);
 router.route('/DisableCart/:id').get(scvController.DisableCart);
 router.route('/getScvCarts/All').get(scvController.getScvCarts);
 router.route('/updateSCVCart/:id').put(partnerCart.single('image'), scvController.updateSCVCart);

@@ -416,7 +416,7 @@ const getAllscv_Admin = async () => {
 const scv_attendance = async (body) => {
   const { type, scvId } = body;
   let times = moment().toDate();
-  let todayDate = moment().format('dd-MM-YYYY');
+  let todayDate = moment().format('DD-MM-YYYY');
   if (type == 'IN') {
     let findTodayRecord = await ScvAttendance.findOne({ scvId: scvId, date: todayDate });
     await Scv.findByIdAndUpdate({ _id: scvId }, { attendance: true }, { new: true });

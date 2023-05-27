@@ -418,6 +418,7 @@ const scv_attendance = async (body) => {
   let todayDate = moment().format('dd-MM-YYYY');
   if (type == 'IN') {
     let findTodayRecord = await ScvAttendance.findOne({ scvId: scvId, date: todayDate });
+    await Scv.findByIdAndUpdate({ _id: scvId }, { attendance: true }, { new: true });
     if (!findTodayRecord) {
       await ScvAttendance.create({ startTime: times, date: todayDate, scvId: scvId, history: { $push: { start: times } } });
     } else {
@@ -440,6 +441,7 @@ const scv_attendance = async (body) => {
       { totalSeconds: TotalSecond, history: { $push: { end: times } } },
       { new: true }
     );
+    await Scv.findByIdAndUpdate({ _id: scvId }, { attendance: false }, { new: true });
   }
   return { Message: 'Attendance updated......' };
 };

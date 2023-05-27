@@ -6,6 +6,7 @@ const { ScvCart, Scv, Customer, ScvAttendance } = require('../models/Scv.mode');
 const CustomerOTP = require('../models/customer.otp.model');
 const { Otp } = require('../config/customer.OTP');
 const bcrypt = require('bcrypt');
+const { start } = require('pm2');
 
 const createSCV = async (scvBody) => {
   return SCVPurchase.create(scvBody);
@@ -420,11 +421,11 @@ const scv_attendance = async (body) => {
     let findTodayRecord = await ScvAttendance.findOne({ scvId: scvId, date: todayDate });
     await Scv.findByIdAndUpdate({ _id: scvId }, { attendance: true }, { new: true });
     if (!findTodayRecord) {
-      await ScvAttendance.create({ startTime: times, date: todayDate, scvId: scvId, history: { $push: { start: times } } });
+      await ScvAttendance.create({ startTime: times, date: todayDate, scvId: scvId, $push: { history: { start: times } } });
     } else {
       await ScvAttendance.findByIdAndUpdate(
         { _id: findTodayRecord._id },
-        { startTime: times, history: { $push: { start: times } } },
+        { startTime: times, $push: { history: { start: times } } },
         { new: true }
       );
     }
@@ -438,7 +439,7 @@ const scv_attendance = async (body) => {
     let TotalSecond = existSecond + secondsDiff;
     await ScvAttendance.findByIdAndUpdate(
       { _id: findTodayRecord._id },
-      { totalSeconds: TotalSecond, history: { $push: { end: times } } },
+      { totalSeconds: TotalSecond, $push: { history: { endTime: endTime } } },
       { new: true }
     );
     await Scv.findByIdAndUpdate({ _id: scvId }, { attendance: false }, { new: true });

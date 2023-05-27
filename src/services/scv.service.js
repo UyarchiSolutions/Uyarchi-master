@@ -401,7 +401,7 @@ const get_Un_Assigned_Scv = async () => {
 
 const allocateSCV_To_Partner_ByAdmin = async (body) => {
   let { arr, partnerId } = body;
-  arr.foreEach(async (e) => {
+  arr.forEach(async (e) => {
     await Scv.findByIdAndUpdate({ _id: e }, { createdBy: partnerId }, { new: true });
   });
   return { message: 'Allocated SuccessFully' };

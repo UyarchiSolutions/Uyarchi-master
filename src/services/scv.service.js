@@ -407,6 +407,11 @@ const allocateSCV_To_Partner_ByAdmin = async (body) => {
   return { message: 'Allocated SuccessFully' };
 };
 
+const getAllscv_Admin = async () => {
+  const scv = await Scv.find();
+  return scv;
+};
+
 module.exports = {
   createSCV,
   getAllSCV,
@@ -437,4 +442,5 @@ module.exports = {
   create_scv,
   get_Un_Assigned_Scv,
   allocateSCV_To_Partner_ByAdmin,
+  getAllscv_Admin,
 };

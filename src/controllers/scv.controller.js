@@ -242,6 +242,11 @@ const allocateSCV_To_Partner_ByAdmin = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const getAllscv_Admin = catchAsync(async (req, res) => {
+  const data = await ScvPartnerService.getAllscv_Admin();
+  res.send(data);
+});
+
 module.exports = {
   createSCV,
   getSCVById,
@@ -272,4 +277,5 @@ module.exports = {
   create_scv,
   get_Un_Assigned_Scv,
   allocateSCV_To_Partner_ByAdmin,
+  getAllscv_Admin,
 };

@@ -2,7 +2,7 @@ const httpStatus = require('http-status');
 const { SCVPurchase } = require('../models');
 const ApiError = require('../utils/ApiError');
 const moment = require('moment');
-const { ScvCart, Scv, Customer } = require('../models/Scv.mode');
+const { ScvCart, Scv, Customer, ScvAttendance } = require('../models/Scv.mode');
 const CustomerOTP = require('../models/customer.otp.model');
 const { Otp } = require('../config/customer.OTP');
 const bcrypt = require('bcrypt');
@@ -412,6 +412,38 @@ const getAllscv_Admin = async () => {
   return scv;
 };
 
+const scv_attendance = async (body) => {
+  const { type, scvId } = body;
+  let times = moment().toDate();
+  let todayDate = moment().format('dd-MM-YYYY');
+  if (type == 'IN') {
+    let findTodayRecord = await ScvAttendance.findOne({ scvId: scvId, date: todayDate });
+    if (!findTodayRecord) {
+      await ScvAttendance.create({ startTime: times, date: todayDate, scvId: scvId, history: { $push: { start: times } } });
+    } else {
+      await ScvAttendance.findByIdAndUpdate(
+        { _id: findTodayRecord._id },
+        { startTime: times, history: { $push: { start: times } } },
+        { new: true }
+      );
+    }
+  }
+  if (type == 'OUT') {
+    let findTodayRecord = await ScvAttendance.findOne({ scvId: scvId, date: todayDate });
+    let existSecond = findTodayRecord.totalSeconds;
+    let startTime = moment(findTodayRecord.startTime);
+    let endTime = moment(times);
+    const secondsDiff = endTime.diff(startTime, 'seconds');
+    let TotalSecond = existSecond + secondsDiff;
+    await ScvAttendance.findByIdAndUpdate(
+      { _id: findTodayRecord._id },
+      { totalSeconds: TotalSecond, history: { $push: { end: times } } },
+      { new: true }
+    );
+  }
+  return { Message: 'Attendance updated......' };
+};
+
 module.exports = {
   createSCV,
   getAllSCV,
@@ -443,4 +475,5 @@ module.exports = {
   get_Un_Assigned_Scv,
   allocateSCV_To_Partner_ByAdmin,
   getAllscv_Admin,
+  scv_attendance,
 };

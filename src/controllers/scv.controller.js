@@ -232,6 +232,11 @@ const enable_disable_partner = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const get_Un_Assigned_Scv = catchAsync(async (req, res) => {
+  const data = await ScvPartnerService.get_Un_Assigned_Scv();
+  res.send(data);
+});
+
 module.exports = {
   createSCV,
   getSCVById,
@@ -260,4 +265,5 @@ module.exports = {
   updatePartner,
   enable_disable_partner,
   create_scv,
+  get_Un_Assigned_Scv,
 };

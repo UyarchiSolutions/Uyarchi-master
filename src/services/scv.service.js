@@ -349,6 +349,17 @@ const enable_disable_partner = async (id, body) => {
   return findpartner;
 };
 
+const get_Un_Assigned_Scv = async () => {
+  let values = await Scv.aggregate([
+    {
+      $match: {
+        createdBy: { $eq: null },
+      },
+    },
+  ]);
+  return values;
+};
+
 module.exports = {
   createSCV,
   getAllSCV,
@@ -377,4 +388,5 @@ module.exports = {
   updatePartner,
   enable_disable_partner,
   create_scv,
+  get_Un_Assigned_Scv,
 };

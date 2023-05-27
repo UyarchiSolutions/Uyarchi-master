@@ -42,5 +42,6 @@ router
 router.route('/getPartners/all').get(scvController.getPartners);
 router.route('/enable/disable/partner/:id').put(scvController.enable_disable_partner);
 router.route('/get_Un/Assigned_Scv').get(scvController.get_Un_Assigned_Scv);
+router.route('/allocateSCV_To_Partner/ByAdmin').post(scvController.allocateSCV_To_Partner_ByAdmin);
 
 module.exports = router;

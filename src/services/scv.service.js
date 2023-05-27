@@ -399,6 +399,14 @@ const get_Un_Assigned_Scv = async () => {
   return values;
 };
 
+const allocateSCV_To_Partner_ByAdmin = async (body) => {
+  let { arr, partnerId } = body;
+  arr.foreEach(async (e) => {
+    await Scv.findByIdAndUpdate({ _id: e }, { createdBy: partnerId }, { new: true });
+  });
+  return { message: 'Allocated SuccessFully' };
+};
+
 module.exports = {
   createSCV,
   getAllSCV,
@@ -428,4 +436,5 @@ module.exports = {
   enable_disable_partner,
   create_scv,
   get_Un_Assigned_Scv,
+  allocateSCV_To_Partner_ByAdmin,
 };

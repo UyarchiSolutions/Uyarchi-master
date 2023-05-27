@@ -346,6 +346,7 @@ const getPartners = async () => {
         idProof: 1,
         password: 1,
         scvCount: { $size: '$scv' },
+        scv: '$scv',
       },
     },
   ]);

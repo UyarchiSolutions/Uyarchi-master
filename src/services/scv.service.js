@@ -322,7 +322,33 @@ const addPartner = async (body) => {
 };
 
 const getPartners = async () => {
-  const getAllPartner = await Customer.find();
+  const getAllPartner = await Customer.aggregate([
+    {
+      $lookup: {
+        from: 'scvs',
+        localField: '_id',
+        foreignField: 'createdBy',
+        as: 'scv',
+      },
+    },
+    {
+      $project: {
+        active: 1,
+        userName: 1,
+        email: 1,
+        mobileNumber: 1,
+        address: 1,
+        pinCode: 1,
+        landMark: 1,
+        createdAt: 1,
+        updatedAt: 1,
+        addressProof: 1,
+        idProof: 1,
+        password: 1,
+        scvCount: { $size: '$scv' },
+      },
+    },
+  ]);
   return getAllPartner;
 };
 

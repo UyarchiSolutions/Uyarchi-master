@@ -232,7 +232,7 @@ const AllocationScv_ToCart = async (body) => {
 
 const SCVAttendance = async (userId) => {
   let values = await Scv.aggregate([
-    { $match: { createdBy: userId } },
+    { $match: { createdBy: userId, active: true } },
     {
       $lookup: {
         from: 'scvcarts',
@@ -276,8 +276,12 @@ const SCVAttendance = async (userId) => {
 const RegisterScv = async (body) => {
   const { userName, email, mobileNumber } = body;
   const findOnebyNumber = await Customer.findOne({ mobileNumber: mobileNumber });
+
   if (!findOnebyNumber) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Mobile Number Invalid');
+  }
+  if (findOnebyNumber.active != true) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'User was Disabled by Admin');
   }
   return Otp(findOnebyNumber);
 };
@@ -313,6 +317,9 @@ const LoginCustomer = async (body) => {
   if (!findByemail || !(await findByemail.isPasswordMatch(password))) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect email or password');
   }
+  if (findByemail.active != false) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Partner Disabled By Admin');
+  }
   return findByemail;
 };
 
@@ -324,10 +331,14 @@ const addPartner = async (body) => {
 const getPartners = async () => {
   const getAllPartner = await Customer.aggregate([
     {
+      $match: { active: true },
+    },
+    {
       $lookup: {
         from: 'scvs',
         localField: '_id',
         foreignField: 'createdBy',
+        pipeline: [{ $match: { active: true } }],
         as: 'scv',
       },
     },
@@ -381,6 +392,7 @@ const get_Un_Assigned_Scv = async () => {
     {
       $match: {
         createdBy: { $eq: null },
+        active: true,
       },
     },
   ]);

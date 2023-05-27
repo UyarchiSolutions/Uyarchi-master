@@ -317,7 +317,7 @@ const LoginCustomer = async (body) => {
   if (!findByemail || !(await findByemail.isPasswordMatch(password))) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect email or password');
   }
-  if (findByemail.active != false) {
+  if (findByemail.active == false) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Partner Disabled By Admin');
   }
   return findByemail;

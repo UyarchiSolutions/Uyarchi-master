@@ -421,14 +421,10 @@ const scv_attendance = async (body) => {
     let findTodayRecord = await ScvAttendance.findOne({ scvId: scvId, date: todayDate });
     await Scv.findByIdAndUpdate({ _id: scvId }, { attendance: true }, { new: true });
     if (!findTodayRecord) {
-      let data = await ScvAttendance.create({ startTime: times, date: todayDate, scvId: scvId });
+      await ScvAttendance.create({ startTime: times, date: todayDate, scvId: scvId });
       // await ScvAttendance.findByIdAndUpdate({ _id: data._id }, { $push: { history: { start: times } } }, { new: true });
     } else {
-      await ScvAttendance.findByIdAndUpdate(
-        { _id: findTodayRecord._id },
-        { startTime: times, $push: { history: { start: times } } },
-        { new: true }
-      );
+      await ScvAttendance.findByIdAndUpdate({ _id: findTodayRecord._id }, { startTime: times }, { new: true });
     }
   }
   if (type == 'OUT') {

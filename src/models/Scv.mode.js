@@ -47,6 +47,9 @@ const CartSchema = new mongoose.Schema(
     latestUpdateStock: {
       type: String,
     },
+    partnerId: {
+      type: String,
+    },
     active: {
       type: Boolean,
       default: true,
@@ -98,9 +101,12 @@ const SCVSchema = new mongoose.Schema(
     createdBy: {
       type: String,
     },
+    gender: {
+      type: String,
+    },
     attendance: {
       type: Boolean,
-      default: true,
+      default: false,
     },
   },
   { timestamps: true }
@@ -170,8 +176,40 @@ scvCustomerSchema.pre('save', async function (next) {
 
 const Customer = mongoose.model('scvcustomer', scvCustomerSchema);
 
+const SCVAttendanceSchema = new mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
+    },
+    date: {
+      type: String,
+    },
+    history: {
+      type: Array,
+    },
+    startTime: {
+      type: String,
+    },
+    scvId: {
+      type: String,
+    },
+    totalSeconds: {
+      type: Number,
+      default: 0,
+    },
+    cartId: {
+      type: String,
+    },
+  },
+  { timestamps: true }
+);
+
+const ScvAttendance = mongoose.model('scvattendance', SCVAttendanceSchema);
+
 module.exports = {
   ScvCart,
   Scv,
   Customer,
+  ScvAttendance,
 };

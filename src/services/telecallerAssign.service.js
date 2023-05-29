@@ -2070,13 +2070,38 @@ const createsalesmanOrderShop = async (body) => {
         createdTime: creat1,
       });
     });
+  } else if (body.status == 'tempReassign') {
+    arr.forEach(async (e) => {
+      let data = await SalesmanOrderShop.find({
+        salesmanOrderteamId: body.salesmanOrderteamId,
+        shopId: e,
+        status: { $in: ['Assign', 'tempReassign'] },
+      });
+      console.log(data);
+      data.forEach(async (f) => {
+        await Shop.findByIdAndUpdate({ _id: f.shopId }, { salesmanOrderStatus: body.status }, { new: true });
+        await SalesmanOrderShop.findByIdAndUpdate(
+          { _id: f._id },
+          {
+            salesmanOrderteamId: f.salesmanOrderteamId,
+            fromsalesmanOrderteamId: f.fromsalesmanOrderteamId,
+            shopId: f.shopId,
+            status: body.status,
+            reAssignDate: serverdate,
+            reAssignTime: time,
+          },
+          { new: true }
+        );
+      });
+    });
   } else {
     arr.forEach(async (e) => {
       let data = await SalesmanOrderShop.find({
         salesmanOrderteamId: body.salesmanOrderteamId,
-        shopId: e.shopId,
+        shopId: e,
         status: { $in: ['Assign', 'tempReassign'] },
       });
+      console.log(data);
       data.forEach(async (f) => {
         await Shop.findByIdAndUpdate({ _id: f.shopId }, { salesmanOrderStatus: body.status }, { new: true });
         await SalesmanOrderShop.findByIdAndUpdate(
@@ -2300,7 +2325,7 @@ const my_assigned_shops = async (id, query) => {
       $match: {
         $or: [
           { $and: [{ fromsalesmanOrderteamId: { $eq: id } }, { status: { $eq: 'Assign' } }] },
-          // { $and: [{ salesmanOrderteamId: { $eq: id } }, { status: { $eq: 'tempReassign' } }] },
+          { $and: [{ salesmanOrderteamId: { $eq: id } }, { status: { $eq: 'tempReassign' } }] },
         ],
       },
     },
@@ -2412,7 +2437,7 @@ const my_assigned_shops = async (id, query) => {
       $match: {
         $or: [
           { $and: [{ fromsalesmanOrderteamId: { $eq: id } }, { status: { $eq: 'Assign' } }] },
-          // { $and: [{ salesmanOrderteamId: { $eq: id } }, { status: { $eq: 'tempReassign' } }] },
+          { $and: [{ salesmanOrderteamId: { $eq: id } }, { status: { $eq: 'tempReassign' } }] },
         ],
       },
     },
@@ -3411,6 +3436,14 @@ const getAssignData_by_SalesmanOrders = async (page) => {
       },
     },
     {
+      $lookup: {
+        from: 'b2bshopclones',
+        localField: '_id',
+        foreignField: 'customer_final_USER',
+        as: 'shops',
+      },
+    },
+    {
       $project: {
         _id: 1,
         name: 1,
@@ -3421,6 +3454,7 @@ const getAssignData_by_SalesmanOrders = async (page) => {
         no_of_shop: { $size: '$salesMan' },
         no_of_temperory: { $size: '$salesMandata' },
         temp: { $size: '$salesmanshopsdata' },
+        verifiedCount: { $size: '$shops' },
       },
     },
     { $skip: 10 * page },
@@ -4195,6 +4229,7 @@ const AssignedData_By_users = async (userId) => {
     {
       $match: {
         salesmanOrderteamId: userId,
+        status: { $ne: 'Reassign' },
       },
     },
     {
@@ -4202,7 +4237,7 @@ const AssignedData_By_users = async (userId) => {
         from: 'b2bshopclones',
         localField: 'shopId',
         foreignField: '_id',
-        pipeline: [{ $match: { salesmanOrderStatus: { $in: ['Assign', 'tempReassign'] } } }],
+        pipeline: [{ $match: { salesmanOrderStatus: { $in: ['Assign', 'tempReassign'] }, new_re_approve: { $eq: null } } }],
         as: 'shops',
       },
     },
@@ -4211,9 +4246,23 @@ const AssignedData_By_users = async (userId) => {
     },
   ]);
 
-  let approved = await Shop.aggregate([
+  let approved = await SalesmanOrderShop.aggregate([
     {
-      $match: { customer_final_USER: userId },
+      $match: {
+        salesmanOrderteamId: userId,
+      },
+    },
+    {
+      $lookup: {
+        from: 'b2bshopclones',
+        localField: 'shopId',
+        foreignField: '_id',
+        pipeline: [{ $match: { new_re_approve: { $ne: null } } }],
+        as: 'shops',
+      },
+    },
+    {
+      $unwind: '$shops',
     },
   ]);
 
@@ -4228,6 +4277,27 @@ const getLat_long = async (body) => {
     },
   ]);
   return findByIdDatas;
+};
+
+const tempAssign = async (body) => {
+  const { arr, fromsalesman, tosalesman, status } = body;
+  let today = moment().format('DD-MM-YYYY');
+  let time = moment().format('hh:mm a');
+  arr.forEach(async (e) => {
+    await Shop.findByIdAndUpdate({ _id: e }, { salesmanOrderStatus: status }, { new: true });
+
+    await SalesmanOrderShop.findOneAndUpdate(
+      {
+        salesmanOrderteamId: fromsalesman,
+        shopId: e,
+        status: { $in: ['Assign', 'tempReassign'] },
+      },
+
+      { reAssignDate: today, reAssignTime: time, status: body.status, salesmanOrderteamId: tosalesman },
+      { new: true }
+    );
+  });
+  return 'works';
 };
 
 module.exports = {
@@ -4269,4 +4339,5 @@ module.exports = {
   getnotAssignShops_without_Page,
   AssignedData_By_users,
   getLat_long,
+  tempAssign,
 };

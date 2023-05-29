@@ -49,7 +49,8 @@ const deletescv = catchAsync(async (req, res) => {
 });
 
 const AddCart = catchAsync(async (req, res) => {
-  const data = await scvService.AddCart(req.body);
+  const userId = req.userId;
+  const data = await scvService.AddCart(req.body, userId);
   let path = '';
   path = 'images/partnercart/';
   if (req.file != null) {
@@ -80,8 +81,14 @@ const updateSCVCart = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const cartOn = catchAsync(async (req, res) => {
+  const data = await scvService.cartOn(req.params.id, req.body);
+  res.send(data);
+});
+
 const addScv = catchAsync(async (req, res) => {
-  const data = await scvService.addScv(req.body);
+  let userId = req.userId;
+  const data = await scvService.addScv(req.body, userId);
   if (req.files != null) {
     if (req.files.addreddProof != null) {
       let path = 'images/scvAdress/';
@@ -112,23 +119,42 @@ const updateSCVByPartner = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const create_scv = catchAsync(async (req, res) => {
+  const data = await scvService.create_scv(req.body);
+  if (req.files != null) {
+    if (req.files.addreddProof != null) {
+      let path = 'images/scvAdress/';
+      data.addreddProof = path + req.files.addreddProof[0].filename;
+    }
+    if (req.files.idProof != null) {
+      let path = 'images/scvAdress/';
+      data.idProof = path + req.files.idProof[0].filename;
+    }
+  }
+  await data.save();
+  res.send(data);
+});
+
 const active_Inactive_Scv_ByPartner = catchAsync(async (req, res) => {
   const data = await scvService.active_Inactive_Scv_ByPartner(req.params.id, req.body);
   res.send(data);
 });
 
 const getAllScvByPartners = catchAsync(async (req, res) => {
-  const data = await scvService.getAllScvByPartners();
+  const userId = req.userId;
+  const data = await scvService.getAllScvByPartners(userId);
   res.send(data);
 });
 
 const getcarts_Allocation = catchAsync(async (req, res) => {
-  const data = await scvService.getcarts_Allocation();
+  let userId = req.userId;
+  const data = await scvService.getcarts_Allocation(userId);
   res.send(data);
 });
 
 const getAvailable_Scv = catchAsync(async (req, res) => {
-  const data = await scvService.getAvailable_Scv();
+  let userId = req.userId;
+  const data = await scvService.getAvailable_Scv(userId);
   res.send(data);
 });
 
@@ -138,7 +164,8 @@ const AllocationScv_ToCart = catchAsync(async (req, res) => {
 });
 
 const SCVAttendance = catchAsync(async (req, res) => {
-  const data = await scvService.SCVAttendance();
+  let userId = req.userId;
+  const data = await scvService.SCVAttendance(userId);
   res.send(data);
 });
 
@@ -189,6 +216,52 @@ const getPartners = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const updatePartner = catchAsync(async (req, res) => {
+  const data = await ScvPartnerService.updatePartner(req.params.id, req.body);
+  if (req.files != null) {
+    if (req.files.addressProof != null) {
+      let path = 'images/partnerAddress/';
+      data.addressProof = path + req.files.addressProof[0].filename;
+    }
+    if (req.files.idProof != null) {
+      let path = 'images/partnerAddress/';
+      data.idProof = path + req.files.idProof[0].filename;
+    }
+  }
+  await data.save();
+  res.send(data);
+});
+
+const enable_disable_partner = catchAsync(async (req, res) => {
+  const data = await ScvPartnerService.enable_disable_partner(req.params.id, req.body);
+  res.send(data);
+});
+
+const get_Un_Assigned_Scv = catchAsync(async (req, res) => {
+  const data = await ScvPartnerService.get_Un_Assigned_Scv();
+  res.send(data);
+});
+
+const allocateSCV_To_Partner_ByAdmin = catchAsync(async (req, res) => {
+  const data = await ScvPartnerService.allocateSCV_To_Partner_ByAdmin(req.body);
+  res.send(data);
+});
+
+const getAllscv_Admin = catchAsync(async (req, res) => {
+  const data = await ScvPartnerService.getAllscv_Admin();
+  res.send(data);
+});
+
+const scv_attendance = catchAsync(async (req, res) => {
+  const data = await ScvPartnerService.scv_attendance(req.body);
+  res.send(data);
+});
+
+const getScv_Attendance_Reports = catchAsync(async (req, res) => {
+  const data = await ScvPartnerService.getScv_Attendance_Reports(req.body);
+  res.send(data);
+});
+
 module.exports = {
   createSCV,
   getSCVById,
@@ -214,4 +287,13 @@ module.exports = {
   getScvCartbyId,
   addPartner,
   getPartners,
+  updatePartner,
+  enable_disable_partner,
+  create_scv,
+  get_Un_Assigned_Scv,
+  allocateSCV_To_Partner_ByAdmin,
+  getAllscv_Admin,
+  scv_attendance,
+  getScv_Attendance_Reports,
+  cartOn,
 };

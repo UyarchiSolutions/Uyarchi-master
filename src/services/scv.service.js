@@ -2,10 +2,11 @@ const httpStatus = require('http-status');
 const { SCVPurchase } = require('../models');
 const ApiError = require('../utils/ApiError');
 const moment = require('moment');
-const { ScvCart, Scv, Customer } = require('../models/Scv.mode');
+const { ScvCart, Scv, Customer, ScvAttendance } = require('../models/Scv.mode');
 const CustomerOTP = require('../models/customer.otp.model');
 const { Otp } = require('../config/customer.OTP');
 const bcrypt = require('bcrypt');
+const { start } = require('pm2');
 
 const createSCV = async (scvBody) => {
   return SCVPurchase.create(scvBody);
@@ -50,8 +51,9 @@ const deleteSCVById = async (scvId) => {
 
 // Scv Partner Flow
 
-const AddCart = async (body) => {
-  let values = await ScvCart.create(body);
+const AddCart = async (body, userId) => {
+  const data = { ...body, ...{ partnerId: userId } };
+  let values = await ScvCart.create(data);
   return values;
 };
 
@@ -78,10 +80,71 @@ const updateSCVCart = async (id, body) => {
   return values;
 };
 
+const cartOn = async (id, body) => {
+  let today = moment().format('DD-MM-YYYY');
+  console.log(today);
+  let value = await ScvCart.findById(id);
+  if (!value) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Cart Not Available');
+  }
+  let values = await ScvCart.aggregate([
+    {
+      $match: {
+        _id: id,
+      },
+    },
+    {
+      $lookup: {
+        from: 'scvs',
+        localField: 'allocatedScv',
+        foreignField: '_id',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'scvattendances',
+              localField: '_id',
+              foreignField: 'scvId',
+              pipeline: [{ $match: { date: today } }],
+              as: 'attendance',
+            },
+          },
+          {
+            $unwind: {
+              preserveNullAndEmptyArrays: true,
+              path: '$attendance',
+            },
+          },
+        ],
+        as: 'scv',
+      },
+    },
+    {
+      $unwind: {
+        path: '$scv',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $project: {
+        scvAttendance: '$scv.attendance.date',
+      },
+    },
+  ]);
+
+  let scvAttendance = values[0];
+  if (scvAttendance.scvAttendance == today) {
+    value = await ScvCart.findByIdAndUpdate({ _id: id }, body, { new: true });
+  } else {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Scv Attendance Not On Today');
+  }
+  return value;
+};
+
 // Manage Scv Flow
 
-const addScv = async (body) => {
-  let values = await Scv.create(body);
+const addScv = async (body, userId) => {
+  const data = { ...body, ...{ createdBy: userId } };
+  let values = await Scv.create(data);
   return values;
 };
 
@@ -108,18 +171,19 @@ const active_Inactive_Scv_ByPartner = async (id, body) => {
   return values;
 };
 
-const getAllScvByPartners = async () => {
-  const values = await Scv.find();
+const getAllScvByPartners = async (userId) => {
+  const values = await Scv.find({ createdBy: userId });
   return values;
 };
 
 // Cart Allocation Flow
 
-const getcarts_Allocation = async () => {
+const getcarts_Allocation = async (userId) => {
   const unAllocatedCart = await ScvCart.aggregate([
     {
       $match: {
         active: true,
+        partnerId: userId,
         closeStock: { $nin: ['activated'] },
       },
     },
@@ -129,6 +193,7 @@ const getcarts_Allocation = async () => {
     {
       $match: {
         active: true,
+        partnerId: userId,
         closeStock: { $in: ['activated'] },
       },
     },
@@ -185,10 +250,11 @@ const getcarts_Allocation = async () => {
   return { unAllocatedCart: unAllocatedCart, AllocatedSCV: AllocatedSCV };
 };
 
-const getAvailable_Scv = async () => {
+const getAvailable_Scv = async (userId) => {
   const data = await Scv.aggregate([
     {
       $match: {
+        createdBy: userId,
         workingStatus: { $in: ['no'] },
       },
     },
@@ -225,8 +291,9 @@ const AllocationScv_ToCart = async (body) => {
   return getCart;
 };
 
-const SCVAttendance = async () => {
+const SCVAttendance = async (userId) => {
   let values = await Scv.aggregate([
+    { $match: { createdBy: userId, active: true } },
     {
       $lookup: {
         from: 'scvcarts',
@@ -270,11 +337,19 @@ const SCVAttendance = async () => {
 const RegisterScv = async (body) => {
   const { userName, email, mobileNumber } = body;
   const findOnebyNumber = await Customer.findOne({ mobileNumber: mobileNumber });
+
   if (!findOnebyNumber) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Mobile Number Invalid');
   }
-  const data = await Customer.create(body);
-  return Otp(data);
+  if (findOnebyNumber.active != true) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'User was Disabled by Admin');
+  }
+  return Otp(findOnebyNumber);
+};
+
+const create_scv = async (body) => {
+  const scvCreate = await Scv.create(body);
+  return scvCreate;
 };
 
 const Otpverify = async (body) => {
@@ -303,6 +378,9 @@ const LoginCustomer = async (body) => {
   if (!findByemail || !(await findByemail.isPasswordMatch(password))) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect email or password');
   }
+  if (findByemail.active == false) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Partner Disabled By Admin');
+  }
   return findByemail;
 };
 
@@ -312,8 +390,159 @@ const addPartner = async (body) => {
 };
 
 const getPartners = async () => {
-  const getAllPartner = await Customer.find();
+  const getAllPartner = await Customer.aggregate([
+    {
+      $match: { active: true },
+    },
+    {
+      $lookup: {
+        from: 'scvs',
+        localField: '_id',
+        foreignField: 'createdBy',
+        pipeline: [{ $match: { active: true } }],
+        as: 'scv',
+      },
+    },
+    {
+      $project: {
+        active: 1,
+        userName: 1,
+        email: 1,
+        mobileNumber: 1,
+        address: 1,
+        pinCode: 1,
+        landMark: 1,
+        createdAt: 1,
+        updatedAt: 1,
+        addressProof: 1,
+        idProof: 1,
+        password: 1,
+        scvCount: { $size: '$scv' },
+        scv: '$scv',
+      },
+    },
+  ]);
   return getAllPartner;
+};
+
+const updatePartner = async (id, body) => {
+  let getExistPartner = await Customer.findById(id);
+  if (!getExistPartner) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Partner Not Found');
+  }
+  getExistPartner = await Customer.findByIdAndUpdate({ _id: id }, body, { new: true });
+  return getExistPartner;
+};
+
+const enable_disable_partner = async (id, body) => {
+  const { status } = body;
+  let findpartner = await Customer.findById(id);
+  if (!findpartner) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Partner Not Found');
+  }
+  if (status == 'enable') {
+    findpartner = await Customer.findByIdAndUpdate({ _id: id }, { active: true }, { new: true });
+  } else {
+    findpartner = await Customer.findByIdAndUpdate({ _id: id }, { active: false }, { new: true });
+  }
+  return findpartner;
+};
+
+const get_Un_Assigned_Scv = async () => {
+  let values = await Scv.aggregate([
+    {
+      $match: {
+        createdBy: { $eq: null },
+        active: true,
+      },
+    },
+  ]);
+  return values;
+};
+
+const allocateSCV_To_Partner_ByAdmin = async (body) => {
+  let { arr, partnerId } = body;
+  arr.forEach(async (e) => {
+    await Scv.findByIdAndUpdate({ _id: e }, { createdBy: partnerId }, { new: true });
+  });
+  return { message: 'Allocated SuccessFully' };
+};
+
+const getAllscv_Admin = async () => {
+  const scv = await Scv.find();
+  return scv;
+};
+
+const scv_attendance = async (body) => {
+  const { type, scvId, cartId } = body;
+  let times = moment().toDate();
+  let todayDate = moment().format('DD-MM-YYYY');
+  if (type == 'IN') {
+    let findTodayRecord = await ScvAttendance.findOne({ scvId: scvId, date: todayDate });
+    await Scv.findByIdAndUpdate({ _id: scvId }, { attendance: true }, { new: true });
+    if (!findTodayRecord) {
+      await ScvAttendance.create({ startTime: times, date: todayDate, scvId: scvId });
+      // await ScvAttendance.findByIdAndUpdate({ _id: data._id }, { $push: { history: { start: times } } }, { new: true });
+    } else {
+      await ScvAttendance.findByIdAndUpdate({ _id: findTodayRecord._id }, { startTime: times }, { new: true });
+    }
+  }
+  if (type == 'OUT') {
+    let findTodayRecord = await ScvAttendance.findOne({ scvId: scvId, date: todayDate });
+    let existSecond = findTodayRecord.totalSeconds;
+    let startTime = moment(findTodayRecord.startTime);
+    let endTime = moment(times);
+    const secondsDiff = endTime.diff(startTime, 'seconds');
+    let TotalSecond = existSecond + secondsDiff;
+    await ScvAttendance.findByIdAndUpdate(
+      { _id: findTodayRecord._id },
+      { totalSeconds: TotalSecond, $push: { history: { startTime: startTime, endTime: times } } },
+      { new: true }
+    );
+    await Scv.findByIdAndUpdate({ _id: scvId }, { attendance: false }, { new: true });
+  }
+  return { Message: 'Attendance updated......' };
+};
+
+const getScv_Attendance_Reports = async (body) => {
+  const { scvId, date } = body;
+  let values = await ScvAttendance.aggregate([
+    {
+      $match: {
+        scvId: scvId,
+        date: date,
+      },
+    },
+    {
+      $lookup: {
+        from: 'scvs',
+        localField: 'scvId',
+        foreignField: '_id',
+        as: 'scv',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$scv',
+      },
+    },
+    {
+      $lookup: {
+        from: 'scvcarts',
+        localField: 'scvId',
+        foreignField: 'allocatedScv',
+        as: 'cart',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$cart',
+      },
+    },
+  ]);
+  return values;
 };
 
 module.exports = {
@@ -340,5 +569,14 @@ module.exports = {
   setPassword,
   LoginCustomer,
   addPartner,
-  getPartners
+  getPartners,
+  updatePartner,
+  enable_disable_partner,
+  create_scv,
+  get_Un_Assigned_Scv,
+  allocateSCV_To_Partner_ByAdmin,
+  getAllscv_Admin,
+  scv_attendance,
+  getScv_Attendance_Reports,
+  cartOn,
 };

@@ -81,6 +81,11 @@ const updateSCVCart = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const cartOn = catchAsync(async (req, res) => {
+  const data = await scvService.cartOn(req.params.id, req.body);
+  res.send(data);
+});
+
 const addScv = catchAsync(async (req, res) => {
   let userId = req.userId;
   const data = await scvService.addScv(req.body, userId);
@@ -290,4 +295,5 @@ module.exports = {
   getAllscv_Admin,
   scv_attendance,
   getScv_Attendance_Reports,
+  cartOn,
 };

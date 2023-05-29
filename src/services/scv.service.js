@@ -80,6 +80,66 @@ const updateSCVCart = async (id, body) => {
   return values;
 };
 
+const cartOn = async (id, body) => {
+  let today = moment().format('DD-MM-YYYY');
+  console.log(today);
+  let value = await ScvCart.findById(id);
+  if (!value) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Cart Not Available');
+  }
+  let values = await ScvCart.aggregate([
+    {
+      $match: {
+        _id: id,
+      },
+    },
+    {
+      $lookup: {
+        from: 'scvs',
+        localField: 'allocatedScv',
+        foreignField: '_id',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'scvattendances',
+              localField: '_id',
+              foreignField: 'scvId',
+              pipeline: [{ $match: { date: today } }],
+              as: 'attendance',
+            },
+          },
+          {
+            $unwind: {
+              preserveNullAndEmptyArrays: true,
+              path: '$attendance',
+            },
+          },
+        ],
+        as: 'scv',
+      },
+    },
+    {
+      $unwind: {
+        path: '$scv',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $project: {
+        scvAttendance: '$scv.attendance.date',
+      },
+    },
+  ]);
+
+  let scvAttendance = values[0];
+  if (scvAttendance.scvAttendance == today) {
+    value = await ScvCart.findByIdAndUpdate({ _id: id }, body, { new: true });
+  } else {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Scv Attendance Not On Today');
+  }
+  return value;
+};
+
 // Manage Scv Flow
 
 const addScv = async (body, userId) => {
@@ -518,4 +578,5 @@ module.exports = {
   getAllscv_Admin,
   scv_attendance,
   getScv_Attendance_Reports,
+  cartOn,
 };

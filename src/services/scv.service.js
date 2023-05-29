@@ -422,7 +422,7 @@ const scv_attendance = async (body) => {
     await Scv.findByIdAndUpdate({ _id: scvId }, { attendance: true }, { new: true });
     if (!findTodayRecord) {
       let data = await ScvAttendance.create({ startTime: times, date: todayDate, scvId: scvId });
-      await ScvAttendance.findByIdAndUpdate({ _id: data._id }, { $push: { history: { start: times } } }, { new: true });
+      // await ScvAttendance.findByIdAndUpdate({ _id: data._id }, { $push: { history: { start: times } } }, { new: true });
     } else {
       await ScvAttendance.findByIdAndUpdate(
         { _id: findTodayRecord._id },
@@ -440,7 +440,7 @@ const scv_attendance = async (body) => {
     let TotalSecond = existSecond + secondsDiff;
     await ScvAttendance.findByIdAndUpdate(
       { _id: findTodayRecord._id },
-      { totalSeconds: TotalSecond, $push: { history: { endTime: times } } },
+      { totalSeconds: TotalSecond, $push: { history: { startTime: startTime, endTime: times } } },
       { new: true }
     );
     await Scv.findByIdAndUpdate({ _id: scvId }, { attendance: false }, { new: true });

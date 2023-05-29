@@ -21,6 +21,7 @@ const addTocart = async (req) => {
   let shopId = req.shopId;
   let streamId = req.body.streamId;
   let cart = req.body.cart;
+  // console.log(cart)
   let value = await streamingCart.findOne({ shopId: shopId, streamId: streamId, status: { $ne: 'ordered' } });
   // console.log(value, 12312)
   if (!value) {
@@ -34,7 +35,7 @@ const addTocart = async (req) => {
     await Dates.create_date(value);
   } else {
     await streamingCartProduct.updateMany({ streamingCart: value._id }, { $set: { cardStatus: false } }, { new: true })
-    value.cart = cart;
+    // value.cart = cart;
     cart.forEach(async (a) => {
       // streamingCart  
       let cartproduct = await streamingCartProduct.findOne({ streamingCart: value._id, streamrequestpostId: a.streamrequestpostId });
@@ -52,8 +53,8 @@ const addTocart = async (req) => {
       cartproduct.save();
     })
     // console.log(value)
-
-    value.save();
+    // console.log(value)
+    value = await streamingCart.findByIdAndUpdate({ _id: value._id }, { cart: cart }, { new: true })
   }
   return value;
 };

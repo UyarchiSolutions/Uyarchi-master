@@ -4126,8 +4126,375 @@ const get_watch_live_steams_interested = async (req) => {
   return { value, next: total.length != 0 };
 };
 const get_watch_live_steams_completed = async (req) => {
-  let value = await tempTokenModel.findById(req.query.id);
-  return value;
+
+  var date_now = new Date().getTime();
+  let statusFilter = {
+    $or: [
+      { status: { $eq: 'Completed' } },
+      { $and: [{ streamEnd_Time: { $lt: date_now } }, { tokenGeneration: { $eq: true } }] },
+    ],
+  };
+  let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : parseInt(req.query.page);
+  let completedHide = { streamrequestposts_count: { $ne: 0 } };
+  let registeredFilter = { registerStatus: { $in: ['Not Registered', 'Unregistered'] } };
+  let value = await Streamrequest.aggregate([
+    { $sort: { startTime: -1 } },
+    { $match: { $and: [statusFilter, { adminApprove: { $eq: 'Approved' } }] } },
+    {
+      $lookup: {
+        from: 'joinedusers',
+        localField: '_id',
+        foreignField: 'streamId',
+        pipeline: [{ $group: { _id: 1, count: { $sum: 1 } } }],
+        as: 'joinedusers',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$joinedusers',
+      },
+    },
+    {
+      $lookup: {
+        from: 'joinedusers',
+        localField: '_id',
+        foreignField: 'streamId',
+        pipeline: [
+          { $match: { shopId: req.shopId } },
+          {
+            $project: {
+              _id: 1,
+              active: { $eq: ['$shopId', req.shopId] },
+            },
+          },
+        ],
+        as: 'joinedusers_user',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$joinedusers_user',
+      },
+    },
+    {
+      $addFields: {
+        alreadyJoined: { $ifNull: ['$joinedusers_user.active', false] },
+      },
+    },
+    {
+      $lookup: {
+        from: 'suppliers',
+        localField: 'suppierId',
+        foreignField: '_id',
+        as: 'suppliers',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$suppliers',
+      },
+    },
+    {
+      $lookup: {
+        from: 'streampreregisters',
+        localField: '_id',
+        foreignField: 'streamId',
+        pipeline: [{ $match: { shopId: req.shopId } }],
+        as: 'streampreregister',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$streampreregister',
+      },
+    },
+    {
+      $addFields: {
+        registerStatus: { $ifNull: ['$streampreregister.status', 'Not Registered'] },
+      },
+    },
+    {
+      $addFields: {
+        eligible: { $ifNull: ['$streampreregister.eligible', false] },
+      },
+    },
+    {
+      $addFields: {
+        viewstatus: { $ifNull: ['$streampreregister.viewstatus', ''] },
+      },
+    },
+    { $match: { $and: [registeredFilter] } },
+    {
+      $lookup: {
+        from: 'streamrequestposts',
+        localField: '_id',
+        foreignField: 'streamRequest',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'streamposts',
+              localField: 'postId',
+              foreignField: '_id',
+              pipeline: [{ $match: { $and: [{ afterStreaming: { $eq: 'yes' } }] } }],
+              as: 'streamposts',
+            },
+          },
+          { $unwind: '$streamposts' },
+          {
+            $group: {
+              _id: null,
+              count: { $sum: 1 },
+            },
+          },
+        ],
+        as: 'streamrequestposts_count',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$streamrequestposts_count',
+      },
+    },
+    {
+      $addFields: {
+        streamrequestposts_count: { $ifNull: ['$streamrequestposts_count.count', 0] },
+      },
+    },
+    { $match: { $and: [completedHide] } },
+    {
+      $lookup: {
+        from: 'streamrequestposts',
+        localField: '_id',
+        foreignField: 'streamRequest',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'streamposts',
+              localField: 'postId',
+              foreignField: '_id',
+              pipeline: [
+                { $match: { $and: [{ afterStreaming: { $eq: 'yes' } }] } },
+                {
+                  $lookup: {
+                    from: 'products',
+                    localField: 'productId',
+                    foreignField: '_id',
+                    as: 'products',
+                  },
+                },
+                { $unwind: '$products' },
+                {
+                  $addFields: {
+                    productTitle: "$products.productTitle"
+                  },
+                },
+                {
+                  $project: {
+                    _id: 1,
+                    productTitle: 1
+                  }
+                }
+              ],
+              as: 'streamposts',
+            },
+          },
+          { $unwind: '$streamposts' },
+
+          {
+            $group: {
+              _id: null,
+              productTitle: { $push: "$streamposts.productTitle" },
+            }
+          },
+        ],
+        as: 'streamrequestposts',
+      },
+    },
+    { $unwind: "$streamrequestposts" },
+    {
+      $project: {
+        _id: 1,
+        active: 1,
+        archive: 1,
+        post: 1,
+        communicationMode: 1,
+        sepTwo: 1,
+        adminApprove: 1,
+        activelive: 1,
+        tokenGeneration: 1,
+        bookingAmount: 1,
+        streamingDate: 1,
+        streamingTime: 1,
+        discription: 1,
+        streamName: 1,
+        suppierId: 1,
+        postCount: 1,
+        startTime: 1,
+        DateIso: 1,
+        created: 1,
+        Duration: 1,
+        chat: 1,
+        endTime: 1,
+        max_post_per_stream: 1,
+        noOfParticipants: 1,
+        planId: 1,
+        tokenDetails: 1,
+        golive: { $gt: ['$noOfParticipants', '$joinedusers.count'] },
+        goLive: 1,
+        joinedusers_user: '$joinedusers_user',
+        alreadyJoined: 1,
+        suppliersName: '$suppliers.primaryContactName',
+        registerStatus: 1,
+        eligible: 1,
+        viewstatus: 1,
+        status: 1,
+        streamrequestposts_count: 1,
+        streamEnd_Time: 1,
+        productArray: "$streamrequestposts.productTitle"
+      },
+    },
+    { $skip: 10 * page },
+    { $limit: 10 },
+  ]);
+  let total = await Streamrequest.aggregate([
+    { $sort: { startTime: 1 } },
+    { $match: { $and: [statusFilter, { adminApprove: { $eq: 'Approved' } }] } },
+    {
+      $lookup: {
+        from: 'joinedusers',
+        localField: '_id',
+        foreignField: 'streamId',
+        pipeline: [{ $group: { _id: 1, count: { $sum: 1 } } }],
+        as: 'joinedusers',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$joinedusers',
+      },
+    },
+    {
+      $lookup: {
+        from: 'joinedusers',
+        localField: '_id',
+        foreignField: 'streamId',
+        pipeline: [
+          { $match: { shopId: req.shopId } },
+          {
+            $project: {
+              _id: 1,
+              active: { $eq: ['$shopId', req.shopId] },
+            },
+          },
+        ],
+        as: 'joinedusers_user',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$joinedusers_user',
+      },
+    },
+    {
+      $addFields: {
+        alreadyJoined: { $ifNull: ['$joinedusers_user.active', false] },
+      },
+    },
+    {
+      $lookup: {
+        from: 'suppliers',
+        localField: 'suppierId',
+        foreignField: '_id',
+        as: 'suppliers',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$suppliers',
+      },
+    },
+    {
+      $lookup: {
+        from: 'streampreregisters',
+        localField: '_id',
+        foreignField: 'streamId',
+        pipeline: [{ $match: { shopId: req.shopId } }],
+        as: 'streampreregister',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$streampreregister',
+      },
+    },
+    {
+      $addFields: {
+        registerStatus: { $ifNull: ['$streampreregister.status', 'Not Registered'] },
+      },
+    },
+    {
+      $addFields: {
+        eligible: { $ifNull: ['$streampreregister.eligible', false] },
+      },
+    },
+    {
+      $addFields: {
+        viewstatus: { $ifNull: ['$streampreregister.viewstatus', ''] },
+      },
+    },
+    { $match: { $and: [registeredFilter] } },
+    {
+      $lookup: {
+        from: 'streamrequestposts',
+        localField: '_id',
+        foreignField: 'streamRequest',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'streamposts',
+              localField: 'postId',
+              foreignField: '_id',
+              pipeline: [{ $match: { $and: [{ afterStreaming: { $eq: 'yes' } }] } }],
+              as: 'streamposts',
+            },
+          },
+          { $unwind: '$streamposts' },
+          {
+            $group: {
+              _id: null,
+              count: { $sum: 1 },
+            },
+          },
+        ],
+        as: 'streamrequestposts_count',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$streamrequestposts_count',
+      },
+    },
+    {
+      $addFields: {
+        streamrequestposts_count: { $ifNull: ['$streamrequestposts_count.count', 0] },
+      },
+    },
+    { $match: { $and: [completedHide] } },
+    { $skip: 10 * (page + 1) },
+    { $limit: 10 },
+  ]);
+  return { value, total: total.length };
+
 };
 
 const get_watch_live_steams = async (req) => {
@@ -4640,6 +5007,7 @@ const getall_homeage_streams = async (req) => {
     {
       $project: {
         _id: 1,
+        image: 1,
         active: 1,
         archive: 1,
         post: 1,
@@ -4678,7 +5046,6 @@ const getall_homeage_streams = async (req) => {
         streamrequestposts_count: 1,
         streamEnd_Time: 1,
         productArray: "$streamrequestposts.productTitle",
-        image: 1,
         teaser: 1,
       },
     },
@@ -4863,6 +5230,7 @@ const getall_homeage_streams = async (req) => {
     {
       $project: {
         _id: 1,
+        image: 1,
         active: 1,
         archive: 1,
         post: 1,
@@ -4900,7 +5268,6 @@ const getall_homeage_streams = async (req) => {
         streamrequestposts_count: 1,
         streamEnd_Time: 1,
         productArray: "$streamrequestposts.productTitle",
-        image: 1,
         teaser: 1,
 
       },

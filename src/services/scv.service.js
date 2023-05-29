@@ -414,7 +414,7 @@ const getAllscv_Admin = async () => {
 };
 
 const scv_attendance = async (body) => {
-  const { type, scvId } = body;
+  const { type, scvId, cartId } = body;
   let times = moment().toDate();
   let todayDate = moment().format('DD-MM-YYYY');
   if (type == 'IN') {
@@ -442,6 +442,47 @@ const scv_attendance = async (body) => {
     await Scv.findByIdAndUpdate({ _id: scvId }, { attendance: false }, { new: true });
   }
   return { Message: 'Attendance updated......' };
+};
+
+const getScv_Attendance_Reports = async (body) => {
+  const { scvId, date } = body;
+  let values = await ScvAttendance.aggregate([
+    {
+      $match: {
+        scvId: scvId,
+        date: date,
+      },
+    },
+    {
+      $lookup: {
+        from: 'scvs',
+        localField: 'scvId',
+        foreignField: '_id',
+        as: 'scv',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$scv',
+      },
+    },
+    {
+      $lookup: {
+        from: 'scvcarts',
+        localField: 'scvId',
+        foreignField: 'allocatedScv',
+        as: 'cart',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$cart',
+      },
+    },
+  ]);
+  return values;
 };
 
 module.exports = {
@@ -476,4 +517,5 @@ module.exports = {
   allocateSCV_To_Partner_ByAdmin,
   getAllscv_Admin,
   scv_attendance,
+  getScv_Attendance_Reports,
 };

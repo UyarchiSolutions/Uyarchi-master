@@ -252,6 +252,11 @@ const scv_attendance = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const getScv_Attendance_Reports = catchAsync(async (req, res) => {
+  const data = await ScvPartnerService.getScv_Attendance_Reports(req.body);
+  res.send(data);
+});
+
 module.exports = {
   createSCV,
   getSCVById,
@@ -284,4 +289,5 @@ module.exports = {
   allocateSCV_To_Partner_ByAdmin,
   getAllscv_Admin,
   scv_attendance,
+  getScv_Attendance_Reports,
 };

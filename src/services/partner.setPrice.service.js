@@ -527,6 +527,93 @@ const orderChange_Status = async (id, body) => {
   return order;
 };
 
+const getAck_Orders = async () => {
+  let values = await PartnerOrder.aggregate([
+    { $match: { status: 'Acknowledged' } },
+    {
+      $sort: { createdAt: -1 },
+    },
+    {
+      $lookup: {
+        from: 'scvcustomers',
+        localField: 'partnerId',
+        foreignField: '_id',
+        as: 'partner',
+      },
+    },
+    { $unwind: { preserveNullAndEmptyArrays: true, path: '$partner' } },
+
+    {
+      $lookup: {
+        from: 'partneradminorders',
+        localField: '_id',
+        foreignField: 'partnerOrderId',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'products',
+              localField: 'productId',
+              foreignField: '_id',
+              as: 'products',
+            },
+          },
+          {
+            $unwind: '$products',
+          },
+          {
+            $project: {
+              _id: 1,
+              productId: 1,
+              scvOrders: 1,
+              totalQty: 1,
+              agreedPrice: 1,
+              Posted_date: 1,
+              OrderedTo: 1,
+              partnerOrderId: 1,
+              revisedPrice: 1,
+              partnerId: 1,
+              createdAt: 1,
+              productName: '$products.productTitle',
+            },
+          },
+        ],
+        as: 'orders',
+      },
+    },
+    {
+      $lookup: {
+        from: 'partneradminorders',
+        localField: '_id',
+        foreignField: 'partnerOrderId',
+        pipeline: [{ $group: { _id: null, total: { $sum: '$totalQty' } } }],
+        as: 'TotakQuantity',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$TotakQuantity',
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        products: '$orders',
+        productCount: { $size: '$products' },
+        status: 1,
+        Posted_date: 1,
+        OrderedTo: 1,
+        partnerId: 1,
+        orderId: 1,
+        createdAt: 1,
+        partner: '$partner',
+        TotakQuantity: '$TotakQuantity.total',
+      },
+    },
+  ]);
+  return values;
+};
+
 module.exports = {
   SetPartnerPrice,
   AddProductByPartner,
@@ -546,4 +633,5 @@ module.exports = {
   getPartner_Orders,
   update_Partner_Individual_Orders,
   orderChange_Status,
+  getAck_Orders,
 };

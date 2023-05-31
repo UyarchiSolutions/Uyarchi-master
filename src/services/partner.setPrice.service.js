@@ -460,6 +460,7 @@ const getPartner_Orders = async () => {
               Posted_date: 1,
               OrderedTo: 1,
               partnerOrderId: 1,
+              revisedPrice:1,
               partnerId: 1,
               createdAt: 1,
               productName: '$products.productTitle',

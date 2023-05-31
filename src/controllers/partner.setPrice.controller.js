@@ -93,6 +93,11 @@ const update_Partner_Individual_Orders = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const orderChange_Status = catchAsync(async (req, res) => {
+  const data = await partnersetpriceService.orderChange_Status(req.params.id, req.body);
+  res.send(data);
+});
+
 module.exports = {
   SetPartnerPrice,
   AddProductByPartner,
@@ -111,4 +116,5 @@ module.exports = {
   DistributeGIven,
   getPartner_Orders,
   update_Partner_Individual_Orders,
+  orderChange_Status,
 };

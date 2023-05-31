@@ -14,6 +14,7 @@ const {
 const { ScvCart } = require('../models/Scv.mode');
 const { Product } = require('../models/product.model');
 const moment = require('moment');
+const Api = require('twilio/lib/rest/Api');
 
 const SetPartnerPrice = async (body) => {
   let date = moment().format('YYYY-MM-dd');
@@ -517,6 +518,15 @@ const update_Partner_Individual_Orders = async (body) => {
   return { message: 'Revised Price Updated.....' };
 };
 
+const orderChange_Status = async (id, body) => {
+  let order = await PartnerOrder.findById(id);
+  if (!order) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Bad Request for Not Found');
+  }
+  order = await PartnerOrder.findByIdAndUpdate({ _id: id }, { status: body.status }, { new: true });
+  return order;
+};
+
 module.exports = {
   SetPartnerPrice,
   AddProductByPartner,
@@ -535,4 +545,5 @@ module.exports = {
   DistributeGIven,
   getPartner_Orders,
   update_Partner_Individual_Orders,
+  orderChange_Status,
 };

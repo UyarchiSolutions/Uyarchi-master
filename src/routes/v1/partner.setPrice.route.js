@@ -20,5 +20,5 @@ router.route('/createPartnerOrder/FromAdmin').post(PartnerAuth, PartnerSetPriceC
 router.route('/getOrders/ByPartner').get(PartnerAuth, PartnerSetPriceController.getOrdersByPartner);
 router.route('/getPartner/Orders').get(PartnerSetPriceController.getPartner_Orders);
 router.route('/update/Partner/Individual/Orders').post(PartnerSetPriceController.update_Partner_Individual_Orders);
-router.route('/orderChange/Status').put(PartnerSetPriceController.orderChange_Status);
+router.route('/orderChange/Status/:id').put(PartnerSetPriceController.orderChange_Status);
 module.exports = router;

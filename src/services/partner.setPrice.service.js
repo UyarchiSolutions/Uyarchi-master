@@ -614,6 +614,29 @@ const getAck_Orders = async () => {
   return values;
 };
 
+const getPartner_Ordered_Products = async (id) => {
+  let values = await PartnerOrderedProductsSeperate.aggregate([
+    {
+      $match: { partnerOrderId: id },
+    },
+    {
+      $lookup: {
+        from: 'products',
+        localField: 'productId',
+        foreignField: '_id',
+        as: 'products',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$products',
+      },
+    },
+  ]);
+  return values;
+};
+
 module.exports = {
   SetPartnerPrice,
   AddProductByPartner,
@@ -634,4 +657,5 @@ module.exports = {
   update_Partner_Individual_Orders,
   orderChange_Status,
   getAck_Orders,
+  getPartner_Ordered_Products,
 };

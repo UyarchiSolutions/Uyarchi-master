@@ -103,6 +103,11 @@ const getAck_Orders = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const getPartner_Ordered_Products = catchAsync(async (req, res) => {
+  const data = await partnersetpriceService.getPartner_Ordered_Products(req.params.id);
+  res.send(data);
+});
+
 module.exports = {
   SetPartnerPrice,
   AddProductByPartner,
@@ -123,4 +128,5 @@ module.exports = {
   update_Partner_Individual_Orders,
   orderChange_Status,
   getAck_Orders,
+  getPartner_Ordered_Products,
 };

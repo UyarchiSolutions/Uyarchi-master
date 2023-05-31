@@ -22,4 +22,5 @@ router.route('/getPartner/Orders').get(PartnerSetPriceController.getPartner_Orde
 router.route('/update/Partner/Individual/Orders').post(PartnerSetPriceController.update_Partner_Individual_Orders);
 router.route('/orderChange/Status/:id').put(PartnerSetPriceController.orderChange_Status);
 router.route('/after/Ack/getAck_Orders').get(PartnerSetPriceController.getAck_Orders);
+router.route('/getPartner/Ordered/Products/:id').get(PartnerSetPriceController.getPartner_Ordered_Products);
 module.exports = router;

@@ -460,7 +460,7 @@ const getPartner_Orders = async () => {
               Posted_date: 1,
               OrderedTo: 1,
               partnerOrderId: 1,
-              revisedPrice:1,
+              revisedPrice: 1,
               partnerId: 1,
               createdAt: 1,
               productName: '$products.productTitle',
@@ -504,7 +504,7 @@ const getPartner_Orders = async () => {
   return values;
 };
 
-const update_Partner_Individual_Orders = async (id, body) => {
+const update_Partner_Individual_Orders = async (body) => {
   const { arr } = body;
   arr.forEach(async (e) => {
     let orders = await PartnerOrderedProductsSeperate.findById(e._id);

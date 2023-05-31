@@ -89,7 +89,7 @@ const getPartner_Orders = catchAsync(async (req, res) => {
 });
 
 const update_Partner_Individual_Orders = catchAsync(async (req, res) => {
-  const data = await partnersetpriceService.update_Partner_Individual_Orders(req.params.id, req.body);
+  const data = await partnersetpriceService.update_Partner_Individual_Orders(req.body);
   res.send(data);
 });
 

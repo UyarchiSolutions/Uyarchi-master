@@ -437,6 +437,34 @@ const getPartner_Orders = async () => {
         from: 'partneradminorders',
         localField: '_id',
         foreignField: 'partnerOrderId',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'products',
+              localField: 'productId',
+              foreignField: '_id',
+              as: 'products',
+            },
+          },
+          {
+            $unwind: '$products',
+          },
+          {
+            $project: {
+              _id: 1,
+              productId: 1,
+              scvOrders: 1,
+              totalQty: 1,
+              agreedPrice: 1,
+              Posted_date: 1,
+              OrderedTo: 1,
+              partnerOrderId: 1,
+              partnerId: 1,
+              createdAt: 1,
+              productName: '$products.productTitle',
+            },
+          },
+        ],
         as: 'orders',
       },
     },

@@ -417,6 +417,60 @@ const DistributeGIven = async (body) => {
   return { message: 'Ditribution work success.............' };
 };
 
+const getPartner_Orders = async () => {
+  let values = await PartnerOrder.aggregate([
+    {
+      $sort: { createdAt: -1 },
+    },
+    {
+      $lookup: {
+        from: 'scvcustomers',
+        localField: 'partnerId',
+        foreignField: '_id',
+        as: 'partner',
+      },
+    },
+    { $unwind: { preserveNullAndEmptyArrays: true, path: '$partner' } },
+
+    {
+      $lookup: {
+        from: 'partneradminorders',
+        localField: '_id',
+        foreignField: 'partnerOrderId',
+        as: 'orders',
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        products: '$orders',
+        productCount: { $size: '$products' },
+        status: 1,
+        Posted_date: 1,
+        OrderedTo: 1,
+        partnerId: 1,
+        orderId: 1,
+        createdAt: 1,
+        partner: '$partner',
+      },
+    },
+  ]);
+  return values;
+};
+
+const update_Partner_Individual_Orders = async (id, body) => {
+  const { arr } = body;
+  arr.forEach(async (e) => {
+    let orders = await PartnerOrderedProductsSeperate.findById(e._id);
+    orders = await PartnerOrderedProductsSeperate.findByIdAndUpdate(
+      { _id: e._id },
+      { revisedPrice: e.revisedPrice },
+      { new: true }
+    );
+  });
+  return { message: 'Revised Price Updated.....' };
+};
+
 module.exports = {
   SetPartnerPrice,
   AddProductByPartner,
@@ -433,4 +487,6 @@ module.exports = {
   getOrdersByPartner,
   getOrder_For_CurrentDateByCart,
   DistributeGIven,
+  getPartner_Orders,
+  update_Partner_Individual_Orders,
 };

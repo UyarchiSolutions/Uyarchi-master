@@ -83,6 +83,16 @@ const DistributeGIven = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const getPartner_Orders = catchAsync(async (req, res) => {
+  const data = await partnersetpriceService.getPartner_Orders();
+  res.send(data);
+});
+
+const update_Partner_Individual_Orders = catchAsync(async (req, res) => {
+  const data = await partnersetpriceService.update_Partner_Individual_Orders(req.params.id, req.body);
+  res.send(data);
+});
+
 module.exports = {
   SetPartnerPrice,
   AddProductByPartner,
@@ -99,4 +109,6 @@ module.exports = {
   getOrdersByPartner,
   getOrder_For_CurrentDateByCart,
   DistributeGIven,
+  getPartner_Orders,
+  update_Partner_Individual_Orders,
 };

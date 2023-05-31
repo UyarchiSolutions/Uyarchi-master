@@ -19,5 +19,5 @@ router.route('/DistributeGIven').post(PartnerSetPriceController.DistributeGIven)
 router.route('/createPartnerOrder/FromAdmin').post(PartnerAuth, PartnerSetPriceController.createPartnerOrder_FromAdmin);
 router.route('/getOrders/ByPartner').get(PartnerAuth, PartnerSetPriceController.getOrdersByPartner);
 router.route('/getPartner/Orders').get(PartnerSetPriceController.getPartner_Orders);
-router.route('/update/Partner/Individual/Orders').put(PartnerSetPriceController.update_Partner_Individual_Orders);
+router.route('/update/Partner/Individual/Orders').post(PartnerSetPriceController.update_Partner_Individual_Orders);
 module.exports = router;

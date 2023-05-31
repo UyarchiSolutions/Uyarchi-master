@@ -441,6 +441,21 @@ const getPartner_Orders = async () => {
       },
     },
     {
+      $lookup: {
+        from: 'partneradminorders',
+        localField: '_id',
+        foreignField: 'partnerOrderId',
+        pipeline: [{ $group: { _id: null, total: { $sum: '$totalQty' } } }],
+        as: 'TotakQuantity',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$TotakQuantity',
+      },
+    },
+    {
       $project: {
         _id: 1,
         products: '$orders',
@@ -452,6 +467,7 @@ const getPartner_Orders = async () => {
         orderId: 1,
         createdAt: 1,
         partner: '$partner',
+        TotakQuantity: '$TotakQuantity.total',
       },
     },
   ]);

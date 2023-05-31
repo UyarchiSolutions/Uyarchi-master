@@ -303,9 +303,9 @@ const PartnerOrderSeperationSchema = new mongoose.Schema(
     partnerId: {
       type: String,
     },
-    revisedPrice:{
-      type:String,
-    }
+    revisedPrice: {
+      type: Number,
+    },
   },
   { timestamps: true }
 );

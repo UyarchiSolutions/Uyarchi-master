@@ -254,6 +254,24 @@ const PartnerOrderSchema = new mongoose.Schema(
     partnerId: {
       type: String,
     },
+    transport: {
+      type: String,
+    },
+    vehicleType: {
+      type: String,
+    },
+    vehicleNo: {
+      type: String,
+    },
+    driverName: {
+      type: String,
+    },
+    driverNo: {
+      type: String,
+    },
+    capaCity: {
+      type: String,
+    },
     status: {
       type: String,
       default: 'Pending',

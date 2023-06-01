@@ -123,6 +123,11 @@ const UpdateVehicleById = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const update_Partnwe_Order = catchAsync(async (req, res) => {
+  const data = await partnersetpriceService.update_Partnwe_Order(req.params.id, req.body);
+  res.send(data);
+});
+
 module.exports = {
   SetPartnerPrice,
   AddProductByPartner,
@@ -147,4 +152,5 @@ module.exports = {
   Add_new_vehicle,
   getAll_Vehicles,
   UpdateVehicleById,
+  update_Partnwe_Order,
 };

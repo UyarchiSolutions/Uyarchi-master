@@ -26,4 +26,5 @@ router.route('/getPartner/Ordered/Products/:id').get(PartnerSetPriceController.g
 router.route('/Add_new_vehicle').post(PartnerSetPriceController.Add_new_vehicle);
 router.route('/all/vehicle').get(PartnerSetPriceController.getAll_Vehicles);
 router.route('/UpdateVehicleById/:id').put(PartnerSetPriceController.UpdateVehicleById);
+router.route('/update/Partnwe/Order/:id').put(PartnerSetPriceController.update_Partnwe_Order);
 module.exports = router;

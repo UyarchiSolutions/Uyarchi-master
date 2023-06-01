@@ -659,6 +659,15 @@ const UpdateVehicleById = async (id, body) => {
   return vehicle;
 };
 
+const update_Partnwe_Order = async (id, body) => {
+  let values = await PartnerOrder.findById(id);
+  if (!values) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Order Not Availabale');
+  }
+  values = await PartnerOrder.findByIdAndUpdate({ _id: id }, body, { new: true });
+  return values;
+};
+
 module.exports = {
   SetPartnerPrice,
   AddProductByPartner,
@@ -683,4 +692,5 @@ module.exports = {
   Add_new_vehicle,
   getAll_Vehicles,
   UpdateVehicleById,
+  update_Partnwe_Order,
 };

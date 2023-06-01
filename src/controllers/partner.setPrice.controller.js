@@ -128,6 +128,11 @@ const update_Partnwe_Order = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const getLoadedOrders = catchAsync(async (req, res) => {
+  const data = await partnersetpriceService.getLoadedOrders();
+  res.send(data);
+});
+
 module.exports = {
   SetPartnerPrice,
   AddProductByPartner,
@@ -153,4 +158,5 @@ module.exports = {
   getAll_Vehicles,
   UpdateVehicleById,
   update_Partnwe_Order,
+  getLoadedOrders,
 };

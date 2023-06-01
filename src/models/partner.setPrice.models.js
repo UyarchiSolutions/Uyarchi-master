@@ -312,6 +312,33 @@ const PartnerOrderSeperationSchema = new mongoose.Schema(
 
 const PartnerOrderedProductsSeperate = mongoose.model('partneradminorders', PartnerOrderSeperationSchema);
 
+const VehicleSchema = new mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
+    },
+    vehicleName: {
+      type: String,
+    },
+    vehicleNumber: {
+      type: String,
+    },
+    vehicleType: {
+      type: String,
+    },
+    Permissible: {
+      type: String,
+    },
+    extendables: {
+      type: String,
+    },
+  },
+  { timestamps: true }
+);
+
+const ManageVehicle = mongoose.model('manageVehicles', VehicleSchema);
+
 module.exports = {
   partnerPrice,
   PartnerProduct,
@@ -321,4 +348,5 @@ module.exports = {
   UpdateStock,
   PartnerOrder,
   PartnerOrderedProductsSeperate,
+  ManageVehicle,
 };

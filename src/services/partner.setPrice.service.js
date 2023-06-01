@@ -10,6 +10,7 @@ const {
   UpdateStock,
   PartnerOrder,
   PartnerOrderedProductsSeperate,
+  ManageVehicle,
 } = require('../models/partner.setPrice.models');
 const { ScvCart } = require('../models/Scv.mode');
 const { Product } = require('../models/product.model');
@@ -637,6 +638,13 @@ const getPartner_Ordered_Products = async (id) => {
   return values;
 };
 
+// manage Vehicle
+
+const Add_new_vehicle = async (body) => {
+  const creations = await ManageVehicle.create(body);
+  return creations;
+};
+
 module.exports = {
   SetPartnerPrice,
   AddProductByPartner,
@@ -658,4 +666,5 @@ module.exports = {
   orderChange_Status,
   getAck_Orders,
   getPartner_Ordered_Products,
+  Add_new_vehicle,
 };

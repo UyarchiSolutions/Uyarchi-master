@@ -660,11 +660,17 @@ const UpdateVehicleById = async (id, body) => {
 };
 
 const update_Partnwe_Order = async (id, body) => {
+  const { data, arr } = body;
   let values = await PartnerOrder.findById(id);
   if (!values) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Order Not Availabale');
   }
-  values = await PartnerOrder.findByIdAndUpdate({ _id: id }, body, { new: true });
+
+  arr.forEach(async (e) => {
+    await PartnerOrderedProductsSeperate.findByIdAndUpdate({ _id: e._id }, { givenStock: e.givenStock }, { new: true });
+  });
+
+  values = await PartnerOrder.findByIdAndUpdate({ _id: id }, data, { new: true });
   return values;
 };
 

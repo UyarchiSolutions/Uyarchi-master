@@ -324,6 +324,9 @@ const PartnerOrderSeperationSchema = new mongoose.Schema(
     revisedPrice: {
       type: Number,
     },
+    givenStock: {
+      type: String,
+    },
   },
   { timestamps: true }
 );

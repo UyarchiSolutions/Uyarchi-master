@@ -330,7 +330,7 @@ const VehicleSchema = new mongoose.Schema(
     Permissible: {
       type: String,
     },
-    extendables: {
+    extendable: {
       type: String,
     },
   },

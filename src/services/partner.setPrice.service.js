@@ -645,6 +645,20 @@ const Add_new_vehicle = async (body) => {
   return creations;
 };
 
+const getAll_Vehicles = async () => {
+  const vehicles = await ManageVehicle.find();
+  return vehicles;
+};
+
+const UpdateVehicleById = async (id, body) => {
+  let vehicle = await ManageVehicle.findById(id);
+  if (!vehicle) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Vehicle Not Available');
+  }
+  vehicle = await ManageVehicle.findByIdAndUpdate({ _id: id }, body, { new: true });
+  return vehicle;
+};
+
 module.exports = {
   SetPartnerPrice,
   AddProductByPartner,
@@ -667,4 +681,6 @@ module.exports = {
   getAck_Orders,
   getPartner_Ordered_Products,
   Add_new_vehicle,
+  getAll_Vehicles,
+  UpdateVehicleById,
 };

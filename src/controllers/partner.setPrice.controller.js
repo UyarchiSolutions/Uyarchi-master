@@ -113,6 +113,16 @@ const Add_new_vehicle = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const getAll_Vehicles = catchAsync(async (req, res) => {
+  const data = await partnersetpriceService.getAll_Vehicles();
+  res.send(data);
+});
+
+const UpdateVehicleById = catchAsync(async (req, res) => {
+  const data = await partnersetpriceService.UpdateVehicleById(req.params.id, req.body);
+  res.send(data);
+});
+
 module.exports = {
   SetPartnerPrice,
   AddProductByPartner,
@@ -135,4 +145,6 @@ module.exports = {
   getAck_Orders,
   getPartner_Ordered_Products,
   Add_new_vehicle,
+  getAll_Vehicles,
+  UpdateVehicleById,
 };

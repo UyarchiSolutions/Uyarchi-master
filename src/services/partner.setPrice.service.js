@@ -732,7 +732,15 @@ const getLoadedOrders = async () => {
         from: 'partneradminorders',
         localField: '_id',
         foreignField: 'partnerOrderId',
-        pipeline: [{ $group: { _id: null, total: { $sum: '$totalQty' } } }],
+        pipeline: [
+          {
+            $group: {
+              _id: null,
+              total: { $sum: '$totalQty' },
+              totalAmt: { $sum: { $multiply: ['$totalQty', '$revisedPrice'] } },
+            },
+          },
+        ],
         as: 'TotakQuantity',
       },
     },
@@ -742,6 +750,7 @@ const getLoadedOrders = async () => {
         path: '$TotakQuantity',
       },
     },
+    { $addFields: { paidAmt: 0 } },
     {
       $project: {
         _id: 1,
@@ -755,6 +764,8 @@ const getLoadedOrders = async () => {
         createdAt: 1,
         partner: '$partner',
         TotakQuantity: '$TotakQuantity.total',
+        totalAmt: '$TotakQuantity.totalAmt',
+        paidAmt: 1,
       },
     },
   ]);

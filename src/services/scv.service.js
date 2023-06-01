@@ -489,7 +489,7 @@ const scv_attendance = async (body) => {
   }
   if (type == 'OUT') {
     let findTodayRecord = await ScvAttendance.findOne({ scvId: scvId, date: todayDate });
-    let existSecond = findTodayRecord.totalSeconds;
+    let existSecond = findTodayRecord.totalSeconds == null ? 0 : findTodayRecord.totalSeconds;
     let startTime = moment(findTodayRecord.startTime);
     let endTime = moment(times);
     const secondsDiff = endTime.diff(startTime, 'seconds');

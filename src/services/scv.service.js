@@ -489,17 +489,22 @@ const scv_attendance = async (body) => {
   }
   if (type == 'OUT') {
     let findTodayRecord = await ScvAttendance.findOne({ scvId: scvId, date: todayDate });
-    let existSecond = findTodayRecord.totalSeconds == null ? 0 : findTodayRecord.totalSeconds;
-    let startTime = moment(findTodayRecord.startTime);
+    console.log(findTodayRecord);
+    let existSecond = findTodayRecord == null ? 0 : findTodayRecord.totalSeconds;
+    let startTime = moment(findTodayRecord == null ? 0 : findTodayRecord.startTime);
     let endTime = moment(times);
     const secondsDiff = endTime.diff(startTime, 'seconds');
     let TotalSecond = existSecond + secondsDiff;
-    await ScvAttendance.findByIdAndUpdate(
-      { _id: findTodayRecord._id },
-      { totalSeconds: TotalSecond, $push: { history: { startTime: startTime, endTime: times } } },
-      { new: true }
-    );
-    await Scv.findByIdAndUpdate({ _id: scvId }, { attendance: false }, { new: true });
+    if (findTodayRecord != null) {
+      await ScvAttendance.findByIdAndUpdate(
+        { _id: findTodayRecord._id },
+        { totalSeconds: TotalSecond, $push: { history: { startTime: startTime, endTime: times } } },
+        { new: true }
+      );
+      await Scv.findByIdAndUpdate({ _id: scvId }, { attendance: false }, { new: true });
+    }else{
+      await Scv.findByIdAndUpdate({ _id: scvId }, { attendance: false }, { new: true });
+    }
   }
   return { Message: 'Attendance updated......' };
 };

@@ -667,7 +667,7 @@ const update_Partnwe_Order = async (id, body) => {
   }
 
   arr.forEach(async (e) => {
-    await PartnerOrderedProductsSeperate.findByIdAndUpdate({ _id: e._id }, { givenStock: e.givenStock }, { new: true });
+    await PartnerOrderedProductsSeperate.findByIdAndUpdate({ _id: e._id }, e, { new: true });
   });
 
   values = await PartnerOrder.findByIdAndUpdate({ _id: id }, data, { new: true });

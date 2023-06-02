@@ -28,4 +28,5 @@ router.route('/all/vehicle').get(PartnerSetPriceController.getAll_Vehicles);
 router.route('/UpdateVehicleById/:id').put(PartnerSetPriceController.UpdateVehicleById);
 router.route('/update/Partnwe/Order/:id').put(PartnerSetPriceController.update_Partnwe_Order);
 router.route('/getLoadedOrders').get(PartnerSetPriceController.getLoadedOrders);
+router.route('/getFetchdata/For/bills/:id').get(PartnerSetPriceController.getFetchdata_For_bills);
 module.exports = router;

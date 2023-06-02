@@ -133,6 +133,11 @@ const getLoadedOrders = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const getFetchdata_For_bills = catchAsync(async (req, res) => {
+  const data = await partnersetpriceService.getFetchdata_For_bills(req.params.id);
+  res.send(data);
+});
+
 module.exports = {
   SetPartnerPrice,
   AddProductByPartner,
@@ -159,4 +164,5 @@ module.exports = {
   UpdateVehicleById,
   update_Partnwe_Order,
   getLoadedOrders,
+  getFetchdata_For_bills,
 };

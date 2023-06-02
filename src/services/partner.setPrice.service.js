@@ -676,7 +676,7 @@ const update_Partnwe_Order = async (id, body) => {
 
 const getLoadedOrders = async () => {
   let values = await PartnerOrder.aggregate([
-    { $match: { status: 'Loaded' } },
+    { $match: { status: 'Billed' } },
     {
       $sort: { createdAt: -1 },
     },
@@ -772,6 +772,104 @@ const getLoadedOrders = async () => {
   return values;
 };
 
+const getFetchdata_For_bills = async (id) => {
+  let values = await PartnerOrder.aggregate([
+    { $match: { _id: id, status: 'Loaded' } },
+    {
+      $sort: { createdAt: -1 },
+    },
+    {
+      $lookup: {
+        from: 'scvcustomers',
+        localField: 'partnerId',
+        foreignField: '_id',
+        as: 'partner',
+      },
+    },
+    { $unwind: { preserveNullAndEmptyArrays: true, path: '$partner' } },
+
+    {
+      $lookup: {
+        from: 'partneradminorders',
+        localField: '_id',
+        foreignField: 'partnerOrderId',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'products',
+              localField: 'productId',
+              foreignField: '_id',
+              as: 'products',
+            },
+          },
+          {
+            $unwind: '$products',
+          },
+          {
+            $project: {
+              _id: 1,
+              productId: 1,
+              scvOrders: 1,
+              totalQty: 1,
+              agreedPrice: 1,
+              Posted_date: 1,
+              OrderedTo: 1,
+              partnerOrderId: 1,
+              revisedPrice: 1,
+              partnerId: 1,
+              createdAt: 1,
+              givenStock: { $toInt: '$givenStock' },
+              productName: '$products.productTitle',
+            },
+          },
+        ],
+        as: 'orders',
+      },
+    },
+    {
+      $lookup: {
+        from: 'partneradminorders',
+        localField: '_id',
+        foreignField: 'partnerOrderId',
+        pipeline: [
+          {
+            $group: {
+              _id: null,
+              total: { $sum: '$totalQty' },
+              totalAmt: { $sum: { $multiply: ['$totalQty', '$revisedPrice'] } },
+            },
+          },
+        ],
+        as: 'TotakQuantity',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$TotakQuantity',
+      },
+    },
+    { $addFields: { paidAmt: 0 } },
+    {
+      $project: {
+        _id: 1,
+        products: '$orders',
+        productCount: { $size: '$products' },
+        status: 1,
+        Posted_date: 1,
+        OrderedTo: 1,
+        partnerId: 1,
+        orderId: 1,
+        createdAt: 1,
+        partner: '$partner',
+        TotakQuantity: '$TotakQuantity.total',
+        totalAmt: '$TotakQuantity.totalAmt',
+        paidAmt: 1,
+      },
+    },
+  ]);
+  return values;
+};
 module.exports = {
   SetPartnerPrice,
   AddProductByPartner,
@@ -798,4 +896,5 @@ module.exports = {
   UpdateVehicleById,
   update_Partnwe_Order,
   getLoadedOrders,
+  getFetchdata_For_bills,
 };

@@ -898,7 +898,7 @@ const Bill_GenerateById = async (body) => {
   let BId = `Bill${center}${count}`;
   findorder = await PartnerOrder.findByIdAndUpdate(
     { _id: orderId },
-    { BillingDate: date, BillingTime: time, status: status, BillingAmt: parseInt(billingAmt), BillNo: BId },
+    { BillingDate: date, BillingTime: time, status: status, BillingAmt: billingAmt, BillNo: BId },
     { new: true }
   );
   return findorder;

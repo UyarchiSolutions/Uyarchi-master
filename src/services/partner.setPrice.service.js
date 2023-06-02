@@ -873,7 +873,7 @@ const getFetchdata_For_bills = async (id) => {
 
 const Bill_GenerateById = async (body) => {
   const { orderId, billingAmt } = body;
-  let date = moment().format('YYYY-MM-dd');
+  let date = moment().format('YYYY-MM-DD');
   let time = moment().format('HH:mm a');
   let status = 'billed';
   let findorder = await PartnerOrder.findById(orderId);

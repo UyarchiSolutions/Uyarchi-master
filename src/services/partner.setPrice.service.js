@@ -870,6 +870,40 @@ const getFetchdata_For_bills = async (id) => {
   ]);
   return values;
 };
+
+const Bill_GenerateById = async (body) => {
+  const { orderId, billingAmt } = body;
+  let date = moment().format('YYYY-MM-dd');
+  let time = moment().format('HH:mm a');
+  let status = 'billed';
+  let findorder = await PartnerOrder.findById(orderId);
+  if (!findorder) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Order Not Found');
+  }
+  let findOrders = await PartnerOrder.find({ billingDate: date }).count();
+  let center = '';
+  if (findOrders < 9) {
+    center = '0000';
+  }
+  if (findOrders < 99 && findOrders >= 9) {
+    center = '000';
+  }
+  if (findOrders < 999 && findOrders >= 99) {
+    center = '00';
+  }
+  if (findOrders < 9999 && findOrders >= 999) {
+    center = '0';
+  }
+  let count = findOrders + 1;
+  let BId = `Bill${center}${count}`;
+  findorder = await PartnerOrder.findByIdAndUpdate(
+    { _id: orderId },
+    { BillingDate: date, BillingTime: time, status: status, BillingAmt: parseInt(billingAmt), BillNo: BId },
+    { new: true }
+  );
+  return findorder;
+};
+
 module.exports = {
   SetPartnerPrice,
   AddProductByPartner,
@@ -897,4 +931,5 @@ module.exports = {
   update_Partnwe_Order,
   getLoadedOrders,
   getFetchdata_For_bills,
+  Bill_GenerateById,
 };

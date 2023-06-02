@@ -276,6 +276,12 @@ const PartnerOrderSchema = new mongoose.Schema(
       type: String,
       default: 'Pending',
     },
+    BillNo: {
+      type: String,
+    },
+    BillingDate: String,
+    BillingTime: String,
+    BillingAmt: Number,
   },
   { timestamps: true }
 );

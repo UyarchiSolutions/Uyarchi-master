@@ -676,7 +676,7 @@ const update_Partnwe_Order = async (id, body) => {
 
 const getLoadedOrders = async () => {
   let values = await PartnerOrder.aggregate([
-    { $match: { status: 'Billed' } },
+    { $match: { status: 'billed' } },
     {
       $sort: { createdAt: -1 },
     },

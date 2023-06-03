@@ -930,6 +930,11 @@ const stockUpdateByCart = async (body) => {
   return cart;
 };
 
+const getCartReports = async (id) => {
+  const data = await ScvCart.aggregate([{ $match: { _id: id } }]);
+  return data;
+};
+
 module.exports = {
   SetPartnerPrice,
   AddProductByPartner,
@@ -959,4 +964,5 @@ module.exports = {
   getFetchdata_For_bills,
   Bill_GenerateById,
   stockUpdateByCart,
+  getCartReports,
 };

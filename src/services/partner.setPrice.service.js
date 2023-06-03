@@ -931,7 +931,75 @@ const stockUpdateByCart = async (body) => {
 };
 
 const getCartReports = async (id) => {
-  const data = await ScvCart.aggregate([{ $match: { _id: id } }]);
+  const today = moment().format('DD/MM/YYYY');
+  console.log(today);
+  const data = await ScvCart.aggregate([
+    { $match: { _id: id } },
+    {
+      $addFields: {
+        currentDate: { $dateToString: { format: '%d-%m-%Y', date: new Date() } },
+      },
+    },
+    {
+      $lookup: {
+        from: 'partnerorderproducts',
+        localField: '_id',
+        foreignField: 'cartId',
+        pipeline: [
+          { $match: { date: today } },
+          {
+            $lookup: {
+              from: 'products',
+              localField: 'productId',
+              foreignField: '_id',
+              as: 'product',
+            },
+          },
+          { $unwind: { preserveNullAndEmptyArrays: true, path: '$product' } },
+          {
+            $project: {
+              _id: 1,
+              orderId: 1,
+              productId: 1,
+              cartId: 1,
+              QTY: 1,
+              date: 1,
+              createdAt: 1,
+              updatedAt: 1,
+              dQTY: 1,
+              balanceQTY: 1,
+              lastBalanceTime: 1,
+              report: 1,
+              productName: '$product.productTitle',
+            },
+          },
+        ],
+        as: 'orders',
+      },
+    },
+    {
+      $project: {
+        times: {
+          $arrayElemAt: [
+            {
+              $map: {
+                input: { $objectToArray: '$cartUpdateHistory' },
+                in: {
+                  $cond: {
+                    if: { $eq: ['$$this.k', '$currentDate'] },
+                    then: '$$this.v',
+                    else: [],
+                  },
+                },
+              },
+            },
+            0,
+          ],
+        },
+        orders: '$orders',
+      },
+    },
+  ]);
   return data;
 };
 

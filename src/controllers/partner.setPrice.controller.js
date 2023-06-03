@@ -143,6 +143,11 @@ const Bill_GenerateById = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const stockUpdateByCart = catchAsync(async (req, res) => {
+  const data = await partnersetpriceService.stockUpdateByCart(req.body);
+  res.send(data);
+});
+
 module.exports = {
   SetPartnerPrice,
   AddProductByPartner,
@@ -171,4 +176,5 @@ module.exports = {
   getLoadedOrders,
   getFetchdata_For_bills,
   Bill_GenerateById,
+  stockUpdateByCart,
 };

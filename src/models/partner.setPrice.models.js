@@ -169,6 +169,9 @@ const partnerOrderProducts = new mongoose.Schema(
     lastBalanceTime: {
       type: String,
     },
+    report: {
+      type: Array,
+    },
   },
   { timestamps: true }
 );

@@ -905,6 +905,31 @@ const Bill_GenerateById = async (body) => {
   return findorder;
 };
 
+const stockUpdateByCart = async (body) => {
+  const { arr, cartId } = body;
+  let cart = await ScvCart.findById(cartId);
+  let date = moment().format('DD-MM-YYYY');
+  let time = moment().format('h:mm a');
+
+  if (cart.cartUpdateHistory[date] == null) {
+    console.log('not created');
+    cart = await ScvCart.updateOne({ _id: cartId }, { $set: { ['cartUpdateHistory.' + date]: [time] } }, { new: true });
+  } else {
+    await cart.cartUpdateHistory[date].push(time);
+    cart = await ScvCart.updateOne({ _id: cartId }, { $push: { ['cartUpdateHistory.' + date]: [time] } }, { new: true });
+    console.log(cart);
+  }
+
+  arr.forEach(async (e) => {
+    await partnerCartOrderProducts.findByIdAndUpdate(
+      { _id: e._id },
+      { balanceQTY: e.balanceqty, lastBalanceTime: time, $push: { report: { time: time, qty: e.balanceqty } } },
+      { new: true }
+    );
+  });
+  return cart;
+};
+
 module.exports = {
   SetPartnerPrice,
   AddProductByPartner,
@@ -933,4 +958,5 @@ module.exports = {
   getLoadedOrders,
   getFetchdata_For_bills,
   Bill_GenerateById,
+  stockUpdateByCart,
 };

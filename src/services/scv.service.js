@@ -133,7 +133,7 @@ const cartOn = async (id, body) => {
 
   let scvAttendance = values[0];
   if (scvAttendance.scvAttendance == today) {
-    value = await ScvCart.findByIdAndUpdate({ _id: id }, body, { new: true });
+    // value = await ScvCart.findByIdAndUpdate({ _id: id }, body, { new: true });
   } else {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Scv Attendance Not On Today');
   }
@@ -502,7 +502,7 @@ const scv_attendance = async (body) => {
         { new: true }
       );
       await Scv.findByIdAndUpdate({ _id: scvId }, { attendance: false }, { new: true });
-    }else{
+    } else {
       await Scv.findByIdAndUpdate({ _id: scvId }, { attendance: false }, { new: true });
     }
   }

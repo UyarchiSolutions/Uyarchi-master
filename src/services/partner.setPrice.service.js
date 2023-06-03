@@ -413,10 +413,11 @@ const getOrder_For_CurrentDateByCart = async (query) => {
 };
 
 const DistributeGIven = async (body) => {
-  let { arr } = body;
+  let { arr, cartId, cartOnDate } = body;
   arr.forEach(async (e) => {
     await partnerCartOrderProducts.findByIdAndUpdate({ _id: e._id }, { dQTY: e.dQty }, { new: true });
   });
+  await ScvCart.findByIdAndUpdate({ _id: cartId }, { cartOnDate: cartOnDate }, { new: true });
   return { message: 'Ditribution work success.............' };
 };
 

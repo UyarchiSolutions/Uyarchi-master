@@ -223,7 +223,7 @@ const getOrderedProducts = async (cartId, date) => {
       },
     },
     { $sort: { dQTY: 1 } },
-    { $sort: { givenQTY: 1 } },
+    { $sort: { givenQTY: -1 } },
     // { $match: { dQTY: { $ne: null } } },
   ]);
   // if (datas[0] != null) {

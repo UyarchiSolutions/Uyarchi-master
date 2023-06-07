@@ -1006,11 +1006,6 @@ const getCartReports = async (id) => {
     //     orders: '$orders',
     //   },
     // },
-    {
-      $project: {
-        times: {},
-      },
-    },
   ]);
   return data;
 };

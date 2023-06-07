@@ -171,6 +171,7 @@ const getOrdersbycart = async (cartId) => {
               date: 1,
               createdAt: 1,
               updatedAt: 1,
+              dQty:1,
               productName: '$product.productTitle',
             },
           },

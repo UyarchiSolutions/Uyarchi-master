@@ -197,37 +197,37 @@ const getOrderedProducts = async (cartId, date) => {
   console.log(date);
   let data = await partnerCartOrderProducts.distinct('productId');
   let values = [];
-  for (let i = 0; i < data.length; i++) {
-    let id = data[i];
-    let datas = await partnerCartOrderProducts.aggregate([
-      {
-        $match: {
-          cartId: cartId,
-          productId: id,
-          date: date,
-        },
+  // for (let i = 0; i < data.length; i++) {
+  //   let id = data[i];
+  let datas = await partnerCartOrderProducts.aggregate([
+    {
+      $match: {
+        cartId: cartId,
+        productId: { $in: [data] },
+        date: date,
       },
-      {
-        $lookup: {
-          from: 'products',
-          localField: 'productId',
-          foreignField: '_id',
-          as: 'products',
-        },
+    },
+    {
+      $lookup: {
+        from: 'products',
+        localField: 'productId',
+        foreignField: '_id',
+        as: 'products',
       },
-      {
-        $unwind: {
-          preserveNullAndEmptyArrays: true,
-          path: '$products',
-        },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$products',
       },
-      { $sort: { dQTY: 1 } },
-      // { $match: { dQTY: { $ne: null } } },
-    ]);
-    if (datas[0] != null) {
-      values.push(datas[0]);
-    }
+    },
+    { $sort: { dQTY: 1 } },
+    // { $match: { dQTY: { $ne: null } } },
+  ]);
+  if (datas[0] != null) {
+    values.push(datas[0]);
   }
+  // }
 
   let cartDetails = await ScvCart.findById(cartId);
 

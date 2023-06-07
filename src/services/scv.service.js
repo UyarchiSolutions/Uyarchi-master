@@ -225,6 +225,7 @@ const getcarts_Allocation = async (userId) => {
         createdAt: 1,
         image: 1,
         allocatedScv: 1,
+        latestUpdateStock:1,
         allocatedTime: 1,
         scvName: '$scv.Name',
         scvActive: '$scv.active',

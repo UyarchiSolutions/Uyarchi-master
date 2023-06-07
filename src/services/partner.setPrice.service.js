@@ -222,7 +222,8 @@ const getOrderedProducts = async (cartId, date) => {
         path: '$products',
       },
     },
-    // { $sort: { dQTY: 1 } },
+    { $sort: { dQTY: 1 } },
+    { $sort: { givenQTY: 1 } },
     // { $match: { dQTY: { $ne: null } } },
   ]);
   // if (datas[0] != null) {

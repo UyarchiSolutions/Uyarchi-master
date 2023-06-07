@@ -910,9 +910,8 @@ const stockUpdateByCart = async (body) => {
   let cart = await ScvCart.findById(cartId);
   let date = moment().format('DD-MM-YYYY');
   let time = moment().format('h:mm a');
-
+  console.log(cart.cartUpdateHistory[date]);
   if (cart.cartUpdateHistory[date] == null) {
-    console.log('not created');
     cart = await ScvCart.updateOne(
       { _id: cartId },
       { latestUpdateStock: time, $set: { ['cartUpdateHistory.' + date]: [time] } },
@@ -921,10 +920,9 @@ const stockUpdateByCart = async (body) => {
   } else {
     cart = await ScvCart.updateOne(
       { _id: cartId },
-      { latestUpdateStock: time, $set: { ['cartUpdateHistory.' + date]: [time] } },
+      { latestUpdateStock: time, $push: { ['cartUpdateHistory.' + date]: time } },
       { new: true }
     );
-    console.log(cart);
   }
 
   arr.forEach(async (e) => {
@@ -984,28 +982,28 @@ const getCartReports = async (id) => {
         as: 'orders',
       },
     },
-    // {
-    //   $project: {
-    //     times: {
-    //       $arrayElemAt: [
-    //         {
-    //           $map: {
-    //             input: { $objectToArray: '$cartUpdateHistory' },
-    //             in: {
-    //               $cond: {
-    //                 if: { $eq: ['$$this.k', '$currentDate'] },
-    //                 then: '$$this.v',
-    //                 else: [],
-    //               },
-    //             },
-    //           },
-    //         },
-    //         0,
-    //       ],
-    //     },
-    //     orders: '$orders',
-    //   },
-    // },
+    {
+      $project: {
+        _id: 0, // Exclude the _id field from the result
+        cartUpdateArray: {
+          $filter: {
+            input: { $objectToArray: '$cartUpdateHistory' },
+            cond: {
+              $eq: ['$$this.k', '$currentDate'],
+            },
+          },
+        },
+        orders: '$orders',
+      },
+    },
+    {
+      $project: {
+        time: {
+          $arrayElemAt: ['$cartUpdateArray.v', 0],
+        },
+        products: '$orders',
+      },
+    },
   ]);
   return data;
 };

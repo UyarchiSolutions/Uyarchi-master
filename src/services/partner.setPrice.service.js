@@ -913,10 +913,18 @@ const stockUpdateByCart = async (body) => {
 
   if (cart.cartUpdateHistory[date] == null) {
     console.log('not created');
-    cart = await ScvCart.updateOne({ _id: cartId }, { $set: { ['cartUpdateHistory.' + date]: [time] } }, { new: true });
+    cart = await ScvCart.updateOne(
+      { _id: cartId },
+      { latestUpdateStock: time, $set: { ['cartUpdateHistory.' + date]: [time] } },
+      { new: true }
+    );
   } else {
-    await cart.cartUpdateHistory[date].push(time);
-    cart = await ScvCart.updateOne({ _id: cartId }, { $push: { ['cartUpdateHistory.' + date]: [time] } }, { new: true });
+    await cart.cartUpdateHistory[date].push([time]);
+    cart = await ScvCart.updateOne(
+      { _id: cartId },
+      { latestUpdateStock: time, $push: { ['cartUpdateHistory.' + date]: [time] } },
+      { new: true }
+    );
     console.log(cart);
   }
 
@@ -977,26 +985,31 @@ const getCartReports = async (id) => {
         as: 'orders',
       },
     },
+    // {
+    //   $project: {
+    //     times: {
+    //       $arrayElemAt: [
+    //         {
+    //           $map: {
+    //             input: { $objectToArray: '$cartUpdateHistory' },
+    //             in: {
+    //               $cond: {
+    //                 if: { $eq: ['$$this.k', '$currentDate'] },
+    //                 then: '$$this.v',
+    //                 else: [],
+    //               },
+    //             },
+    //           },
+    //         },
+    //         0,
+    //       ],
+    //     },
+    //     orders: '$orders',
+    //   },
+    // },
     {
       $project: {
-        times: {
-          $arrayElemAt: [
-            {
-              $map: {
-                input: { $objectToArray: '$cartUpdateHistory' },
-                in: {
-                  $cond: {
-                    if: { $eq: ['$$this.k', '$currentDate'] },
-                    then: '$$this.v',
-                    else: [],
-                  },
-                },
-              },
-            },
-            0,
-          ],
-        },
-        orders: '$orders',
+        times: {},
       },
     },
   ]);

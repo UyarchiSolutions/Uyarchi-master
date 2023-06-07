@@ -142,6 +142,44 @@ const getOrdersbycart = async (cartId) => {
     },
     {
       $lookup: {
+        from: 'partnerorderproducts',
+        localField: '_id',
+        foreignField: 'orderId',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'products',
+              localField: 'productId',
+              foreignField: '_id',
+              as: 'product',
+            },
+          },
+          {
+            $unwind: {
+              preserveNullAndEmptyArrays: true,
+              path: '$product',
+            },
+          },
+          {
+            $project: {
+              _id: 1,
+              report: 1,
+              orderId: 1,
+              productId: 1,
+              cartId: 1,
+              QTY: 1,
+              date: 1,
+              createdAt: 1,
+              updatedAt: 1,
+              productName: '$product.productTitle',
+            },
+          },
+        ],
+        as: 'ordersDetails',
+      },
+    },
+    {
+      $lookup: {
         from: 'scvcarts',
         localField: 'cartId',
         foreignField: '_id',

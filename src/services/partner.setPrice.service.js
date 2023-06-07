@@ -199,12 +199,12 @@ const getOrderedProducts = async (cartId, date) => {
   let values = [];
   // for (let i = 0; i < data.length; i++) {
   //   let id = data[i];
-  console.log(data);
+  console.log(data.length);
   let datas = await partnerCartOrderProducts.aggregate([
     {
       $match: {
         cartId: cartId,
-        productId: { $in: data },
+        // productId: { $in: data },
         date: date,
       },
     },
@@ -222,17 +222,17 @@ const getOrderedProducts = async (cartId, date) => {
         path: '$products',
       },
     },
-    { $sort: { dQTY: 1 } },
+    // { $sort: { dQTY: 1 } },
     // { $match: { dQTY: { $ne: null } } },
   ]);
-  if (datas[0] != null) {
-    values.push(datas[0]);
-  }
+  // if (datas[0] != null) {
+  //   values.push(datas[0]);
+  // }
   // }
 
   let cartDetails = await ScvCart.findById(cartId);
 
-  return { values: values, cartDetails: cartDetails };
+  return { values: datas, cartDetails: cartDetails };
 };
 
 const updateAddOnStock = async (body) => {

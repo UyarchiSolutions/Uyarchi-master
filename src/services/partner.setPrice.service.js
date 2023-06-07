@@ -919,10 +919,9 @@ const stockUpdateByCart = async (body) => {
       { new: true }
     );
   } else {
-    await cart.cartUpdateHistory[date].push([time]);
     cart = await ScvCart.updateOne(
       { _id: cartId },
-      { latestUpdateStock: time, $push: { ['cartUpdateHistory.' + date]: [time] } },
+      { latestUpdateStock: time, $set: { ['cartUpdateHistory.' + date]: [time] } },
       { new: true }
     );
     console.log(cart);
@@ -985,26 +984,31 @@ const getCartReports = async (id) => {
         as: 'orders',
       },
     },
+    // {
+    //   $project: {
+    //     times: {
+    //       $arrayElemAt: [
+    //         {
+    //           $map: {
+    //             input: { $objectToArray: '$cartUpdateHistory' },
+    //             in: {
+    //               $cond: {
+    //                 if: { $eq: ['$$this.k', '$currentDate'] },
+    //                 then: '$$this.v',
+    //                 else: [],
+    //               },
+    //             },
+    //           },
+    //         },
+    //         0,
+    //       ],
+    //     },
+    //     orders: '$orders',
+    //   },
+    // },
     {
       $project: {
-        times: {
-          $arrayElemAt: [
-            {
-              $map: {
-                input: { $objectToArray: '$cartUpdateHistory' },
-                in: {
-                  $cond: {
-                    if: { $eq: ['$$this.k', '$currentDate'] },
-                    then: '$$this.v',
-                    else: [],
-                  },
-                },
-              },
-            },
-            0,
-          ],
-        },
-        orders: '$orders',
+        times: {},
       },
     },
   ]);

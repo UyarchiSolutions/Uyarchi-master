@@ -985,31 +985,26 @@ const getCartReports = async (id) => {
         as: 'orders',
       },
     },
-    // {
-    //   $project: {
-    //     times: {
-    //       $arrayElemAt: [
-    //         {
-    //           $map: {
-    //             input: { $objectToArray: '$cartUpdateHistory' },
-    //             in: {
-    //               $cond: {
-    //                 if: { $eq: ['$$this.k', '$currentDate'] },
-    //                 then: '$$this.v',
-    //                 else: [],
-    //               },
-    //             },
-    //           },
-    //         },
-    //         0,
-    //       ],
-    //     },
-    //     orders: '$orders',
-    //   },
-    // },
     {
       $project: {
-        times: {},
+        times: {
+          $arrayElemAt: [
+            {
+              $map: {
+                input: { $objectToArray: '$cartUpdateHistory' },
+                in: {
+                  $cond: {
+                    if: { $eq: ['$$this.k', '$currentDate'] },
+                    then: '$$this.v',
+                    else: [],
+                  },
+                },
+              },
+            },
+            0,
+          ],
+        },
+        orders: '$orders',
       },
     },
   ]);

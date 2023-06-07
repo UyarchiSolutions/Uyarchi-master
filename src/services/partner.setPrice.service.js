@@ -199,11 +199,12 @@ const getOrderedProducts = async (cartId, date) => {
   let values = [];
   // for (let i = 0; i < data.length; i++) {
   //   let id = data[i];
+  console.log(data);
   let datas = await partnerCartOrderProducts.aggregate([
     {
       $match: {
         cartId: cartId,
-        productId: { $in: [data] },
+        productId: { $in: data },
         date: date,
       },
     },

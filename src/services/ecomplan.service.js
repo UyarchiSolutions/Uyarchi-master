@@ -5504,7 +5504,6 @@ const getall_homeage_streams = async (req) => {
               from: 'streamposts',
               localField: 'postId',
               foreignField: '_id',
-              pipeline: [{ $match: { $and: [{ afterStreaming: { $eq: 'yes' } }] } }],
               as: 'streamposts',
             },
           },

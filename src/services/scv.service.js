@@ -401,7 +401,7 @@ const getPartners = async () => {
         from: 'scvs',
         localField: '_id',
         foreignField: 'createdBy',
-        pipeline: [{ $match: { active: true } }],
+        // pipeline: [{ $match: { active: true } }],
         as: 'scv',
       },
     },

@@ -31,6 +31,14 @@ const getScvCartbyId = async (id) => {
   return data;
 };
 
+const getCartBy_Allocated_Scv = async (id) => {
+  const data = await ScvCart.findOne({ allocatedScv: id });
+  if (!data) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'This Scv Not Allocated this cart');
+  }
+  return data;
+};
+
 const updateSCVById = async (scvId, updateBody) => {
   let scv = await getSCVById(scvId);
   if (!scv) {
@@ -584,4 +592,5 @@ module.exports = {
   scv_attendance,
   getScv_Attendance_Reports,
   cartOn,
+  getCartBy_Allocated_Scv,
 };

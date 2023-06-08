@@ -202,6 +202,45 @@ const getcarts_Allocation = async (userId) => {
         closeStock: { $nin: ['activated'] },
       },
     },
+    {
+      $lookup: {
+        from: 'scvs',
+        localField: 'allocatedScv',
+        foreignField: '_id',
+        pipeline: [{ $match: { attendance: true } }],
+        as: 'scv',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$scv',
+      },
+    },
+  ]);
+
+  const getAbsentScvCarts = await ScvCart.aggregate([
+    {
+      $match: {
+        active: true,
+        partnerId: userId,
+      },
+    },
+    {
+      $lookup: {
+        from: 'scvs',
+        localField: 'allocatedScv',
+        foreignField: '_id',
+        pipeline: [{ $match: { attendance: false } }],
+        as: 'scv',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$scv',
+      },
+    },
   ]);
 
   const AllocatedSCV = await ScvCart.aggregate([
@@ -218,6 +257,7 @@ const getcarts_Allocation = async (userId) => {
         from: 'scvs',
         localField: 'allocatedScv',
         foreignField: '_id',
+        pipeline: [{ $match: { attendance: true } }],
         as: 'scv',
       },
     },
@@ -263,7 +303,7 @@ const getcarts_Allocation = async (userId) => {
     },
   ]);
 
-  return { unAllocatedCart: unAllocatedCart, AllocatedSCV: AllocatedSCV };
+  return { unAllocatedCart: unAllocatedCart, AllocatedSCV: AllocatedSCV, getAbsentScvCarts: getAbsentScvCarts };
 };
 
 const getAvailable_Scv = async (userId) => {

@@ -24,11 +24,10 @@ const getAllSCV = async () => {
 };
 
 const getScvCartbyId = async (id) => {
-  const data = await ScvCart.aggregate([
-    {
-      $match: { allocatedScv: id },
-    },
-  ]);
+  const data = await ScvCart.findById(id);
+  if (!data) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Cart Not Found');
+  }
   return data;
 };
 

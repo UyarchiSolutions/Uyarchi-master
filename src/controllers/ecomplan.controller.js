@@ -300,7 +300,7 @@ const getall_homeage_streams = catchAsync(async (req, res) => {
 });
 const on_going_stream = catchAsync(async (req, res) => {
   console.log('sdas');
-  const value = await Ecomserive.getall_homeage_streams(req);
+  const value = await Ecomserive.on_going_stream(req);
   res.send(value);
 });
 const regisetr_strean_instrest = catchAsync(async (req, res) => {

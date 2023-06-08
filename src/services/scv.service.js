@@ -393,9 +393,9 @@ const addPartner = async (body) => {
 
 const getPartners = async () => {
   const getAllPartner = await Customer.aggregate([
-    {
-      $match: { active: true },
-    },
+    // {
+    //   $match: { active: true },
+    // },
     {
       $lookup: {
         from: 'scvs',

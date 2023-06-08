@@ -169,6 +169,9 @@ const partnerOrderProducts = new mongoose.Schema(
     lastBalanceTime: {
       type: String,
     },
+    report: {
+      type: Array,
+    },
   },
   { timestamps: true }
 );
@@ -254,10 +257,34 @@ const PartnerOrderSchema = new mongoose.Schema(
     partnerId: {
       type: String,
     },
+    transport: {
+      type: String,
+    },
+    vehicleType: {
+      type: String,
+    },
+    vehicleNo: {
+      type: String,
+    },
+    driverName: {
+      type: String,
+    },
+    driverNo: {
+      type: String,
+    },
+    capaCity: {
+      type: String,
+    },
     status: {
       type: String,
       default: 'Pending',
     },
+    BillNo: {
+      type: String,
+    },
+    BillingDate: String,
+    BillingTime: String,
+    BillingAmt: Number,
   },
   { timestamps: true }
 );
@@ -303,11 +330,44 @@ const PartnerOrderSeperationSchema = new mongoose.Schema(
     partnerId: {
       type: String,
     },
+    revisedPrice: {
+      type: Number,
+    },
+    givenStock: {
+      type: String,
+    },
   },
   { timestamps: true }
 );
 
 const PartnerOrderedProductsSeperate = mongoose.model('partneradminorders', PartnerOrderSeperationSchema);
+
+const VehicleSchema = new mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
+    },
+    vehicleName: {
+      type: String,
+    },
+    vehicleNumber: {
+      type: String,
+    },
+    vehicleType: {
+      type: String,
+    },
+    Permissible: {
+      type: String,
+    },
+    extendable: {
+      type: String,
+    },
+  },
+  { timestamps: true }
+);
+
+const ManageVehicle = mongoose.model('manageVehicles', VehicleSchema);
 
 module.exports = {
   partnerPrice,
@@ -318,4 +378,5 @@ module.exports = {
   UpdateStock,
   PartnerOrder,
   PartnerOrderedProductsSeperate,
+  ManageVehicle,
 };

@@ -54,6 +54,10 @@ const CartSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    cartUpdateHistory: {
+      type: Object,
+      default: {},
+    },
   },
   { timestamps: true }
 );

@@ -66,7 +66,8 @@ const DisableCart = catchAsync(async (req, res) => {
 });
 
 const getScvCarts = catchAsync(async (req, res) => {
-  const data = await scvService.getScvCarts();
+  let userId = req.userId;
+  const data = await scvService.getScvCarts(userId);
   res.send(data);
 });
 
@@ -262,6 +263,11 @@ const getScv_Attendance_Reports = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const getCartBy_Allocated_Scv = catchAsync(async (req, res) => {
+  const data = await ScvPartnerService.getCartBy_Allocated_Scv(req.params.id);
+  res.send(data);
+});
+
 module.exports = {
   createSCV,
   getSCVById,
@@ -296,4 +302,5 @@ module.exports = {
   scv_attendance,
   getScv_Attendance_Reports,
   cartOn,
+  getCartBy_Allocated_Scv,
 };

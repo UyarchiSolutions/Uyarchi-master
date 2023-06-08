@@ -83,6 +83,76 @@ const DistributeGIven = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const getPartner_Orders = catchAsync(async (req, res) => {
+  const data = await partnersetpriceService.getPartner_Orders();
+  res.send(data);
+});
+
+const update_Partner_Individual_Orders = catchAsync(async (req, res) => {
+  const data = await partnersetpriceService.update_Partner_Individual_Orders(req.body);
+  res.send(data);
+});
+
+const orderChange_Status = catchAsync(async (req, res) => {
+  const data = await partnersetpriceService.orderChange_Status(req.params.id, req.body);
+  res.send(data);
+});
+
+const getAck_Orders = catchAsync(async (req, res) => {
+  const data = await partnersetpriceService.getAck_Orders();
+  res.send(data);
+});
+
+const getPartner_Ordered_Products = catchAsync(async (req, res) => {
+  const data = await partnersetpriceService.getPartner_Ordered_Products(req.params.id);
+  res.send(data);
+});
+
+const Add_new_vehicle = catchAsync(async (req, res) => {
+  const data = await partnersetpriceService.Add_new_vehicle(req.body);
+  res.send(data);
+});
+
+const getAll_Vehicles = catchAsync(async (req, res) => {
+  const data = await partnersetpriceService.getAll_Vehicles();
+  res.send(data);
+});
+
+const UpdateVehicleById = catchAsync(async (req, res) => {
+  const data = await partnersetpriceService.UpdateVehicleById(req.params.id, req.body);
+  res.send(data);
+});
+
+const update_Partnwe_Order = catchAsync(async (req, res) => {
+  const data = await partnersetpriceService.update_Partnwe_Order(req.params.id, req.body);
+  res.send(data);
+});
+
+const getLoadedOrders = catchAsync(async (req, res) => {
+  const data = await partnersetpriceService.getLoadedOrders();
+  res.send(data);
+});
+
+const getFetchdata_For_bills = catchAsync(async (req, res) => {
+  const data = await partnersetpriceService.getFetchdata_For_bills(req.params.id);
+  res.send(data);
+});
+
+const Bill_GenerateById = catchAsync(async (req, res) => {
+  const data = await partnersetpriceService.Bill_GenerateById(req.body);
+  res.send(data);
+});
+
+const stockUpdateByCart = catchAsync(async (req, res) => {
+  const data = await partnersetpriceService.stockUpdateByCart(req.body);
+  res.send(data);
+});
+
+const getCartReports = catchAsync(async (req, res) => {
+  const data = await partnersetpriceService.getCartReports(req.params.id);
+  res.send(data);
+});
+
 module.exports = {
   SetPartnerPrice,
   AddProductByPartner,
@@ -99,4 +169,18 @@ module.exports = {
   getOrdersByPartner,
   getOrder_For_CurrentDateByCart,
   DistributeGIven,
+  getPartner_Orders,
+  update_Partner_Individual_Orders,
+  orderChange_Status,
+  getAck_Orders,
+  getPartner_Ordered_Products,
+  Add_new_vehicle,
+  getAll_Vehicles,
+  UpdateVehicleById,
+  update_Partnwe_Order,
+  getLoadedOrders,
+  getFetchdata_For_bills,
+  Bill_GenerateById,
+  stockUpdateByCart,
+  getCartReports,
 };

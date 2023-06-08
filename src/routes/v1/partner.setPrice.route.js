@@ -18,5 +18,18 @@ router.route('/DistributeGIven').post(PartnerSetPriceController.DistributeGIven)
 // partner request order to Admin
 router.route('/createPartnerOrder/FromAdmin').post(PartnerAuth, PartnerSetPriceController.createPartnerOrder_FromAdmin);
 router.route('/getOrders/ByPartner').get(PartnerAuth, PartnerSetPriceController.getOrdersByPartner);
-
+router.route('/getPartner/Orders').get(PartnerSetPriceController.getPartner_Orders);
+router.route('/update/Partner/Individual/Orders').post(PartnerSetPriceController.update_Partner_Individual_Orders);
+router.route('/orderChange/Status/:id').put(PartnerSetPriceController.orderChange_Status);
+router.route('/after/Ack/getAck_Orders').get(PartnerSetPriceController.getAck_Orders);
+router.route('/getPartner/Ordered/Products/:id').get(PartnerSetPriceController.getPartner_Ordered_Products);
+router.route('/Add_new_vehicle').post(PartnerSetPriceController.Add_new_vehicle);
+router.route('/all/vehicle').get(PartnerSetPriceController.getAll_Vehicles);
+router.route('/UpdateVehicleById/:id').put(PartnerSetPriceController.UpdateVehicleById);
+router.route('/update/Partnwe/Order/:id').put(PartnerSetPriceController.update_Partnwe_Order);
+router.route('/getLoadedOrders').get(PartnerSetPriceController.getLoadedOrders);
+router.route('/getFetchdata/For/bills/:id').get(PartnerSetPriceController.getFetchdata_For_bills);
+router.route('/Bill/GenerateById').post(PartnerSetPriceController.Bill_GenerateById);
+router.route('/stockUpdateByCart').post(PartnerSetPriceController.stockUpdateByCart);
+router.route('/getCartReports/:id').get(PartnerSetPriceController.getCartReports);
 module.exports = router;

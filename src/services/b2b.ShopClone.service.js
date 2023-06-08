@@ -5552,13 +5552,15 @@ const get_final_customer_shops = async (req) => {
       statusMatch = { new_re_approve: 'Cannot Spot the shop' };
     } else if (req.query.status == '5') {
       statusMatch = { new_re_approve: 'Not interested' };
+    } else if (req.query.status == '6') {
+      statusMatch = { new_re_approve: 'Irrelevant Shop' };
     } else {
       statusMatch;
     }
   }
 
   let shop = await Shop.aggregate([
-    {$sort:{customer_final_CREATED:-1}},
+    { $sort: { customer_final_CREATED: -1 } },
     {
       $match: {
         $and: [{ new_re_approve: { $ne: null } }, salesMatch, dateMatch, statusMatch],

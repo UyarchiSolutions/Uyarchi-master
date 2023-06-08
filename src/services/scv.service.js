@@ -31,6 +31,14 @@ const getScvCartbyId = async (id) => {
   return data;
 };
 
+const getCartBy_Allocated_Scv = async (id) => {
+  const data = await ScvCart.findOne({ allocatedScv: id });
+  if (!data) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'This Scv Not Allocated this cart');
+  }
+  return data;
+};
+
 const updateSCVById = async (scvId, updateBody) => {
   let scv = await getSCVById(scvId);
   if (!scv) {
@@ -66,8 +74,8 @@ const DisableCart = async (id) => {
   return values;
 };
 
-const getScvCarts = async () => {
-  let values = await ScvCart.find({ active: true });
+const getScvCarts = async (userId) => {
+  let values = await ScvCart.find({ active: true, partnerId: userId });
   return values;
 };
 
@@ -82,7 +90,8 @@ const updateSCVCart = async (id, body) => {
 
 const cartOn = async (id, body) => {
   let today = moment().format('DD-MM-YYYY');
-  console.log(today);
+  let today1 = moment().format('DD/MM/YYYY');
+
   let value = await ScvCart.findById(id);
   if (!value) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Cart Not Available');
@@ -127,13 +136,19 @@ const cartOn = async (id, body) => {
     {
       $project: {
         scvAttendance: '$scv.attendance.date',
+        cartOnDate: 1,
+        scv: '$scv',
       },
     },
   ]);
 
   let scvAttendance = values[0];
-  if (scvAttendance.scvAttendance == today) {
-    value = await ScvCart.findByIdAndUpdate({ _id: id }, body, { new: true });
+  console.log(values[0]);
+
+  let scv = await Scv.findById(value.allocatedScv);
+
+  if (scvAttendance.scvAttendance == today && scv.attendance == true) {
+    // value = await ScvCart.findByIdAndUpdate({ _id: id }, body, { new: true });
   } else {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Scv Attendance Not On Today');
   }
@@ -225,6 +240,8 @@ const getcarts_Allocation = async (userId) => {
         createdAt: 1,
         image: 1,
         allocatedScv: 1,
+        latestUpdateStock: 1,
+        cartOnDate: 1,
         allocatedTime: 1,
         scvName: '$scv.Name',
         scvActive: '$scv.active',
@@ -242,7 +259,6 @@ const getcarts_Allocation = async (userId) => {
     {
       $match: {
         scvActive: true,
-        scvworkingStatus: 'yes',
       },
     },
   ]);
@@ -391,15 +407,15 @@ const addPartner = async (body) => {
 
 const getPartners = async () => {
   const getAllPartner = await Customer.aggregate([
-    {
-      $match: { active: true },
-    },
+    // {
+    //   $match: { active: true },
+    // },
     {
       $lookup: {
         from: 'scvs',
         localField: '_id',
         foreignField: 'createdBy',
-        pipeline: [{ $match: { active: true } }],
+        // pipeline: [{ $match: { active: true } }],
         as: 'scv',
       },
     },
@@ -452,8 +468,7 @@ const get_Un_Assigned_Scv = async () => {
   let values = await Scv.aggregate([
     {
       $match: {
-        createdBy: { $eq: null },
-        active: true,
+        _id: { $ne: null },
       },
     },
   ]);
@@ -489,17 +504,22 @@ const scv_attendance = async (body) => {
   }
   if (type == 'OUT') {
     let findTodayRecord = await ScvAttendance.findOne({ scvId: scvId, date: todayDate });
-    let existSecond = findTodayRecord.totalSeconds;
-    let startTime = moment(findTodayRecord.startTime);
+    console.log(findTodayRecord);
+    let existSecond = findTodayRecord == null ? 0 : findTodayRecord.totalSeconds;
+    let startTime = moment(findTodayRecord == null ? 0 : findTodayRecord.startTime);
     let endTime = moment(times);
     const secondsDiff = endTime.diff(startTime, 'seconds');
     let TotalSecond = existSecond + secondsDiff;
-    await ScvAttendance.findByIdAndUpdate(
-      { _id: findTodayRecord._id },
-      { totalSeconds: TotalSecond, $push: { history: { startTime: startTime, endTime: times } } },
-      { new: true }
-    );
-    await Scv.findByIdAndUpdate({ _id: scvId }, { attendance: false }, { new: true });
+    if (findTodayRecord != null) {
+      await ScvAttendance.findByIdAndUpdate(
+        { _id: findTodayRecord._id },
+        { totalSeconds: TotalSecond, $push: { history: { startTime: startTime, endTime: times } } },
+        { new: true }
+      );
+      await Scv.findByIdAndUpdate({ _id: scvId }, { attendance: false }, { new: true });
+    } else {
+      await Scv.findByIdAndUpdate({ _id: scvId }, { attendance: false }, { new: true });
+    }
   }
   return { Message: 'Attendance updated......' };
 };
@@ -579,4 +599,5 @@ module.exports = {
   scv_attendance,
   getScv_Attendance_Reports,
   cartOn,
+  getCartBy_Allocated_Scv,
 };

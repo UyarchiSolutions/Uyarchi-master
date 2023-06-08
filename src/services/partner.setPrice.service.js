@@ -10,10 +10,12 @@ const {
   UpdateStock,
   PartnerOrder,
   PartnerOrderedProductsSeperate,
+  ManageVehicle,
 } = require('../models/partner.setPrice.models');
-const { ScvCart } = require('../models/Scv.mode');
+const { ScvCart, Scv } = require('../models/Scv.mode');
 const { Product } = require('../models/product.model');
 const moment = require('moment');
+const Api = require('twilio/lib/rest/Api');
 
 const SetPartnerPrice = async (body) => {
   let date = moment().format('YYYY-MM-dd');
@@ -140,6 +142,45 @@ const getOrdersbycart = async (cartId) => {
     },
     {
       $lookup: {
+        from: 'partnerorderproducts',
+        localField: '_id',
+        foreignField: 'orderId',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'products',
+              localField: 'productId',
+              foreignField: '_id',
+              as: 'product',
+            },
+          },
+          {
+            $unwind: {
+              preserveNullAndEmptyArrays: true,
+              path: '$product',
+            },
+          },
+          {
+            $project: {
+              _id: 1,
+              report: 1,
+              orderId: 1,
+              productId: 1,
+              cartId: 1,
+              QTY: 1,
+              date: 1,
+              createdAt: 1,
+              updatedAt: 1,
+              dQTY: 1,
+              productName: '$product.productTitle',
+            },
+          },
+        ],
+        as: 'ordersDetails',
+      },
+    },
+    {
+      $lookup: {
         from: 'scvcarts',
         localField: 'cartId',
         foreignField: '_id',
@@ -156,39 +197,43 @@ const getOrderedProducts = async (cartId, date) => {
   console.log(date);
   let data = await partnerCartOrderProducts.distinct('productId');
   let values = [];
-  for (let i = 0; i < data.length; i++) {
-    let id = data[i];
-    let datas = await partnerCartOrderProducts.aggregate([
-      {
-        $match: {
-          cartId: cartId,
-          productId: id,
-          date: date,
-        },
+  // for (let i = 0; i < data.length; i++) {
+  //   let id = data[i];
+  console.log(data.length);
+  let datas = await partnerCartOrderProducts.aggregate([
+    {
+      $match: {
+        cartId: cartId,
+        // productId: { $in: data },
+        date: date,
       },
-      {
-        $lookup: {
-          from: 'products',
-          localField: 'productId',
-          foreignField: '_id',
-          as: 'products',
-        },
+    },
+    {
+      $lookup: {
+        from: 'products',
+        localField: 'productId',
+        foreignField: '_id',
+        as: 'products',
       },
-      {
-        $unwind: {
-          preserveNullAndEmptyArrays: true,
-          path: '$products',
-        },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$products',
       },
-    ]);
-    if (datas[0] != null) {
-      values.push(datas[0]);
-    }
-  }
+    },
+    { $sort: { dQTY: 1 } },
+    { $sort: { givenQTY: -1 } },
+    // { $match: { dQTY: { $ne: null } } },
+  ]);
+  // if (datas[0] != null) {
+  //   values.push(datas[0]);
+  // }
+  // }
 
   let cartDetails = await ScvCart.findById(cartId);
 
-  return { values: values, cartDetails: cartDetails };
+  return { values: datas, cartDetails: cartDetails };
 };
 
 const updateAddOnStock = async (body) => {
@@ -220,7 +265,11 @@ const updateAddOnStock = async (body) => {
     body.forEach(async (e) => {
       let getValues = await partnerCartOrderProducts.findById(e._id);
       let totalvalue = parseInt(getValues.givenQTY ? getValues.givenQTY : 0 + e.given);
-      await partnerCartOrderProducts.findByIdAndUpdate({ _id: e._id }, { givenQTY: totalvalue }, { new: true });
+      await partnerCartOrderProducts.findByIdAndUpdate(
+        { _id: e._id },
+        { givenQTY: totalvalue, dQTY: getValues.dQTY + totalvalue },
+        { new: true }
+      );
     });
   }
 
@@ -246,6 +295,8 @@ const Return_Wastage_inCloseStock = async (body) => {
       { new: true }
     );
   });
+  let cart = await ScvCart.findById(cartId);
+  await Scv.findByIdAndUpdate({ _id: cart.allocatedScv }, { workingStatus: 'no' }, { new: true });
   await ScvCart.findByIdAndUpdate({ _id: cartId }, { cartOnDate: '' }, { new: true });
   return { message: 'Cart Closed' };
 };
@@ -325,6 +376,7 @@ const createPartnerOrder_FromAdmin = async (body, userId) => {
       scvOrders: e.scvKG,
       totalQty: e.totalqty,
       agreedPrice: e.price,
+      revisedPrice: e.price,
       Posted_date: todayDate,
       OrderedTo: tomorrowDate,
       partnerOrderId: creation._id,
@@ -410,11 +462,599 @@ const getOrder_For_CurrentDateByCart = async (query) => {
 };
 
 const DistributeGIven = async (body) => {
-  let { arr } = body;
+  let { arr, cartId, cartOnDate } = body;
   arr.forEach(async (e) => {
     await partnerCartOrderProducts.findByIdAndUpdate({ _id: e._id }, { dQTY: e.dQty }, { new: true });
   });
+  await ScvCart.findByIdAndUpdate({ _id: cartId }, { cartOnDate: cartOnDate }, { new: true });
   return { message: 'Ditribution work success.............' };
+};
+
+const getPartner_Orders = async () => {
+  let values = await PartnerOrder.aggregate([
+    {
+      $sort: { createdAt: -1 },
+    },
+    {
+      $lookup: {
+        from: 'scvcustomers',
+        localField: 'partnerId',
+        foreignField: '_id',
+        as: 'partner',
+      },
+    },
+    { $unwind: { preserveNullAndEmptyArrays: true, path: '$partner' } },
+
+    {
+      $lookup: {
+        from: 'partneradminorders',
+        localField: '_id',
+        foreignField: 'partnerOrderId',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'products',
+              localField: 'productId',
+              foreignField: '_id',
+              as: 'products',
+            },
+          },
+          {
+            $unwind: '$products',
+          },
+          {
+            $project: {
+              _id: 1,
+              productId: 1,
+              scvOrders: 1,
+              totalQty: 1,
+              agreedPrice: 1,
+              Posted_date: 1,
+              OrderedTo: 1,
+              partnerOrderId: 1,
+              revisedPrice: 1,
+              partnerId: 1,
+              createdAt: 1,
+              productName: '$products.productTitle',
+            },
+          },
+        ],
+        as: 'orders',
+      },
+    },
+    {
+      $lookup: {
+        from: 'partneradminorders',
+        localField: '_id',
+        foreignField: 'partnerOrderId',
+        pipeline: [{ $group: { _id: null, total: { $sum: '$totalQty' } } }],
+        as: 'TotakQuantity',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$TotakQuantity',
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        products: '$orders',
+        productCount: { $size: '$products' },
+        status: 1,
+        Posted_date: 1,
+        OrderedTo: 1,
+        partnerId: 1,
+        orderId: 1,
+        createdAt: 1,
+        partner: '$partner',
+        TotakQuantity: '$TotakQuantity.total',
+      },
+    },
+  ]);
+  return values;
+};
+
+const update_Partner_Individual_Orders = async (body) => {
+  const { arr } = body;
+  arr.forEach(async (e) => {
+    let orders = await PartnerOrderedProductsSeperate.findById(e._id);
+    orders = await PartnerOrderedProductsSeperate.findByIdAndUpdate(
+      { _id: e._id },
+      { revisedPrice: e.revisedPrice },
+      { new: true }
+    );
+  });
+  return { message: 'Revised Price Updated.....' };
+};
+
+const orderChange_Status = async (id, body) => {
+  let order = await PartnerOrder.findById(id);
+  if (!order) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Bad Request for Not Found');
+  }
+  order = await PartnerOrder.findByIdAndUpdate({ _id: id }, { status: body.status }, { new: true });
+  return order;
+};
+
+const getAck_Orders = async () => {
+  let values = await PartnerOrder.aggregate([
+    { $match: { status: 'Acknowledged' } },
+    {
+      $sort: { createdAt: -1 },
+    },
+    {
+      $lookup: {
+        from: 'scvcustomers',
+        localField: 'partnerId',
+        foreignField: '_id',
+        as: 'partner',
+      },
+    },
+    { $unwind: { preserveNullAndEmptyArrays: true, path: '$partner' } },
+
+    {
+      $lookup: {
+        from: 'partneradminorders',
+        localField: '_id',
+        foreignField: 'partnerOrderId',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'products',
+              localField: 'productId',
+              foreignField: '_id',
+              as: 'products',
+            },
+          },
+          {
+            $unwind: '$products',
+          },
+          {
+            $project: {
+              _id: 1,
+              productId: 1,
+              scvOrders: 1,
+              totalQty: 1,
+              agreedPrice: 1,
+              Posted_date: 1,
+              OrderedTo: 1,
+              partnerOrderId: 1,
+              revisedPrice: 1,
+              partnerId: 1,
+              createdAt: 1,
+              productName: '$products.productTitle',
+            },
+          },
+        ],
+        as: 'orders',
+      },
+    },
+    {
+      $lookup: {
+        from: 'partneradminorders',
+        localField: '_id',
+        foreignField: 'partnerOrderId',
+        pipeline: [{ $group: { _id: null, total: { $sum: '$totalQty' } } }],
+        as: 'TotakQuantity',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$TotakQuantity',
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        products: '$orders',
+        productCount: { $size: '$products' },
+        status: 1,
+        Posted_date: 1,
+        OrderedTo: 1,
+        partnerId: 1,
+        orderId: 1,
+        createdAt: 1,
+        partner: '$partner',
+        TotakQuantity: '$TotakQuantity.total',
+      },
+    },
+  ]);
+  return values;
+};
+
+const getPartner_Ordered_Products = async (id) => {
+  let values = await PartnerOrderedProductsSeperate.aggregate([
+    {
+      $match: { partnerOrderId: id },
+    },
+    {
+      $lookup: {
+        from: 'products',
+        localField: 'productId',
+        foreignField: '_id',
+        as: 'products',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$products',
+      },
+    },
+  ]);
+  return values;
+};
+
+// manage Vehicle
+
+const Add_new_vehicle = async (body) => {
+  const creations = await ManageVehicle.create(body);
+  return creations;
+};
+
+const getAll_Vehicles = async () => {
+  const vehicles = await ManageVehicle.find();
+  return vehicles;
+};
+
+const UpdateVehicleById = async (id, body) => {
+  let vehicle = await ManageVehicle.findById(id);
+  if (!vehicle) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Vehicle Not Available');
+  }
+  vehicle = await ManageVehicle.findByIdAndUpdate({ _id: id }, body, { new: true });
+  return vehicle;
+};
+
+const update_Partnwe_Order = async (id, body) => {
+  const { data, arr } = body;
+  let values = await PartnerOrder.findById(id);
+  if (!values) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Order Not Availabale');
+  }
+
+  arr.forEach(async (e) => {
+    await PartnerOrderedProductsSeperate.findByIdAndUpdate({ _id: e._id }, e, { new: true });
+  });
+
+  values = await PartnerOrder.findByIdAndUpdate({ _id: id }, data, { new: true });
+  return values;
+};
+
+const getLoadedOrders = async () => {
+  let values = await PartnerOrder.aggregate([
+    { $match: { status: 'billed' } },
+    {
+      $sort: { createdAt: -1 },
+    },
+    {
+      $lookup: {
+        from: 'scvcustomers',
+        localField: 'partnerId',
+        foreignField: '_id',
+        as: 'partner',
+      },
+    },
+    { $unwind: { preserveNullAndEmptyArrays: true, path: '$partner' } },
+
+    {
+      $lookup: {
+        from: 'partneradminorders',
+        localField: '_id',
+        foreignField: 'partnerOrderId',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'products',
+              localField: 'productId',
+              foreignField: '_id',
+              as: 'products',
+            },
+          },
+          {
+            $unwind: '$products',
+          },
+          {
+            $project: {
+              _id: 1,
+              productId: 1,
+              scvOrders: 1,
+              totalQty: 1,
+              agreedPrice: 1,
+              Posted_date: 1,
+              OrderedTo: 1,
+              partnerOrderId: 1,
+              revisedPrice: 1,
+              partnerId: 1,
+              createdAt: 1,
+              productName: '$products.productTitle',
+            },
+          },
+        ],
+        as: 'orders',
+      },
+    },
+    {
+      $lookup: {
+        from: 'partneradminorders',
+        localField: '_id',
+        foreignField: 'partnerOrderId',
+        pipeline: [
+          {
+            $group: {
+              _id: null,
+              total: { $sum: '$totalQty' },
+              totalAmt: { $sum: { $multiply: ['$totalQty', '$revisedPrice'] } },
+            },
+          },
+        ],
+        as: 'TotakQuantity',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$TotakQuantity',
+      },
+    },
+    { $addFields: { paidAmt: 0 } },
+    {
+      $project: {
+        _id: 1,
+        products: '$orders',
+        productCount: { $size: '$products' },
+        status: 1,
+        Posted_date: 1,
+        OrderedTo: 1,
+        partnerId: 1,
+        orderId: 1,
+        createdAt: 1,
+        partner: '$partner',
+        TotakQuantity: '$TotakQuantity.total',
+        totalAmt: '$TotakQuantity.totalAmt',
+        paidAmt: 1,
+      },
+    },
+  ]);
+  return values;
+};
+
+const getFetchdata_For_bills = async (id) => {
+  let values = await PartnerOrder.aggregate([
+    { $match: { _id: id, status: 'Loaded' } },
+    {
+      $sort: { createdAt: -1 },
+    },
+    {
+      $lookup: {
+        from: 'scvcustomers',
+        localField: 'partnerId',
+        foreignField: '_id',
+        as: 'partner',
+      },
+    },
+    { $unwind: { preserveNullAndEmptyArrays: true, path: '$partner' } },
+
+    {
+      $lookup: {
+        from: 'partneradminorders',
+        localField: '_id',
+        foreignField: 'partnerOrderId',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'products',
+              localField: 'productId',
+              foreignField: '_id',
+              as: 'products',
+            },
+          },
+          {
+            $unwind: '$products',
+          },
+          {
+            $project: {
+              _id: 1,
+              productId: 1,
+              scvOrders: 1,
+              totalQty: 1,
+              agreedPrice: 1,
+              Posted_date: 1,
+              OrderedTo: 1,
+              partnerOrderId: 1,
+              revisedPrice: 1,
+              partnerId: 1,
+              createdAt: 1,
+              givenStock: { $toInt: '$givenStock' },
+              productName: '$products.productTitle',
+            },
+          },
+        ],
+        as: 'orders',
+      },
+    },
+    {
+      $lookup: {
+        from: 'partneradminorders',
+        localField: '_id',
+        foreignField: 'partnerOrderId',
+        pipeline: [
+          {
+            $group: {
+              _id: null,
+              total: { $sum: '$totalQty' },
+              totalAmt: { $sum: { $multiply: ['$totalQty', '$revisedPrice'] } },
+            },
+          },
+        ],
+        as: 'TotakQuantity',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$TotakQuantity',
+      },
+    },
+    { $addFields: { paidAmt: 0 } },
+    {
+      $project: {
+        _id: 1,
+        products: '$orders',
+        productCount: { $size: '$products' },
+        status: 1,
+        Posted_date: 1,
+        OrderedTo: 1,
+        partnerId: 1,
+        orderId: 1,
+        createdAt: 1,
+        partner: '$partner',
+        TotakQuantity: '$TotakQuantity.total',
+        totalAmt: '$TotakQuantity.totalAmt',
+        paidAmt: 1,
+      },
+    },
+  ]);
+  return values;
+};
+
+const Bill_GenerateById = async (body) => {
+  const { orderId, billingAmt } = body;
+  let date = moment().format('YYYY-MM-DD');
+  let time = moment().format('HH:mm a');
+  let status = 'billed';
+  let findorder = await PartnerOrder.findById(orderId);
+  if (!findorder) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Order Not Found');
+  }
+  let findOrders = await PartnerOrder.find({ billingDate: date }).count();
+  let center = '';
+  if (findOrders < 9) {
+    center = '0000';
+  }
+  if (findOrders < 99 && findOrders >= 9) {
+    center = '000';
+  }
+  if (findOrders < 999 && findOrders >= 99) {
+    center = '00';
+  }
+  if (findOrders < 9999 && findOrders >= 999) {
+    center = '0';
+  }
+  let count = findOrders + 1;
+  let BId = `Bill${center}${count}`;
+  findorder = await PartnerOrder.findByIdAndUpdate(
+    { _id: orderId },
+    { BillingDate: date, BillingTime: time, status: status, BillingAmt: billingAmt, BillNo: BId },
+    { new: true }
+  );
+  return findorder;
+};
+
+const stockUpdateByCart = async (body) => {
+  const { arr, cartId } = body;
+  let cart = await ScvCart.findById(cartId);
+  let date = moment().format('DD-MM-YYYY');
+  let time = moment().format('h:mm a');
+  console.log(cart.cartUpdateHistory[date]);
+  if (cart.cartUpdateHistory[date] == null) {
+    cart = await ScvCart.updateOne(
+      { _id: cartId },
+      { latestUpdateStock: time, $set: { ['cartUpdateHistory.' + date]: [time] } },
+      { new: true }
+    );
+  } else {
+    cart = await ScvCart.updateOne(
+      { _id: cartId },
+      { latestUpdateStock: time, $push: { ['cartUpdateHistory.' + date]: time } },
+      { new: true }
+    );
+  }
+
+  arr.forEach(async (e) => {
+    await partnerCartOrderProducts.findByIdAndUpdate(
+      { _id: e._id },
+      { balanceQTY: e.balanceqty, lastBalanceTime: time, $push: { report: { time: time, qty: e.balanceqty } } },
+      { new: true }
+    );
+  });
+  return cart;
+};
+
+const getCartReports = async (id) => {
+  const today = moment().format('DD/MM/YYYY');
+  console.log(today);
+  const data = await ScvCart.aggregate([
+    { $match: { _id: id } },
+    {
+      $addFields: {
+        currentDate: { $dateToString: { format: '%d-%m-%Y', date: new Date() } },
+      },
+    },
+    {
+      $lookup: {
+        from: 'partnerorderproducts',
+        localField: '_id',
+        foreignField: 'cartId',
+        pipeline: [
+          { $match: { date: today } },
+          {
+            $lookup: {
+              from: 'products',
+              localField: 'productId',
+              foreignField: '_id',
+              as: 'product',
+            },
+          },
+          { $unwind: { preserveNullAndEmptyArrays: true, path: '$product' } },
+          {
+            $project: {
+              _id: 1,
+              orderId: 1,
+              productId: 1,
+              cartId: 1,
+              QTY: 1,
+              date: 1,
+              createdAt: 1,
+              updatedAt: 1,
+              dQTY: 1,
+              balanceQTY: 1,
+              lastBalanceTime: 1,
+              report: 1,
+              productName: '$product.productTitle',
+            },
+          },
+        ],
+        as: 'orders',
+      },
+    },
+    {
+      $project: {
+        _id: 0, // Exclude the _id field from the result
+        cartUpdateArray: {
+          $filter: {
+            input: { $objectToArray: '$cartUpdateHistory' },
+            cond: {
+              $eq: ['$$this.k', '$currentDate'],
+            },
+          },
+        },
+        orders: '$orders',
+      },
+    },
+    {
+      $project: {
+        time: {
+          $arrayElemAt: ['$cartUpdateArray.v', 0],
+        },
+        products: '$orders',
+      },
+    },
+  ]);
+  return data;
 };
 
 module.exports = {
@@ -433,4 +1073,18 @@ module.exports = {
   getOrdersByPartner,
   getOrder_For_CurrentDateByCart,
   DistributeGIven,
+  getPartner_Orders,
+  update_Partner_Individual_Orders,
+  orderChange_Status,
+  getAck_Orders,
+  getPartner_Ordered_Products,
+  Add_new_vehicle,
+  getAll_Vehicles,
+  UpdateVehicleById,
+  update_Partnwe_Order,
+  getLoadedOrders,
+  getFetchdata_For_bills,
+  Bill_GenerateById,
+  stockUpdateByCart,
+  getCartReports,
 };

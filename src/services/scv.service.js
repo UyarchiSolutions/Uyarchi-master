@@ -454,8 +454,7 @@ const get_Un_Assigned_Scv = async () => {
   let values = await Scv.aggregate([
     {
       $match: {
-        createdBy: { $eq: null },
-        active: true,
+        _id: { $ne: null },
       },
     },
   ]);

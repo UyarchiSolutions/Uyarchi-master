@@ -236,10 +236,7 @@ const getcarts_Allocation = async (userId) => {
       },
     },
     {
-      $unwind: {
-        preserveNullAndEmptyArrays: true,
-        path: '$scv',
-      },
+      $unwind: '$scv',
     },
   ]);
 

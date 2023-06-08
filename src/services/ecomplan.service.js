@@ -4823,7 +4823,7 @@ const get_watch_live_token = async (req) => {
   return value;
 };
 
-const getall_homeage_streams = async (req) => {
+const on_going_stream = async (req) => {
   var date_now = new Date().getTime();
   let streamId = req.query.id;
   let statusFilter = {
@@ -5399,7 +5399,7 @@ const getall_homeage_streams = async (req) => {
   return { completedStream, currentLives, upcoming };
 };
 
-const on_going_stream = async (req) => {
+const getall_homeage_streams = async (req) => {
   let interested = await Streamrequest.aggregate([
     { $match: { $and: [{ adminApprove: { $eq: 'Approved' } }] } },
     {

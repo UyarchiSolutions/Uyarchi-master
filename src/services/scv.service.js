@@ -24,10 +24,11 @@ const getAllSCV = async () => {
 };
 
 const getScvCartbyId = async (id) => {
-  const data = await ScvCart.findById(id);
-  if (!data) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Cart Not Found');
-  }
+  const data = await ScvCart.aggregate([
+    {
+      $match: { allocatedScv: id },
+    },
+  ]);
   return data;
 };
 
@@ -82,7 +83,6 @@ const updateSCVCart = async (id, body) => {
 
 const cartOn = async (id, body) => {
   let today = moment().format('DD-MM-YYYY');
-  console.log(today);
   let value = await ScvCart.findById(id);
   if (!value) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Cart Not Available');

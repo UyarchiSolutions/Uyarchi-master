@@ -4825,7 +4825,9 @@ const get_watch_live_token = async (req) => {
 
 const on_going_stream = async (req) => {
   var date_now = new Date().getTime();
-  let streamId = req.query.id;
+  let userjoin = await Joinusers.findById(req.query.id)
+  let streamId = userjoin.streamId;
+
   let statusFilter = {
     $or: [
       { status: { $eq: 'Completed' } },
@@ -5504,7 +5506,6 @@ const getall_homeage_streams = async (req) => {
               from: 'streamposts',
               localField: 'postId',
               foreignField: '_id',
-              pipeline: [{ $match: { $and: [{ afterStreaming: { $eq: 'yes' } }] } }],
               as: 'streamposts',
             },
           },

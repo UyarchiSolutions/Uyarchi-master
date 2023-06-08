@@ -298,7 +298,11 @@ const getall_homeage_streams = catchAsync(async (req, res) => {
   const value = await Ecomserive.getall_homeage_streams(req);
   res.send(value);
 });
-
+const on_going_stream = catchAsync(async (req, res) => {
+  console.log('sdas');
+  const value = await Ecomserive.getall_homeage_streams(req);
+  res.send(value);
+});
 const regisetr_strean_instrest = catchAsync(async (req, res) => {
   console.log('sdas');
   const value = await Ecomserive.regisetr_strean_instrest(req);
@@ -650,5 +654,6 @@ module.exports = {
   get_watch_live_steams_completed,
   get_watch_live_steams_upcoming_byid,
   getall_homeage_streams,
-  get_watch_live_steams_current
+  get_watch_live_steams_current,
+  on_going_stream
 };

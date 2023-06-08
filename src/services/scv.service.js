@@ -137,13 +137,14 @@ const cartOn = async (id, body) => {
       $project: {
         scvAttendance: '$scv.attendance.date',
         cartOnDate: 1,
+        scv: '$scv',
       },
     },
   ]);
 
   let scvAttendance = values[0];
   console.log(values[0]);
-  if (scvAttendance.scvAttendance == today && values[0].cartOnDate == today1) {
+  if (scvAttendance.scvAttendance == today) {
     // value = await ScvCart.findByIdAndUpdate({ _id: id }, body, { new: true });
   } else {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Scv Attendance Not On Today');

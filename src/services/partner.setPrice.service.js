@@ -12,7 +12,7 @@ const {
   PartnerOrderedProductsSeperate,
   ManageVehicle,
 } = require('../models/partner.setPrice.models');
-const { ScvCart } = require('../models/Scv.mode');
+const { ScvCart, Scv } = require('../models/Scv.mode');
 const { Product } = require('../models/product.model');
 const moment = require('moment');
 const Api = require('twilio/lib/rest/Api');
@@ -295,6 +295,8 @@ const Return_Wastage_inCloseStock = async (body) => {
       { new: true }
     );
   });
+  let cart = await ScvCart.findById(cartId);
+  await Scv.findByIdAndUpdate({ _id: cart.allocatedScv }, { attendance: false, workingStatus: 'no' }, { new: true });
   await ScvCart.findByIdAndUpdate({ _id: cartId }, { cartOnDate: '' }, { new: true });
   return { message: 'Cart Closed' };
 };

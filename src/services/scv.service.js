@@ -144,7 +144,10 @@ const cartOn = async (id, body) => {
 
   let scvAttendance = values[0];
   console.log(values[0]);
-  if (scvAttendance.scvAttendance == today) {
+
+  let scv = await Scv.findById(value.allocatedScv);
+
+  if (scvAttendance.scvAttendance == today && scv.attendance == true) {
     // value = await ScvCart.findByIdAndUpdate({ _id: id }, body, { new: true });
   } else {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Scv Attendance Not On Today');

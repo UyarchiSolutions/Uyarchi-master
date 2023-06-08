@@ -66,7 +66,8 @@ const DisableCart = catchAsync(async (req, res) => {
 });
 
 const getScvCarts = catchAsync(async (req, res) => {
-  const data = await scvService.getScvCarts();
+  let userId = req.userId
+  const data = await scvService.getScvCarts(userId);
   res.send(data);
 });
 

@@ -66,8 +66,8 @@ const DisableCart = async (id) => {
   return values;
 };
 
-const getScvCarts = async () => {
-  let values = await ScvCart.find({ active: true });
+const getScvCarts = async (userId) => {
+  let values = await ScvCart.find({ active: true, partnerId: userId });
   return values;
 };
 

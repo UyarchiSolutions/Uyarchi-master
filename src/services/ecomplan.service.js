@@ -4824,6 +4824,582 @@ const get_watch_live_token = async (req) => {
 };
 
 const getall_homeage_streams = async (req) => {
+  var date_now = new Date().getTime();
+  let streamId = req.query.id;
+  let statusFilter = {
+    $or: [
+      { status: { $eq: 'Completed' } },
+      { $and: [{ streamEnd_Time: { $lt: date_now } }, { tokenGeneration: { $eq: true } }] },
+    ],
+  };
+  let completedStream = await Streamrequest.aggregate([
+    { $match: { $and: [{ _id: { $ne: streamId } }, statusFilter, { adminApprove: { $eq: 'Approved' } }] } },
+    {
+      $lookup: {
+        from: 'joinedusers',
+        localField: '_id',
+        foreignField: 'streamId',
+        pipeline: [{ $group: { _id: 1, count: { $sum: 1 } } }],
+        as: 'joinedusers',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$joinedusers',
+      },
+    },
+    {
+      $lookup: {
+        from: 'joinedusers',
+        localField: '_id',
+        foreignField: 'streamId',
+        pipeline: [
+          { $match: { shopId: req.shopId } },
+          {
+            $project: {
+              _id: 1,
+              active: { $eq: ['$shopId', req.shopId] },
+            },
+          },
+        ],
+        as: 'joinedusers_user',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$joinedusers_user',
+      },
+    },
+    {
+      $addFields: {
+        alreadyJoined: { $ifNull: ['$joinedusers_user.active', false] },
+      },
+    },
+    {
+      $lookup: {
+        from: 'sellers',
+        localField: 'suppierId',
+        foreignField: '_id',
+        as: 'suppliers',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$suppliers',
+      },
+    },
+    {
+      $lookup: {
+        from: 'streampreregisters',
+        localField: '_id',
+        foreignField: 'streamId',
+        pipeline: [{ $match: { shopId: req.shopId } }],
+        as: 'streampreregister',
+      },
+    },
+    {
+      $unwind: "$streampreregister"
+    },
+    {
+      $addFields: {
+        registerStatus: '$streampreregister.status',
+      },
+    },
+    {
+      $addFields: {
+        eligible: '$streampreregister.eligible'
+      },
+    },
+    {
+      $addFields: {
+        viewstatus: '$streampreregister.viewstatus'
+      },
+    },
+    {
+      $addFields: {
+        reg_DateIso: '$streampreregister.DateIso'
+      },
+    },
+    { $sort: { reg_DateIso: -1 } },
+    { $match: { $and: [{ registerStatus: { $eq: 'Registered' } }] } },
+    {
+      $lookup: {
+        from: 'streamrequestposts',
+        localField: '_id',
+        foreignField: 'streamRequest',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'streamposts',
+              localField: 'postId',
+              foreignField: '_id',
+              pipeline: [{ $match: { $and: [{ afterStreaming: { $eq: 'yes' } }] } }],
+              as: 'streamposts',
+            },
+          },
+          { $unwind: '$streamposts' },
+          {
+            $group: {
+              _id: null,
+              count: { $sum: 1 },
+            },
+          },
+        ],
+        as: 'streamrequestposts_count',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$streamrequestposts_count',
+      },
+    },
+    {
+      $addFields: {
+        streamrequestposts_count: { $ifNull: ['$streamrequestposts_count.count', 0] },
+      },
+    },
+
+    {
+      $lookup: {
+        from: 'streamrequestposts',
+        localField: '_id',
+        foreignField: 'streamRequest',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'streamposts',
+              localField: 'postId',
+              foreignField: '_id',
+              pipeline: [
+                {
+                  $lookup: {
+                    from: 'products',
+                    localField: 'productId',
+                    foreignField: '_id',
+                    as: 'products',
+                  },
+                },
+                { $unwind: '$products' },
+                {
+                  $addFields: {
+                    productTitle: "$products.productTitle"
+                  },
+                },
+                {
+                  $project: {
+                    _id: 1,
+                    productTitle: 1
+                  }
+                }
+              ],
+              as: 'streamposts',
+            },
+          },
+          { $unwind: '$streamposts' },
+
+          {
+            $group: {
+              _id: null,
+              productTitle: { $push: "$streamposts.productTitle" },
+            }
+          },
+        ],
+        as: 'streamrequestposts',
+      },
+    },
+    { $unwind: "$streamrequestposts" },
+    {
+      $project: {
+        _id: 1,
+        image: 1,
+        active: 1,
+        archive: 1,
+        post: 1,
+        communicationMode: 1,
+        sepTwo: 1,
+        adminApprove: 1,
+        activelive: 1,
+        tokenGeneration: 1,
+        bookingAmount: 1,
+        streamingDate: 1,
+        streamingTime: 1,
+        discription: 1,
+        streamName: 1,
+        suppierId: 1,
+        postCount: 1,
+        startTime: 1,
+        DateIso: 1,
+        created: 1,
+        Duration: 1,
+        chat: 1,
+        endTime: 1,
+        max_post_per_stream: 1,
+        noOfParticipants: 1,
+        planId: 1,
+        tokenDetails: 1,
+        golive: { $gt: ['$noOfParticipants', '$joinedusers.count'] },
+        goLive: 1,
+        joinedusers_user: '$joinedusers_user',
+        alreadyJoined: 1,
+        suppliersName: '$suppliers.contactName',
+        tradeName: '$suppliers.tradeName',
+        registerStatus: 1,
+        eligible: 1,
+        viewstatus: 1,
+        status: 1,
+        streamrequestposts_count: 1,
+        streamEnd_Time: 1,
+        productArray: "$streamrequestposts.productTitle",
+        teaser: 1,
+      },
+    },
+    { $limit: 5 },
+  ]);
+
+  let upcoming = await Streamrequest.aggregate([
+    { $sort: { startTime: 1 } },
+    { $match: { $and: [{ _id: { $ne: streamId } }, { startTime: { $gt: date_now } }, { adminApprove: { $eq: 'Approved' } }] } },
+    {
+      $lookup: {
+        from: 'joinedusers',
+        localField: '_id',
+        foreignField: 'streamId',
+        pipeline: [{ $group: { _id: 1, count: { $sum: 1 } } }],
+        as: 'joinedusers',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$joinedusers',
+      },
+    },
+    {
+      $lookup: {
+        from: 'joinedusers',
+        localField: '_id',
+        foreignField: 'streamId',
+        pipeline: [
+          { $match: { shopId: req.shopId } },
+          {
+            $project: {
+              _id: 1,
+              active: { $eq: ['$shopId', req.shopId] },
+            },
+          },
+        ],
+        as: 'joinedusers_user',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$joinedusers_user',
+      },
+    },
+    {
+      $addFields: {
+        alreadyJoined: { $ifNull: ['$joinedusers_user.active', false] },
+      },
+    },
+    {
+      $lookup: {
+        from: 'sellers',
+        localField: 'suppierId',
+        foreignField: '_id',
+        as: 'suppliers',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$suppliers',
+      },
+    },
+    {
+      $lookup: {
+        from: 'streampreregisters',
+        localField: '_id',
+        foreignField: 'streamId',
+        pipeline: [{ $match: { shopId: req.shopId } }],
+        as: 'streampreregister',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$streampreregister',
+      },
+    },
+    {
+      $addFields: {
+        registerStatus: { $ifNull: ['$streampreregister.status', 'Not Registered'] },
+      },
+    },
+    {
+      $addFields: {
+        eligible: { $ifNull: ['$streampreregister.eligible', false] },
+      },
+    },
+    {
+      $addFields: {
+        viewstatus: { $ifNull: ['$streampreregister.viewstatus', ''] },
+      },
+    },
+    {
+      $lookup: {
+        from: 'streamrequestposts',
+        localField: '_id',
+        foreignField: 'streamRequest',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'streamposts',
+              localField: 'postId',
+              foreignField: '_id',
+              pipeline: [{ $match: { $and: [{ afterStreaming: { $eq: 'yes' } }] } }],
+              as: 'streamposts',
+            },
+          },
+          { $unwind: '$streamposts' },
+          {
+            $group: {
+              _id: null,
+              count: { $sum: 1 },
+            },
+          },
+        ],
+        as: 'streamrequestposts_count',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$streamrequestposts_count',
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        image: 1,
+        active: 1,
+        archive: 1,
+        post: 1,
+        communicationMode: 1,
+        sepTwo: 1,
+        adminApprove: 1,
+        activelive: 1,
+        tokenGeneration: 1,
+        bookingAmount: 1,
+        streamingDate: 1,
+        streamingTime: 1,
+        discription: 1,
+        streamName: 1,
+        suppierId: 1,
+        postCount: 1,
+        startTime: 1,
+        DateIso: 1,
+        created: 1,
+        Duration: 1,
+        chat: 1,
+        endTime: 1,
+        max_post_per_stream: 1,
+        noOfParticipants: 1,
+        planId: 1,
+        tokenDetails: 1,
+        golive: { $gt: ['$noOfParticipants', '$joinedusers.count'] },
+        goLive: 1,
+        joinedusers_user: '$joinedusers_user',
+        alreadyJoined: 1,
+        suppliersName: '$suppliers.primaryContactName',
+        registerStatus: 1,
+        eligible: 1,
+        viewstatus: 1,
+        status: 1,
+        streamrequestposts_count: 1,
+        streamEnd_Time: 1,
+        teaser: 1,
+
+      },
+    },
+    { $limit: 5 },
+  ]);
+  let currentLives = await Streamrequest.aggregate([
+    { $sort: { startTime: 1 } },
+    { $match: { $and: [{ _id: { $ne: streamId } }, { startTime: { $lt: date_now } }, { streamEnd_Time: { $gt: date_now } }, { adminApprove: { $eq: 'Approved' } }] } },
+    {
+      $lookup: {
+        from: 'joinedusers',
+        localField: '_id',
+        foreignField: 'streamId',
+        pipeline: [{ $group: { _id: 1, count: { $sum: 1 } } }],
+        as: 'joinedusers',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$joinedusers',
+      },
+    },
+    {
+      $lookup: {
+        from: 'joinedusers',
+        localField: '_id',
+        foreignField: 'streamId',
+        pipeline: [
+          { $match: { shopId: req.shopId } },
+          {
+            $project: {
+              _id: 1,
+              active: { $eq: ['$shopId', req.shopId] },
+            },
+          },
+        ],
+        as: 'joinedusers_user',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$joinedusers_user',
+      },
+    },
+    {
+      $addFields: {
+        alreadyJoined: { $ifNull: ['$joinedusers_user.active', false] },
+      },
+    },
+    {
+      $lookup: {
+        from: 'sellers',
+        localField: 'suppierId',
+        foreignField: '_id',
+        as: 'suppliers',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$suppliers',
+      },
+    },
+    {
+      $lookup: {
+        from: 'streampreregisters',
+        localField: '_id',
+        foreignField: 'streamId',
+        pipeline: [{ $match: { shopId: req.shopId } }],
+        as: 'streampreregister',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$streampreregister',
+      },
+    },
+    {
+      $addFields: {
+        registerStatus: { $ifNull: ['$streampreregister.status', 'Not Registered'] },
+      },
+    },
+    {
+      $addFields: {
+        eligible: { $ifNull: ['$streampreregister.eligible', false] },
+      },
+    },
+    {
+      $addFields: {
+        viewstatus: { $ifNull: ['$streampreregister.viewstatus', ''] },
+      },
+    },
+    {
+      $lookup: {
+        from: 'streamrequestposts',
+        localField: '_id',
+        foreignField: 'streamRequest',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'streamposts',
+              localField: 'postId',
+              foreignField: '_id',
+              pipeline: [{ $match: { $and: [{ afterStreaming: { $eq: 'yes' } }] } }],
+              as: 'streamposts',
+            },
+          },
+          { $unwind: '$streamposts' },
+          {
+            $group: {
+              _id: null,
+              count: { $sum: 1 },
+            },
+          },
+        ],
+        as: 'streamrequestposts_count',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$streamrequestposts_count',
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        active: 1,
+        archive: 1,
+        post: 1,
+        communicationMode: 1,
+        sepTwo: 1,
+        adminApprove: 1,
+        activelive: 1,
+        tokenGeneration: 1,
+        bookingAmount: 1,
+        streamingDate: 1,
+        streamingTime: 1,
+        discription: 1,
+        streamName: 1,
+        suppierId: 1,
+        postCount: 1,
+        startTime: 1,
+        DateIso: 1,
+        created: 1,
+        Duration: 1,
+        chat: 1,
+        endTime: 1,
+        max_post_per_stream: 1,
+        noOfParticipants: 1,
+        planId: 1,
+        tokenDetails: 1,
+        golive: { $gt: ['$noOfParticipants', '$joinedusers.count'] },
+        goLive: 1,
+        joinedusers_user: '$joinedusers_user',
+        alreadyJoined: 1,
+        suppliersName: '$suppliers.contactName',
+        registerStatus: 1,
+        eligible: 1,
+        viewstatus: 1,
+        status: 1,
+        streamrequestposts_count: 1,
+        streamEnd_Time: 1,
+        image: 1,
+        teaser: 1,
+
+      },
+    },
+    { $limit: 5 },
+  ]);
+  return { completedStream, currentLives, upcoming };
+};
+
+const on_going_stream = async (req) => {
   let interested = await Streamrequest.aggregate([
     { $match: { $and: [{ adminApprove: { $eq: 'Approved' } }] } },
     {
@@ -10366,5 +10942,6 @@ module.exports = {
   get_watch_live_steams_completed,
   getall_homeage_streams,
   get_watch_live_steams_current,
-  get_post_view
+  get_post_view,
+  on_going_stream
 };

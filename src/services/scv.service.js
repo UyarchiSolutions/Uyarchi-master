@@ -90,6 +90,8 @@ const updateSCVCart = async (id, body) => {
 
 const cartOn = async (id, body) => {
   let today = moment().format('DD-MM-YYYY');
+  let today1 = moment().format('DD/MM/YYYY');
+
   let value = await ScvCart.findById(id);
   if (!value) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Cart Not Available');
@@ -134,12 +136,14 @@ const cartOn = async (id, body) => {
     {
       $project: {
         scvAttendance: '$scv.attendance.date',
+        cartOnDate: 1,
       },
     },
   ]);
 
   let scvAttendance = values[0];
-  if (scvAttendance.scvAttendance == today) {
+  console.log(values[0]);
+  if (scvAttendance.scvAttendance == today && values[0].cartOnDate == today1) {
     // value = await ScvCart.findByIdAndUpdate({ _id: id }, body, { new: true });
   } else {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Scv Attendance Not On Today');

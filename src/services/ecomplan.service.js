@@ -2767,7 +2767,7 @@ const get_watch_live_steams_admin_watch = async (req) => {
         from: 'temptokens',
         localField: '_id',
         foreignField: 'streamId',
-        pipeline: [{ $match: { $and: [{ type: { $eq: 'host' } }] } }],
+        pipeline: [{ $match: { $and: [{ type: { $eq: 'CloudRecording' } }] } }],
         as: 'temptokens',
       },
     },

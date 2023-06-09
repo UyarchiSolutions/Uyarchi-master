@@ -7509,6 +7509,7 @@ const get_completed_stream_buyer = async (req) => {
                     created: 1,
                     bookingAmount: 1,
                     products: '$products',
+                    status: 1
                   },
                 },
               ],
@@ -7538,6 +7539,7 @@ const get_completed_stream_buyer = async (req) => {
               suppierId: 1,
               DateIso: 1,
               created: '2023-01-20T11:46:58.201Z',
+              postStatus: "$streamposts.status"
             },
           },
         ],

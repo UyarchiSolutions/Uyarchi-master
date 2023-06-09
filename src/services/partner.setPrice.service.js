@@ -460,6 +460,7 @@ const getOrdersByPartner = async (id) => {
 
 const getOrder_For_CurrentDateByCart = async (query) => {
   const { cartId, date } = query;
+  let yersterday = moment().subtract('days', 1).format('DD/MM/YYYY');
   let values = await partnerCartOrderProducts.aggregate([
     {
       $match: {
@@ -482,6 +483,21 @@ const getOrder_For_CurrentDateByCart = async (query) => {
       },
     },
     {
+      $lookup: {
+        from: 'partnerorderproducts',
+        localField: 'productId',
+        foreignField: 'productId',
+        pipeline: [{ $match: { date: yersterday, cartId: cartId } }],
+        as: 'products2',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$products2',
+      },
+    },
+    {
       $project: {
         _id: 1,
         orderId: 1,
@@ -490,6 +506,7 @@ const getOrder_For_CurrentDateByCart = async (query) => {
         QTY: 1,
         date: 1,
         productName: '$products.productTitle',
+        yersterdayReturn: { $ifNull: ['$products2.returnQTY', 0] },
       },
     },
   ]);

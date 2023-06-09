@@ -267,7 +267,7 @@ const updateAddOnStock = async (body) => {
       let totalvalue = parseInt(getValues.givenQTY ? getValues.givenQTY : 0 + e.given);
       await partnerCartOrderProducts.findByIdAndUpdate(
         { _id: e._id },
-        { givenQTY: totalvalue, dQTY: getValues.dQTY + totalvalue },
+        { givenQTY: totalvalue, dQTY: getValues.dQTY ? getValues.dQTY : 0 + totalvalue },
         { new: true }
       );
     });

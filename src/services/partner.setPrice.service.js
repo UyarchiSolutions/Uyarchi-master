@@ -195,6 +195,7 @@ const getOrdersbycart = async (cartId) => {
 
 const getOrderedProducts = async (cartId, date) => {
   console.log(date);
+  let yersterday = moment().subtract('days', 1).format('DD/MM/YYYY');
   let data = await partnerCartOrderProducts.distinct('productId');
   let values = [];
   // for (let i = 0; i < data.length; i++) {
@@ -220,6 +221,38 @@ const getOrderedProducts = async (cartId, date) => {
       $unwind: {
         preserveNullAndEmptyArrays: true,
         path: '$products',
+      },
+    },
+    {
+      $lookup: {
+        from: 'partnerorderproducts',
+        localField: 'productId',
+        foreignField: 'productId',
+        pipeline: [{ $match: { date: yersterday, cartId: cartId } }],
+        as: 'products2',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$products2',
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        report: 1,
+        orderId: 1,
+        productId: 1,
+        cartId: 1,
+        QTY: 1,
+        date: 1,
+        createdAt: 1,
+        updatedAt: 1,
+        dQTY: 1,
+        products: 1,
+        products2: '$products2',
+        givenQTY: 1,
       },
     },
     { $sort: { dQTY: 1 } },
@@ -264,8 +297,8 @@ const updateAddOnStock = async (body) => {
   } else {
     body.forEach(async (e) => {
       let getValues = await partnerCartOrderProducts.findById(e._id);
-      let totalvalue = parseInt(getValues.givenQTY ? getValues.givenQTY : 0 + e.given);
-      await partnerCartOrderProducts.findByIdAndUpdate(
+      let totalvalue = parseInt((getValues.givenQTY ? getValues.givenQTY : 0) + e.given);
+      await partnerCartOrderProducts.findOneAndUpdate(
         { _id: e._id },
         { givenQTY: totalvalue, dQTY: getValues.dQTY ? getValues.dQTY : 0 + totalvalue },
         { new: true }

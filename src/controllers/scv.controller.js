@@ -268,6 +268,11 @@ const getCartBy_Allocated_Scv = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const Remove__ScvFrom_Cart = catchAsync(async (req, res) => {
+  const data = await ScvPartnerService.Remove__ScvFrom_Cart(req.body);
+  res.send(data);
+});
+
 module.exports = {
   createSCV,
   getSCVById,
@@ -303,4 +308,5 @@ module.exports = {
   getScv_Attendance_Reports,
   cartOn,
   getCartBy_Allocated_Scv,
+  Remove__ScvFrom_Cart,
 };

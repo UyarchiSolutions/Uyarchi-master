@@ -4239,7 +4239,7 @@ const get_watch_live_steams_completed = async (req) => {
               from: 'streamposts',
               localField: 'postId',
               foreignField: '_id',
-              pipeline: [{ $match: { $and: [{ afterStreaming: { $eq: 'yes' } }] } }],
+              pipeline: [{ $match: { $and: [{ afterStreaming: { $eq: 'yes' } }, { status: { $ne: "Removed" } }] } }],
               as: 'streamposts',
             },
           },
@@ -4835,7 +4835,7 @@ const on_going_stream = async (req) => {
     ],
   };
   let completedStream = await Streamrequest.aggregate([
-    { $match: { $and: [{ _id: { $ne: streamId } }, statusFilter, { adminApprove: { $eq: 'Approved' } },{status:{$ne:'Cancelled'}}] } },
+    { $match: { $and: [{ _id: { $ne: streamId } }, statusFilter, { adminApprove: { $eq: 'Approved' } }, { status: { $ne: 'Cancelled' } }] } },
     {
       $lookup: {
         from: 'joinedusers',
@@ -5064,7 +5064,7 @@ const on_going_stream = async (req) => {
 
   let upcoming = await Streamrequest.aggregate([
     { $sort: { startTime: 1 } },
-    { $match: { $and: [{ _id: { $ne: streamId } }, { startTime: { $gt: date_now } }, { adminApprove: { $eq: 'Approved' } },{status:{$ne:'Cancelled'}}] } },
+    { $match: { $and: [{ _id: { $ne: streamId } }, { startTime: { $gt: date_now } }, { adminApprove: { $eq: 'Approved' } }, { status: { $ne: 'Cancelled' } }] } },
     {
       $lookup: {
         from: 'joinedusers',
@@ -5282,7 +5282,7 @@ const on_going_stream = async (req) => {
   ]);
   let currentLives = await Streamrequest.aggregate([
     { $sort: { startTime: 1 } },
-    { $match: { $and: [{ _id: { $ne: streamId } }, { startTime: { $lt: date_now } }, { streamEnd_Time: { $gt: date_now } }, { adminApprove: { $eq: 'Approved' } },{status:{$ne:'Cancelled'}}] } },
+    { $match: { $and: [{ _id: { $ne: streamId } }, { startTime: { $lt: date_now } }, { streamEnd_Time: { $gt: date_now } }, { adminApprove: { $eq: 'Approved' } }, { status: { $ne: 'Cancelled' } }] } },
     {
       $lookup: {
         from: 'joinedusers',
@@ -5959,7 +5959,7 @@ const getall_homeage_streams = async (req) => {
   var date_now = new Date().getTime();
   let upcoming = await Streamrequest.aggregate([
     { $sort: { startTime: 1 } },
-    { $match: { $and: [{ startTime: { $gt: date_now } }, { adminApprove: { $eq: 'Approved' } },{status:{$ne:'Cancelled'}}] } },
+    { $match: { $and: [{ startTime: { $gt: date_now } }, { adminApprove: { $eq: 'Approved' } }, { status: { $ne: 'Cancelled' } }] } },
     {
       $lookup: {
         from: 'joinedusers',
@@ -6180,7 +6180,7 @@ const getall_homeage_streams = async (req) => {
   ]);
   let upcoming_next = await Streamrequest.aggregate([
     { $sort: { startTime: 1 } },
-    { $match: { $and: [{ startTime: { $gt: date_now } }, { adminApprove: { $eq: 'Approved' } },{status:{$ne:'Cancelled'}}] } },
+    { $match: { $and: [{ startTime: { $gt: date_now } }, { adminApprove: { $eq: 'Approved' } }, { status: { $ne: 'Cancelled' } }] } },
     {
       $lookup: {
         from: 'joinedusers',
@@ -6402,7 +6402,7 @@ const getall_homeage_streams = async (req) => {
   ]);
   let currentLives = await Streamrequest.aggregate([
     { $sort: { startTime: 1 } },
-    { $match: { $and: [{ startTime: { $lt: date_now } }, { streamEnd_Time: { $gt: date_now } }, { adminApprove: { $eq: 'Approved' } },{status:{$ne:'Cancelled'}}] } },
+    { $match: { $and: [{ startTime: { $lt: date_now } }, { streamEnd_Time: { $gt: date_now } }, { adminApprove: { $eq: 'Approved' } }, { status: { $ne: 'Cancelled' } }] } },
     {
       $lookup: {
         from: 'joinedusers',
@@ -6624,7 +6624,7 @@ const getall_homeage_streams = async (req) => {
   ]);
   let currentLives_next = await Streamrequest.aggregate([
     { $sort: { startTime: 1 } },
-    { $match: { $and: [{ startTime: { $lt: date_now } }, { streamEnd_Time: { $gt: date_now } }, { adminApprove: { $eq: 'Approved' } },{status:{$ne:'Cancelled'}}] } },
+    { $match: { $and: [{ startTime: { $lt: date_now } }, { streamEnd_Time: { $gt: date_now } }, { adminApprove: { $eq: 'Approved' } }, { status: { $ne: 'Cancelled' } }] } },
     {
       $lookup: {
         from: 'joinedusers',
@@ -7480,7 +7480,7 @@ const get_completed_stream_buyer = async (req) => {
               localField: 'postId',
               foreignField: '_id',
               pipeline: [
-                { $match: { $and: [{ afterStreaming: { $eq: 'yes' } }] } },
+                { $match: { $and: [{ afterStreaming: { $eq: 'yes' } }, { status: { $ne: "Removed" } }] } },
                 {
                   $lookup: {
                     from: 'products',
@@ -7509,6 +7509,7 @@ const get_completed_stream_buyer = async (req) => {
                     created: 1,
                     bookingAmount: 1,
                     products: '$products',
+                    status: 1
                   },
                 },
               ],
@@ -7538,6 +7539,7 @@ const get_completed_stream_buyer = async (req) => {
               suppierId: 1,
               DateIso: 1,
               created: '2023-01-20T11:46:58.201Z',
+              postStatus: "$streamposts.status"
             },
           },
         ],

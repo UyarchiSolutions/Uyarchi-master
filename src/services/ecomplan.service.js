@@ -1514,6 +1514,47 @@ const get_one_stream = async (req) => {
     {
       $unwind: '$purchasedplans',
     },
+    {
+      $lookup: {
+        from: 'streamrequestposts',
+        localField: '_id',
+        foreignField: 'streamRequest',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'streamposts',
+              localField: 'postId',
+              foreignField: '_id',
+              pipeline: [
+                {
+                  $lookup: {
+                    from: 'products',
+                    localField: 'productId',
+                    foreignField: '_id',
+                    as: 'products',
+                  },
+                },
+                {
+                  $unwind: '$products',
+                },
+              ],
+              as: 'streamposts',
+            },
+          },
+          {
+            $unwind: '$streamposts',
+          },
+          {
+            $project: {
+              _id: 1,
+              productName: "$streamposts.products.productTitle"
+            }
+          }
+        ],
+        as: 'streamrequestposts',
+      },
+    },
+
   ]);
   if (value.length == 0) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Not Found');
@@ -3035,7 +3076,7 @@ const get_watch_live_steams_current = async (req) => {
   let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : parseInt(req.query.page);
   let currentLives = await Streamrequest.aggregate([
     { $sort: { startTime: 1 } },
-    { $match: { $and: [{ startTime: { $lt: date_now } }, { streamEnd_Time: { $gt: date_now } }, { adminApprove: { $eq: 'Approved' } },{status:{$ne:"Cancelled"}}] } },
+    { $match: { $and: [{ startTime: { $lt: date_now } }, { streamEnd_Time: { $gt: date_now } }, { adminApprove: { $eq: 'Approved' } }, { status: { $ne: "Cancelled" } }] } },
     {
       $lookup: {
         from: 'joinedusers',
@@ -3487,7 +3528,7 @@ const get_watch_live_steams_upcoming = async (req) => {
 
   let value = await Streamrequest.aggregate([
     { $sort: { startTime: 1 } },
-    { $match: { $and: [statusFilter, { adminApprove: { $eq: 'Approved' } },{status:{$ne:"Cancelled"}}] } },
+    { $match: { $and: [statusFilter, { adminApprove: { $eq: 'Approved' } }, { status: { $ne: "Cancelled" } }] } },
     {
       $lookup: {
         from: 'joinedusers',
@@ -4139,7 +4180,7 @@ const get_watch_live_steams_completed = async (req) => {
   let registeredFilter = { registerStatus: { $in: ['Not Registered', 'Unregistered'] } };
   let value = await Streamrequest.aggregate([
     { $sort: { startTime: -1 } },
-    { $match: { $and: [statusFilter, { adminApprove: { $eq: 'Approved' } },{status:{$ne:"Cancelled"}}] } },
+    { $match: { $and: [statusFilter, { adminApprove: { $eq: 'Approved' } }, { status: { $ne: "Cancelled" } }] } },
     {
       $lookup: {
         from: 'joinedusers',

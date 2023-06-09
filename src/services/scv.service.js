@@ -673,7 +673,7 @@ const Remove__ScvFrom_Cart = async (body) => {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Cart Not Available');
   }
   await Scv.findByIdAndUpdate({ _id: carts.allocatedScv }, { workingStatus: 'no' }, { new: true });
-  carts = await ScvCart.findByIdAndUpdate({ _id: cartId }, { allocatedScv: '' }, { new: true });
+  carts = await ScvCart.findByIdAndUpdate({ _id: cartId }, { allocatedScv: '', closeStock: 'new' }, { new: true });
   return carts;
 };
 

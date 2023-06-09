@@ -2051,7 +2051,7 @@ const getProductbycategory = async (id) => {
     values = await Product.find();
     return values;
   } else {
-    values = await Product.find({ category: id });
+    values = await Product.find({ category: id }).sort({ productTitle: 1 });
     return values;
   }
 };

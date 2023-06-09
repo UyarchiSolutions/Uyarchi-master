@@ -252,6 +252,7 @@ const getOrderedProducts = async (cartId, date) => {
         dQTY: 1,
         products: 1,
         products2: '$products2',
+        givenQTY: 1,
       },
     },
     { $sort: { dQTY: 1 } },

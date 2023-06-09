@@ -296,7 +296,7 @@ const Return_Wastage_inCloseStock = async (body) => {
     );
   });
   let cart = await ScvCart.findById(cartId);
-  await Scv.findByIdAndUpdate({ _id: cart.allocatedScv }, { workingStatus: 'no' }, { new: true });
+  // await Scv.findByIdAndUpdate({ _id: cart.allocatedScv }, { workingStatus: 'no' }, { new: true });
   await ScvCart.findByIdAndUpdate({ _id: cartId }, { cartOnDate: '' }, { new: true });
   return { message: 'Cart Closed' };
 };

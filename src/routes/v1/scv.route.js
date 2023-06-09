@@ -17,6 +17,7 @@ router.route('/Cart/Allocation/Scv').post(scvController.AllocationScv_ToCart);
 router.route('/getScvCartbyId/:id').get(scvController.getScvCartbyId);
 router.route('/getCartBy/Allocated/Scv/:id').get(scvController.getCartBy_Allocated_Scv);
 router.route('/cartOn/:id').put(scvController.cartOn);
+router.route('/Remove/ScvFrom/Cart').post(scvController.Remove__ScvFrom_Cart);
 // SCV Manage
 
 router

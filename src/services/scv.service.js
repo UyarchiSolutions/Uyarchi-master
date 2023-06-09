@@ -666,6 +666,17 @@ const getScv_Attendance_Reports = async (body) => {
   return values;
 };
 
+const Remove__ScvFrom_Cart = async (body) => {
+  const { cartId } = body;
+  let carts = await ScvCart.findById(cartId);
+  if (!carts) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Cart Not Available');
+  }
+  await Scv.findByIdAndUpdate({ _id: carts.allocatedScv }, { workingStatus: 'no' }, { new: true });
+  carts = await ScvCart.findByIdAndUpdate({ _id: cartId }, { allocatedScv: '', closeStock: 'new' }, { new: true });
+  return carts;
+};
+
 module.exports = {
   createSCV,
   getAllSCV,
@@ -701,4 +712,5 @@ module.exports = {
   getScv_Attendance_Reports,
   cartOn,
   getCartBy_Allocated_Scv,
+  Remove__ScvFrom_Cart,
 };

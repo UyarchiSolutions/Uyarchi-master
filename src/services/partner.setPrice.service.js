@@ -338,12 +338,24 @@ const Return_Wastage_inCloseStock = async (body) => {
 
 // partner Request order tot admin Flow
 
-const getCart_Ordered_Products = async (date) => {
+const getCart_Ordered_Products = async (date, userId) => {
   let values = await partnerCartOrderProducts.aggregate([
     {
       $match: {
         date: date,
       },
+    },
+    {
+      $lookup: {
+        from: 'partnerpostorders',
+        localField: 'orderId',
+        foreignField: '_id',
+        pipeline: [{ $match: { partnerId: userId } }],
+        as: 'postOrders',
+      },
+    },
+    {
+      $unwind: '$postOrders',
     },
     {
       $project: {

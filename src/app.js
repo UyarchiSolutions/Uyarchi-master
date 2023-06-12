@@ -172,13 +172,9 @@ function parseUserAgent(userAgent) {
 
 const deviceDetais = async (req, res, next) => {
   const userAgent = req.headers['user-agent'];
-  // Parse the user agent string to extract relevant information
-  // You can use third-party libraries like 'ua-parser-js' for more advanced parsing
-
-  // Extracting device information from the user agent string
   const deviceInfo = parseUserAgent(userAgent);
-  console.log(deviceInfo,2356172,userAgent)
-
+  console.log(deviceInfo)
+  req.deviceInfo = deviceInfo;
   return next();
 }
 

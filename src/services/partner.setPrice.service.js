@@ -1149,7 +1149,6 @@ const getCartOrderByProduct = async (query, userId) => {
         from: 'scvcarts',
         localField: 'cartId',
         foreignField: '_id',
-        pipeline: [{ $match: { userId: userId } }],
         as: 'carts',
       },
     },

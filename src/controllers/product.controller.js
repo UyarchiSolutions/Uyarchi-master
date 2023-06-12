@@ -199,6 +199,7 @@ const getAllStock = catchAsync(async (req, res) => {
 const getProducts = catchAsync(async (req, res) => {
   const filter = pick(req.query, ['productTitle', 'unit']);
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
+  console.log(req.deviceInfo)
   const result = await productService.queryProduct(filter, options);
   res.send(result);
 });

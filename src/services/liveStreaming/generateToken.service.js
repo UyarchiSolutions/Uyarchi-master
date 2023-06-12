@@ -448,8 +448,11 @@ const get_sub_token = async (req) => {
   return value[0];
 };
 
-const get_sub_golive = async (req) => {
-  console.log(req.query.id)
+const get_sub_golive = async (req, io) => {
+  let code = req.query.code;
+  let streamId = req.query.id;
+  io.emit(streamId + "watching_live", { code: code, stream: streamId })
+  console.log(req.query.id,code)
   let value = await Joinusers.aggregate([
     { $match: { $and: [{ _id: { $eq: req.query.id } }, { shopId: { $eq: req.shopId } }] } },
     {

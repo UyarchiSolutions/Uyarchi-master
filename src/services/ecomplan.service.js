@@ -1830,8 +1830,44 @@ const end_stream = async (req) => {
 const get_all_streams = async (req) => {
   let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : parseInt(req.query.page);
   console.log(req.userId);
+  var date_now = new Date().getTime();
+  let statusFilter = { active: true };
+  if (req.query.status == "All") {
+    statusFilter = { active: true };
+  }
+
+  if (req.query.status == "Completed") {
+    statusFilter = { $and: [{ stream_expired: { $eq: false } }, { $or: [{ status: { $eq: "Completed" } }, { $and: [{ tokenGeneration: { $eq: true } }, { endTime: { $lte: date_now } }, { status: { $ne: "Cancelled" } }] }] }] };
+  }
+  if (req.query.status == "Cancelled") {
+    statusFilter = { status: { $eq: "Cancelled" } };
+  }
+  if (req.query.status == "Waiting") {
+    statusFilter = { $and: [{ tokenGeneration: { $eq: false } }, { startTime: { $gte: date_now } }, { status: { $ne: "Cancelled" } }] };
+  }
+
+  var date_now_string = new Date();
+  if (req.query.status == "Expired") {
+    statusFilter = { $and: [{ tokenGeneration: { $eq: true } }, { originalDate: { $lte: date_now_string } }, { status: { $ne: "Cancelled" } }] };
+  }
+
   const value = await Streamrequest.aggregate([
-    { $match: { $and: [{ suppierId: { $eq: req.userId } }, { adminApprove: { $eq: 'Approved' } }] } },
+    {
+      $addFields: {
+        originalDate: {
+          $add: [
+            { $toDate: "$startTime" },
+            { $multiply: [30, 24, 60, 60, 1000] }
+          ]
+        }
+      }
+    },
+    {
+      $addFields: {
+        stream_expired: { $lte: ['$originalDate', date_now_string] },
+      },
+    },
+    { $match: { $and: [statusFilter, { suppierId: { $eq: req.userId } }, { adminApprove: { $eq: 'Approved' } }] } },
     {
       $lookup: {
         from: 'streamrequestposts',
@@ -1894,6 +1930,7 @@ const get_all_streams = async (req) => {
         as: 'streamrequestposts',
       },
     },
+
     {
       $lookup: {
         from: 'sellers',
@@ -2018,6 +2055,7 @@ const get_all_streams = async (req) => {
         allot_host_3_name: { $ifNull: ['$allot_host_3_lookup.contactName', '$allot_host_3'] },
       },
     },
+
     {
       $project: {
         _id: 1,
@@ -2070,9 +2108,10 @@ const get_all_streams = async (req) => {
         allot_host_1_name: 1,
         allot_host_2_name: 1,
         allot_host_3_name: 1,
-        primarycommunication:1,
-        secondarycommunication:1,
-        
+        primarycommunication: 1,
+        secondarycommunication: 1,
+        originalDate: 1,
+        stream_expired: 1
 
       },
     },
@@ -2082,18 +2121,73 @@ const get_all_streams = async (req) => {
     { $limit: 10 },
   ]);
   const total = await Streamrequest.aggregate([
-    { $match: { $and: [{ suppierId: { $eq: req.userId } }, { adminApprove: { $eq: 'Approved' } }] } },
+    {
+      $addFields: {
+        originalDate: {
+          $add: [
+            { $toDate: "$startTime" },
+            { $multiply: [30, 24, 60, 60, 1000] }
+          ]
+        }
+      }
+    },
+    {
+      $addFields: {
+        stream_expired: { $lte: ['$originalDate', date_now_string] },
+      },
+    },
+    { $match: { $and: [statusFilter, { suppierId: { $eq: req.userId } }, { adminApprove: { $eq: 'Approved' } }] } },
+    { $skip: 10 * (page + 1) },
+    { $limit: 10 },
   ]);
-  return { value, total: total.length };
+  return { value, next: total.length != 0 };
 };
 
 const get_subhost_streams = async (req) => {
   let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : parseInt(req.query.page);
-  console.log(req.userId);
+  console.log(req.query, page);
+
+  var date_now = new Date().getTime();
+  let statusFilter = { active: true };
+  if (req.query.status == "All") {
+    statusFilter = { active: true };
+  }
+
+  if (req.query.status == "Completed") {
+    statusFilter = { $and: [{ stream_expired: { $eq: false } }, { $or: [{ status: { $eq: "Completed" } }, { $and: [{ tokenGeneration: { $eq: true } }, { endTime: { $lte: date_now } }, { status: { $ne: "Cancelled" } }] }] }] };
+  }
+  if (req.query.status == "Cancelled") {
+    statusFilter = { status: { $eq: "Cancelled" } };
+  }
+  if (req.query.status == "Waiting") {
+    statusFilter = { $and: [{ tokenGeneration: { $eq: false } }, { startTime: { $gte: date_now } }, { status: { $ne: "Cancelled" } }] };
+  }
+
+  var date_now_string = new Date();
+  if (req.query.status == "Expired") {
+    statusFilter = { $and: [{ tokenGeneration: { $eq: true } }, { originalDate: { $lte: date_now_string } }, { status: { $ne: "Cancelled" } }] };
+  }
+  console.log("asdhagfsdyahgsv", statusFilter)
   const value = await Streamrequest.aggregate([
+    {
+      $addFields: {
+        originalDate: {
+          $add: [
+            { $toDate: "$startTime" },
+            { $multiply: [30, 24, 60, 60, 1000] }
+          ]
+        }
+      }
+    },
+    {
+      $addFields: {
+        stream_expired: { $lte: ['$originalDate', date_now_string] },
+      },
+    },
     {
       $match: {
         $and: [
+          statusFilter,
           {
             $or: [
               { allot_host_1: { $eq: req.userId } },
@@ -2351,7 +2445,36 @@ const get_subhost_streams = async (req) => {
     { $limit: 10 },
   ]);
   const total = await Streamrequest.aggregate([
-    { $match: { $and: [{ suppierId: { $eq: req.userId } }, { adminApprove: { $eq: 'Approved' } }] } },
+    {
+      $addFields: {
+        originalDate: {
+          $add: [
+            { $toDate: "$startTime" },
+            { $multiply: [30, 24, 60, 60, 1000] }
+          ]
+        }
+      }
+    },
+    {
+      $addFields: {
+        stream_expired: { $lte: ['$originalDate', date_now_string] },
+      },
+    },
+    {
+      $match: {
+        $and: [
+          statusFilter,
+          {
+            $or: [
+              { allot_host_1: { $eq: req.userId } },
+              { allot_host_2: { $eq: req.userId } },
+              { allot_host_3: { $eq: req.userId } },
+            ],
+          },
+          { adminApprove: { $eq: 'Approved' } },
+        ],
+      },
+    },
     { $skip: 10 * (page + 1) },
     { $limit: 10 },
   ]);

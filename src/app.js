@@ -22,6 +22,7 @@ const logger = require('./config/logger');
 const chetModule = require("./services/liveStreaming/chat.service")
 const socketService = require("./services/liveStreaming/socket.service")
 const moment = require('moment');
+const UAParser = require('ua-parser-js');
 // app.use(session( { secret:'hello world',
 // store:SessionStore,
 // resave:false,
@@ -148,8 +149,38 @@ if (config.env === 'production') {
   app.use('/v1/auth', authLimiter);
 }
 // v1 api routes
-app.use('/v1', routes);
-app.use('/v2', routes_v2);
+
+function parseUserAgent(userAgent) {
+  // Implement your own logic to parse the User-Agent header and extract device information.
+  // There are various libraries available that can help with this task, such as 'ua-parser-js'.
+
+  // Example implementation using 'ua-parser-js' library
+  const parser = new UAParser();
+  const result = parser.setUA(userAgent).getResult();
+
+  // Extract relevant device information
+  const deviceInfo = {
+    browser: result.browser.name,
+    browserVersion: result.browser.version,
+    os: result.os.name,
+    osVersion: result.os.version,
+    device: result.device.model || 'Unknown',
+  };
+
+  return deviceInfo;
+}
+
+const deviceDetais = async (req, res, next) => {
+  const userAgent = req.headers['user-agent'];
+  const deviceInfo = parseUserAgent(userAgent);
+  console.log(deviceInfo)
+  req.deviceInfo = deviceInfo;
+  return next();
+}
+
+
+app.use('/v1', deviceDetais, routes);
+app.use('/v2', deviceDetais, routes_v2);
 
 
 //default routes

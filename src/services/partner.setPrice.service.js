@@ -1110,6 +1110,42 @@ const getCartReports = async (id) => {
   return data;
 };
 
+const getCartOrderByProduct = async (query) => {
+  const { date, productId } = query;
+  const values = await partnerCartOrderProducts.aggregate([
+    {
+      $match: { productId: productId, date: date },
+    },
+    {
+      $lookup: {
+        from: 'scvcarts',
+        localField: 'cartId',
+        foreignField: '_id',
+        as: 'carts',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$carts',
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        productId: 1,
+        cartId: 1,
+        QTY: 1,
+        date: 1,
+        cartName: '$carts.cartName',
+      },
+    },
+  ]);
+  const product = await Product.findById(productId);
+
+  return { values: values, product: product };
+};
+
 module.exports = {
   SetPartnerPrice,
   AddProductByPartner,
@@ -1140,4 +1176,5 @@ module.exports = {
   Bill_GenerateById,
   stockUpdateByCart,
   getCartReports,
+  getCartOrderByProduct,
 };

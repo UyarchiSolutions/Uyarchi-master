@@ -12,7 +12,7 @@ router.route('/getOrdersbycart/:id').get(PartnerSetPriceController.getOrdersbyca
 router.route('/getOrdered/Products/:id').get(PartnerSetPriceController.getOrderedProducts);
 router.route('/updateAddOnStock').post(PartnerSetPriceController.updateAddOnStock);
 router.route('/Return_Wastage_inCloseStock').post(PartnerSetPriceController.Return_Wastage_inCloseStock);
-router.route('/getCart/Ordered/Products/').get(PartnerSetPriceController.getCart_Ordered_Products);
+router.route('/getCart/Ordered/Products/').get(PartnerAuth, PartnerSetPriceController.getCart_Ordered_Products);
 router.route('/distributions/getOrder/For/CurrentDateByCart').get(PartnerSetPriceController.getOrder_For_CurrentDateByCart);
 router.route('/DistributeGIven').post(PartnerSetPriceController.DistributeGIven);
 router.route('/getCartOrderBy/Product').get(PartnerAuth, PartnerSetPriceController.getCartOrderByProduct);

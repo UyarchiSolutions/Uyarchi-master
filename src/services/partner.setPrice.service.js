@@ -354,6 +354,18 @@ const getCart_Ordered_Products = async (date, userId) => {
       },
     },
     {
+      $lookup: {
+        from: 'scvcarts',
+        localField: 'cartId',
+        foreignField: '_id',
+        pipeline: [{ $match: { partnerId: userId } }],
+        as: 'cart',
+      },
+    },
+    {
+      $unwind: '$cart',
+    },
+    {
       $group: {
         _id: '$productId',
         totalQTY: { $sum: '$QTY' },
@@ -374,18 +386,7 @@ const getCart_Ordered_Products = async (date, userId) => {
         path: '$products',
       },
     },
-    {
-      $lookup: {
-        from: 'scvcarts',
-        localField: 'cartId',
-        foreignField: '_id',
-        pipeline: [{ $match: { partnerId: userId } }],
-        as: 'cart',
-      },
-    },
-    {
-      $unwind: '$cart',
-    },
+
     {
       $project: {
         productId: '$_id',

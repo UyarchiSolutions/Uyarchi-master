@@ -1126,7 +1126,7 @@ const getCartReports = async (id) => {
   return data;
 };
 
-const getCartOrderByProduct = async (query) => {
+const getCartOrderByProduct = async (query, userId) => {
   const { date, productId } = query;
   const values = await partnerCartOrderProducts.aggregate([
     {
@@ -1137,6 +1137,7 @@ const getCartOrderByProduct = async (query) => {
         from: 'scvcarts',
         localField: 'cartId',
         foreignField: '_id',
+        pipeline: [{ $match: { userId: userId } }],
         as: 'carts',
       },
     },

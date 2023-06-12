@@ -155,7 +155,8 @@ const getCartReports = catchAsync(async (req, res) => {
 });
 
 const getCartOrderByProduct = catchAsync(async (req, res) => {
-  const data = await partnersetpriceService.getCartOrderByProduct(req.query);
+  let userId = req.userId;
+  const data = await partnersetpriceService.getCartOrderByProduct(req.query, userId);
   res.send(data);
 });
 

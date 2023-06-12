@@ -15,7 +15,7 @@ router.route('/Return_Wastage_inCloseStock').post(PartnerSetPriceController.Retu
 router.route('/getCart/Ordered/Products/').get(PartnerSetPriceController.getCart_Ordered_Products);
 router.route('/distributions/getOrder/For/CurrentDateByCart').get(PartnerSetPriceController.getOrder_For_CurrentDateByCart);
 router.route('/DistributeGIven').post(PartnerSetPriceController.DistributeGIven);
-router.route('/getCartOrderBy/Product').get(PartnerSetPriceController.getCartOrderByProduct);
+router.route('/getCartOrderBy/Product').get(PartnerAuth, PartnerSetPriceController.getCartOrderByProduct);
 // partner request order to Admin
 router.route('/createPartnerOrder/FromAdmin').post(PartnerAuth, PartnerSetPriceController.createPartnerOrder_FromAdmin);
 router.route('/getOrders/ByPartner').get(PartnerAuth, PartnerSetPriceController.getOrdersByPartner);

@@ -353,14 +353,15 @@ const getCart_Ordered_Products = async (date) => {
     },
     {
       $group: {
-        _id: '$productId',
+        _id: '$_id',
+        id: { $first: '$productId' },
         totalQTY: { $sum: '$QTY' },
       },
     },
     {
       $lookup: {
         from: 'products',
-        localField: '_id',
+        localField: 'id',
         foreignField: '_id',
         as: 'products',
       },

@@ -353,8 +353,7 @@ const getCart_Ordered_Products = async (date) => {
     },
     {
       $group: {
-        _id: '$_id',
-        id: { $first: '$productId' },
+        _id: '$productId',
         totalQTY: { $sum: '$QTY' },
       },
     },
@@ -374,7 +373,7 @@ const getCart_Ordered_Products = async (date) => {
     },
     {
       $project: {
-        productId: '$id',
+        productId: '$_id',
         scvKG: '$totalQTY',
         productName: '$products.productTitle',
       },

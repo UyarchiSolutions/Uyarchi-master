@@ -374,7 +374,7 @@ const getCart_Ordered_Products = async (date) => {
     },
     {
       $project: {
-        productId: '$_id',
+        productId: '$id',
         scvKG: '$totalQTY',
         productName: '$products.productTitle',
       },

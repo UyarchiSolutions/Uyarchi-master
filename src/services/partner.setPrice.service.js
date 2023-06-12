@@ -345,28 +345,19 @@ const getCart_Ordered_Products = async (date, userId) => {
         date: date,
       },
     },
-    {
-      $lookup: {
-        from: 'partnerpostorders',
-        localField: 'orderId',
-        foreignField: '_id',
-        pipeline: [{ $match: { partnerId: userId } }],
-        as: 'postOrders',
-      },
-    },
-    {
-      $unwind: '$postOrders',
-    },
+
     {
       $project: {
         productId: 1,
         QTY: { $toDouble: '$QTY' },
+        cartId: 1,
       },
     },
     {
       $group: {
         _id: '$productId',
         totalQTY: { $sum: '$QTY' },
+        cartId: { $first: '$cartId' },
       },
     },
     {
@@ -384,10 +375,23 @@ const getCart_Ordered_Products = async (date, userId) => {
       },
     },
     {
+      $lookup: {
+        from: 'scvcarts',
+        localField: 'cartId',
+        foreignField: '_id',
+        pipeline: [{ $match: { partnerId: userId } }],
+        as: 'cart',
+      },
+    },
+    {
+      $unwind: '$cart',
+    },
+    {
       $project: {
         productId: '$_id',
         scvKG: '$totalQTY',
         productName: '$products.productTitle',
+        cartId: 1,
       },
     },
   ]);

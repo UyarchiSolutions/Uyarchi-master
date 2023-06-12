@@ -79,7 +79,7 @@ const get_sub_token = catchAsync(async (req, res) => {
 });
 
 const get_sub_golive = catchAsync(async (req, res) => {
-  const tokens = await generateTokenService.get_sub_golive(req);
+  const tokens = await generateTokenService.get_sub_golive(req,req.io);
   res.status(httpStatus.CREATED).send(tokens);
 });
 

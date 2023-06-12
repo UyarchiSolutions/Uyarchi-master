@@ -1145,6 +1145,21 @@ const getCartOrderByProduct = async (query, userId) => {
       $unwind: '$cart',
     },
     {
+      $lookup: {
+        from: 'scvcarts',
+        localField: 'cartId',
+        foreignField: '_id',
+        pipeline: [{ $match: { userId: userId } }],
+        as: 'carts',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$carts',
+      },
+    },
+    {
       $project: {
         _id: 1,
         productId: 1,

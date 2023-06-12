@@ -350,13 +350,13 @@ const getCart_Ordered_Products = async (date, userId) => {
       $project: {
         productId: 1,
         QTY: { $toDouble: '$QTY' },
-        cartId: 1,
+        orderId: 1,
       },
     },
     {
       $lookup: {
-        from: 'scvcarts',
-        localField: 'cartId',
+        from: 'partnerpostorders',
+        localField: 'orderId',
         foreignField: '_id',
         pipeline: [{ $match: { partnerId: userId } }],
         as: 'cart',
@@ -392,7 +392,7 @@ const getCart_Ordered_Products = async (date, userId) => {
         productId: '$_id',
         scvKG: '$totalQTY',
         productName: '$products.productTitle',
-        cartId: 1,
+        orderId: 1,
       },
     },
   ]);

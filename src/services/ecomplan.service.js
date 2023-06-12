@@ -2947,15 +2947,6 @@ const get_watch_live_steams_admin_watch = async (req) => {
 };
 
 const get_watch_live_steams_upcoming_byid = async (req) => {
-  var ip;
-  if (req.headers['x-forwarded-for']) {
-      ip = req.headers['x-forwarded-for'].split(",")[0];
-  } else if (req.connection && req.connection.remoteAddress) {
-      ip = req.connection.remoteAddress;
-  } else {
-      ip = req.ip;
-  }console.log("client IP is *********************" + ip);
-  
   var date_now = new Date().getTime();
   let registeredFilter = { registerStatus: { $in: ['Not Registered', 'Unregistered', 'Registered'] } };
   let statusFilter = { startTime: { $gt: date_now } };

@@ -2529,7 +2529,12 @@ const go_live_stream_host = async (req, userId) => {
                     as: 'stream_cart',
                   },
                 },
-                { $unwind: "$stream_cart" },
+                {
+                  $unwind: {
+                    preserveNullAndEmptyArrays: true,
+                    path: '$stream_cart',
+                  },
+                },
                 {
                   $lookup: {
                     from: 'streamingorderproducts',
@@ -2541,7 +2546,12 @@ const go_live_stream_host = async (req, userId) => {
                     as: 'stream_checkout',
                   },
                 },
-                { $unwind: "$stream_checkout" },
+                {
+                  $unwind: {
+                    preserveNullAndEmptyArrays: true,
+                    path: '$stream_checkout',
+                  },
+                },
                 {
                   $lookup: {
                     from: 'products',
@@ -2571,8 +2581,8 @@ const go_live_stream_host = async (req, userId) => {
                     created: 1,
                     streamStart: 1,
                     streamEnd: 1,
-                    stream_cart: "$stream_cart.count",
-                    stream_checkout: "$stream_checkout.count",
+                    stream_cart: {$ifNull:["$stream_cart.count",0]},
+                    stream_checkout: {$ifNull:["$stream_checkout.count",0]},
 
                   },
                   

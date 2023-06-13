@@ -2550,6 +2550,7 @@ const go_live_stream_host = async (req, userId) => {
                     as: 'products',
                   },
                 },
+
                 { $unwind: '$products' },
                 {
                   $project: {
@@ -2574,6 +2575,7 @@ const go_live_stream_host = async (req, userId) => {
                     stream_checkout: "$stream_checkout.count",
 
                   },
+                  
                 },
               ],
               as: 'streamposts',

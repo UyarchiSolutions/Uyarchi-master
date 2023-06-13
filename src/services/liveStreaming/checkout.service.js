@@ -57,6 +57,11 @@ const addTocart = async (req) => {
     value = await streamingCart.findByIdAndUpdate({ _id: value._id }, { cart: cart }, { new: true })
   }
 
+  await emit_cart_qty(streamId);
+  return value;
+};
+
+const emit_cart_qty = async (streamId) => {
   let socket_cart = await Streamrequest.aggregate([
     {
       $match: {
@@ -199,8 +204,7 @@ const addTocart = async (req) => {
     },
   ]);
   req.io.emit(streamId + "cart_qty", socket_cart[0].streamrequestposts);
-  return value;
-};
+}
 const get_addTocart = async (req) => {
   let timeNow = new Date().getTime();
   let shopId = req.shopId;
@@ -348,6 +352,7 @@ const confirmOrder_cod = async (shopId, body) => {
     });
     cart.status = 'ordered';
     cart.save();
+    await emit_cart_qty(body.OdrerDetails.streamId);
     resolve(orders);
   });
 };
@@ -372,6 +377,7 @@ const confirmOrder_razerpay = async (shopId, body) => {
       });
       cart.status = 'ordered';
       cart.save();
+      await emit_cart_qty(body.OdrerDetails.streamId);
       return orders;
     }
   }

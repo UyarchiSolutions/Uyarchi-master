@@ -94,7 +94,30 @@ io.sockets.on('connection', async (socket) => {
   socket.on('ban_user_chat', async (data) => {
     await socketService.ban_user_chat(data, io)
   });
+  socket.on('joinRoom', (room) => {
+    console.log(room)
+    socket.join(room);
+    // Emit an event to notify other clients in the room about the new user joining
+    console.log(socket.id,2136712)
+    socket.to(room).emit('userJoined', socket.id);
+    console.log(socket.rooms)
+
+  });
+
+  socket.on('disconnecting', () => {
+    console.log(socket.rooms)
+    // Get the rooms the user is currently in
+    const rooms = Object.keys(socket.rooms);
+    console.log(rooms)
+    rooms.forEach((room) => {
+      console.log(room)
+      // Emit an event to notify other clients in the room about the user disconnecting
+      socket.to(room).emit('userDisconnected', socket.id);
+    });
+  });
+
 });
+
 app.use(function (req, res, next) {
   req.io = io;
   next();
@@ -173,7 +196,7 @@ function parseUserAgent(userAgent) {
 const deviceDetais = async (req, res, next) => {
   const userAgent = req.headers['user-agent'];
   const deviceInfo = parseUserAgent(userAgent);
-  console.log(deviceInfo)
+  // console.log(deviceInfo)
   req.deviceInfo = deviceInfo;
   return next();
 }

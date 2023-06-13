@@ -56,6 +56,149 @@ const addTocart = async (req) => {
     // console.log(value)
     value = await streamingCart.findByIdAndUpdate({ _id: value._id }, { cart: cart }, { new: true })
   }
+
+  let socket_cart = await Streamrequest.aggregate([
+    {
+      $match: {
+        $and: [{ adminApprove: { $eq: 'Approved' } }, { _id: { $eq: streamId } }],
+      },
+    },
+    {
+      $lookup: {
+        from: 'streamrequestposts',
+        localField: '_id',
+        foreignField: 'streamRequest',
+        pipeline: [
+          {
+            $lookup: {
+              from: 'streamposts',
+              localField: 'postId',
+              foreignField: '_id',
+              pipeline: [
+                {
+                  $lookup: {
+                    from: 'streamingcartproducts',
+                    localField: '_id',
+                    foreignField: 'streamPostId',
+                    pipeline: [
+                      {
+                        $lookup: {
+                          from: 'streamingcarts',
+                          localField: 'streamingCart',
+                          foreignField: '_id',
+                          pipeline: [
+                            { $match: { $and: [{ status: { $ne: "ordered" } }] } },
+                            {
+                              $project: {
+                                _id: 1
+                              }
+                            }
+                          ],
+                          as: 'streamingcarts',
+                        }
+                      },
+                      { $unwind: "$streamingcarts" },
+                      { $match: { $and: [{ cardStatus: { $eq: true } }, { add_to_cart: { $eq: true } }] } },
+                      { $group: { _id: null, count: { $sum: "$cartQTY" } } },
+                    ],
+                    as: 'stream_cart',
+                  },
+                },
+                {
+                  $unwind: {
+                    preserveNullAndEmptyArrays: true,
+                    path: '$stream_cart',
+                  },
+                },
+                {
+                  $lookup: {
+                    from: 'streamingorderproducts',
+                    localField: '_id',
+                    foreignField: 'streamPostId',
+                    pipeline: [
+                      { $group: { _id: null, count: { $sum: "$purchase_price" } } },
+                    ],
+                    as: 'stream_checkout',
+                  },
+                },
+                {
+                  $unwind: {
+                    preserveNullAndEmptyArrays: true,
+                    path: '$stream_checkout',
+                  },
+                },
+                {
+                  $lookup: {
+                    from: 'products',
+                    localField: 'productId',
+                    foreignField: '_id',
+                    as: 'products',
+                  },
+                },
+
+                { $unwind: '$products' },
+                {
+                  $project: {
+                    _id: 1,
+                    productTitle: '$products.productTitle',
+                    productImage: '$products.image',
+                    productId: 1,
+                    categoryId: 1,
+                    quantity: 1,
+                    marketPlace: 1,
+                    offerPrice: 1,
+                    postLiveStreamingPirce: 1,
+                    validity: 1,
+                    minLots: 1,
+                    incrementalLots: 1,
+                    suppierId: 1,
+                    DateIso: 1,
+                    created: 1,
+                    streamStart: 1,
+                    streamEnd: 1,
+                    stream_cart: { $ifNull: ["$stream_cart.count", 0] },
+                    stream_checkout: { $ifNull: ["$stream_checkout.count", 0] },
+
+                  },
+
+                },
+              ],
+              as: 'streamposts',
+            },
+          },
+          { $unwind: '$streamposts' },
+          {
+            $project: {
+              _id: 1,
+              productTitle: '$streamposts.productTitle',
+              productId: '$streamposts.productId',
+              quantity: '$streamposts.quantity',
+              marketPlace: '$streamposts.marketPlace',
+              offerPrice: '$streamposts.offerPrice',
+              postLiveStreamingPirce: '$streamposts.postLiveStreamingPirce',
+              validity: '$streamposts.validity',
+              minLots: '$streamposts.minLots',
+              incrementalLots: '$streamposts.incrementalLots',
+              productImage: '$streamposts.productImage',
+              streamStart: '$streamposts.streamStart',
+              streamEnd: '$streamposts.streamEnd',
+              streampostsId: '$streamposts._id',
+              stream_cart: "$streamposts.stream_cart",
+              stream_checkout: "$streamposts.stream_checkout",
+            },
+          },
+        ],
+        as: 'streamrequestposts',
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        streamrequestposts: '$streamrequestposts',
+      },
+    },
+  ]);
+  req.io.emit(streamId + "cart_qty", socket_cart[0].streamrequestposts);
   return value;
 };
 const get_addTocart = async (req) => {

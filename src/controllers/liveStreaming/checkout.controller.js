@@ -12,12 +12,12 @@ const get_addTocart = catchAsync(async (req, res) => {
 });
 
 const confirmOrder_razerpay = catchAsync(async (req, res) => {
-  const category = await checkout.confirmOrder_razerpay(req.shopId, req.body);
+  const category = await checkout.confirmOrder_razerpay(req.shopId, req.body,req);
   res.send(category);
 });
 
 const confirmOrder_cod = catchAsync(async (req, res) => {
-  const category = await checkout.confirmOrder_cod(req.shopId, req.body);
+  const category = await checkout.confirmOrder_cod(req.shopId, req.body,req);
   res.send(category);
 });
 

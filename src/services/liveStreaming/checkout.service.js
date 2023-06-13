@@ -57,11 +57,11 @@ const addTocart = async (req) => {
     value = await streamingCart.findByIdAndUpdate({ _id: value._id }, { cart: cart }, { new: true })
   }
 
-  await emit_cart_qty(streamId);
+  await emit_cart_qty(req,streamId);
   return value;
 };
 
-const emit_cart_qty = async (streamId) => {
+const emit_cart_qty = async (req,streamId) => {
   let socket_cart = await Streamrequest.aggregate([
     {
       $match: {
@@ -337,7 +337,7 @@ const get_addTocart = async (req) => {
   return value[0];
 };
 
-const confirmOrder_cod = async (shopId, body) => {
+const confirmOrder_cod = async (shopId, body,req) => {
   let orders;
   let streamId = body.OdrerDetails.cart;
   return new Promise(async (resolve) => {
@@ -352,11 +352,11 @@ const confirmOrder_cod = async (shopId, body) => {
     });
     cart.status = 'ordered';
     cart.save();
-    await emit_cart_qty(body.OdrerDetails.streamId);
+    await emit_cart_qty(req,body.OdrerDetails.streamId);
     resolve(orders);
   });
 };
-const confirmOrder_razerpay = async (shopId, body) => {
+const confirmOrder_razerpay = async (shopId, body,req) => {
   let orders;
   let streamId = body.OdrerDetails.cart;
   console.log(body);
@@ -377,7 +377,7 @@ const confirmOrder_razerpay = async (shopId, body) => {
       });
       cart.status = 'ordered';
       cart.save();
-      await emit_cart_qty(body.OdrerDetails.streamId);
+      await emit_cart_qty(req,body.OdrerDetails.streamId);
       return orders;
     }
   }

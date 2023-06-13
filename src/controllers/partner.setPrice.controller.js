@@ -59,7 +59,8 @@ const Return_Wastage_inCloseStock = catchAsync(async (req, res) => {
 });
 
 const getCart_Ordered_Products = catchAsync(async (req, res) => {
-  const data = await partnersetpriceService.getCart_Ordered_Products(req.query.date);
+  let userId = req.userId;
+  const data = await partnersetpriceService.getCart_Ordered_Products(req.query.date, userId);
   res.send(data);
 });
 
@@ -153,6 +154,12 @@ const getCartReports = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const getCartOrderByProduct = catchAsync(async (req, res) => {
+  let userId = req.userId;
+  const data = await partnersetpriceService.getCartOrderByProduct(req.query, userId);
+  res.send(data);
+});
+
 module.exports = {
   SetPartnerPrice,
   AddProductByPartner,
@@ -183,4 +190,5 @@ module.exports = {
   Bill_GenerateById,
   stockUpdateByCart,
   getCartReports,
+  getCartOrderByProduct,
 };

@@ -338,23 +338,38 @@ const Return_Wastage_inCloseStock = async (body) => {
 
 // partner Request order tot admin Flow
 
-const getCart_Ordered_Products = async (date) => {
+const getCart_Ordered_Products = async (date, userId) => {
   let values = await partnerCartOrderProducts.aggregate([
     {
       $match: {
         date: date,
       },
     },
+
     {
       $project: {
         productId: 1,
         QTY: { $toDouble: '$QTY' },
+        orderId: 1,
       },
+    },
+    {
+      $lookup: {
+        from: 'partnerpostorders',
+        localField: 'orderId',
+        foreignField: '_id',
+        pipeline: [{ $match: { partnerId: userId } }],
+        as: 'cart',
+      },
+    },
+    {
+      $unwind: '$cart',
     },
     {
       $group: {
         _id: '$productId',
         totalQTY: { $sum: '$QTY' },
+        cartId: { $first: '$cartId' },
       },
     },
     {
@@ -371,11 +386,13 @@ const getCart_Ordered_Products = async (date) => {
         path: '$products',
       },
     },
+
     {
       $project: {
         productId: '$_id',
         scvKG: '$totalQTY',
         productName: '$products.productTitle',
+        orderId: 1,
       },
     },
   ]);
@@ -1109,6 +1126,54 @@ const getCartReports = async (id) => {
   return data;
 };
 
+const getCartOrderByProduct = async (query, userId) => {
+  const { date, productId } = query;
+  const values = await partnerCartOrderProducts.aggregate([
+    {
+      $match: { productId: productId, date: date },
+    },
+    {
+      $lookup: {
+        from: 'partnerpostorders',
+        localField: 'orderId',
+        foreignField: '_id',
+        pipeline: [{ $match: { partnerId: userId } }],
+        as: 'cart',
+      },
+    },
+    {
+      $unwind: '$cart',
+    },
+    {
+      $lookup: {
+        from: 'scvcarts',
+        localField: 'cartId',
+        foreignField: '_id',
+        as: 'carts',
+      },
+    },
+    {
+      $unwind: {
+        preserveNullAndEmptyArrays: true,
+        path: '$carts',
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        productId: 1,
+        cartId: 1,
+        QTY: 1,
+        date: 1,
+        cartName: '$carts.cartName',
+      },
+    },
+  ]);
+  const product = await Product.findById(productId);
+
+  return { values: values, product: product };
+};
+
 module.exports = {
   SetPartnerPrice,
   AddProductByPartner,
@@ -1139,4 +1204,5 @@ module.exports = {
   Bill_GenerateById,
   stockUpdateByCart,
   getCartReports,
+  getCartOrderByProduct,
 };

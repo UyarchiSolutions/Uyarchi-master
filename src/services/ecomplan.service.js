@@ -2502,6 +2502,48 @@ const go_live_stream_host = async (req, userId) => {
               pipeline: [
                 {
                   $lookup: {
+                    from: 'streamingcartproducts',
+                    localField: '_id',
+                    foreignField: 'streamPostId',
+                    pipeline: [
+                      {
+                        $lookup: {
+                          from: 'streamingcarts',
+                          localField: 'streamingCart',
+                          foreignField: '_id',
+                          pipeline: [
+                            { $match: { $and: [{ status: { $ne: "ordered" } }] } },
+                            {
+                              $project: {
+                                _id: 1
+                              }
+                            }
+                          ],
+                          as: 'streamingcarts',
+                        }
+                      },
+                      { $unwind: "$streamingcarts" },
+                      { $match: { $and: [{ cardStatus: { $eq: true } }, { add_to_cart: { $eq: true } }] } },
+                      { $group: { _id: null, count: { $sum: "$cartQTY" } } },
+                    ],
+                    as: 'stream_cart',
+                  },
+                },
+                { $unwind: "$stream_cart" },
+                {
+                  $lookup: {
+                    from: 'streamingorderproducts',
+                    localField: '_id',
+                    foreignField: 'streamPostId',
+                    pipeline: [
+                      { $group: { _id: null, count: { $sum: "$purchase_price" } } },
+                    ],
+                    as: 'stream_checkout',
+                  },
+                },
+                { $unwind: "$stream_checkout" },
+                {
+                  $lookup: {
                     from: 'products',
                     localField: 'productId',
                     foreignField: '_id',
@@ -2528,6 +2570,9 @@ const go_live_stream_host = async (req, userId) => {
                     created: 1,
                     streamStart: 1,
                     streamEnd: 1,
+                    stream_cart: "$stream_cart.count",
+                    stream_checkout: "$stream_checkout.count",
+
                   },
                 },
               ],
@@ -2551,6 +2596,8 @@ const go_live_stream_host = async (req, userId) => {
               streamStart: '$streamposts.streamStart',
               streamEnd: '$streamposts.streamEnd',
               streampostsId: '$streamposts._id',
+              stream_cart: "$streamposts.stream_cart",
+              stream_checkout: "$streamposts.stream_checkout",
             },
           },
         ],

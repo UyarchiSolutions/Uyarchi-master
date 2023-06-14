@@ -2566,7 +2566,7 @@ const go_live_stream_host = async (req, userId) => {
                   $project: {
                     _id: 1,
                     productTitle: '$products.productTitle',
-                    productImage: '$products.image',
+                    image: '$products.image',
                     productId: 1,
                     categoryId: 1,
                     quantity: 1,
@@ -2604,7 +2604,7 @@ const go_live_stream_host = async (req, userId) => {
               validity: '$streamposts.validity',
               minLots: '$streamposts.minLots',
               incrementalLots: '$streamposts.incrementalLots',
-              productImage: '$streamposts.productImage',
+              image: '$streamposts.image',
               streamStart: '$streamposts.streamStart',
               streamEnd: '$streamposts.streamEnd',
               streampostsId: '$streamposts._id',

@@ -2581,11 +2581,11 @@ const go_live_stream_host = async (req, userId) => {
                     created: 1,
                     streamStart: 1,
                     streamEnd: 1,
-                    stream_cart: {$ifNull:["$stream_cart.count",0]},
-                    stream_checkout: {$ifNull:["$stream_checkout.count",0]},
+                    stream_cart: { $ifNull: ["$stream_cart.count", 0] },
+                    stream_checkout: { $ifNull: ["$stream_checkout.count", 0] },
 
                   },
-                  
+
                 },
               ],
               as: 'streamposts',
@@ -7792,7 +7792,8 @@ const get_completed_stream_buyer = async (req) => {
             $match: {
               $and: [
                 { type: { $eq: 'CloudRecording' } },
-                { $or: [{ recoredStart: { $eq: 'stop' } }, { recoredStart: { $eq: 'query' } }] },
+                { videoLink: { $ne: '' } },
+                { videoLink: { $ne: null } },
               ],
             },
           },

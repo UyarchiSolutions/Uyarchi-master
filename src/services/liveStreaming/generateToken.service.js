@@ -363,27 +363,28 @@ const recording_query = async (req) => {
 };
 const recording_stop = async (req) => {
 
-  const mode = 'mix';
-  let token = await tempTokenModel.findById(req.body.id);
-  token.recoredStart = "stop";
-  token.save();
-  const resource = token.resourceId;
-  const sid = token.sid;
-  const stop = await axios.post(
-    `https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/stop`,
-    {
-      cname: token.chennel,
-      uid: token.Uid.toString(),
-      clientRequest: {},
-    },
-    {
-      headers: {
-        Authorization,
-      },
-    }
-  );
+  // const mode = 'mix';
+  // let token = await tempTokenModel.findById(req.body.id);
+  // token.recoredStart = "stop";
+  // token.save();
+  // const resource = token.resourceId;
+  // const sid = token.sid;
+  // const stop = await axios.post(
+  //   `https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/stop`,
+  //   {
+  //     cname: token.chennel,
+  //     uid: token.Uid.toString(),
+  //     clientRequest: {},
+  //   },
+  //   {
+  //     headers: {
+  //       Authorization,
+  //     },
+  //   }
+  // );
 
-  return stop.data;
+  // return stop.data;
+  return {message:"asdhajs"}
 };
 const recording_updateLayout = async (req) => {
   const acquire = await axios.post(
@@ -1046,7 +1047,7 @@ const production_supplier_token_cloudrecording = async (req) => {
   }
   console.log(stream)
   value = await tempTokenModel.findOne({ chennel: streamId, type: 'CloudRecording', recoredStart: { $ne: "stop" } });
-  if (!value || stream.allot_host_2  ==null) {
+  if (!value ) {
     const uid = await generateUid();
     const role = Agora.RtcRole.SUBSCRIBER;
     const expirationTimestamp = stream.endTime / 1000;

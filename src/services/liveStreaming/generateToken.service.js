@@ -349,12 +349,12 @@ const recording_start = async (req) => {
   return start.data;
 };
 const recording_query = async (req) => {
-  console.log(req.body);
+  // console.log(req.body);
   let token = await tempTokenModel.findById(req.body.id);
   const resource = token.resourceId;
   const sid = token.sid;
   const mode = 'mix';
-  console.log(`https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/query`);
+  // console.log(`https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/query`);
   const query = await axios.get(
     `https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/query`,
     { headers: { Authorization } }
@@ -1046,6 +1046,7 @@ const production_supplier_token_cloudrecording = async (req) => {
   if (!stream) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
   }
+  console.log(stream)
   value = await tempTokenModel.findOne({ chennel: streamId, type: 'CloudRecording', recoredStart: { $ne: "stop" } });
   if (!value) {
     const uid = await generateUid();

@@ -3,6 +3,8 @@ PORT=3000
 
 # URL of the Mongo DB
 MONGODB_URL=mongodb+srv://uyar:uyar123@cluster0.crdmbat.mongodb.net/primary?retryWrites=true&w=majority
+# mongodb+srv://uyar:uyar123@cluster0.crdmbat.mongodb.net/primary?retryWrites=true&w=majority
+# mongodb+srv://uyar:uyar123@cluster0.crdmbat.mongodb.net/primary?retryWrites=true&w=majority
 # JWT
 # JWT secret key
 JWT_SECRET=thisisasamplesecret

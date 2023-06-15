@@ -4310,7 +4310,7 @@ const getNewEdite = async (page, limit, mobile, status) => {
     mobileMatch = { mobile: { $eq: mobile } };
   }
 
-  if (status != null) {
+  if (status != 'null') {
     statusMatch = { daStatus: { $eq: status } };
   }
 

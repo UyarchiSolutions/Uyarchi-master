@@ -4335,10 +4335,10 @@ const chennai_corporation_decodes = async () => {
     `https://chennaicorporation.gov.in/gcc/citizen-details/location-service-lb/assets/GCC_DIVISION.geojson`
   );
   //console.log(
-    response.data.features.array.foreach((element) => {
-      return element.geometry;
-    })
-  );
+  //   response.data.features.array.foreach((element) => {
+  //     return element.geometry;
+  //   })
+  // );
   return response.data;
 };
 

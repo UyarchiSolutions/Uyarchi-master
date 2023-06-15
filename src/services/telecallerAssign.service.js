@@ -4300,15 +4300,20 @@ const tempAssign = async (body) => {
   return 'works';
 };
 
-const getNewEdite = async (page, limit, mobile) => {
+const getNewEdite = async (page, limit, mobile, status) => {
   // let userMatch = { Uid: id };
   page = parseInt(page);
   limit = parseInt(limit);
-  // let statusMatch = { status: 'Pending' };
+  let statusMatch = { active: true };
   let mobileMatch = { active: true };
   if (mobile != 'null') {
     mobileMatch = { mobile: { $eq: mobile } };
   }
+
+  if (status != null) {
+    statusMatch = { daStatus: { $eq: status } };
+  }
+
   let dastatusMatch = { active: true };
   const data = await Shop.aggregate([
     { $match: { $and: [dastatusMatch, mobileMatch] } },
@@ -4316,7 +4321,7 @@ const getNewEdite = async (page, limit, mobile) => {
     { $limit: limit },
   ]);
 
-  const total = await Shop.aggregate([{ $match: { $and: [dastatusMatch, mobileMatch] } }]);
+  const total = await Shop.aggregate([{ $match: { $and: [dastatusMatch, mobileMatch, statusMatch] } }]);
   return { data: data, total: total.length };
 };
 

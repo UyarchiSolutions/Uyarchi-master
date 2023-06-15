@@ -4316,7 +4316,7 @@ const getNewEdite = async (page, limit, mobile, status) => {
 
   let dastatusMatch = { active: true };
   const data = await Shop.aggregate([
-    { $match: { $and: [dastatusMatch, mobileMatch] } },
+    { $match: { $and: [statusMatch, mobileMatch, statusMatch] } },
     { $skip: limit * page },
     { $limit: limit },
   ]);

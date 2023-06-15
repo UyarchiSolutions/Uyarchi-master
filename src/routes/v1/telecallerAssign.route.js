@@ -71,4 +71,5 @@ router
 router.route('/AssignedData/By/users/:id').get(telecallerAssignController.AssignedData_By_users);
 router.route('/getLat/long').post(telecallerAssignController.getLat_long);
 router.route('/tempAssign').post(telecallerAssignController.tempAssign);
+router.route('/getNewEdite/:page/:limit/:mobile/:status').get(telecallerAssignController.getNewEdite);
 module.exports = router;

@@ -4300,6 +4300,31 @@ const tempAssign = async (body) => {
   return 'works';
 };
 
+const getNewEdite = async (page, limit, mobile, status) => {
+  // let userMatch = { Uid: id };
+  page = parseInt(page);
+  limit = parseInt(limit);
+  let statusMatch = { active: true };
+  let mobileMatch = { active: true };
+  if (mobile != 'null') {
+    mobileMatch = { mobile: { $eq: mobile } };
+  }
+
+  if (status != null) {
+    statusMatch = { daStatus: { $eq: status } };
+  }
+
+  let dastatusMatch = { active: true };
+  const data = await Shop.aggregate([
+    { $match: { $and: [statusMatch, mobileMatch, statusMatch] } },
+    { $skip: limit * page },
+    { $limit: limit },
+  ]);
+
+  const total = await Shop.aggregate([{ $match: { $and: [dastatusMatch, mobileMatch, statusMatch] } }]);
+  return { data: data, total: total.length };
+};
+
 module.exports = {
   createtelecallerAssignReassign,
   getAllTelecallerHead,
@@ -4340,4 +4365,5 @@ module.exports = {
   AssignedData_By_users,
   getLat_long,
   tempAssign,
+  getNewEdite,
 };

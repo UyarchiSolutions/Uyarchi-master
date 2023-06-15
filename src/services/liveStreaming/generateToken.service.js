@@ -279,9 +279,6 @@ const participents_limit = async (req) => {
 
 const agora_acquire = async (req) => {
   let token = await tempTokenModel.findById(req.body.id);
-  //console.log(token)
-  //console.log(token.chennel);
-  //console.log(token.Uid);
   const acquire = await axios.post(
     `https://api.agora.io/v1/apps/${appID}/cloud_recording/acquire`,
     {
@@ -368,6 +365,8 @@ const recording_stop = async (req) => {
 
   const mode = 'mix';
   let token = await tempTokenModel.findById(req.body.id);
+  token.recoredStart = "stop";
+  token.save();
   const resource = token.resourceId;
   const sid = token.sid;
   const stop = await axios.post(
@@ -383,8 +382,7 @@ const recording_stop = async (req) => {
       },
     }
   );
-  token.recoredStart = "stop";
-  token.save();
+
   return stop.data;
 };
 const recording_updateLayout = async (req) => {

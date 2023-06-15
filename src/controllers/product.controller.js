@@ -105,7 +105,7 @@ const createConfirmStock = catchAsync(async (req, res) => {
 
 const getconfirmStockById = catchAsync(async (req, res) => {
   const confirmStock = await productService.getConfrimById(req.params.confirmStockId);
-  console.log(confirmStock);
+  //console.log(confirmStock);
   if (!confirmStock || confirmStock.active === false) {
     throw new ApiError(httpStatus.NOT_FOUND, 'ConfirmStock not found');
   }
@@ -199,7 +199,7 @@ const getAllStock = catchAsync(async (req, res) => {
 const getProducts = catchAsync(async (req, res) => {
   const filter = pick(req.query, ['productTitle', 'unit']);
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
-  console.log(req.deviceInfo)
+  //console.log(req.deviceInfo)
   const result = await productService.queryProduct(filter, options);
   res.send(result);
 });
@@ -388,7 +388,7 @@ const getbillingexecutive = catchAsync(async (req, res) => {
   res.send(stock);
 });
 const productaggregateById = catchAsync(async (req, res) => {
-  console.log('sdfsdfsd');
+  //console.log('sdfsdfsd');
   const product = await productService.productaggregateById(req.params.page);
   res.send(product);
 });

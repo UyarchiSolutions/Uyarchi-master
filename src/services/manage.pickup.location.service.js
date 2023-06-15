@@ -22,7 +22,7 @@ const createManagePickupLocation = async (body, userId) => {
 
   let values = { ...body, ...{ color: "#" + Math.floor(Math.random() * 16777215).toString(16), location: { type: 'Point', coordinates: [parseFloat(body.latitude), parseFloat(body.langitude)] }, date: serverdate, time: servertime, created: moment(), userId: userId } };
 
-  console.log(values)
+  //console.log(values)
   const createpickuplocations = await PickupLocation.create(values);
   return createpickuplocations;
 };

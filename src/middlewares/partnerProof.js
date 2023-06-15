@@ -24,7 +24,7 @@ const uploadImage = multer({
     ) {
       callback(null, true);
     } else {
-      console.log('Only png And Jpg file supported!');
+      //console.log('Only png And Jpg file supported!');
       callback(null, false);
     }
   },

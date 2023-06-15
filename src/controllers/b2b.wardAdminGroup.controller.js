@@ -127,7 +127,7 @@ const getBillDetails = catchAsync(async (req, res) => {
 });
 
 const getAssigned = catchAsync(async (req, res) => {
-  console.log('stock');
+  //console.log('stock');
   const details = await wardAdminGroupService.assignOnly(req.query, 'stock');
   res.send(details);
 });
@@ -137,12 +137,12 @@ const cashgetAssigned = catchAsync(async (req, res) => {
 });
 const deliverygetAssigned = catchAsync(async (req, res) => {
   let userid = req.userId;
-  console.log(userid);
+  //console.log(userid);
   const details = await wardAdminGroupService.assignOnly_DE(req.query, 'delivery', userid);
   res.send(details);
 });
 const delivery_selfpickup = catchAsync(async (req, res) => {
-  console.log('hello');
+  //console.log('hello');
   const details = await wardAdminGroupService.assignOnly_SP(req.query, 'delivery');
   res.send(details);
 });
@@ -158,7 +158,7 @@ const groupIdClick = catchAsync(async (req, res) => {
 });
 
 const orderIdClickGetProduct = catchAsync(async (req, res) => {
-  console.log(req.params.id);
+  //console.log(req.params.id);
   const details = await wardAdminGroupService.orderIdClickGetProduct(req.params.id);
   res.send(details);
 });
@@ -268,7 +268,7 @@ const getPEttyCashQuantity = catchAsync(async (req, res) => {
 });
 
 const returnStock = catchAsync(async (req, res) => {
-  console.log(req.params.id);
+  //console.log(req.params.id);
   const returnStock = await wardAdminGroupService.returnStock(req.params.id);
   res.send(returnStock);
 });

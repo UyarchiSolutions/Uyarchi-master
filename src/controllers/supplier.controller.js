@@ -132,21 +132,21 @@ const forgotPassword = catchAsync(async (req, res) => {
 
 const getAllAppSupplier = catchAsync(async (req, res) => {
   let userId = req.userId;
-  // console.log(userId);
+  // //console.log(userId);
   const users = await supplierService.getAllAppSupplier(userId);
   res.send(users);
 });
 
 const getAllAppSupplierApproved = catchAsync(async (req, res) => {
   let userId = req.userId;
-  // console.log(userId);
+  // //console.log(userId);
   const users = await supplierService.getAllAppSupplierApproved(userId);
   res.send(users);
 });
 
 const getAllAppOnly_Supplier = catchAsync(async (req, res) => {
   let userId = req.userId;
-  // console.log(userId);
+  // //console.log(userId);
   const users = await supplierService.getAllAppOnly_Supplier(userId);
   res.send(users);
 });
@@ -202,7 +202,7 @@ const getSupplierDetails = catchAsync(async (req, res) => {
 
 const Store_lat_long = catchAsync(async (req, res) => {
   let userId = req.userId;
-  console.log(userId);
+  //console.log(userId);
   const data = await supplierService.Store_lat_long(req.params.id, req.body, userId);
   res.send(data);
 });

@@ -17,12 +17,12 @@ const ReturnStock_history = require('../models/returnStock.histories.model');
 
 const createGroup = async (body, userId) => {
   let serverdates = moment().format('YYYY-MM-DD');
-  console.log(typeof serverdates);
+  //console.log(typeof serverdates);
   let servertime = moment().format('hh:mm a');
   let num = 1;
   const group = await wardAdminGroup.find({ assignDate: serverdates });
   const Buy = await wardAdminGroup.find({ assignDate: serverdates });
-  console.log(group);
+  //console.log(group);
 
   let center = '';
 
@@ -40,7 +40,7 @@ const createGroup = async (body, userId) => {
   }
   let user = '';
   let totalcount = group.length + 1;
-  console.log(totalcount);
+  //console.log(totalcount);
   user = 'G' + center + totalcount;
   let centerdata = '';
   if (Buy.length < 9) {
@@ -298,7 +298,7 @@ const updateOrderStatus = async (id, updateBody, userId) => {
     },
   };
   let deliveryStatus = await ShopOrderClone.findById(id);
-  console.log(deliveryStatus);
+  //console.log(deliveryStatus);
   if (!deliveryStatus) {
     throw new ApiError(httpStatus.NOT_FOUND, 'status not found');
   }
@@ -336,7 +336,7 @@ const updateOrderStatus_forundelivey = async (id, updateBody, userId) => {
     },
   };
   let deliveryStatus = await ShopOrderClone.findById(id);
-  console.log(deliveryStatus);
+  //console.log(deliveryStatus);
   if (!deliveryStatus) {
     throw new ApiError(httpStatus.NOT_FOUND, 'status not found');
   }
@@ -347,7 +347,7 @@ const updateOrderStatus_forundelivey = async (id, updateBody, userId) => {
 };
 const orderPicked = async (deliveryExecutiveId) => {
   let orderPicked = await ShopOrderClone.find({ deliveryExecutiveId: deliveryExecutiveId });
-  console.log(orderPicked);
+  //console.log(orderPicked);
   if (orderPicked.length == 0) {
     throw new ApiError(httpStatus.NOT_FOUND, ' id not found');
   }
@@ -507,7 +507,7 @@ const getOrderFromGroupById = async (id) => {
 };
 
 const getPettyStock = async (id) => {
-  console.log(id);
+  //console.log(id);
   let values = await Product.aggregate([
     {
       $lookup: {
@@ -574,7 +574,7 @@ const getPettyStock = async (id) => {
 };
 
 const returnStock = async (id) => {
-  console.log(id);
+  //console.log(id);
   let values = await Product.aggregate([
     // {
     //   $lookup: {
@@ -840,7 +840,7 @@ const pettyStockSubmit = async (id, updateBody, userId) => {
   // });
 
   // let valueStatus = await wardAdminGroupModel_ORDERS.find({ orderId: id });
-  // console.log(valueStatus);
+  // //console.log(valueStatus);
   // valueStatus.forEach(async (e) => {
   //   await ShopOrderClone.findByIdAndUpdate({ _id: e.orderId }, { status: 'Delivery Completed' }, { new: true });
   // });
@@ -1106,8 +1106,8 @@ const getBillDetails = async (id) => {
 const assignOnly = async (query, status) => {
   let page = query.page == null || query.page == '' ? 0 : query.page;
   let type = query.pickputype;
-  console.log(type);
-  console.log(page);
+  //console.log(type);
+  //console.log(page);
   let macthStatus = { active: true };
   let statusMatch = { status: 'Packed' };
   if (status == 'stock') {
@@ -1124,7 +1124,7 @@ const assignOnly = async (query, status) => {
     };
     statusMatch = { status: { $in: ['Assigned', 'Packed'] } };
   }
-  console.log(statusMatch);
+  //console.log(statusMatch);
   let values = await wardAdminGroup.aggregate([
     { $match: { $and: [statusMatch, macthStatus, { pickputype: { $eq: type } }] } },
     {
@@ -1337,7 +1337,7 @@ const assignOnly = async (query, status) => {
 
 const assignOnly_DE = async (query, status, userid) => {
   let page = query.page == null || query.page == '' ? 0 : query.page;
-  // console.log(page)
+  // //console.log(page)
   let macthStatus = { active: true };
   let statusMatch = { status: 'Packed' };
   if (status == 'stock') {
@@ -1965,7 +1965,7 @@ const getpettyStockData = async (id, body) => {
   return data;
 };
 const orderIdClickGetProduct = async (id) => {
-  console.log(id);
+  //console.log(id);
 
   let getDetails = await ProductorderClone.aggregate([
     {
@@ -2648,13 +2648,13 @@ const getAllGroup = async (id, date, FinishingStatus, page) => {
 const pettyStockCreate = async (id, pettyStockBody, userId) => {
   let { product } = pettyStockBody;
   let wardadmin = await wardAdminGroup.findById(id);
-  console.log(wardadmin);
+  //console.log(wardadmin);
   let createPetty = await wardAdminGroup.findByIdAndUpdate(
     { _id: id },
     { pettyStockAllocateStatus: 'Allocated', PettyStockCreate: moment(), StockUid: userId, status: 'Packed' },
     { new: true }
   );
-  console.log(pettyStockBody);
+  //console.log(pettyStockBody);
   product.forEach(async (e) => {
     pettyStockModel.create({
       wardAdminId: createPetty.id,
@@ -2897,12 +2897,12 @@ const getShopDetailsForProj = async (id) => {
 
 const submitCashGivenByWDE = async (id, updateBody) => {
   let deliveryStatus = await wardAdminGroup.findById(id);
-  console.log(deliveryStatus);
+  //console.log(deliveryStatus);
   if (!deliveryStatus) {
     throw new ApiError(httpStatus.NOT_FOUND, 'status not found');
   }
   deliveryStatus = await wardAdminGroup.findByIdAndUpdate({ _id: id }, updateBody, { new: true });
-  console.log(deliveryStatus);
+  //console.log(deliveryStatus);
 
   return deliveryStatus;
 };
@@ -3372,7 +3372,7 @@ const submitDispute = async (id, updatebody) => {
     throw new ApiError(httpStatus.NOT_FOUND, ' Not Found');
   }
   product = await wardAdminGroup.findByIdAndUpdate({ _id: id }, updatebody, { new: true });
-  console.log(product);
+  //console.log(product);
   return product;
 };
 
@@ -3499,7 +3499,7 @@ const deliveryExecutiveSorting = async () => {
 
 const getGroupOrders_driver = async (query, status) => {
   let page = query.page == null || query.page == '' ? 0 : query.page;
-  console.log(page);
+  //console.log(page);
   let macthStatus = { active: true };
   let statusMatch = { status: 'Packed' };
   if (status == 'stock') {
@@ -3516,7 +3516,7 @@ const getGroupOrders_driver = async (query, status) => {
     };
     statusMatch = { status: { $in: ['Assigned', 'Packed'] } };
   }
-  console.log(statusMatch);
+  //console.log(statusMatch);
   let values = await wardAdminGroup.aggregate([
     { $match: { $and: [statusMatch, macthStatus, { pickputype: { $eq: 'SP' } }] } },
     {
@@ -3783,7 +3783,7 @@ const getGroupOrders_driver = async (query, status) => {
 
 const assignOnly_SP = async (query, status) => {
   let page = query.page == null || query.page == '' ? 0 : query.page;
-  console.log(page);
+  //console.log(page);
   let macthStatus = { active: true };
   let statusMatch = { status: 'Packed' };
   if (status == 'stock') {
@@ -3800,7 +3800,7 @@ const assignOnly_SP = async (query, status) => {
     };
     statusMatch = { status: { $in: ['Assigned', 'Packed'] } };
   }
-  console.log(statusMatch);
+  //console.log(statusMatch);
   let values = await wardAdminGroup.aggregate([
     { $match: { $and: [statusMatch, macthStatus, { pickputype: { $eq: 'SP' } }] } },
     {
@@ -3996,7 +3996,7 @@ const assignOnly_SP = async (query, status) => {
 
 const get_stock_roport_selfpickup = async (query) => {
   let id = query.id;
-  console.log(id);
+  //console.log(id);
 
   let values = await wardAdminGroup.aggregate([
     { $match: { $and: [{ _id: { $eq: id } }, { pickputype: { $eq: 'SP' } }] } },

@@ -68,8 +68,8 @@ const getAllUsers = catchAsync(async (req, res) => {
 
 const createMetaUSers = catchAsync(async (req, res) => {
   const metauser = await b2bUsersService.createMetaUsers(req.body);
-  // console.log(metauser);
-  console.log('working......');
+  // //console.log(metauser);
+  //console.log('working......');
   res.send(metauser);
 });
 
@@ -90,7 +90,7 @@ const updateMetaUsers = catchAsync(async (req, res) => {
 
 const getForMyAccount = catchAsync(async (req, res) => {
   let userId = req.userId;
-  console.log(userId);
+  //console.log(userId);
   const users = await b2bUsersService.getForMyAccount(userId);
   res.send(users);
 });
@@ -186,7 +186,7 @@ const PurchaseExecutive_setPassword = catchAsync(async (req, res) => {
 });
 
 const supplierEnroll = catchAsync(async (req, res) => {
-  console.log('sadfsdf');
+  //console.log('sadfsdf');
   const users = await b2bUsersService.supplierEnroll();
   res.send(users);
 });

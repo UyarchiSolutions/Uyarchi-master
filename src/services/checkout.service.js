@@ -18,10 +18,10 @@ const add_to_cart = async (shopId, body) => {
             shopId: shopId,
             cart: body.cart
         })
-        console.log(cart, 'as')
+        //console.log(cart, 'as')
     }
     else {
-        console.log(cart)
+        //console.log(cart)
         cart = await AddToCart.findByIdAndUpdate({ _id: cart._id }, { cart: body.cart, delivery_type: body.delivery_type }, { new: true })
     }
 
@@ -78,7 +78,7 @@ const verifycheckout = async (shopId) => {
 };
 function createOrder(options) {
     return new Promise((resolve, reject) => {
-        console.log(options)
+        //console.log(options)
         let totalAmount = []
         options.cart.forEach(async (element) => {
             totalAmount.push(await productpackType.findById(element.packId))
@@ -117,9 +117,9 @@ const confirmOrder_razerpay = async (shopId, body) => {
 
 
     }
-    // console.log(cart)
-    // console.log();
-    // console.log(body)
+    // //console.log(cart)
+    // //console.log();
+    // //console.log(body)
     // return orders
 };
 const confirmOrder_cod = async (shopId, body) => {
@@ -209,7 +209,7 @@ const add_odrerPayment = async (shopId, body, orders, payment) => {
     let orderDetails = body.OdrerDetails
     let currentDate = moment().format('YYYY-MM-DD');
     let currenttime = moment().format('HHmmss');
-    // console.log(payment)
+    // //console.log(payment)
     return await OrderPayment.create({
         uid: shopId,
         paidAmt: orderDetails.Amount,
@@ -252,7 +252,7 @@ const add_odrerPayment_cod = async (shopId, body, orders, payment) => {
 const getshoporder_byID = async (shopId, query) => {
     let odrerId = query.id;
     let shopOrder = await ShopOrderClone.findOne({ shopId: shopId, _id: odrerId });
-    console.log(shopOrder)
+    //console.log(shopOrder)
     if (!shopOrder) {
         throw new ApiError(httpStatus.NOT_FOUND, 'Odrer Not Found');
     }

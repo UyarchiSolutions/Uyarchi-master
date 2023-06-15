@@ -103,7 +103,7 @@ const loginadminRegistrationWithEmailAndPassword = async (email, password) => {
 
 // const getSameInterviewRegistartion = async(id)=>{
 //   const interviewerData = await interviewerRegistration.findById(id)
-//   //  console.log(interviewerData._id)
+//   //  //console.log(interviewerData._id)
 
 //   if(!interviewerData){
 //     throw new ApiError(httpStatus.NOT_FOUND, 'Interviewer not found')
@@ -113,7 +113,7 @@ const loginadminRegistrationWithEmailAndPassword = async (email, password) => {
 
 //   let functionalSkills = await InterviewFunctionalSkill.find({interviewId:interviewerData._id})
 //   let functionalSkillsss = await functionalSkill.find()
-//   //  console.log(functionalSkillsss)
+//   //  //console.log(functionalSkillsss)
 
 //   let arr ={}
 
@@ -128,7 +128,7 @@ const loginadminRegistrationWithEmailAndPassword = async (email, password) => {
 
 //    })
 
-//   //  console.log(arr)
+//   //  //console.log(arr)
 
 //   return interviewerData
 
@@ -139,16 +139,16 @@ const loginadminRegistrationWithEmailAndPassword = async (email, password) => {
 // }
 // const updateInterviewerRegistrationById = async (interviewerRegistrationId, updateBody) => {
 //   const interviewersRegistration = await getInterviewerRegistrationId(interviewerRegistrationId);
-//   // console.log(interviewersRegistration.uploadResume)
+//   // //console.log(interviewersRegistration.uploadResume)
 //   if (!interviewersRegistration) {
 //     throw new ApiError(httpStatus.NOT_FOUND, 'InterviewerRegistration not found');
 //   }
 //   if (updateBody.email && (await interviewerRegistration.isEmailTaken(updateBody.email, interviewerRegistrationId))) {
 //     throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
 //   }
-//   // console.log(JSON.stringify(updateBody));
+//   // //console.log(JSON.stringify(updateBody));
 //   const updatedInterviewerRegistration = await interviewerRegistration.findOneAndUpdate({ _id: interviewerRegistrationId }, updateBody, { new: true });
-//   // console.log(updatedInterviewerRegistration.uploadResume);
+//   // //console.log(updatedInterviewerRegistration.uploadResume);
 //   await updatedInterviewerRegistration.save();
 //   return updatedInterviewerRegistration;
 // };

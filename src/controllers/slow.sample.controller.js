@@ -18,8 +18,8 @@ const getAllAttendanceClone = async (id, date, fromtime, totime, page) => {
     to = parseInt(totime);
     from = parseInt(fromtime);
   }
-  console.log('les', from);
-  console.log('ge', to);
+  //console.log('les', from);
+  //console.log('ge', to);
   if (id != 'null' && date != 'null' && fromtime != 'null' && totime != 'null') {
     //  match=[{ Uid: { $eq: id }},{ date: { $eq: date }},{ time:{ $gte: from,$lte: to}},{active:{$eq:true}}];
     const d = new Date(date);
@@ -35,7 +35,7 @@ const getAllAttendanceClone = async (id, date, fromtime, totime, page) => {
     match = [{ Uid: { $eq: id } }, { active: { $eq: true } }];
   } else if (id == 'null' && date != 'null' && fromtime == 'null' && totime == 'null') {
     match = [{ date: { $eq: date } }, { active: { $eq: true } }];
-    console.log('df');
+    //console.log('df');
   } else if (id == 'null' && (date == 'null') & (fromtime != 'null') && totime != 'null') {
     //  match=[{ time:{ $gte: from}},{ time:{$lte: to}},{active:{$eq:true}}]
     match = [{ time: { $gte: to } }, { time: { $lte: from } }, { active: { $eq: true } }];

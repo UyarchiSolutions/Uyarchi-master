@@ -11,7 +11,7 @@ const getProductName= catchAsync(async (req, res) => {
 
   const createrandomStock = catchAsync(async (req, res) => {
     const stock = await randomStockService.createrandomStock(req.body);
-    // console.log(wallet);
+    // //console.log(wallet);
     if (req.files) {
       let path = '';
       path = 'images/randomStock/';

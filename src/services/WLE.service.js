@@ -22,7 +22,7 @@ const setPackedStatus_By_LoadingExecutice = async (body, userId) => {
     //   wardAdminGroupID: orderassign.wardAdminGroupID,
     //   status: 'Assigned',
     // });
-    // // console.log(wardgroup);
+    // // //console.log(wardgroup);
     // if (wardgroup.length == 0) {
     //   await wardAdminGroup.findByIdAndUpdate({ _id: orderassign.wardAdminGroupID }, { status: 'Packed' }, { new: true });
     // }

@@ -40,7 +40,7 @@ const uploadImageById = catchAsync(async (req, res) => {
   if (req.files) {
     let path = '';
     path = 'images/receivedproductimage/';
-    console.log(req.files.weighBridgeBillImg);
+    //console.log(req.files.weighBridgeBillImg);
     if (req.files.weighBridgeBillImg != null) {
       req.files.weighBridgeBillImg.map((e) => {
         receivedProduct.weighBridgeBillImg.push(path + e.filename);
@@ -127,7 +127,7 @@ const previousOrderdata = catchAsync(async (req, res) => {
 
 const getbilled_Details = catchAsync(async (req, res) => {
   let userId = req.userId;
-  console.log(userId);
+  //console.log(userId);
   const data = await ReceivedProductService.getbilled_Details(req.query.page, userId);
   res.send(data);
 });

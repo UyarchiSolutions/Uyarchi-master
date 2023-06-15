@@ -6,7 +6,7 @@ const Street = require('../models/street.model');
 
 const createWard = async (wardBody) => {
   const { zone, zoneId } = wardBody;
-  console.log(zoneId);
+  //console.log(zoneId);
   let zon = await Zone.findById(zoneId);
   if (zon === null) {
     throw new ApiError(httpStatus.NOT_FOUND, '! 😞oops');
@@ -59,7 +59,7 @@ const getAllWard = async () => {
 };
 
 const getWardByZoneId = async (zoneId) => {
-  console.log('asrgl;y jkdfn', zoneId);
+  //console.log('asrgl;y jkdfn', zoneId);
   const zone = await Ward.aggregate([
     {
       $sort: { ward: 1 },
@@ -74,7 +74,7 @@ const getWardByZoneId = async (zoneId) => {
 };
 
 const getWardByZoneIdBySalesman = async (zoneId) => {
-  console.log('asdfg', zoneId);
+  //console.log('asdfg', zoneId);
   const zone = await Ward.aggregate([
     {
       $sort: { ward: 1 },
@@ -89,7 +89,7 @@ const getWardByZoneIdBySalesman = async (zoneId) => {
 };
 
 const wardPagination = async (id) => {
-  console.log(id);
+  //console.log(id);
   return Ward.aggregate([
     {
       $sort: {
@@ -191,12 +191,12 @@ const createDummyStreet = async () => {
   //       dommy: true,
   //       sort:sort
   //     };
-  //     console.log(row);
+  //     //console.log(row);
 
   //     // await Street.create(row);
   //   });
   // });
-  // console.log(count);
+  // //console.log(count);
   return await Street.find({ dommy: true }).sort({ sort: 1 });
 };
 

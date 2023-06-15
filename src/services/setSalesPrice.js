@@ -6,14 +6,14 @@ const moment = require('moment');
 
 const createSetSalesPrice = async (salepriceBody) => {
   const bodycontent = salepriceBody;
-  console.log(bodycontent);
+  //console.log(bodycontent);
 
-  console.log(bodycontent.product);
+  //console.log(bodycontent.product);
   const productId = bodycontent.product;
   let onlinePrice = bodycontent.onlinePrice;
   let salesmanPrice = bodycontent.salesmanPrice;
   let oldstock = bodycontent.oldstock;
-  console.log(oldstock);
+  //console.log(oldstock);
   await Product.findByIdAndUpdate(
     { _id: productId },
     { onlinePrice: onlinePrice, salesmanPrice: salesmanPrice, oldstock: oldstock },
@@ -33,7 +33,7 @@ const getAllSetSalesPrice = async () => {
 };
 
 const getdataByDateWise = async (datawise, id) => {
-  console.log(id);
+  //console.log(id);
   let ret = [];
   let count = datawise;
   let index = 0;

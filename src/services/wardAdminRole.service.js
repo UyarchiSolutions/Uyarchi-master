@@ -192,7 +192,7 @@ const telecallerHead = async () => {
 
 // ward wcce
 const wardwcce = async () => {
-  console.log('efe');
+  //console.log('efe');
   const data = await Users.aggregate([
     {
       $match: {
@@ -1050,11 +1050,11 @@ const createtemperaryAssigndata = async (body) => {
   let time = moment().format('hh:mm a');
   body.arr.forEach(async (e) => {
     let data = await SalesManShop.find({ shopId: e, status: { $in: ['Assign', 'tempReassign'] } });
-    console.log(data);
+    //console.log(data);
     if (data.length != 0) {
       data.forEach(async (f) => {
         await Shop.findByIdAndUpdate({ _id: f.shopId }, { salesManStatus: body.status }, { new: true });
-        console.log(f._id);
+        //console.log(f._id);
         await SalesManShop.findByIdAndUpdate(
           { _id: f._id },
           {
@@ -1393,7 +1393,7 @@ const history_Assign_Reaasign_data = async (id, date, idSearch, tempid) => {
       ],
     };
   }
-  // console.log(match)
+  // //console.log(match)
   const data = await SalesManShop.aggregate([
     {
       $match: match,
@@ -2578,7 +2578,7 @@ const getusertarget = async (userID) => {
 };
 
 const re_getAssign_bySalesman = async (userId) => {
-  console.log("hello")
+  //console.log("hello")
   let values = await Shop.aggregate([
     {
       $sort: { status: 1, gomap: -1 },

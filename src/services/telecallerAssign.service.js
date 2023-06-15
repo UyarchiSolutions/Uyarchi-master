@@ -455,25 +455,25 @@ const getnotAssignShops = async (zone, id, street, page, limit, uid, date, dasta
   } else {
     pincodeMatch = [{ active: { $eq: true } }];
   }
-  // console.log(pincodeMatch)
+  // //console.log(pincodeMatch)
   if (zone != 'null') {
     zoneMatch = [{ _id: { $eq: zone } }];
   } else {
     zoneMatch = [{ active: { $eq: true } }];
   }
-  // console.log(zoneMatch)
+  // //console.log(zoneMatch)
   if (id != 'null') {
     wardMatch = [{ _id: { $eq: id } }];
   } else {
     wardMatch = [{ active: { $eq: true } }];
   }
-  //  console.log(wardMatch)
+  //  //console.log(wardMatch)
   if (street != 'null') {
     streetMatch = [{ _id: { $eq: street } }];
   } else {
     streetMatch = [{ active: { $eq: true } }];
   }
-  // console.log(streetMatch)
+  // //console.log(streetMatch)
 
   if (uid != 'null' && date == 'null') {
     match = [{ Uid: { $eq: uid } }];
@@ -495,7 +495,7 @@ const getnotAssignShops = async (zone, id, street, page, limit, uid, date, dasta
   // } else {
   //   match = [{ Wardid: { $eq: id } }];
   // }
-  // console.log(match)
+  // //console.log(match)
   let data = await Shop.aggregate([
     {
       $match: {
@@ -900,25 +900,25 @@ const getnotAssignShops_without_Page = async (zone, id, street, uid, date, dasta
   } else {
     pincodeMatch = [{ active: { $eq: true } }];
   }
-  // console.log(pincodeMatch)
+  // //console.log(pincodeMatch)
   if (zone != 'null') {
     zoneMatch = [{ _id: { $eq: zone } }];
   } else {
     zoneMatch = [{ active: { $eq: true } }];
   }
-  // console.log(zoneMatch)
+  // //console.log(zoneMatch)
   if (id != 'null') {
     wardMatch = [{ _id: { $eq: id } }];
   } else {
     wardMatch = [{ active: { $eq: true } }];
   }
-  //  console.log(wardMatch)
+  //  //console.log(wardMatch)
   if (street != 'null') {
     streetMatch = [{ _id: { $eq: street } }];
   } else {
     streetMatch = [{ active: { $eq: true } }];
   }
-  // console.log(streetMatch)
+  // //console.log(streetMatch)
 
   if (uid != 'null' && date == 'null') {
     match = [{ Uid: { $eq: uid } }];
@@ -940,7 +940,7 @@ const getnotAssignShops_without_Page = async (zone, id, street, uid, date, dasta
   // } else {
   //   match = [{ Wardid: { $eq: id } }];
   // }
-  // console.log(match)
+  // //console.log(match)
   let data = await Shop.aggregate([
     {
       $match: {
@@ -1180,7 +1180,7 @@ const history_Assign_Reaasign_datatelecaller = async (id) => {
   //     ],
   //   },
   // }
-  // console.log(match)
+  // //console.log(match)
   const data = await TelecallerShop.aggregate([
     {
       $match: {
@@ -1247,11 +1247,11 @@ const createtemperaryAssigndata = async (body) => {
   let time = moment().format('hh:mm a');
   body.arr.forEach(async (e) => {
     let data = await TelecallerShop.find({ shopId: e, status: { $in: ['Assign', 'tempReassign'] } });
-    // console.log(data);
+    // //console.log(data);
     if (data.length != 0) {
       data.forEach(async (f) => {
         await Shop.findByIdAndUpdate({ _id: f.shopId }, { telecallerStatus: body.status }, { new: true });
-        // console.log(f._id);
+        // //console.log(f._id);
         await TelecallerShop.findByIdAndUpdate(
           { _id: f._id },
           {
@@ -2077,7 +2077,7 @@ const createsalesmanOrderShop = async (body) => {
         shopId: e,
         status: { $in: ['Assign', 'tempReassign'] },
       });
-      console.log(data);
+      //console.log(data);
       data.forEach(async (f) => {
         await Shop.findByIdAndUpdate({ _id: f.shopId }, { salesmanOrderStatus: body.status }, { new: true });
         await SalesmanOrderShop.findByIdAndUpdate(
@@ -2101,7 +2101,7 @@ const createsalesmanOrderShop = async (body) => {
         shopId: e,
         status: { $in: ['Assign', 'tempReassign'] },
       });
-      console.log(data);
+      //console.log(data);
       data.forEach(async (f) => {
         await Shop.findByIdAndUpdate({ _id: f.shopId }, { salesmanOrderStatus: body.status }, { new: true });
         await SalesmanOrderShop.findByIdAndUpdate(
@@ -2309,7 +2309,7 @@ const getsalesmanOrderAssignedShops = async (id) => {
 };
 
 const my_assigned_shops = async (id, query) => {
-  console.log(id);
+  //console.log(id);
   let page = query.page == '' || query.page == null || query.page == null ? 0 : parseInt(query.page);
 
   let serach = { active: true };
@@ -2538,19 +2538,19 @@ const getnotAssignsalesmanOrderShops = async (zone, id, street, page, limit, uid
   } else {
     zoneMatch = [{ active: { $eq: true } }];
   }
-  // console.log(zoneMatch)
+  // //console.log(zoneMatch)
   if (id != 'null') {
     wardMatch = [{ _id: { $eq: id } }];
   } else {
     wardMatch = [{ active: { $eq: true } }];
   }
-  //  console.log(wardMatch)
+  //  //console.log(wardMatch)
   if (street != 'null') {
     streetMatch = [{ _id: { $eq: street } }];
   } else {
     streetMatch = [{ active: { $eq: true } }];
   }
-  // console.log(streetMatch)
+  // //console.log(streetMatch)
   if (uid != 'null') {
     capture = { Uid: { $eq: uid } };
   } else {
@@ -2597,7 +2597,7 @@ const getnotAssignsalesmanOrderShops = async (zone, id, street, page, limit, uid
   // } else {
   //   match = [{ Wardid: { $eq: id } }];
   // }
-  console.log(daUser1);
+  //console.log(daUser1);
   let data = await Shop.aggregate([
     {
       $match: {
@@ -3351,11 +3351,11 @@ const createsalesmantemperaryAssigndata = async (body) => {
   let time = moment().format('hh:mm a');
   body.arr.forEach(async (e) => {
     let data = await SalesmanOrderShop.find({ _id: e, status: { $in: ['Assign', 'tempReassign'] } });
-    // console.log(data);
+    // //console.log(data);
     if (data.length != 0) {
       data.forEach(async (f) => {
         await Shop.findByIdAndUpdate({ _id: f.shopId }, { salesmanOrderStatus: body.status }, { new: true });
-        // console.log(f._id);
+        // //console.log(f._id);
         await SalesmanOrderShop.findByIdAndUpdate(
           { _id: f._id },
           {
@@ -4024,7 +4024,7 @@ const history_Assign_Reaasign_datasalesman = async (id) => {
   //     ],
   //   },
   // }
-  // console.log(match)
+  // //console.log(match)
   const data = await SalesmanOrderShop.aggregate([
     {
       $match: {

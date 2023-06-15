@@ -35,7 +35,7 @@ router.route('/create/post/teaser').post(upload, Ecomcontroller.create_post_teas
 router.route('/get/all/post').get(SellerAuth, Ecomcontroller.get_all_post);
 router.route('/get/all/post').get(SellerAuth, Ecomcontroller.get_all_post);
 router.route('/get/all/post/pagenation').get(SellerAuth, Ecomcontroller.get_all_Post_with_page);
-router.route('/get/stream/post/view').get(shopverify, Ecomcontroller.get_post_view);
+router.route('/get/stream/post/view').get(Ecomcontroller.get_post_view);
 
 
 

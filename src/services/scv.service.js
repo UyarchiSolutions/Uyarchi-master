@@ -143,7 +143,7 @@ const cartOn = async (id, body) => {
   ]);
 
   let scvAttendance = values[0];
-  console.log(values[0]);
+  //console.log(values[0]);
 
   let scv = await Scv.findById(value.allocatedScv);
 
@@ -605,7 +605,7 @@ const scv_attendance = async (body) => {
   }
   if (type == 'OUT') {
     let findTodayRecord = await ScvAttendance.findOne({ scvId: scvId, date: todayDate });
-    console.log(findTodayRecord);
+    //console.log(findTodayRecord);
     let existSecond = findTodayRecord == null ? 0 : findTodayRecord.totalSeconds;
     let startTime = moment(findTodayRecord == null ? 0 : findTodayRecord.startTime);
     let endTime = moment(times);

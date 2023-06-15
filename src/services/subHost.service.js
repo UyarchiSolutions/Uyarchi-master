@@ -26,7 +26,7 @@ const getActiveSubHosts = async (userId) => {
 
 const SendOtp = async (body) => {
   let values = await SubHost.findOne({ phoneNumber: body.phoneNumber });
-  console.log(values);
+  //console.log(values);
   if (!values) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Mobile Number Invalid');
   }
@@ -68,7 +68,7 @@ const login = async (body) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'User Not Found');
   } else {
     if (await user.isPasswordMatch(password)) {
-      console.log(password);
+      //console.log(password);
     } else {
       throw new ApiError(httpStatus.BAD_REQUEST, 'Password Invalid');
     }
@@ -78,7 +78,7 @@ const login = async (body) => {
 const get_subhost_tokens = async (req) => {
 
   let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : req.query.page;
-  // console.log(req.userId)
+  // //console.log(req.userId)
   const value = await Streamrequest.aggregate([
     { $match: { $and: [{ suppierId: { $eq: req.createdBy } }, { adminApprove: { $eq: "Approved" } }] } },
     {

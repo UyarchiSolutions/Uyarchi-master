@@ -7,12 +7,12 @@ const manageEnquiry = require('../models/general.Enquiry.model');
 
 const createUser = async (body) => {
     let serverdates = moment().format('YYYY-MM-DD');
-    console.log(typeof serverdates);
+    //console.log(typeof serverdates);
     let servertime = moment().format('hh:mm a');
   
     const group = await manageJob.find({ date: serverdates });
   
-    console.log(group);
+    //console.log(group);
   
     let center = '';
   
@@ -30,7 +30,7 @@ const createUser = async (body) => {
     }
     let userId = '';
     let totalcount = group.length + 1;
-    console.log(totalcount);
+    //console.log(totalcount);
     userId = 'U' + center + totalcount;
   
     let values = {
@@ -56,12 +56,12 @@ const createUser = async (body) => {
 
   const createEnquiry = async (body) => {
     let serverdates = moment().format('YYYY-MM-DD');
-    console.log(typeof serverdates);
+    //console.log(typeof serverdates);
     let servertime = moment().format('hh:mm a');
   
     const group = await manageEnquiry.find({ date: serverdates });
   
-    console.log(group);
+    //console.log(group);
   
     let center = '';
   
@@ -79,7 +79,7 @@ const createUser = async (body) => {
     }
     let userId = '';
     let totalcount = group.length + 1;
-    console.log(totalcount);
+    //console.log(totalcount);
     userId = 'Eq' + center + totalcount;
   
     let values = {

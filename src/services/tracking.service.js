@@ -26,7 +26,7 @@ const updateTrackingById = async (id, body) => {
 };
 
 const getTrackingByUserById = async (userId) => {
-  console.log(userId);
+  //console.log(userId);
   let values = await Tracking.findOne({ userId: userId });
   if (!values) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Not Found');
@@ -35,7 +35,7 @@ const getTrackingByUserById = async (userId) => {
 };
 
 const gettracking = async (userId) => {
-  console.log(userId);
+  //console.log(userId);
 
   let values = await Tracking.aggregate([
     { $match: { userId: userId } },
@@ -57,7 +57,7 @@ const gettracking = async (userId) => {
 };
 
 const gettrackingall = async (userId) => {
-  console.log(userId);
+  //console.log(userId);
   let today = moment().format('YYYY-MM-DD');
   let values = await Tracking.findOne({ userId: userId, date: today });
   if (!values) {
@@ -75,7 +75,7 @@ const getusers = async () => {
 };
 
 const updatelocation = async (shopId, body) => {
-  console.log(shopId);
+  //console.log(shopId);
   let today = moment().format('YYYY-MM-DD');
   let update = { ...body, ...{ date: today, userId: shopId } };
   let values = await Tracking.findOne({ userId: shopId, date: today });

@@ -9,7 +9,7 @@ const saveOtp = async (number, otp) => {
 };
 
 const updateOtp = async (number, otp) => {
-  console.log(number, otp)
+  //console.log(number, otp)
   return await OTPModel.findOneAndUpdate({mobileNumber:number}, { OTP:otp }, { new: true })
 };
 

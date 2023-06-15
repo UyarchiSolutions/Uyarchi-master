@@ -12,7 +12,7 @@ const create_purchase_plan = async (req) => {
     let orders;
     if (req.body.PaymentDatails != null) {
         let payment = await paymentgatway.verifyRazorpay_Amount(req.body.PaymentDatails);
-        console.log(payment)
+        //console.log(payment)
         let collectedAmount = payment.amount / 100
         let collectedstatus = payment.status;
         let plan = await Streamplan.findById(req.body.plan);
@@ -129,7 +129,7 @@ const create_purchase_plan_addon = async (req) => {
     let orders;
     if (req.body.PaymentDatails != null) {
         let payment = await paymentgatway.verifyRazorpay_Amount(req.body.PaymentDatails);
-        console.log(payment)
+        //console.log(payment)
         let collectedAmount = payment.amount / 100
         let collectedstatus = payment.status;
         let plan = await Streamplan.findById(req.body.plan);
@@ -140,7 +140,7 @@ const create_purchase_plan_addon = async (req) => {
             if (plan.planType == 'addon') {
                 date_now = new Date().getTime();
             }
-            console.log(date_now)
+            //console.log(date_now)
             let con = await purchasePlan.create({ ...{ no_of_host: plan.no_of_host, planType: 'addon', streamId: req.body.streamId, planId: req.body.plan, suppierId: req.userId, paidAmount: collectedAmount, paymentStatus: collectedstatus, order_id: payment.order_id, noOfParticipants: plan.numberOfParticipants }, ...req.body.PaymentDatails });
             await Dates.create_date(con)
             await addstream_user_limits(req, plan, con)
@@ -160,7 +160,7 @@ const create_purchase_plan_addon = async (req) => {
 const addstream_user_limits = async (req, plan, con) => {
     let stream = await Streamrequest.findById(req.body.streamId);
     let users_limit = await StreamPreRegister.find({ streamId: req.body.streamId, status: "Registered" }).skip(stream.noOfParticipants).limit(plan.numberOfParticipants);
-    console.log(users_limit)
+    //console.log(users_limit)
     let count = stream.noOfParticipants;
     users_limit.forEach(async (e) => {
         count++;

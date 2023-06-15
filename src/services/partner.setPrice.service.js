@@ -194,13 +194,13 @@ const getOrdersbycart = async (cartId) => {
 };
 
 const getOrderedProducts = async (cartId, date) => {
-  console.log(date);
+  //console.log(date);
   let yersterday = moment().subtract('days', 1).format('DD/MM/YYYY');
   let data = await partnerCartOrderProducts.distinct('productId');
   let values = [];
   // for (let i = 0; i < data.length; i++) {
   //   let id = data[i];
-  console.log(data.length);
+  //console.log(data.length);
   let datas = await partnerCartOrderProducts.aggregate([
     {
       $match: {
@@ -1028,7 +1028,7 @@ const stockUpdateByCart = async (body) => {
   let cart = await ScvCart.findById(cartId);
   let date = moment().format('DD-MM-YYYY');
   let time = moment().format('h:mm a');
-  console.log(cart.cartUpdateHistory[date]);
+  //console.log(cart.cartUpdateHistory[date]);
   if (cart.cartUpdateHistory[date] == null) {
     cart = await ScvCart.updateOne(
       { _id: cartId },
@@ -1055,7 +1055,7 @@ const stockUpdateByCart = async (body) => {
 
 const getCartReports = async (id) => {
   const today = moment().format('DD/MM/YYYY');
-  console.log(today);
+  //console.log(today);
   const data = await ScvCart.aggregate([
     { $match: { _id: id } },
     {

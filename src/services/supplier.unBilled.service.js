@@ -38,7 +38,7 @@ const createSupplierUnBilled = async (body) => {
 };
 
 const getUnBilledBySupplier = async (query) => {
-  console.log(query);
+  //console.log(query);
   let page = query.page;
   let values = await Supplier.aggregate([
     {
@@ -942,19 +942,19 @@ const billAdjust = async (body) => {
   if (pending.length == 0) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Pending Bill Not Available');
   }
-  console.log(pending);
+  //console.log(pending);
   pending.forEach(async (e) => {
     if (amount > 0) {
       let pendingamount = e.PendingAmount;
       // pending amount consolidated from billing amount and unbilled amount
-      console.log(pendingamount);
+      //console.log(pendingamount);
       if (pendingamount > 0) {
         let reduceAmount = pendingamount - amount;
         if (reduceAmount >= 0) {
-          console.log(reduceAmount);
+          //console.log(reduceAmount);
           // amount is getting from client side
-          console.log(pendingamount, 'pending');
-          console.log(amount, '1');
+          //console.log(pendingamount, 'pending');
+          //console.log(amount, '1');
           await supplierBills.create({
             status: 'Paid',
             groupId: e._id,
@@ -967,7 +967,7 @@ const billAdjust = async (body) => {
         } else {
           reduceAmount = amount;
           // amount = 0;
-          console.log(reduceAmount, '2');
+          //console.log(reduceAmount, '2');
           await supplierBills.create({
             status: 'Paid',
             groupId: e._id,
@@ -1001,7 +1001,7 @@ const PayPendingAmount = async (body) => {
   }
   arr.forEach(async (e) => {
     let values = await ReceivedProduct.findById(e);
-    console.log(PaidToBe);
+    //console.log(PaidToBe);
     await supplierBills.create({
       status: 'Paid',
       groupId: values._id,

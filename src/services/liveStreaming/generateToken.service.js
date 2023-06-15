@@ -29,7 +29,7 @@ const generateUid = async (req) => {
 const generateToken = async (req) => {
   let supplierId = req.userId;
   let streamId = req.body.streamId;
-  console.log(streamId)
+  //console.log(streamId)
   let stream = await Streamrequest.findById(streamId)
   if (!streamId) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
@@ -79,7 +79,7 @@ const generateToken_sub_record = async (channel, isPublisher, req, hostIdss, exp
   const expirationTimeInSeconds = 3600;
   const uid = await generateUid();
   const role = isPublisher ? Agora.RtcRole.PUBLISHER : Agora.RtcRole.SUBSCRIBER;
-  console.log(role);
+  //console.log(role);
   const moment_curr = moment();
   const currentTimestamp = moment_curr.add(600, 'minutes');
   const expirationTimestamp =
@@ -99,7 +99,7 @@ const generateToken_sub_record = async (channel, isPublisher, req, hostIdss, exp
       hostId: hostIdss._id
     },
   });
-  console.log(role);
+  //console.log(role);
   const token = await geenerate_rtc_token(channel, uid, role, expirationTimestamp);
   value.token = token;
   value.save();
@@ -110,7 +110,7 @@ const generateToken_sub = async (req) => {
   const channel = req.query.id;
   let str = await Streamrequest.findById(channel)
   let users = await Joinusers.find({ streamId: channel }).count()
-  console.log(users, str.noOfParticipants)
+  //console.log(users, str.noOfParticipants)
   let user = await Joinusers.findOne({ streamId: channel, shopId: req.shopId, })
   if (!user) {
     user = await Joinusers.create({ shopId: req.shopId, streamId: channel, hostId: str.tokenDetails });
@@ -254,7 +254,7 @@ const gettokenById_host = async (req) => {
   // value.token = token;
   // value.Uid = uid;
   // value.save();
-  // console.log(role);
+  // //console.log(role);
   return value;
 };
 const leave_participents = async (req) => {
@@ -279,9 +279,6 @@ const participents_limit = async (req) => {
 
 const agora_acquire = async (req) => {
   let token = await tempTokenModel.findById(req.body.id);
-  console.log(token)
-  console.log(token.chennel);
-  console.log(token.Uid);
   const acquire = await axios.post(
     `https://api.agora.io/v1/apps/${appID}/cloud_recording/acquire`,
     {
@@ -303,8 +300,8 @@ const agora_acquire = async (req) => {
 const recording_start = async (req) => {
   let token = await tempTokenModel.findById(req.body.id);
   const resource = token.resourceId;
-  console.log(resource)
-  console.log(token)
+  //console.log(resource)
+  //console.log(token)
   const mode = 'mix';
   const start = await axios.post(
     `https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/mode/${mode}/start`,
@@ -349,12 +346,12 @@ const recording_start = async (req) => {
   return start.data;
 };
 const recording_query = async (req) => {
-  console.log(req.body);
+  // //console.log(req.body);
   let token = await tempTokenModel.findById(req.body.id);
   const resource = token.resourceId;
   const sid = token.sid;
   const mode = 'mix';
-  console.log(`https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/query`);
+  // //console.log(`https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/query`);
   const query = await axios.get(
     `https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/query`,
     { headers: { Authorization } }
@@ -368,6 +365,8 @@ const recording_stop = async (req) => {
 
   const mode = 'mix';
   let token = await tempTokenModel.findById(req.body.id);
+  token.recoredStart = "stop";
+  token.save();
   const resource = token.resourceId;
   const sid = token.sid;
   const stop = await axios.post(
@@ -383,8 +382,7 @@ const recording_stop = async (req) => {
       },
     }
   );
-  token.recoredStart = "stop";
-  token.save();
+
   return stop.data;
 };
 const recording_updateLayout = async (req) => {
@@ -452,7 +450,7 @@ const get_sub_golive = async (req, io) => {
   let code = req.query.code;
   let streamId = req.query.id;
   io.emit(streamId + "watching_live", { code: code, stream: streamId })
-  console.log(req.query.id,code)
+  //console.log(req.query.id,code)
   let value = await Joinusers.aggregate([
     { $match: { $and: [{ _id: { $eq: req.query.id } }, { shopId: { $eq: req.shopId } }] } },
     {
@@ -928,7 +926,7 @@ const remove_host_live = async (req) => {
 const create_subhost_token = async (req) => {
   let supplierId = req.userId;
   let streamId = req.body.streamId;
-  console.log(streamId)
+  //console.log(streamId)
   let stream = await Streamrequest.findById(streamId)
   let value = await tempTokenModel.findOne({ streamId: stream._id, supplierId: supplierId });
   if (!value) {
@@ -966,7 +964,7 @@ const create_subhost_token = async (req) => {
 
 const create_raice_token = async (req) => {
   let streamId = req.body.streamId;
-  console.log(streamId)
+  //console.log(streamId)
   let stream = await Streamrequest.findById(streamId)
   let value = await tempTokenModel.findOne({ streamId: stream._id, type: 'raice-your-hand', });
   if (!value) {
@@ -1008,7 +1006,7 @@ const production_supplier_token = async (req) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
   }
   value = await tempTokenModel.findOne({ supplierId: supplierId, chennel: streamId });
-  console.log(value)
+  //console.log(value)
   if (!value) {
     const uid = await generateUid();
     const role = req.body.isPublisher ? Agora.RtcRole.PUBLISHER : Agora.RtcRole.SUBSCRIBER;
@@ -1046,8 +1044,9 @@ const production_supplier_token_cloudrecording = async (req) => {
   if (!stream) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
   }
+  console.log(stream)
   value = await tempTokenModel.findOne({ chennel: streamId, type: 'CloudRecording', recoredStart: { $ne: "stop" } });
-  if (!value) {
+  if (!value || stream.allot_host_2  ==null) {
     const uid = await generateUid();
     const role = Agora.RtcRole.SUBSCRIBER;
     const expirationTimestamp = stream.endTime / 1000;
@@ -1143,13 +1142,13 @@ const videoConverter = async () => {
     .outputOptions('-c', 'copy')
     .output(outputFilePath)
     .on('end', (e) => {
-      console.log('Conversion completed successfully', e);
+      //console.log('Conversion completed successfully', e);
     })
     .on('error', (err) => {
       console.error('Error while converting:', err);
     })
     .run();
-  console.log(outputFilePath)
+  //console.log(outputFilePath)
   const s3 = new AWS.S3({
     accessKeyId: 'AKIA3323XNN7Y2RU77UG',
     secretAccessKey: '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',
@@ -1170,7 +1169,7 @@ const videoConverter = async () => {
     if (err) {
       console.error(err);
     } else {
-      console.log(`File uploaded successfully. Location: ${data.Location}`);
+      //console.log(`File uploaded successfully. Location: ${data.Location}`);
     }
   });
 }

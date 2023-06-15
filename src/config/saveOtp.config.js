@@ -4,7 +4,7 @@ const moment = require('moment');
 const CustomerOTP = require('../models/customer.otp.model');
 
 const saveOtp = async (number, otp,user) => {
-  console.log(number);
+  //console.log(number);
   return await OTP.create({
     OTP: otp,
     mobileNumber: number,

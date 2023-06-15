@@ -4,7 +4,7 @@ const { toJSON, paginate } = require('./plugins');
 const moment = require('moment');
 
 let datenow = moment(new Date()).format('DD-MM-YYYY');
-console.log(datenow);
+//console.log(datenow);
 
 const setTrendsValueSchema = new mongoose.Schema(
   {

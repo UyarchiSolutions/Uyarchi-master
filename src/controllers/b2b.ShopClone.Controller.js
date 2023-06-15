@@ -55,17 +55,17 @@ const getshopmyshops = catchAsync(async (req, res) => {
   let shop;
   if (user.userRole == 'fb0dd028-c608-4caa-a7a9-b700389a098d') {
     shop = await b2bCloneService.getshop_myshops(req.params.page, req.userId);
-    console.log('sales man');
+    //console.log('sales man');
   }
   if (user.userRole == '719d9f71-8388-4534-9bfe-3f47faed62ac') {
     shop = await b2bCloneService.getshop_myshops_asm(req.params.page, req.userId);
-    console.log('asm');
+    //console.log('asm');
   }
   res.send(shop);
 });
 
 const getshopWardStreetNamesWithAggregation_withfilter = catchAsync(async (req, res) => {
-  console.log(req.body);
+  //console.log(req.body);
 
   const shop = await b2bCloneService.getshopWardStreetNamesWithAggregation_withfilter(
     req.params.district,
@@ -79,7 +79,7 @@ const getshopWardStreetNamesWithAggregation_withfilter = catchAsync(async (req, 
 });
 
 const getshopWardStreetNamesWithAggregation_withfilter_daily = catchAsync(async (req, res) => {
-  console.log(req.body);
+  //console.log(req.body);
   ///:user/:startdata/:enddate/:starttime/:endtime/:page
   const shop = await b2bCloneService.getshopWardStreetNamesWithAggregation_withfilter_daily(
     req.params.user,
@@ -134,7 +134,7 @@ const deleteB2BShopById = catchAsync(async (req, res) => {
 const creatAttendanceClone = catchAsync(async (req, res) => {
   const attendance = await b2bCloneService.createAttendanceClone(req.body);
   attendance.Uid = req.userId;
-  // console.log(req.files);
+  // //console.log(req.files);
   if (req.files) {
     req.files.forEach(function (files, index, arr) {
       attendance.image = 'images/attandanceClone/' + files.filename;
@@ -146,7 +146,7 @@ const creatAttendanceClone = catchAsync(async (req, res) => {
 const creatAttendanceClone_new = catchAsync(async (req, res) => {
   const attendance = await b2bCloneService.createAttendanceClone_new(req.body);
   attendance.Uid = req.userId;
-  // console.log(req.files);
+  // //console.log(req.files);
   if (req.files) {
     req.files.forEach(function (files, index, arr) {
       attendance.image = 'images/attandanceClone/' + files.filename;
@@ -167,8 +167,8 @@ const getAllAttendanceClone = async (id, date, fromtime, totime, page) => {
     to = parseInt(totime);
     from = parseInt(fromtime);
   }
-  console.log('les', from);
-  console.log('ge', to);
+  //console.log('les', from);
+  //console.log('ge', to);
   if (id != 'null' && date != 'null' && fromtime != 'null' && totime != 'null') {
     //  match=[{ Uid: { $eq: id }},{ date: { $eq: date }},{ time:{ $gte: from,$lte: to}},{active:{$eq:true}}];
     const d = new Date(date);
@@ -184,7 +184,7 @@ const getAllAttendanceClone = async (id, date, fromtime, totime, page) => {
     match = [{ Uid: { $eq: id } }, { active: { $eq: true } }];
   } else if (id == 'null' && date != 'null' && fromtime == 'null' && totime == 'null') {
     match = [{ date: { $eq: date } }, { active: { $eq: true } }];
-    console.log('df');
+    //console.log('df');
   } else if (id == 'null' && (date == 'null') & (fromtime != 'null') && totime != 'null') {
     //  match=[{ time:{ $gte: from}},{ time:{$lte: to}},{active:{$eq:true}}]
     match = [{ time: { $gte: to } }, { time: { $lte: from } }, { active: { $eq: true } }];

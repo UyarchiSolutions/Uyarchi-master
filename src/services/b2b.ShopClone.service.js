@@ -164,7 +164,7 @@ const searchShops = async (key) => {
   return values;
 };
 const getshop_myshops_asm = async (page, userId) => {
-  console.log(userId);
+  //console.log(userId);
   let values = await Shop.aggregate([
     {
       $sort: { status: 1, gomap: -1 },
@@ -588,7 +588,7 @@ const getshop_myshops_asm = async (page, userId) => {
 };
 
 const getshop_myshops = async (page, userId) => {
-  console.log(userId);
+  //console.log(userId);
   let values = await Shop.aggregate([
     {
       $sort: { status: 1, gomap: -1 },
@@ -1056,7 +1056,7 @@ const getshopWardStreetNamesWithAggregation_withfilter_all = async (district, zo
   if (street != 'null') {
     streetMatch = { Strid: { $eq: street } };
   }
-  console.log(districtMatch);
+  //console.log(districtMatch);
 
   let values = await Shop.aggregate([
     {
@@ -1185,7 +1185,7 @@ const getshopWardStreetNamesWithAggregation_withfilter = async (district, zone, 
   if (street != 'null') {
     streetMatch = { Strid: { $eq: street } };
   }
-  console.log(districtMatch);
+  //console.log(districtMatch);
 
   let values = await Shop.aggregate([
     {
@@ -1915,7 +1915,7 @@ const update_reverification_custmer = async (id, bodyData, userID) => {
 const craeteRegister = async (shopBody) => {
   const { mobile } = shopBody;
   const register = await Users.findOne({ phoneNumber: mobile });
-  // console.log(register);
+  // //console.log(register);
   if (register) {
     throw new ApiError(httpStatus.NOT_FOUND, 'MobileNumber already registered');
   } else if (register == null) {
@@ -1991,7 +1991,7 @@ const getAllAttendanceClone = async (id, date, fromtime, totime, page) => {
     match = [{ Uid: { $eq: id } }, { active: { $eq: true } }];
   } else if (id == 'null' && date != 'null' && fromtime == 'null' && totime == 'null') {
     match = [{ date: { $eq: date } }, { active: { $eq: true } }];
-    console.log('df');
+    //console.log('df');
   } else if (id == 'null' && (date == 'null') & (fromtime != 'null') && totime != 'null') {
     //  match=[{ time:{ $gte: from}},{ time:{$lte: to}},{active:{$eq:true}}]
     match = [{ time: { $gte: to } }, { time: { $lte: from } }, { active: { $eq: true } }];
@@ -2096,7 +2096,7 @@ const getAllAttendanceCloneforMapView = async (id, date, fromtime, totime) => {
     match = [{ Uid: { $eq: id } }, { active: { $eq: true } }];
   } else if (id == 'null' && date != 'null' && fromtime == 'null' && totime == 'null') {
     match = [{ date: { $eq: date } }, { active: { $eq: true } }];
-    console.log('df');
+    //console.log('df');
   } else if (id == 'null' && (date == 'null') & (fromtime != 'null') && totime != 'null') {
     //  match=[{ time:{ $gte: from}},{ time:{$lte: to}},{active:{$eq:true}}]
     match = [{ time: { $gte: to } }, { time: { $lte: from } }, { active: { $eq: true } }];
@@ -2175,7 +2175,7 @@ const totalCount = async (userId) => {
   const markettodayCount = await MarketClone.find({ date: datenow, Uid: userId }).count();
   const marketshopTotalcount = await Shop.find({ Uid: userId, type: 'market' }).count();
   const marketshoptodayCount = await Shop.find({ date: datenow, Uid: userId, type: 'market' }).count();
-  // console.log(Totalcount, todayCount, marketTotalcount, markettodayCount, marketshopTotalcount, marketshoptodayCount);
+  // //console.log(Totalcount, todayCount, marketTotalcount, markettodayCount, marketshopTotalcount, marketshoptodayCount);
   return {
     shopTotal: Totalcount,
     shopToday: todayCount,
@@ -2545,19 +2545,19 @@ const getnotAssignSalesmanData = async (zone, id, street, page, limit, uid, date
   } else {
     zoneMatch = [{ active: { $eq: true } }];
   }
-  console.log(zoneMatch);
+  //console.log(zoneMatch);
   if (id != 'null') {
     wardMatch = [{ _id: { $eq: id } }];
   } else {
     wardMatch = [{ active: { $eq: true } }];
   }
-  console.log(wardMatch);
+  //console.log(wardMatch);
   if (street != 'null') {
     streetMatch = [{ _id: { $eq: street } }];
   } else {
     streetMatch = [{ active: { $eq: true } }];
   }
-  console.log(streetMatch);
+  //console.log(streetMatch);
 
   if (uid != 'null' && date == 'null') {
     match = [{ Uid: { $eq: uid } }];
@@ -2596,7 +2596,7 @@ const getnotAssignSalesmanData = async (zone, id, street, page, limit, uid, date
   //  else {
   //   match = [{ Wardid: { $eq: id } }];
   // }
-  console.log(match);
+  //console.log(match);
   let data = await Shop.aggregate([
     {
       $match: {
@@ -3096,7 +3096,7 @@ const getnotAssignSalesmanData = async (zone, id, street, page, limit, uid, date
 };
 
 const GetShopsByShopType = async (id, page) => {
-  console.log(id);
+  //console.log(id);
   let match;
   if (id == 'null') {
     match = {
@@ -3256,7 +3256,7 @@ const data1 = async () => {
   if (data.length != 0) {
     data.forEach(async (e) => {
       await Shop.findByIdAndUpdate({ _id: e._id }, { salesManStatus: null }, { new: true });
-      console.log(e.salesManStatus);
+      //console.log(e.salesManStatus);
     });
   }
   return { mesage: 'updated..' };
@@ -3267,7 +3267,7 @@ const data2 = async () => {
   if (data.length != 0) {
     data.forEach(async (e) => {
       await Shop.findByIdAndUpdate({ _id: e._id }, { telecallerStatus: null }, { new: true });
-      console.log(e.telecallerStatus);
+      //console.log(e.telecallerStatus);
     });
   }
   return { mesage: 'updated..' };
@@ -3278,7 +3278,7 @@ const data3 = async () => {
   if (data.length != 0) {
     data.forEach(async (e) => {
       await Shop.findByIdAndUpdate({ _id: e._id }, { salesmanOrderStatus: null }, { new: true });
-      console.log(e.salesmanOrderStatus);
+      //console.log(e.salesmanOrderStatus);
     });
   }
   return { mesage: 'updated..' };
@@ -3360,7 +3360,7 @@ const get_wardby_shops = async (query) => {
   if (query.users != '' && query.users != null && query.users != 'null') {
     user = { Uid: { $eq: query.users } };
   }
-  // console.log("hello")
+  // //console.log("hello")
   let shopss = await Shop.aggregate([
     {
       $match: {
@@ -3503,12 +3503,12 @@ const get_wardby_shops = async (query) => {
     { $match: { $and: [user, { Wardid: { $eq: wardId } }, { status: { $eq: 'data_approved' } }] } },
     { $group: { _id: null, count: { $sum: 1 } } },
   ]);
-  // console.log(assign)
-  // console.log(data_approved)
+  // //console.log(assign)
+  // //console.log(data_approved)
   assign = assign.length == 0 ? 0 : assign[0].count;
   data_approved = data_approved.length == 0 ? 0 : data_approved[0].count;
-  // console.log(assign)
-  // console.log(data_approved)
+  // //console.log(assign)
+  // //console.log(data_approved)
 
   return { shopss: shopss, data_approved: data_approved, assign: assign };
 };
@@ -3626,19 +3626,19 @@ const getnotAssignSalesmanDataMap = async (zone, id, street, uid, date) => {
   } else {
     zoneMatch = [{ active: { $eq: true } }];
   }
-  console.log(zoneMatch);
+  //console.log(zoneMatch);
   if (id != 'null') {
     wardMatch = [{ _id: { $eq: id } }];
   } else {
     wardMatch = [{ active: { $eq: true } }];
   }
-  console.log(wardMatch);
+  //console.log(wardMatch);
   if (street != 'null') {
     streetMatch = [{ _id: { $eq: street } }];
   } else {
     streetMatch = [{ active: { $eq: true } }];
   }
-  console.log(streetMatch);
+  //console.log(streetMatch);
 
   if (uid != 'null' && date == 'null') {
     match = [{ Uid: { $eq: uid } }];
@@ -3677,7 +3677,7 @@ const getnotAssignSalesmanDataMap = async (zone, id, street, uid, date) => {
   //  else {
   //   match = [{ Wardid: { $eq: id } }];
   // }
-  // console.log(match);
+  // //console.log(match);
   let data = await Shop.aggregate([
     {
       $match: {
@@ -3789,8 +3789,8 @@ const getnotAssignSalesmanDataMap = async (zone, id, street, uid, date) => {
 const get_userbased_dataapproved = async (query) => {
   let userId = query.user;
   let date = query.date;
-  console.log(userId);
-  console.log(date);
+  //console.log(userId);
+  //console.log(date);
   const shops = await Shop.aggregate([
     { $sort: { DA_CREATED: 1 } },
     {
@@ -3818,8 +3818,8 @@ const get_userbased_dataapproved = async (query) => {
           shops[i].Slat + ',' + shops[i].Slong
         }&key=AIzaSyC4f71KgUy-ocpdfmadcNPy-wrVks4YSdY`
       );
-      // console.log(dis.data.rows[0].elements[0].distance.text);
-      // console.log(dis.data.rows[0].elements[0].duration.text);
+      // //console.log(dis.data.rows[0].elements[0].distance.text);
+      // //console.log(dis.data.rows[0].elements[0].duration.text);
       if (response != null) {
         returns.push({
           ...shops[i],
@@ -3846,7 +3846,7 @@ const get_userbased_dataapproved = async (query) => {
     lat = shops[i].Slat;
     long = shops[i].Slong;
   }
-  // console.log(returns);
+  // //console.log(returns);
   return { returns: returns };
   // return shops;
 };
@@ -4043,7 +4043,7 @@ const managemap_data_approved = async (query) => {
 
 const reverifiction_byshop = async (query, userId) => {
   let page = query.page == '' || query.page == null || query.page == 'null' ? 0 : query.page;
-  console.log(page);
+  //console.log(page);
   let values = await Shop.aggregate([
     {
       $sort: { status: 1, gomap: -1 },
@@ -4324,7 +4324,7 @@ const reverifiction_byshop = async (query, userId) => {
 };
 
 const get_reassign_temp = async (query) => {
-  console.log(query);
+  //console.log(query);
   let page = query.page == null || query.page == 'null' || query.page == '' ? 0 : query.page;
   let assignby = { active: true };
   if (query.assign != null && query.assign != 'null' && query.assign != '') {
@@ -4343,8 +4343,8 @@ const get_reassign_temp = async (query) => {
     wardMatch = { Wardid: { $eq: query.ward } };
   }
   let capture = query.capture;
-  console.log(wardMatch);
-  console.log(zoneMatch);
+  //console.log(wardMatch);
+  //console.log(zoneMatch);
 
   let values = await Shop.aggregate([
     {
@@ -4523,7 +4523,7 @@ const get_reassign_temp = async (query) => {
 };
 
 const update_reassign_temp = async (body) => {
-  console.log(body);
+  //console.log(body);
 
   body.arr.forEach(async (e) => {
     await Shop.findByIdAndUpdate({ _id: e }, { re_Uid: body.assign, reAssigin_date: moment() }, { new: true });
@@ -4534,7 +4534,7 @@ const update_reassign_temp = async (body) => {
 
 const get_data_approved_date = async (query) => {
   let user = query.id;
-  console.log(user);
+  //console.log(user);
   let shop = await Shop.aggregate([
     { $match: { $and: [{ DA_USER: { $eq: user } }] } },
     {
@@ -5122,7 +5122,7 @@ const get_shop_in_pincode = async (query) => {
 };
 
 const getindividualSupplierAttendence = async (user, date, page) => {
-  console.log(user);
+  //console.log(user);
   let userFilter = [{ active: true }];
   if (user !== 'null') {
     userFilter = [{ Uid: { $eq: user } }];
@@ -5224,7 +5224,7 @@ const getindividualSupplierAttendence = async (user, date, page) => {
 
 const HighlyIntrestedShops = async (type) => {
   let typeMatch;
-  console.log(type);
+  //console.log(type);
   if (type == 'ModeratelyInterested') {
     typeMatch = { daStatus: 'ModeratelyInterested', status: 'data_approved' };
   } else if (type == 'both') {
@@ -5435,7 +5435,7 @@ const DummySort = async (body) => {
 };
 
 const getShopByPincode = async (pincode) => {
-  console.log(pincode);
+  //console.log(pincode);
   let code = parseInt(pincode);
   let shop = await Shop.aggregate([
     {
@@ -5466,7 +5466,7 @@ const finalmap_view = async (req) => {
     req.query.status != 'null'
   ) {
     req.query.pincode = parseInt(req.query.pincode);
-    console.log(req.query.pincode, 2);
+    //console.log(req.query.pincode, 2);
 
     status = {
       $or: [
@@ -5476,7 +5476,7 @@ const finalmap_view = async (req) => {
     };
   } else if (req.query.pincode != null && req.query.pincode != '' && req.query.pincode != 'null') {
     req.query.pincode = parseInt(req.query.pincode);
-    console.log(req.query.pincode, 3);
+    //console.log(req.query.pincode, 3);
 
     status = { $or: [{ Pincode: { $eq: req.query.pincode } }, { Re_Pincode: { $eq: req.query.pincode } }] };
   }
@@ -5537,7 +5537,7 @@ const get_final_customer_shops = async (req) => {
     if (req.query.date1 == 'null' || req.query.date2 == 'null') {
       statusMatch;
     } else {
-      console.log(req.query.date1, req.query.date2);
+      //console.log(req.query.date1, req.query.date2);
       dateMatch = { customer_final_date: { $gte: req.query.date1, $lte: req.query.date2 } };
     }
   }

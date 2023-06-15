@@ -145,7 +145,7 @@ const getAll = async () => {
 
 const callingStatusreport = async (date) => {
   // let yesterday = moment(date, 'DD-MM-YYYY').add(-1, 'days').format('DD-MM-yyyy');
-  // console.log(yesterday);
+  // //console.log(yesterday);
   // let serverdate = date;
   // let acceptCount = await Shop.find({ callingStatus: 'accept', historydate: serverdate, lapsed: { $ne: true } }).count();
   // let callbackCount = await Shop.find({ callingStatus: 'callback', historydate: serverdate, lapsed: { $ne: true } }).count();
@@ -301,7 +301,7 @@ const callingStatusreport = async (date) => {
 };
 
 const getById = async (id) => {
-  console.log('params Id', id);
+  //console.log('params Id', id);
   let historys = await Shop.aggregate([
     {
       $match: {
@@ -1001,7 +1001,7 @@ const getShop_pending = async (date, status, key, page, userId, userRole) => {
   //     $count: 'passing_scores',
   //   },
   // ]);
-  // console.log(total);
+  // //console.log(total);
   let role = await Role.findOne({ _id: userRole });
   let user = await Users.findOne({ _id: userId });
   return {
@@ -1012,7 +1012,7 @@ const getShop_pending = async (date, status, key, page, userId, userRole) => {
   };
 };
 const getShop_oncall = async (date, status, key, page, userId, userRole) => {
-  console.log(status);
+  //console.log(status);
   let keys = { active: { $eq: true } };
   if (key != 'null') {
     keys = {
@@ -1787,7 +1787,7 @@ const getShop_callback = async (date, status, key, page, userId, userRole) => {
   //     $count: 'passing_scores',
   //   },
   // ]);
-  // console.log(total);
+  // //console.log(total);
   let role = await Role.findOne({ _id: userRole });
   let user = await Users.findOne({ _id: userId });
   return {
@@ -2291,7 +2291,7 @@ const createShopByOwner = async (body) => {
 
 const getOncallfromshops = async (userId) => {
   let values = await Shop.find({ callingUserId: userId, callingStatus: 'On Call' });
-  console.log(values);
+  //console.log(values);
   if (values.length != 0) {
     return { OnCallstatus: false };
   } else {
@@ -2571,7 +2571,7 @@ const getacceptDeclined = async (status, date, key, page, userId, userRole) => {
 const resethistory = async () => {
   let currentDate = moment().format('DD-MM-yyyy');
   let yersterday = moment().subtract(1, 'days').format('DD-MM-yyyy');
-  console.log(yersterday);
+  //console.log(yersterday);
   let today = '';
   today = currentDate;
   await Shop.updateMany(

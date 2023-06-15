@@ -14,7 +14,7 @@ const createPusersalaryInfo = catchAsync(async (req, res) => {
 
 const getPusersalaryInfoById = catchAsync(async (req, res) => {
   const usersalaryInfo = await PUserSalaryService.getUsersalaryInfoById(req.params.id);
-  console.log(usersalaryInfo);
+  //console.log(usersalaryInfo);
   if (!usersalaryInfo || usersalaryInfo.active == false) {
     throw new ApiError(httpStatus.NOT_FOUND, 'user not found');
   }

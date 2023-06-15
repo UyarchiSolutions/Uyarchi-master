@@ -81,7 +81,7 @@ const getAllPage = catchAsync(async (req, res) => {
 
 const updateCallingStatus = catchAsync(async (req, res) => {
   let userId = req.userId;
-  console.log(userId);
+  //console.log(userId);
   const callingStatus = await callHistoryService.updateStatuscall(req.params.id, req.body, userId, req.params.date);
   // throw new ApiError(httpStatus.UNAUTHORIZED, 'OnCall');
   res.send(callingStatus);
@@ -89,7 +89,7 @@ const updateCallingStatus = catchAsync(async (req, res) => {
 
 const updateCallingStatuslapsed = catchAsync(async (req, res) => {
   let userId = req.userId;
-  console.log(userId);
+  //console.log(userId);
   const callingStatus = await callHistoryService.updateStatuscalllapsed(
     req.params.id,
     req.params.orderId,

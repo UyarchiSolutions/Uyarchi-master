@@ -6,7 +6,7 @@ const shopEnrollmentEnquiryService = require('../services/shopEnrollmentEnquiry.
 
 const createEnquiry = catchAsync(async (req, res) => {
     let userId = req.userId;
-    console.log(userId);
+    //console.log(userId);
   const data = await shopEnrollmentEnquiryService.createEnquiry(userId, req.body);
   if (!data) {
     throw new ApiError(httpStatus.NOT_FOUND, 'ShopEnrollmentEnquiry Not Fount');
@@ -44,7 +44,7 @@ const pincode = catchAsync(async (req, res) => {
 
   const createShops = catchAsync(async (req, res) => {
   const data = await shopEnrollmentEnquiryService.createShops(req.body);
-//   console.log(req.files)
+//   //console.log(req.files)
   if (req.files) {
     req.files.forEach(function (files, index, arr) {
         data.photoCapture.push('images/shopClone/' + files.filename);
@@ -65,7 +65,7 @@ const getAllSupplierDatas = catchAsync(async (req, res) => {
   });
 
   const createSupplierEnquiry = catchAsync(async (req, res) => {
-    console.log(req.userId)
+    //console.log(req.userId)
     const data = await shopEnrollmentEnquiryService.createSupplierEnquiry(req.userId, req.body);
     res.send(data);
   });

@@ -6,7 +6,7 @@ const brandModel = require('../models/brand.model');
 
 const createbrand = catchAsync(async (req, res) => {
   const { body } = req;
-  console.log(body);
+  //console.log(body);
   const brands = await brand.createbrand(body);
   if (req.files.length != 0) {
     let path = '';
@@ -73,7 +73,7 @@ const doplicte_check = async (req, res, next) => {
       brandname: req.body.brandname,
     })
     .collation({ locale: 'en', strength: 2 });
-  console.log(product);
+  //console.log(product);
   if (product) {
     return res.send(httpStatus.UNAUTHORIZED, 'Exist');
   }

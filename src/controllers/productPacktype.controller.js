@@ -17,12 +17,12 @@ const getproductpackrById = catchAsync(async (req, res) => {
 
 const getAllproductpackrById = catchAsync(async (req, res) => {
   const postorder = await productpackTypeService.getALLproductpackTypeById(req.params.page);
-  //   console.log(req.params.page);
+  //   //console.log(req.params.page);
   res.send(postorder);
 });
 const get_product_withpacktype = catchAsync(async (req, res) => {
   const postorder = await productpackTypeService.get_product_withpacktype(req.params.search, req.params.page, req.query);
-  //   console.log(req.params.page);
+  //   //console.log(req.params.page);
   res.send(postorder);
 });
 

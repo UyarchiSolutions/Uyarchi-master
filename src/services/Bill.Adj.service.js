@@ -375,7 +375,7 @@ const getCustomer_bills = async (page) => {
 };
 
 const adjustment_bill = async (id, userId) => {
-  // console.log(id)
+  // //console.log(id)
   let shoporder = await ShopOrderClone.aggregate([
     {
       $match: {
@@ -517,7 +517,7 @@ const adjustment_bill = async (id, userId) => {
       },
     },
   ]);
-  console.log(shoporder);
+  //console.log(shoporder);
   if (shoporder.length == 0) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Pending Bill Not Available');
   }
@@ -530,7 +530,7 @@ const adjustment_bill = async (id, userId) => {
         let reduceAmount = totalAmount - pendingAmount;
         if (reduceAmount >= 0) {
           totalAmount = totalAmount - pendingAmount;
-          console.log(pendingAmount, 'asdasda');
+          //console.log(pendingAmount, 'asdasda');
           await ShopOrderClone.findByIdAndUpdate({ _id: e._id }, { statusOfBill: 'Paid' }, { new: true });
           await OrderPayment.create({
             paidAmt: pendingAmount,
@@ -543,8 +543,8 @@ const adjustment_bill = async (id, userId) => {
             uid: userId,
           });
         } else {
-          console.log(reduceAmount, 'asdas');
-          console.log(totalAmount, 'asdas');
+          //console.log(reduceAmount, 'asdas');
+          //console.log(totalAmount, 'asdas');
           reduceAmount = totalAmount;
           totalAmount = 0;
           await OrderPayment.create({
@@ -561,7 +561,7 @@ const adjustment_bill = async (id, userId) => {
       }
     }
   });
-  console.log(totalAmount);
+  //console.log(totalAmount);
   billadj = await BillAdjustment.findByIdAndUpdate({ _id: billadj._id }, { un_Billed_amt: totalAmount }, { new: true });
   // let billadjss = await BillAdjustment.findOne({ shopId: id });
 
@@ -569,7 +569,7 @@ const adjustment_bill = async (id, userId) => {
 };
 
 const adjustment_bill_pay = async (id, userId, body) => {
-  // console.log(id)
+  // //console.log(id)
   let billadj = await BillAdjustment.findOne({ shopId: id });
   totalAmount = body.amount;
   if (billadj.un_Billed_amt < body.amount) {
@@ -721,7 +721,7 @@ const adjustment_bill_pay = async (id, userId, body) => {
       },
     },
   ]);
-  console.log(shoporder);
+  //console.log(shoporder);
   if (shoporder.length == 0) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Pending Bill Not Available');
   }
@@ -733,7 +733,7 @@ const adjustment_bill_pay = async (id, userId, body) => {
         let reduceAmount = totalAmount - pendingAmount;
         if (reduceAmount >= 0) {
           totalAmount = totalAmount - pendingAmount;
-          console.log(pendingAmount, 'asdasda');
+          //console.log(pendingAmount, 'asdasda');
           await ShopOrderClone.findByIdAndUpdate({ _id: e._id }, { statusOfBill: 'Paid' }, { new: true });
           await OrderPayment.create({
             paidAmt: pendingAmount,
@@ -746,8 +746,8 @@ const adjustment_bill_pay = async (id, userId, body) => {
             uid: userId,
           });
         } else {
-          console.log(reduceAmount, 'asdas');
-          console.log(totalAmount, 'asdas');
+          //console.log(reduceAmount, 'asdas');
+          //console.log(totalAmount, 'asdas');
           reduceAmount = totalAmount;
           totalAmount = 0;
           await OrderPayment.create({
@@ -764,7 +764,7 @@ const adjustment_bill_pay = async (id, userId, body) => {
       }
     }
   });
-  console.log(totalAmount);
+  //console.log(totalAmount);
   billadj = await BillAdjustment.findByIdAndUpdate(
     { _id: billadj._id },
     { un_Billed_amt: billadj.un_Billed_amt - body.amount },

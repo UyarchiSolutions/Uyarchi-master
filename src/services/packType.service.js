@@ -8,12 +8,12 @@ const createpackTypeData = async (packTypeBody) => {
 };
 
 const getpackTypeById = async (packTypeId) => {
-  console.log(packTypeId);
+  //console.log(packTypeId);
   return packType.findById(packTypeId);
 };
 
 const getAllpackTypeAll = async (unit, page) => {
-  console.log(unit);
+  //console.log(unit);
   let match;
   if (unit == 'null') {
     match = [{ active: { $eq: true } }];

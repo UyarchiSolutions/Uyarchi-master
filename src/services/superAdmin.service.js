@@ -31,7 +31,7 @@ const updatesuperAdminById = async (superAdminId, updateBody) => {
   if (updateBody.email && (await SuperAdmin.isEmailTaken(updateBody.email, superAdminId))) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
   }
-  // console.log(JSON.stringify(updateBody));
+  // //console.log(JSON.stringify(updateBody));
   const updatedAdmin = await superAdmin.findOneAndUpdate({ _id: superAdminId }, updateBody, { new: true });
   await updatedAdmin.save();
   return updatedAdmin;

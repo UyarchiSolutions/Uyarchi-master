@@ -35,7 +35,7 @@ const doplicte_check = async (req, res, next) => {
     category: req.body.category,
     productTitle: req.body.productTitle,
   }).collation({ locale: 'en', strength: 2 });
-  console.log(product);
+  //console.log(product);
   if (product) {
     return res.send(httpStatus.UNAUTHORIZED, 'Exist');
   }
@@ -58,7 +58,7 @@ const setTrendsValueforProduct = async (id, updateBody) => {
   }
   product = await Product.findByIdAndUpdate({ _id: id }, updateBody, { new: true });
   product = await Product.findByIdAndUpdate({ _id: id }, { $set: { setTrendsDate: datenow } }, { new: true });
-  console.log(product);
+  //console.log(product);
   return product;
 };
 
@@ -354,7 +354,7 @@ const TrendsCounts = async (productId, date, wardId, street) => {
   } else {
     match = { productId: { $eq: productId }, date: { $eq: date } };
   }
-  console.log(wardId);
+  //console.log(wardId);
   if (wardId != 'null') {
     wardmatch = { Wardid: wardId };
     wardmatchCount = { Wardid: { $eq: wardId } };
@@ -362,7 +362,7 @@ const TrendsCounts = async (productId, date, wardId, street) => {
     wardmatch = { active: true };
     wardmatchCount = { active: true };
   }
-  console.log(match);
+  //console.log(match);
   let marketshop = await MarketShopsClone.aggregate([
     {
       $lookup: {
@@ -416,7 +416,7 @@ const createManageBill = async (manageBillBody) => {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid SupplierId');
   }
   const order = await ReceivedOrder.findById(orderId);
-  console.log(order);
+  //console.log(order);
   if (order === null) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'OrderId Invalid');
   }
@@ -440,11 +440,11 @@ const createStock = async (stockbody) => {
   let month = (date.getMonth() < 9 ? '0' : '') + (date.getMonth() + 1);
   let day = (date.getDate() < 9 ? '0' : '') + date.getDate();
   let billid = first + '' + day + '' + second + '' + month + '' + third;
-  console.log(month);
+  //console.log(month);
   product.forEach(async (element) => {
     const productId = element.product;
     const pro = await Product.findById(productId);
-    console.log(pro.productTitle);
+    //console.log(pro.productTitle);
     let oldStock = pro.stock;
     let newStock = element.measureMent;
     let totalStock = parseInt(oldStock) + parseInt(newStock);
@@ -458,7 +458,7 @@ const createStock = async (stockbody) => {
 
 const getByBillId = async (billId) => {
   const bills = Stock.find({ billId });
-  console.log(billId);
+  //console.log(billId);
   if (bills === null || !bills) {
     throw new ApiError(httpStatus.NOT_FOUND, 'InCorrect BillId');
   }
@@ -467,19 +467,19 @@ const getByBillId = async (billId) => {
 
 const productAggregationWithShopOrder = async () => {
   const products = await Product.find();
-  console.log(
-    products.map((e) => {
-      return e.id;
-    })
-  );
+  //console.log(
+  //   products.map((e) => {
+  //     return e.id;
+  //   })
+  // );
   const shopOrders = await ShopOrders.find();
-  console.log(
-    shopOrders.map((e) => {
-      return e.product.map((ee) => {
-        return ee.productid;
-      });
-    })
-  );
+  // //console.log(
+  //   shopOrders.map((e) => {
+  //     return e.product.map((ee) => {
+  //       return ee.productid;
+  //     });
+  //   })
+  // );
 };
 
 const productDateTimeFilter = async (date) => {
@@ -1050,7 +1050,7 @@ const getProductById = async (id) => {
 };
 
 const getProductByIdWithAggregation = async (id) => {
-  console.log(id);
+  //console.log(id);
   const product = await Product.aggregate([
     {
       $match: {
@@ -1268,9 +1268,9 @@ const getStockByStatusClosed = async () => {
 };
 
 const updateStackById = async (stackId, updateBody) => {
-  console.log(stackId);
+  //console.log(stackId);
   let stack = await Stock.findOne({ supplierId: stackId });
-  console.log(stack);
+  //console.log(stack);
   if (!stack) {
     throw new ApiError(httpStatus.NOT_FOUND, 'stacks not found');
   }
@@ -1396,7 +1396,7 @@ const productaggregateById = async (page) => {
 
   const total = await Product.find().count();
 
-  // console.log(total.length);
+  // //console.log(total.length);
   return {
     value: product,
     total: total,
@@ -1477,7 +1477,7 @@ const costPriceCalculation = async (date, page) => {
     ]);
     let retunJson;
     if (followers.length != 0) {
-      console.log(followers[0]);
+      //console.log(followers[0]);
       let cost = followers[0].receivedstocks.billingPrice;
       let exp = followers[0].transportbills.Total / followers[0].incomingQuantity.Total;
       retunJson = {
@@ -1506,7 +1506,7 @@ const costPriceCalculation = async (date, page) => {
   return await Promise.all(result);
 
   // await values.forEach(async (product) => {`
-  //   // console.log(product);
+  //   // //console.log(product);
   //   let receiveddate = await ReceivedProduct.aggregate([
   //     {
   //       $match: {
@@ -1526,7 +1526,7 @@ const costPriceCalculation = async (date, page) => {
   //   ]);
   //   if (receiveddate.length != 0) {
   //     retunJson.push(receiveddate[0]);
-  //     console.log(retunJson);
+  //     //console.log(retunJson);
   //   }
   // });
 
@@ -1625,7 +1625,7 @@ const rateSetSellingPrice = async (productId, date, sedate, day) => {
 };
 
 const productaggregateFilter = async (key) => {
-  console.log(key);
+  //console.log(key);
   const product = await Product.aggregate([
     {
       $match: {
@@ -1848,7 +1848,7 @@ const AssignStockGetall = async (date, page) => {
 const get_Set_price_product = async (page) => {
   const today = moment().format('YYYY-MM-DD');
   const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
-  console.log(yesterday);
+  //console.log(yesterday);
   let value = await Product.aggregate([
     {
       $lookup: {

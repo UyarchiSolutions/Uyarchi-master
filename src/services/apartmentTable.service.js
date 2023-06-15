@@ -9,14 +9,14 @@ const axios = require('axios');
 
 const createApartment = async (apartmentBody) => {
   const { Uid } = apartmentBody;
-  console.log(apartmentBody);
+  //console.log(apartmentBody);
   let ManageUser = await manageUser.findById(Uid);
   let values = {};
   values = { ...apartmentBody, ...{ Uid: ManageUser.id } };
   if (ManageUser === null) {
     throw new ApiError(httpStatus.NO_CONTENT, '!oops 🖕');
   }
-  console.log(values);
+  //console.log(values);
   return Apartment.create(values);
 };
 
@@ -28,7 +28,7 @@ const createManageUserAutoAttendance = async (manageUserAttendanceAutoBody) => {
   if (ManageUser === null) {
     throw new ApiError(httpStatus.NO_CONTENT, '!oops 🖕');
   }
-  console.log(values);
+  //console.log(values);
   return ManageUserAttendanceAuto.create(values);
 };
 
@@ -49,7 +49,7 @@ const groupMap = async (from, to) => {
   let response = await axios.get(
     `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${from}&destinations=${to}&key=AIzaSyC4f71KgUy-ocpdfmadcNPy-wrVks4YSdY`
   );
-  // console.log(response.data)
+  // //console.log(response.data)
   return response.data;
 };
 
@@ -78,19 +78,19 @@ const WardApi = async (location) => {
 const WardApi2 = async (longi, lati, data1) => {
   let longitude = longi;
   let latitude = lati;
-  // console.log(longitude.length)
+  // //console.log(longitude.length)
   let data = [];
   let data2 = data1;
   let response = await axios.get(
     'https://chennaicorporation.gov.in/gcc/citizen-details/location-service/assets/GCC_DIVISION.geojson'
   );
 
-  //  console.log(response.data.features.length )
-  //  console.log(response.data.features[0].geometry.coordinates[0])
+  //  //console.log(response.data.features.length )
+  //  //console.log(response.data.features[0].geometry.coordinates[0])
   for (let i = 0; i < response.data.features.length; i++) {
     for (let j = 0; j < response.data.features[i].geometry.coordinates[0].length; j++) {
       let b = response.data.features[i].geometry.coordinates[0][j];
-      // console.log(b)
+      // //console.log(b)
       let lon = b.slice(0, 1);
       let la = b.slice(1, 2);
       const first2Str = String(la).slice(0, 5);
@@ -98,10 +98,10 @@ const WardApi2 = async (longi, lati, data1) => {
       const first2Num = first2Str;
       const second2Num = second2Str;
       if (first2Num == latitude && second2Num == longitude) {
-        console.log(second2Num);
-        console.log(Number(longitude));
-        console.log(first2Num);
-        console.log(Number(latitude));
+        //console.log(second2Num);
+        //console.log(Number(longitude));
+        //console.log(first2Num);
+        //console.log(Number(latitude));
         data = response.data.features[i].properties;
         break;
       }
@@ -138,19 +138,19 @@ const getAllStreetLatLang = async () => {
   //   //   `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${streets, area, t, i}&inputtype=textquery&fields=formatted_address%2Cname%2Crating%2Copening_hours%2Cgeometry&key=AIzaSyC4f71KgUy-ocpdfmadcNPy-wrVks4YSdY`
   //   // );
   //   axios.get(`https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${streets + " " + area + " ," + t + " ," + i}&inputtype=textquery&fields=formatted_address%2Cname%2Crating%2Copening_hours%2Cgeometry&key=AIzaSyC4f71KgUy-ocpdfmadcNPy-wrVks4YSdY`).then(resp => {
-  //     // console.log(resp.data.candidates[0]);
+  //     // //console.log(resp.data.candidates[0]);
   //     count++;
   //     if (resp.data.candidates[0].geometry.location.lat != undefined) {
-  //       console.log(count + "-", resp.data.candidates[0].geometry.location.lat, streets, area)
-  //       console.log(count + "-", resp.data.candidates[0].geometry.location.lng)
+  //       //console.log(count + "-", resp.data.candidates[0].geometry.location.lat, streets, area)
+  //       //console.log(count + "-", resp.data.candidates[0].geometry.location.lng)
   //     }
 
   //   });
 
   //   // await street.findByIdAndUpdate({ _id: streetId }, {lat:response.data.candidates[0].geometry.location.lat, lng:response.data.candidates[0].geometry.location.lng}, { new: true });
   // });
-  //  console.log(response.data.candidates[0].geometry.location.lat)
-  //  console.log(response.data.candidates[0].geometry.location.lng)
+  //  //console.log(response.data.candidates[0].geometry.location.lat)
+  //  //console.log(response.data.candidates[0].geometry.location.lng)
   return 'data';
 };
 
@@ -371,7 +371,7 @@ const createManageUserAttendance = async (manageUserAttendanceBody) => {
   if (ManageUser === null) {
     throw new ApiError(httpStatus.NO_CONTENT, '!oops 🖕');
   }
-  console.log(values);
+  //console.log(values);
   return ManageUserAttendance.create(values);
 };
 
@@ -382,7 +382,7 @@ const attendancelat = async (id, date1, date2) => {
   } else {
     match = [{ Uid: { $eq: id } }];
   }
-  console.log(match);
+  //console.log(match);
   return ManageUserAttendance.aggregate([
     {
       $match: {
@@ -411,8 +411,8 @@ const getAllManageUSerAttendance = async (id, date, fromtime, totime, page) => {
     to = parseInt(totime);
     from = parseInt(fromtime);
   }
-  console.log('les', from);
-  console.log('ge', to);
+  //console.log('les', from);
+  //console.log('ge', to);
   if (id != 'null' && date != 'null' && fromtime != 'null' && totime != 'null') {
     //  match=[{ Uid: { $eq: id }},{ date: { $eq: date }},{ time:{ $gte: from,$lte: to}},{active:{$eq:true}}];
     match = [
@@ -426,7 +426,7 @@ const getAllManageUSerAttendance = async (id, date, fromtime, totime, page) => {
     match = [{ Uid: { $eq: id } }, { active: { $eq: true } }];
   } else if (id == 'null' && date != 'null' && fromtime == 'null' && totime == 'null') {
     match = [{ date: { $eq: date } }, { active: { $eq: true } }];
-    console.log('df');
+    //console.log('df');
   } else if (id == 'null' && (date == 'null') & (fromtime != 'null') && totime != 'null') {
     //  match=[{ time:{ $gte: from}},{ time:{$lte: to}},{active:{$eq:true}}]
     match = [{ time: { $gte: to } }, { time: { $lte: from } }, { active: { $eq: true } }];
@@ -441,7 +441,7 @@ const getAllManageUSerAttendance = async (id, date, fromtime, totime, page) => {
   } else {
     match = [{ Uid: { $ne: null } }, { active: { $eq: true } }];
   }
-  console.log(match);
+  //console.log(match);
   const Attendance = await ManageUserAttendance.aggregate([
     { $sort: { date: -1, time: -1 } },
     {
@@ -491,7 +491,7 @@ const getAllManageUSerAttendance = async (id, date, fromtime, totime, page) => {
     },
   ]);
 
-  console.log(Attendance);
+  //console.log(Attendance);
 
   return {
     data: Attendance,
@@ -500,7 +500,7 @@ const getAllManageUSerAttendance = async (id, date, fromtime, totime, page) => {
 };
 
 const getSearch = async (manageUserAttendanceBody) => {
-  console.log(manageUserAttendanceBody);
+  //console.log(manageUserAttendanceBody);
   let ManageUser = await manageUser.find({ name: manageUserAttendanceBody.name });
   if (!ManageUser) {
     throw new ApiError(httpStatus.NOT_FOUND, 'ManageUser not found');
@@ -517,7 +517,7 @@ const createShop = async (shopBody) => {
   if (ManageUser === null) {
     throw new ApiError(httpStatus.NO_CONTENT, '!oops 🖕');
   }
-  console.log(values);
+  //console.log(values);
   return Shop.create(values);
 };
 
@@ -1795,7 +1795,7 @@ const getAllApartment = async (id, districtId, zoneId, wardId, streetId, status,
     streetId != 'null' &&
     status != 'null'
   ) {
-    console.log('wfd');
+    //console.log('wfd');
     match = [
       { 'manageusersdata.preferredDistrict': { $eq: districtId } },
       { 'manageusersdata.preferredZone': { $eq: zoneId } },
@@ -1875,7 +1875,7 @@ const getAllApartment = async (id, districtId, zoneId, wardId, streetId, status,
   } else {
     match = [{ _id: { $ne: null } }];
   }
-  console.log(match);
+  //console.log(match);
   const apart = await Apartment.aggregate([
     {
       $lookup: {
@@ -3153,7 +3153,7 @@ const getAllShop = async (id, districtId, zoneId, wardId, streetId, status, page
     streetId != 'null' &&
     status != 'null'
   ) {
-    console.log('wfd');
+    //console.log('wfd');
     match = [
       { 'manageusersdata.preferredDistrict': { $eq: districtId } },
       { 'manageusersdata.preferredZone': { $eq: zoneId } },
@@ -3233,7 +3233,7 @@ const getAllShop = async (id, districtId, zoneId, wardId, streetId, status, page
   } else {
     match = [{ _id: { $ne: null } }];
   }
-  console.log(match);
+  //console.log(match);
   const shop = await Shop.aggregate([
     {
       $lookup: {
@@ -3911,7 +3911,7 @@ const getAllApartmentAndShop = async (id, districtId, zoneId, wardId, streetId, 
   } else {
     mat = { $and: [{ _id: { $ne: null } }] };
   }
-  console.log(mat);
+  //console.log(mat);
   const street = await Street.aggregate([
     {
       $match: {
@@ -4165,7 +4165,7 @@ const updateApartmentById = async (apartmentId, updateBody) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'Apartment not found');
   }
   Apart = await Apartment.findByIdAndUpdate({ _id: apartmentId }, updateBody, { new: true });
-  console.log(Apart.Strid);
+  //console.log(Apart.Strid);
   let app = await Street.aggregate([
     {
       $match: {
@@ -4220,7 +4220,7 @@ const updateApartmentById = async (apartmentId, updateBody) => {
       },
     },
   ]);
-  console.log(app);
+  //console.log(app);
   let filter = '';
   if (app.length != 0) {
     if (app[0].shopData.length == 0 && app[0].apartmentData.length == 0) {
@@ -4229,7 +4229,7 @@ const updateApartmentById = async (apartmentId, updateBody) => {
       filter = 'partialpending';
     }
   }
-  console.log(Apart.Strid);
+  //console.log(Apart.Strid);
   if (filter != '') {
     await Street.findByIdAndUpdate({ _id: Apart.Strid }, { filter: filter }, { new: true });
   }
@@ -4296,7 +4296,7 @@ const updateShopById = async (shopId, updateBody) => {
       },
     },
   ]);
-  console.log(app);
+  //console.log(app);
   let filter = '';
   if (app.length != 0) {
     if (app[0].shopData.length == 0 && app[0].apartmentData.length == 0) {
@@ -4305,7 +4305,7 @@ const updateShopById = async (shopId, updateBody) => {
       filter = 'partialpending';
     }
   }
-  // console.log(Apart.Strid)
+  // //console.log(Apart.Strid)
   if (filter != '') {
     await Street.findByIdAndUpdate({ _id: Sho.Strid }, { filter: filter }, { new: true });
   }
@@ -4334,11 +4334,11 @@ const chennai_corporation_decodes = async () => {
   let response = await axios.get(
     `https://chennaicorporation.gov.in/gcc/citizen-details/location-service-lb/assets/GCC_DIVISION.geojson`
   );
-  console.log(
-    response.data.features.array.foreach((element) => {
-      return element.geometry;
-    })
-  );
+  //console.log(
+  //   response.data.features.array.foreach((element) => {
+  //     return element.geometry;
+  //   })
+  // );
   return response.data;
 };
 

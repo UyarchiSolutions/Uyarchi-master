@@ -40,7 +40,7 @@ const OtpForget = async (mobile) => {
   );
   data = 'send/?apikey=' + apiKey + '&numbers=' + numbers + '&sender=' + sender + '&message=' + message;
   var options = 'https://api.textlocal.in/' + data;
-  console.log(data)
+  //console.log(data)
   await saveOtp.updateOtp(contact, OTPCODE);
   https.request(options, callback).end();
   return 'OTP Send Successfully';
@@ -52,7 +52,7 @@ callback = function (response) {
     str += chunk;
   });
   response.on('end', function () {
-    console.log(str);
+    //console.log(str);
   });
 };
 

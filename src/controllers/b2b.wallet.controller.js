@@ -5,7 +5,7 @@ const httpStatus = require('http-status');
 
 const createWalletAccount = catchAsync(async (req, res) => {
   const wallet = await walletService.createWallet(req.body);
-  // console.log(wallet);
+  // //console.log(wallet);
   if (req.files) {
     let path = '';
     path = 'images/wallet/';

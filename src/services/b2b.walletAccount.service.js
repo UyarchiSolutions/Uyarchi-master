@@ -5,7 +5,7 @@ const { Shop } = require('../models/b2b.ShopClone.model');
 
 const createWallet = async (walletbody) => {
   let wallet = await walletModel.create(walletbody);
-  // console.log(wallet);
+  // //console.log(wallet);
   return wallet;
 };
 

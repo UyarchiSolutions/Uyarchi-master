@@ -19,7 +19,7 @@ const createUserFine = async (body) => {
     }
     let orderId = body.orderId
     let orderpaymentId = body.orderpaymentId
-    console.log(orderId)
+    //console.log(orderId)
     await orderPayment.findByIdAndUpdate({ _id: orderpaymentId }, { creditApprovalStatus: "Approved" }, { new: true })
     const createValues = await Userfine.create(values)
     return createValues

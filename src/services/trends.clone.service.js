@@ -108,7 +108,7 @@ const updateTrendsCloneById = async (TrendsCloneId, updateBody) => {
   if (!TrendsClone) {
     throw new ApiError(httpStatus.NOT_FOUND, 'TrendsClone not found');
   }
-  console.log(TrendsClone);
+  //console.log(TrendsClone);
 
   TrendsClone = await TrendsClone.findByIdAndUpdate({ _id: TrendsCloneId }, updateBody, { new: true });
   return TrendsClone;

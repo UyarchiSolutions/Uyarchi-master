@@ -7,7 +7,7 @@ let currentDate = moment().format('DD-MM-YYYY');
 
 const createB2bBillStatus = async (body) => {
   let billcount = await b2bBillStatus.find({ date: currentDate }).count();
-  console.log(billcount);
+  //console.log(billcount);
   let center = '';
   if (billcount < 9) {
     center = '000000';

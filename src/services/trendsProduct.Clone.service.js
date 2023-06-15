@@ -7,7 +7,7 @@ const { Shop } = require('../models/apartmentTable.model');
 const moment = require('moment');
 
 const getStreetsByWardIdAndProductsClone = async (wardId, street, date, page) => {
-  console.log(date, 'sdfsa');
+  //console.log(date, 'sdfsa');
 
   let match;
   if (street != 'null') {
@@ -22,7 +22,7 @@ const getStreetsByWardIdAndProductsClone = async (wardId, street, date, page) =>
   } else {
     wardmatch = { active: true };
   }
-  console.log(match);
+  //console.log(match);
 
   let values = await Product.aggregate([
     {
@@ -135,7 +135,7 @@ const getProductByProductIdFromTrendProductClone = async (wardId, street, produc
   } else {
     wardmatch = { active: true };
   }
-  console.log(match);
+  //console.log(match);
   let value = await TrendProductClone.aggregate([
     {
       $match: {
@@ -194,7 +194,7 @@ const getProductByProductIdFromTrendProductClone = async (wardId, street, produc
 };
 
 const getProductCloneCalculation = async (wardId, street, productId, date) => {
-  console.log(productId);
+  //console.log(productId);
   let match;
   if (street != 'null') {
     match = { steetId: { $eq: street } };
@@ -254,7 +254,7 @@ const getProductCloneCalculation = async (wardId, street, productId, date) => {
       },
     ]);
   }
-  console.log(shopss.length);
+  //console.log(shopss.length);
 
   return { totalshops: value.length, totalStreet: shopss.length };
 };
@@ -264,7 +264,7 @@ const updateTrendsById = async (id, body) => {
   if (!trendproduct) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Not Found');
   }
-  console.log(trendproduct);
+  //console.log(trendproduct);
   trendproduct = await TrendProductClone.findByIdAndUpdate({ _id: id }, body, { new: true });
   return trendproduct;
 };
@@ -278,10 +278,10 @@ const getShopsByIdFromTrends = async (id) => {
     formatter = new Intl.DateTimeFormat([], options);
   var dt = moment(formatter.format(new Date()), ['h:mm A']).format('HHmm');
   let datenow = moment(new Date()).format('DD-MM-YYYY');
-  console.log(dt);
+  //console.log(dt);
   let match = [{ active: { $eq: false } }];
   if (600 < dt && 1100 > dt) {
-    console.log('1');
+    //console.log('1');
 
     match = [{ date: { $eq: datenow } }, { shopid: { $eq: id } }, { time: { $gte: 600 } }, { time: { $lte: 1100 } }];
   }
@@ -291,7 +291,7 @@ const getShopsByIdFromTrends = async (id) => {
   if (1500 < dt && 2400 > dt) {
     match = [{ date: { $eq: datenow } }, { shopid: { $eq: id } }, { time: { $gte: 1500 } }, { time: { $lte: 1800 } }];
   }
-  console.log(match);
+  //console.log(match);
   let values = await Trends.aggregate([
     {
       $match: {

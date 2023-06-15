@@ -11,7 +11,7 @@ const createmarketService = catchAsync(async (req, res) => {
     //   let path = [];
     req.files.forEach(function (files, index, arr) {
       pro.image.push('images/market/' + files.filename);
-      // console.log(shop.photoCapture)
+      // //console.log(shop.photoCapture)
     });
   }
   res.status(httpStatus.CREATED);
@@ -30,7 +30,7 @@ const createmarketCloneService = catchAsync(async (req, res) => {
     //   let path = [];
     req.files.forEach(function (files, index, arr) {
       pro.image.push('images/marketClone/' + files.filename);
-      // console.log(shop.photoCapture)
+      // //console.log(shop.photoCapture)
     });
   }
   res.status(httpStatus.CREATED);
@@ -49,7 +49,7 @@ const createmarketShopCloneService = catchAsync(async (req, res) => {
     //   let path = [];
     req.files.forEach(function (files, index, arr) {
       pro.image.push('images/marketShopClone/' + files.filename);
-      // console.log(shop.photoCapture)
+      // //console.log(shop.photoCapture)
     });
   }
   res.status(httpStatus.CREATED);
@@ -74,10 +74,10 @@ const updatemarketShopClone = catchAsync(async (req, res) => {
   const pro = await marketService.updatemarketShopCloneById(req.params.id, req.body);
   if (req.files) {
     //   let path = [];
-    console.log(req.files);
+    //console.log(req.files);
     req.files.forEach(function (files, index, arr) {
       pro.image.push('images/marketShopClone/' + files.filename);
-      // console.log(shop.photoCapture)
+      // //console.log(shop.photoCapture)
     });
   }
   await pro.save();
@@ -109,7 +109,7 @@ const getmarketCloneById = catchAsync(async (req, res) => {
 
 const getmarketCloneAll = catchAsync(async (req, res) => {
   const manage = await marketService.getAllmarketClone();
-  console.log(manage);
+  //console.log(manage);
   res.send(manage);
 });
 
@@ -117,10 +117,10 @@ const updatemarketClone = catchAsync(async (req, res) => {
   const pro = await marketService.updatemarketCloneById(req.params.id, req.body);
   if (req.files) {
     //   let path = [];
-    console.log(req.files);
+    //console.log(req.files);
     req.files.forEach(function (files, index, arr) {
       pro.image.push('images/marketClone/' + files.filename);
-      // console.log(shop.photoCapture)
+      // //console.log(shop.photoCapture)
     });
   }
   // await pro.save();
@@ -131,10 +131,10 @@ const createmarketShopService = catchAsync(async (req, res) => {
   const pro = await marketService.createMarketShops(req.body);
   if (req.files) {
     //   let path = [];
-    console.log(req.files);
+    //console.log(req.files);
     req.files.forEach(function (files, index, arr) {
       pro.image.push('images/marketShop/' + files.filename);
-      // console.log(shop.photoCapture)
+      // //console.log(shop.photoCapture)
     });
   }
   res.status(httpStatus.CREATED).send(pro);
@@ -182,10 +182,10 @@ const updatemarketService = catchAsync(async (req, res) => {
   const pro = await marketService.updatemarketById(req.params.marketId, req.body);
   if (req.files) {
     //   let path = [];
-    console.log(req.files);
+    //console.log(req.files);
     req.files.forEach(function (files, index, arr) {
       pro.image.push('images/market/' + files.filename);
-      // console.log(shop.photoCapture)
+      // //console.log(shop.photoCapture)
     });
   }
   // await pro.save();
@@ -196,10 +196,10 @@ const updatemarketShopService = catchAsync(async (req, res) => {
   const pro = await marketService.updatemarketShopsById(req.params.marketShopId, req.body);
   if (req.files) {
     //   let path = [];
-    console.log(req.files);
+    //console.log(req.files);
     req.files.forEach(function (files, index, arr) {
       pro.image.push('images/marketShop/' + files.filename);
-      // console.log(shop.photoCapture)
+      // //console.log(shop.photoCapture)
     });
   }
   // await pro.save();

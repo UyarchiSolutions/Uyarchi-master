@@ -300,7 +300,7 @@ const createMarketShops = async (marketShopsBody) => {
   if (ManageUser === null) {
     throw new ApiError(httpStatus.NO_CONTENT, '!oops 🖕');
   }
-  console.log(values);
+  //console.log(values);
   return MarketShops.create(values);
 };
 
@@ -604,7 +604,7 @@ const getAllmarketTable = async (id, page) => {
       },
     },
   ]);
-  console.log(mark);
+  //console.log(mark);
   return {
     data: mark,
     count: count.length,

@@ -9,7 +9,7 @@ const config = require('../config/config');
 const { Seller } = require('../models/seller.models');
 const SellerAuth = async (req, res, next) => {
   const token = req.headers.sellerauth
-  // console.log(token)
+  // //console.log(token)
   if (!token) {
     return res.send(httpStatus.UNAUTHORIZED, 'Invalid Access set');
   }

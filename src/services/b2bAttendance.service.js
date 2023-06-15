@@ -9,7 +9,7 @@ const createAttendance = async (attendanceBody) => {
 
   let total = days - ApprovedAbsentDays;
   let userSalary = await salaryInfo.findOne({ userId: b2bUser });
-  console.log(userSalary);
+  //console.log(userSalary);
   if (!userSalary) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User Not Found');
   }
@@ -34,7 +34,7 @@ const createAttendance = async (attendanceBody) => {
 // }
 
 const getEmpName = async (input) => {
-  console.log(input);
+  //console.log(input);
   let inp = input.replace(/[^0-9\.]+/g, '');
 
   let arr = [];
@@ -69,20 +69,20 @@ const getEmpName = async (input) => {
       },
     },
   ]);
-  //   console.log(inp)
-  // console.log(status.length)
+  //   //console.log(inp)
+  // //console.log(status.length)
   //  let data = status[0].DateofJoining.replace(/[^0-9\.]+/g, '');
-  //  console.log(String(data).slice(0, 6))
+  //  //console.log(String(data).slice(0, 6))
 
   for (let i = 0; i < status.length; i++) {
     let data = status[i].DateofJoining.replace(/[^0-9\.]+/g, '');
     let data1 = String(data).slice(0, 6);
-    console.log(data1);
+    //console.log(data1);
     if (data1 == inp) {
       arr.push(status[i]);
     }
   }
-  console.log(arr);
+  //console.log(arr);
   //  return {arr: arr , status: status}
   return arr;
 };

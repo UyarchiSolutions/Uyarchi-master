@@ -250,7 +250,7 @@ const getAllShopOrderClone = async (date, page) => {
 };
 
 const getShopOrderCloneById = async (id) => {
-  ////console.log('hello');
+  //////console.log('hello');
   let Values = await ShopOrderClone.aggregate([
     {
       $match: {
@@ -621,7 +621,7 @@ const deleteProductOrderClone = async (id) => {
 };
 
 const getShopNameWithPagination = async (page, userId) => {
-  ////console.log(userId);
+  //////console.log(userId);
   return ShopOrder.aggregate([
     {
       $match: {
@@ -798,7 +798,7 @@ const getShopNameCloneWithPagination = async (page, userId) => {
     'ordered',
   ];
   value.forEach((e) => {
-    ////console.log(statuss.find((element) => element == e.status));
+    //////console.log(statuss.find((element) => element == e.status));
     let lapsedd = false;
     if (
       (e.date = today && e.delivery_type == 'IMD' && e.timeslot <= lapsed) ||
@@ -806,11 +806,11 @@ const getShopNameCloneWithPagination = async (page, userId) => {
       (e.date = threeDay && e.status == 'Acknowledged' && e.status == '' && e.status == '')
     ) {
       lapsedd = true;
-      ////console.log(e);
+      //////console.log(e);
     }
     retrunValue.push({ ...e, ...{ lapsed: lapsedd } });
   });
-  // ////console.log(value);
+  // //////console.log(value);
   return {
     value: retrunValue,
     total: total,
@@ -821,7 +821,7 @@ const getShopNameCloneWithPagination = async (page, userId) => {
 const getAllShopOrder = async (UserRole) => {
   let value;
   if (UserRole == '')
-    ////console.log(UserRole);
+    //////console.log(UserRole);
     return ShopOrder.find();
 };
 
@@ -1186,7 +1186,7 @@ const get_data_for_lapster = async (page) => {
   var today = moment().format('YYYY-MM-DD');
   var yersterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
 
-  ////console.log(today);
+  //////console.log(today);
   let todaydata = await ShopOrderClone.aggregate([
     {
       $project: {
@@ -1403,7 +1403,7 @@ const get_data_for_lapster = async (page) => {
   };
 };
 const getLapsed_Data = async (page, userRoles, userId, method) => {
-  ////console.log(userRoles, userId);
+  //////console.log(userRoles, userId);
   let yersterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
   let todaydate = moment().format('YYYY-MM-DD');
   let matchvalue;
@@ -1561,7 +1561,7 @@ const getLapsed_Data = async (page, userRoles, userId, method) => {
   ]);
   let userRole = await UserRole.findById(userRoles);
   let User = await Users.findById(userId);
-  ////console.log(userRoles, userId);
+  //////console.log(userRoles, userId);
   return { values: values, total: total.length, Role: userRole.roleName, User: User.name };
 };
 
@@ -1949,7 +1949,7 @@ const lapsed_callBack = async (page, userRoles, userId, method) => {
   ]);
   let userRole = await UserRole.findById(userRoles);
   let User = await Users.findById(userId);
-  ////console.log(userRoles, userId);
+  //////console.log(userRoles, userId);
   return { values: values, total: total.length, Role: userRole.roleName, User: User.name };
 };
 
@@ -2081,7 +2081,7 @@ const lapsed_accept = async (page, userRoles, userId, method) => {
   ]);
   let userRole = await UserRole.findById(userRoles);
   let User = await Users.findById(userId);
-  ////console.log(userRoles, userId);
+  //////console.log(userRoles, userId);
   return { values: values, total: total.length, Role: userRole.roleName, User: User.name };
 };
 
@@ -2202,7 +2202,7 @@ const lapsed_declined = async (page, userRoles, userId, method) => {
   ]);
   let userRole = await UserRole.findById(userRoles);
   let User = await Users.findById(userId);
-  ////console.log(userRoles, userId);
+  //////console.log(userRoles, userId);
   return { values: values, total: total.length, Role: userRole.roleName, User: User.name };
 };
 
@@ -2344,12 +2344,12 @@ const lapsed_reschedule = async (page, userRoles, userId, method) => {
   ]);
   let userRole = await UserRole.findById(userRoles);
   let User = await Users.findById(userId);
-  ////console.log(userRoles, userId);
+  //////console.log(userRoles, userId);
   return { values: values, total: total.length, Role: userRole.roleName, User: User.name };
 };
 
 const lapsedordercount = async (method) => {
-  ////console.log('asd');
+  //////console.log('asd');
   let todaydate = moment().format('YYYY-MM-DD');
   let yersterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
   let callBackmatch;
@@ -4614,7 +4614,7 @@ const UnDeliveredOrders = async (query) => {
 };
 
 const getall_ordered_shops = async (query) => {
-  ////console.log(query)
+  //////console.log(query)
   let page = query.page == null || query.page == '' || query.page == 'null' ? 0 : query.page;
   let statusMatch = { status: { $eq: query.status } };
   let deliveryType = { delivery_type: { $eq: query.deliverytype } };
@@ -4623,8 +4623,8 @@ const getall_ordered_shops = async (query) => {
   let today = moment().format('YYYY-MM-DD');
   let yesterday = moment().subtract(1, 'days').format('yyyy-MM-DD');
   let dateMacth = { active: true };
-  ////console.log(today)
-  ////console.log(yesterday)
+  //////console.log(today)
+  //////console.log(yesterday)
   if (query.status == 'Approved') {
     statusMatch = {
       status: {
@@ -4839,7 +4839,7 @@ const getall_ordered_shops = async (query) => {
 };
 
 const get_order_counts_ordered = async (status, deliverytype, timeslot, deliverymode, dateMacth) => {
-  //console.log(pincode, 'sdf');
+  ////console.log(pincode, 'sdf');
   let today = moment().format('YYYY-MM-DD');
   let yesterday = moment().subtract(1, 'days').format('yyyy-MM-DD');
   let orderstatus = await ShopOrderClone.aggregate([
@@ -5063,7 +5063,7 @@ const get_order_counts_ordered = async (status, deliverytype, timeslot, delivery
 const get_approved_orders = async (query) => {
   let pincode = { $and: [{ active: { $eq: true } }] };
   if (query.pincode != null && query.pincode != '' && query.pincode != 'null') {
-    console.log('asdas');
+    //console.log('asdas');
     var result = query.pincode.split(',').map(function (x) {
       return parseInt(x, 10);
     });
@@ -5082,8 +5082,8 @@ const get_approved_orders = async (query) => {
   let today = moment().format('YYYY-MM-DD');
   let yesterday = moment().subtract(1, 'days').format('yyyy-MM-DD');
   let dateMacth = { active: true };
-  ////console.log(today)
-  ////console.log(yesterday)
+  //////console.log(today)
+  //////console.log(yesterday)
   if (query.deliverytype == 'all') {
     deliveryType = {
       $or: [
@@ -5111,7 +5111,7 @@ const get_approved_orders = async (query) => {
     deliveryMode = { devevery_mode: { $eq: query.deliverymode } };
   }
   let lossTime = moment().format('H');
-  // console.log( moment().format("H"))
+  // //console.log( moment().format("H"))
   let values = await ShopOrderClone.aggregate([
     { $sort: { created: 1 } },
     { $match: { $and: [statusMatch, deliveryType, timeSlot, deliveryMode, dateMacth] } },
@@ -5369,7 +5369,7 @@ const get_approved_orders = async (query) => {
 };
 
 const get_order_counts = async (status, deliverytype, timeslot, deliverymode, dateMacth, pincode) => {
-  //console.log(pincode, 'sdf');
+  ////console.log(pincode, 'sdf');
   let today = moment().format('YYYY-MM-DD');
   let yesterday = moment().subtract(1, 'days').format('yyyy-MM-DD');
   let orderstatus = await ShopOrderClone.aggregate([
@@ -5887,7 +5887,7 @@ const get_assignorder_timeloss = async (query) => {
 };
 
 const get_rejected_orders = async (query) => {
-  console.log(query, 'asd');
+  //console.log(query, 'asd');
   let page = query.page == null || query.page == '' || query.page == 'null' ? 0 : query.page;
   let statusMatch = { status: { $eq: query.status } };
   let deliveryType = { delivery_type: { $eq: query.deliverytype } };
@@ -6209,7 +6209,7 @@ const sort_by_order_wde = async (body) => {
   let count = 0;
   if (body) {
     body.orders.forEach(async (e) => {
-      console.log(e);
+      //console.log(e);
       count = count + 1;
       await ShopOrderClone.findByIdAndUpdate({ _id: e._id }, { sort_wde: count }, { new: true });
     });
@@ -6291,13 +6291,13 @@ const order_issue_return = async () => {
   return orders;
 };
 const shopDataMap = async (query) => {
-  console.log(query);
+  //console.log(query);
   // let mode = query.mod;
   // let type = query.type;
   // let today = moment().format('YYYY-MM-DD');
   let pincode = { $and: [{ active: { $eq: true } }] };
   if (query.pincode != null && query.pincode != '' && query.pincode != 'null') {
-    console.log('asdas');
+    //console.log('asdas');
     var result = query.pincode.split(',').map(function (x) {
       return parseInt(x, 10);
     });
@@ -6764,7 +6764,7 @@ const get_issue_product_list = async (req) => {
 const issue_collection_start = async (req) => {
   const { id } = req.body;
   let values = await ProductorderClone.findById(id);
-  console.log(req.userId, values, id)
+  //console.log(req.userId, values, id)
   if (!values) {
     throw new ApiError(httpStatus.NOT_FOUND, 'productOrders Not Found');
   }
@@ -6821,7 +6821,7 @@ const issue_collection_checked_video = async (req) => {
   return new Promise((resolve) => {
     s3.upload(params, async (err, data) => {
       if (err) {
-        console.log(err);
+        //console.log(err);
       }
       values = await ProductorderClone.findByIdAndUpdate({ _id: id }, { issue_returnVideo: data.Location }, { new: true });
       resolve({ video: 'success', values });
@@ -6867,7 +6867,7 @@ const issue_collection_returntosm = async (req) => {
 
 const issue_collection_recieved = async (req) => {
   const { id } = req.body;
-  console.log(id)
+  //console.log(id)
   let values = await ProductorderClone.findById(id);
   if (!values) {
     throw new ApiError(httpStatus.NOT_FOUND, 'productOrders Not Found');

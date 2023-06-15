@@ -78,7 +78,7 @@ const wardloadExecutive = catchAsync(async (req, res) => {
   res.send(executive);
 });
 const wardloadExecutivebtgroup = catchAsync(async (req, res) => {
-  console.log(req.query);
+  //console.log(req.query);
   const executive = await wardAdminService.wardloadExecutivebtgroup(req.query);
   res.send(executive);
 });
@@ -147,7 +147,7 @@ const updateAcknowledgeSingle = catchAsync(async (req, res) => {
 // });
 
 const statusMatchingAppOrModi = catchAsync(async (req, res) => {
-  console.log(req.params.type, req.params.time, req.params.status, req.params.limit, req.params.page);
+  //console.log(req.params.type, req.params.time, req.params.status, req.params.limit, req.params.page);
   let statusMatching;
   if (req.params.status == 'Acknowledged') {
     statusMatching = await wardAdminService.getdetailsDataStatusAcknowledged(

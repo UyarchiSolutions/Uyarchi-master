@@ -98,7 +98,7 @@ const getAssignStockbyId = async (id) => {
 
 const getStocks = async () => {
   const today = moment().format('DD-MM-YYYY');
-  console.log(today);
+  //console.log(today);
   const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
   const Today = moment().format('YYYY-MM-DD');
   let values = await Product.aggregate([
@@ -622,23 +622,23 @@ const getstockDetails = async (id) => {
 };
 
 const updatestcokDetails = async (body) => {
-  console.log(body);
+  //console.log(body);
   const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
   const tomorrow = moment().subtract(-1, 'days').format('DD-MM-YYYY');
   const todayfor = moment().format('DD-MM-YYYY');
   body.product.forEach(async (e) => {
-    console.log(e);
+    //console.log(e);
     let NSFQ1 = e.NSFQ1 == null || e.NSFQ1 == '' ? 0 : e.NSFQ1;
     let NSFQ2 = e.NSFQ2 == null || e.NSFQ2 == '' ? 0 : e.NSFQ2;
     let NSFQ3 = e.NSFQ3 == null || e.NSFQ3 == '' ? 0 : e.NSFQ3;
     let NSFW_Wastage = e.NSFW_Wastage == null || e.NSFW_Wastage == '' ? 0 : e.NSFW_Wastage;
-    console.log(NSFW_Wastage);
+    //console.log(NSFW_Wastage);
     // let wastedImageFile = e.wastedImageFile == null ? 0 : e.wastedImageFile;
     let Pid = e.Pid;
     let total = NSFQ1 + NSFQ2 + NSFQ3;
     let usablestocks = await usableStock.findOne({ productId: Pid, date: todayfor });
     if (usablestocks) {
-      // console.log(usablestocks, 'asd')
+      // //console.log(usablestocks, 'asd')
       usablestocks = await usableStock.findByIdAndUpdate(
         { _id: usablestocks._id },
         { closingStock: total, status: 'Closed', closingWastage: NSFW_Wastage, closingTime: moment() },
@@ -657,25 +657,25 @@ const updatestcokDetails = async (body) => {
       //   openingStock: totalStock,
       // })
     }
-    // console.log(usablestocks)
+    // //console.log(usablestocks)
   });
   // body.product.forEach((res)=>{
-  //   // console.log(res.wastedImageFile)
+  //   // //console.log(res.wastedImageFile)
   //   res.wastedImageFile.forEach((s)=>{
-  //       console.log(s.res)
+  //       //console.log(s.res)
   //   })
   // })
   return { success: true };
 };
 
 const updatestcokDetails_Opening = async (body) => {
-  console.log(body);
+  //console.log(body);
   const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
   const tomorrow = moment().subtract(-1, 'days').format('DD-MM-YYYY');
   const todayfor = moment().format('DD-MM-YYYY');
   const time = moment().format('hhmmss');
   body.product.forEach(async (e) => {
-    // console.log(e)
+    // //console.log(e)
     let NSFQ1 = e.NSFQ1 == null || e.NSFQ1 == '' ? 0 : e.NSFQ1;
     let NSFQ2 = e.NSFQ2 == null || e.NSFQ2 == '' ? 0 : e.NSFQ2;
     let NSFQ3 = e.NSFQ3 == null || e.NSFQ3 == '' ? 0 : e.NSFQ3;
@@ -712,14 +712,14 @@ const updatestcokDetails_Opening = async (body) => {
 };
 
 const updatestcokDetails_Random = async (body) => {
-  console.log(body);
+  //console.log(body);
   const today = moment().format('DD-MM-YYYY');
   const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
   const tomorrow = moment().subtract(-1, 'days').format('DD-MM-YYYY');
   const todayfor = moment().format('DD-MM-YYYY');
   const time = moment().format('hhmmss');
   body.product.forEach(async (e) => {
-    console.log(e);
+    //console.log(e);
     let NSFQ1 = e.NSFQ1 == null || e.NSFQ1 == '' ? 0 : e.NSFQ1;
     let NSFQ2 = e.NSFQ2 == null || e.NSFQ2 == '' ? 0 : e.NSFQ2;
     let NSFQ3 = e.NSFQ3 == null || e.NSFQ3 == '' ? 0 : e.NSFQ3;

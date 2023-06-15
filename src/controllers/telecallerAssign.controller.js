@@ -230,6 +230,11 @@ const tempAssign = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const getNewEdite = catchAsync(async (req, res) => {
+  const data = await telecallerService.getNewEdite(req.params.page, req.params.limit);
+  res.send(data);
+});
+
 module.exports = {
   createtelecallerAssignReassign,
   getAllTelecallerHead,
@@ -270,4 +275,5 @@ module.exports = {
   AssignedData_By_users,
   getLat_long,
   tempAssign,
+  getNewEdite,
 };

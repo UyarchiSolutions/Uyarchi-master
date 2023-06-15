@@ -247,7 +247,6 @@ const shopSchema = mongoose.Schema({
   },
   location: {
     type: Object,
-
   },
   location_add: {
     type: Object,
@@ -276,9 +275,8 @@ const shopSchema = mongoose.Schema({
   customer_final_TIME: {
     type: Number,
   },
-  
+  editeStatus: { type: String, default: 'Pending' },
 });
-
 
 // assignSchema.plugin(toJSON);
 // assignSchema.plugin(paginate);

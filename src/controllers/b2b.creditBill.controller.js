@@ -102,7 +102,7 @@ const GroupDetails = catchAsync(async (req, res) => {
 
 const submitDispute = catchAsync(async (req, res) => {
   const dispute = await creditBillService.submitDispute(req.params.id, req.body);
-  console.log(req.params.id, req.body);
+  //console.log(req.params.id, req.body);
   res.send(dispute);
 });
 
@@ -118,7 +118,7 @@ const getdeliveryExcutive = catchAsync(async (req, res) => {
 
 const submitfinish = catchAsync(async (req, res) => {
   const dispute = await creditBillService.submitfinish(req.userId, req.params.id);
-  console.log(req.params.id, req.body);
+  //console.log(req.params.id, req.body);
   res.send(dispute);
 });
 

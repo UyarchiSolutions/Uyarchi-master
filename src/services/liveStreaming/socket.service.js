@@ -12,7 +12,7 @@ const { tempTokenModel, Joinusers } = require('../../models/liveStreaming/genera
 const { CodeBuild } = require('aws-sdk');
 
 const romove_message = async (req, io) => {
-  console.log(req)
+  //console.log(req)
   let message = await Groupchat.findById(req._id);
   message.removeMessage = true;
   message.save();
@@ -23,7 +23,7 @@ const ban_user_chat = async (req, io) => {
   let joinuser = await Joinusers.findById(req.joinuser);
   joinuser.joindedUserBan = true;
   joinuser.save();
-  console.log(joinuser)
+  //console.log(joinuser)
   io.sockets.emit(req.joinuser + "ban_chat", joinuser);
 
 }

@@ -53,7 +53,7 @@ const verifyOTP = async (req) => {
 const setPassword = async (req) => {
   let body = req.body;
   let sellerId = req.userId;
-  console.log(sellerId)
+  //console.log(sellerId)
   let seller = await Seller.findById(sellerId);
 
   if (!seller) {

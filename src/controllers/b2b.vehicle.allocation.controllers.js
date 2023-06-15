@@ -5,7 +5,7 @@ const httpStatus = require('http-status');
 
 const createvehicle = catchAsync(async (req, res) => {
   const vehicle = await vehicleService.createvehicle(req.body);
-  // console.log(wallet);
+  // //console.log(wallet);
   if (req.files) {
     let path = '';
     path = 'images//';

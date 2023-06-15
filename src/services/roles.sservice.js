@@ -19,7 +19,7 @@ const getAllRoles = async () => {
 
 const mainWarehouseRoles = async () => {
   const roles = await Roles.find({ addMainWH: true });
-  console.log(roles);
+  //console.log(roles);
   if (!roles) {
     throw new ApiError(httpStatus.NOT_FOUND, 'There is No Roles Available For Main WhareHouse Admin');
   }
@@ -86,7 +86,7 @@ const updateRolesById = async (roleId, updateBody) => {
     print(e);
   }
   updateBody.forEach(async (e) => {
-    console.log(e)
+    //console.log(e)
     await MenueAssign.create({
       rolesId: roleId,
       menuid: e.menuid,
@@ -787,7 +787,7 @@ const getAllSalesmanShops = async () => {
 };
 
 const get_user_menu = async (userRole) => {
-  console.log(userRole)
+  //console.log(userRole)
   let menus = await Menu.aggregate([
     {
       $match: { parentMenu: "0" }

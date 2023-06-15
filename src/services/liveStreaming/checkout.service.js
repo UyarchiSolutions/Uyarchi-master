@@ -17,13 +17,13 @@ const Dates = require('../Date.serive');
 const paymentgatway = require('../paymentgatway.service');
 
 const addTocart = async (req) => {
-  // console.log("asdas",2321312)
+  // //console.log("asdas",2321312)
   let shopId = req.shopId;
   let streamId = req.body.streamId;
   let cart = req.body.cart;
-  // console.log(cart)
+  // //console.log(cart)
   let value = await streamingCart.findOne({ shopId: shopId, streamId: streamId, status: { $ne: 'ordered' } });
-  // console.log(value, 12312)
+  // //console.log(value, 12312)
   if (!value) {
     value = await streamingCart.create({ cart: cart, shopId: shopId, streamId: streamId });
     cart.forEach(async (a) => {
@@ -39,7 +39,7 @@ const addTocart = async (req) => {
     cart.forEach(async (a) => {
       // streamingCart  
       let cartproduct = await streamingCartProduct.findOne({ streamingCart: value._id, streamrequestpostId: a.streamrequestpostId });
-      // console.log(cartproduct)
+      // //console.log(cartproduct)
       if (cartproduct) {
         cartproduct.cartQTY = a.cartQTY;
       }
@@ -52,8 +52,8 @@ const addTocart = async (req) => {
       cartproduct.add_to_cart = a.add_to_cart;
       cartproduct.save();
     })
-    // console.log(value)
-    // console.log(value)
+    // //console.log(value)
+    // //console.log(value)
     value = await streamingCart.findByIdAndUpdate({ _id: value._id }, { cart: cart }, { new: true })
   }
 
@@ -359,8 +359,8 @@ const confirmOrder_cod = async (shopId, body,req) => {
 const confirmOrder_razerpay = async (shopId, body,req) => {
   let orders;
   let streamId = body.OdrerDetails.cart;
-  console.log(body);
-  console.log(streamId);
+  //console.log(body);
+  //console.log(streamId);
   if (body.PaymentDatails != null) {
     let payment = await paymentgatway.verifyRazorpay_Amount(body.PaymentDatails);
     let collectedAmount = payment.amount / 100;
@@ -589,22 +589,22 @@ const Buyer_Status_Update = async (id, body) => {
 const proceed_to_pay_start = async (req) => {
   let streamId = req.query.id;
   let shopId = req.shopId;
-  console.log(streamId, shopId)
+  //console.log(streamId, shopId)
   var startDate = new Date();
   var oldDateObj = new Date();
   var newDateObj = new Date();
   newDateObj.setTime(oldDateObj.getTime() + (3 * 60 * 1000));
   let values = await streamingCart.findOne({ shopId: shopId, streamId: streamId, status: { $ne: 'ordered' } });
-  console.log(values)
+  //console.log(values)
   if (values) {
     if (values.proceed_To_Pay == 'start' && values.endTime < startDate.getTime()) {
-      console.log("asda")
+      //console.log("asda")
       values.endTime = newDateObj.getTime();
       values.startTime = startDate.getTime();
       await streamingCartProduct.updateMany({ streamingCart: values._id }, { $set: { endTime: newDateObj.getTime(), startTime: startDate.getTime(), proceed_To_Pay: "start" } }, { new: true })
     }
     else if (values.proceed_To_Pay != 'start') {
-      console.log("asd2312a")
+      //console.log("asd2312a")
       values.endTime = newDateObj.getTime();
       values.proceed_To_Pay = "start";
       values.startTime = startDate.getTime();

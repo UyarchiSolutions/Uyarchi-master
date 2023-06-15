@@ -15,7 +15,7 @@ const authorization = async (req, res, next) => {
   }
   try {
     const payload = jwt.verify(token, config.jwt.secret);
-    console.log(payload);
+    //console.log(payload);
     const userss = await Customer.findOne({ _id: payload.sub });
     if (!userss) {
       return res.send(httpStatus.UNAUTHORIZED, { message: 'User Not Available' });

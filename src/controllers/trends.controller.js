@@ -29,7 +29,7 @@ const createTrends = catchAsync(async (req, res) => {
 
 const updateProductFromTrends = catchAsync(async (req, res) => {
   const trends = await trendsService.updateProductFromTrends(req.params.id, req.body);
-  console.log(trends);
+  //console.log(trends);
   req.body.product.forEach(async (e) => {
     let row = {
       productId: e.Pid,

@@ -39,7 +39,7 @@ const updateCustomerById = async (customerId, updateBody) => {
   if (updateBody.email && (await Customer.isEmailTaken(updateBody.email, oemId))) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
   }
-  // console.log(JSON.stringify(updateBody));
+  // //console.log(JSON.stringify(updateBody));
   const updatedCustomer = await Customer.findOneAndUpdate({ _id: customerId }, updateBody, { new: true });
   await updatedCustomer.save();
   return updatedCustomer;

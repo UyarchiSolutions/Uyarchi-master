@@ -130,7 +130,7 @@ const getbrand = async () => {
 };
 
 const getBrandById = async (id) => {
-  console.log(id);
+  //console.log(id);
   const brands = await brand.aggregate([
     {
       $match: {

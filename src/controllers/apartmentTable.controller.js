@@ -12,7 +12,7 @@ const createapartmentTableService = catchAsync(async (req, res) => {
       apart.photoCapture.push('images/apartment/' + files.filename);
     });
   }
-  console.log(apart);
+  //console.log(apart);
   res.send(apart);
   await apart.save();
 });
@@ -116,7 +116,7 @@ const createManageUserAttendanceAutoService = catchAsync(async (req, res) => {
 //   res.send(result);
 // });
 const getmanageUSerAttendanceAll = catchAsync(async (req, res) => {
-  console.log(req.params.totime);
+  //console.log(req.params.totime);
 
   const attend = await apartmentTableService.getAllManageUSerAttendance(
     req.params.id,
@@ -125,7 +125,7 @@ const getmanageUSerAttendanceAll = catchAsync(async (req, res) => {
     req.params.totime,
     req.params.page
   );
-  console.log(req.params.fromtime, 'dfgdd');
+  //console.log(req.params.fromtime, 'dfgdd');
   if (!attend) {
     throw new ApiError(httpStatus.NOT_FOUND);
   }
@@ -146,7 +146,7 @@ const getmanageUSerAttendanceAllAutoTable = catchAsync(async (req, res) => {
 
 const getAllAttendance = catchAsync(async (req, res) => {
   const attendance = await apartmentTableService.getAllAttendance();
-  console.log(attendance);
+  //console.log(attendance);
   res.send(attendance);
 });
 
@@ -194,10 +194,10 @@ const createshopTableService = catchAsync(async (req, res) => {
 
   if (req.files) {
     //   let path = [];
-    console.log(req.files);
+    //console.log(req.files);
     req.files.forEach(function (files, index, arr) {
       shop.photoCapture.push('images/shop/' + files.filename);
-      // console.log(shop.photoCapture)
+      // //console.log(shop.photoCapture)
     });
   }
   // res.status(httpStatus.CREATED).send(shop);
@@ -262,13 +262,13 @@ const updateApartment = catchAsync(async (req, res) => {
   const apart = await apartmentTableService.updateApartmentById(req.params.apartmentId, req.body);
   if (req.files) {
     //   let path = [];
-    //   console.log(req.files)
+    //   //console.log(req.files)
     req.files.forEach(function (files, index, arr) {
       apart.photoCapture.push('images/apartment/' + files.filename);
-      // console.log(shop.photoCapture)
+      // //console.log(shop.photoCapture)
     });
   }
-  //     console.log(apart)
+  //     //console.log(apart)
   // res.status(httpStatus.CREATED).send(apart);
   res.send(apart);
 });
@@ -282,10 +282,10 @@ const updateShop = catchAsync(async (req, res) => {
   const shop = await apartmentTableService.updateShopById(req.params.shopId, req.body);
   if (req.files) {
     //   let path = [];
-    console.log(req.files);
+    //console.log(req.files);
     req.files.forEach(function (files, index, arr) {
       shop.photoCapture.push('images/shop/' + files.filename);
-      // console.log(shop.photoCapture)
+      // //console.log(shop.photoCapture)
     });
   }
   // res.status(httpStatus.CREATED).send(shop);

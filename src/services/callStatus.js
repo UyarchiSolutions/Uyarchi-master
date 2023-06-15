@@ -6,7 +6,7 @@ const { Product } = require('../models/product.model');
 const moment = require('moment');
 
 const createCallStatus = async (callStatusBody) => {
-  console.log(callStatusBody);
+  //console.log(callStatusBody);
   const serverdate = moment().format('YYYY-MM-DD');
   const servertime = moment().format('HHmmss');
   let Buy = await CallStatus.find({ date: serverdate }).count();
@@ -35,7 +35,7 @@ const createCallStatus = async (callStatusBody) => {
 };
 
 const createCallStatus_suppierApp = async (userId, callStatusBody) => {
-  console.log(callStatusBody);
+  //console.log(callStatusBody);
   const serverdate = moment().format('YYYY-MM-DD');
   const servertime = moment().format('HHmmss');
   let Buy = await CallStatus.find({ date: serverdate }).count();
@@ -134,7 +134,7 @@ const getProductAndSupplierDetails = async (page) => {
 };
 
 const getDataWithSupplierId = async (id, page, search, date) => {
-  // console.log(search);
+  // //console.log(search);
   // let dateM = { active: true };
   // let searchMatch = { active: true };
   // if (search !== 'null') {
@@ -441,7 +441,7 @@ const suddenOrdersDisplay = async (productId) => {
 };
 
 const getReportWithSupplierId = async (page, search, date) => {
-  console.log(search);
+  //console.log(search);
   let dateM = { active: true };
   let searchMatch = { active: true };
   if (search !== 'null') {
@@ -454,7 +454,7 @@ const getReportWithSupplierId = async (page, search, date) => {
   } else {
     dateM;
   }
-  console.log('sadf');
+  //console.log('sadf');
   let values = await CallStatus.aggregate([
     {
       $match: { $and: [dateM] },

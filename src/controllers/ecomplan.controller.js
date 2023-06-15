@@ -54,7 +54,7 @@ const create_post = catchAsync(async (req, res) => {
       });
     }
   }
-  console.log(images);
+  //console.log(images);
   const value = await Ecomserive.create_post(req, images);
   res.send(value);
 });
@@ -97,7 +97,7 @@ const get_one_post = catchAsync(async (req, res) => {
   res.send(value);
 });
 const update_one_post = catchAsync(async (req, res) => {
-  console.log(req.files);
+  //console.log(req.files);
   let images = [];
   if (req.files) {
     let path = '';
@@ -132,15 +132,15 @@ const find_and_update_one = catchAsync(async (req, res) => {
 });
 
 const create_stream_one_image = catchAsync(async (req, res) => {
-  console.log('asdasasas');
-  console.log(req.file);
+  //console.log('asdasasas');
+  //console.log(req.file);
   const value = await Ecomserive.create_stream_one_image(req);
   res.send(value);
 });
 
 const create_stream_one_video = catchAsync(async (req, res) => {
-  console.log('asdasasas');
-  console.log(req.file);
+  //console.log('asdasasas');
+  //console.log(req.file);
   const value = await Ecomserive.create_stream_one_video(req);
   res.send(value);
 });
@@ -154,19 +154,19 @@ const get_all_stream = catchAsync(async (req, res) => {
   res.send(value);
 });
 const get_one_stream = catchAsync(async (req, res) => {
-  console.log('asdaszas');
+  //console.log('asdaszas');
   const value = await Ecomserive.get_one_stream(req);
   res.send(value);
 });
 
 const get_one_stream_assign_host = catchAsync(async (req, res) => {
-  console.log('asdaszas');
+  //console.log('asdaszas');
   const value = await Ecomserive.get_one_stream_assign_host(req);
   res.send(value);
 });
 
 const get_one_stream_step_two = catchAsync(async (req, res) => {
-  console.log('zas');
+  //console.log('zas');
   const value = await Ecomserive.get_one_stream_step_two(req);
   res.send(value);
 });
@@ -201,122 +201,122 @@ const update_reject = catchAsync(async (req, res) => {
 });
 
 const get_all_streams = catchAsync(async (req, res) => {
-  console.log('sdas');
+  //console.log('sdas');
   const value = await Ecomserive.get_all_streams(req);
   res.send(value);
 });
 const get_subhost_streams = catchAsync(async (req, res) => {
-  console.log('sdas');
+  //console.log('sdas');
   const value = await Ecomserive.get_subhost_streams(req);
   res.send(value);
 });
 const allot_stream_subhost = catchAsync(async (req, res) => {
-  console.log('sdas');
+  //console.log('sdas');
   const value = await Ecomserive.allot_stream_subhost(req);
   res.send(value);
 });
 
 const cancel_stream = catchAsync(async (req, res) => {
-  console.log('sdas');
+  //console.log('sdas');
   const value = await Ecomserive.cancel_stream(req);
   res.send(value);
 });
 
 const end_stream = catchAsync(async (req, res) => {
-  console.log('sdas');
+  //console.log('sdas');
   const value = await Ecomserive.end_stream(req);
   res.send(value);
 });
 
 const go_live_stream_host = catchAsync(async (req, res) => {
-  console.log('sdas');
+  //console.log('sdas');
   const value = await Ecomserive.go_live_stream_host(req, req.userId);
   res.send(value);
 });
 
 const get_subhost_token = catchAsync(async (req, res) => {
-  console.log('sdas');
+  //console.log('sdas');
   const value = await Ecomserive.get_subhost_token(req, req.userId);
   res.send(value);
 });
 
 const go_live_stream_host_subhost = catchAsync(async (req, res) => {
-  console.log('sdas');
+  //console.log('sdas');
   const value = await Ecomserive.go_live_stream_host_SUBHOST(req, req.createdBy);
   res.send(value);
 });
 
 const get_watch_live_steams = catchAsync(async (req, res) => {
-  console.log('sdas');
+  //console.log('sdas');
   const value = await Ecomserive.get_watch_live_steams(req);
   res.send(value);
 });
 
 const get_watch_live_steams_upcoming = catchAsync(async (req, res) => {
-  console.log('sdas');
+  //console.log('sdas');
   const value = await Ecomserive.get_watch_live_steams_upcoming(req);
   res.send(value);
 });
 
 const get_watch_live_steams_current= catchAsync(async (req, res) => {
-  console.log('sdas');
+  //console.log('sdas');
   const value = await Ecomserive.get_watch_live_steams_current(req);
   res.send(value);
 });
 
 const get_watch_live_steams_upcoming_byid = catchAsync(async (req, res) => {
-  console.log('sdas');
+  //console.log('sdas');
   const value = await Ecomserive.get_watch_live_steams_upcoming_byid(req);
   res.send(value);
 });
 
 const get_watch_live_steams_interested = catchAsync(async (req, res) => {
-  console.log('sdas');
+  //console.log('sdas');
   const value = await Ecomserive.get_watch_live_steams_interested(req);
   res.send(value);
 });
 const get_watch_live_steams_completed = catchAsync(async (req, res) => {
-  console.log('sdas');
+  //console.log('sdas');
   const value = await Ecomserive.get_watch_live_steams_completed(req);
   res.send(value);
 });
 
 const get_watch_live_steams_admin_watch = catchAsync(async (req, res) => {
-  console.log('sdas');
+  //console.log('sdas');
   const value = await Ecomserive.get_watch_live_steams_admin_watch(req);
   res.send(value);
 });
 
 const get_watch_live_token = catchAsync(async (req, res) => {
-  console.log('sdas');
+  //console.log('sdas');
   const value = await Ecomserive.get_watch_live_token(req);
   res.send(value);
 });
 
 const getall_homeage_streams = catchAsync(async (req, res) => {
-  console.log('sdas');
+  //console.log('sdas');
   const value = await Ecomserive.getall_homeage_streams(req);
   res.send(value);
 });
 const on_going_stream = catchAsync(async (req, res) => {
-  console.log('sdas');
+  //console.log('sdas');
   const value = await Ecomserive.on_going_stream(req);
   res.send(value);
 });
 const regisetr_strean_instrest = catchAsync(async (req, res) => {
-  console.log('sdas');
+  //console.log('sdas');
   const value = await Ecomserive.regisetr_strean_instrest(req);
   res.send(value);
 });
 
 const unregisetr_strean_instrest = catchAsync(async (req, res) => {
-  console.log('sdas');
+  //console.log('sdas');
   const value = await Ecomserive.unregisetr_strean_instrest(req);
   res.send(value);
 });
 
 const purchase_details = catchAsync(async (req, res) => {
-  console.log('sdas');
+  //console.log('sdas');
   const value = await Ecomserive.purchase_details(req);
   res.send(value);
 });
@@ -457,7 +457,7 @@ const fetch_stream_Payment_Details = catchAsync(async (req, res) => {
 });
 
 const update_Multiple_approval_Status = catchAsync(async (req, res) => {
-  console.log(req.body);
+  //console.log(req.body);
   const data = await Ecomserive.update_Multiple_approval_Status(req.body);
   res.send(data);
 });

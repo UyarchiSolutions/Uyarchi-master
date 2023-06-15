@@ -22,16 +22,16 @@ const moment = require('moment');
 const { findById } = require('../models/token.model');
 
 const create_Plans = async (req) => {
-  console.log(req.body);
+  //console.log(req.body);
   const value = await Streamplan.create({ ...req.body, ...{ planType: 'normal' } });
   await Dates.create_date(value);
-  console.log(value);
+  //console.log(value);
   return value;
 };
 const create_Plans_addon = async (req) => {
   const value = await Streamplan.create({ ...req.body, ...{ planType: 'addon' } });
   await Dates.create_date(value);
-  console.log(value);
+  //console.log(value);
   return value;
 };
 
@@ -124,7 +124,7 @@ const delete_one_Plans = async (req) => {
 };
 
 const create_post = async (req, images) => {
-  // console.log(req.userId, "asdas", { ...req.body, ...{ suppierId: req.userId, images: images } })
+  // //console.log(req.userId, "asdas", { ...req.body, ...{ suppierId: req.userId, images: images } })
   const value = await StreamPost.create({
     ...req.body,
     ...{ suppierId: req.userId, images: images, pendingQTY: req.body.quantity },
@@ -147,9 +147,9 @@ const create_teaser_upload = async (req, images) => {
   return new Promise((resolve) => {
     s3.upload(params, async (err, data) => {
       if (err) {
-        console.log(err);
+        //console.log(err);
       }
-      console.log(data);
+      //console.log(data);
       stream = await StreamPost.findByIdAndUpdate({ _id: req.query.id }, { video: data.Location });
       resolve({ video: 'success', stream });
     });
@@ -215,7 +215,7 @@ const get_all_Post_with_page_live = async (req) => {
         $and: [{ DateIso: { $gte: new Date(date[0] + " 0:0:0").getTime() } }, { DateIso: { $lte: new Date(date[1] + " 23:59:59").getTime() } }],
       };
     }
-    // console.log(date, dateMatch)
+    // //console.log(date, dateMatch)
   }
   const value = await StreamPost.aggregate([
     { $sort: { DateIso: 1 } },
@@ -388,7 +388,7 @@ const get_all_Post_with_page_completed = async (req) => {
         $and: [{ DateIso: { $gte: new Date(date[0] + " 0:0:0").getTime() } }, { DateIso: { $lte: new Date(date[1] + " 23:59:59").getTime() } }],
       };
     }
-    // console.log(date, dateMatch)
+    // //console.log(date, dateMatch)
   }
   const value = await StreamPost.aggregate([
     { $sort: { DateIso: 1 } },
@@ -579,7 +579,7 @@ const get_all_Post_with_page_exhausted = async (req) => {
         $and: [{ DateIso: { $gte: new Date(date[0] + " 0:0:0").getTime() } }, { DateIso: { $lte: new Date(date[1] + " 23:59:59").getTime() } }],
       };
     }
-    // console.log(date, dateMatch)
+    // //console.log(date, dateMatch)
   }
   const value = await StreamPost.aggregate([
     { $match: { $and: [{ suppierId: { $eq: req.userId } }] } },
@@ -653,7 +653,7 @@ const get_all_Post_with_page_removed = async (req) => {
         $and: [{ DateIso: { $gte: new Date(date[0] + " 0:0:0").getTime() } }, { DateIso: { $lte: new Date(date[1] + " 23:59:59").getTime() } }],
       };;
     }
-    // console.log(date, dateMatch)
+    // //console.log(date, dateMatch)
   }
   const value = await StreamPost.aggregate([
     { $match: { $and: [dateMatch, { suppierId: { $eq: req.userId } }, { status: { $eq: 'Removed' } }] } },
@@ -806,7 +806,7 @@ const get_all_Post_with_page_removed = async (req) => {
 };
 
 const get_all_Post_with_page_all = async (req, status) => {
-  console.log('asda');
+  //console.log('asda');
   let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : parseInt(req.query.page);
   var date_now = new Date().getTime();
   let filterdate = req.query.date;
@@ -814,14 +814,14 @@ const get_all_Post_with_page_all = async (req, status) => {
   if (filterdate != null && filterdate != '' && filterdate != 'null') {
     let date = filterdate.split(',');
     if (date.length == 2) {
-      console.log();
+      //console.log();
       dateMatch = {
         $and: [{ DateIso: { $gte: new Date(date[0] + " 0:0:0").getTime() } }, { DateIso: { $lte: new Date(date[1] + " 23:59:59").getTime() } }],
       };
     }
-    console.log(date, dateMatch);
+    //console.log(date, dateMatch);
   }
-  console.log(dateMatch);
+  //console.log(dateMatch);
 
   const value = await StreamPost.aggregate([
     // {
@@ -941,7 +941,7 @@ const get_all_Post_with_page_all = async (req, status) => {
     { $skip: 10 * page },
     { $limit: 10 },
   ]);
-  console.log(10 * (page + 1))
+  //console.log(10 * (page + 1))
   const total = await StreamPost.aggregate([
     { $match: { $and: [dateMatch, { suppierId: { $eq: req.userId } }] } },
     { $sort: { DateIso: -1 } },
@@ -959,14 +959,14 @@ const get_all_Post_with_page = async (req, status) => {
   if (filterdate != null && filterdate != '' && filterdate != 'null') {
     let date = filterdate.split(',');
     if (date.length == 2) {
-      console.log();
+      //console.log();
       dateMatch = {
         $and: [{ DateIso: { $gte: new Date(date[0] + " 0:0:0").getTime() } }, { DateIso: { $lte: new Date(date[1] + " 23:59:59").getTime() } }],
       };
     }
-    console.log(date, dateMatch);
+    //console.log(date, dateMatch);
   }
-  console.log(dateMatch);
+  //console.log(dateMatch);
 
   const value = await StreamPost.aggregate([
     // {
@@ -1108,7 +1108,7 @@ const get_all_Post_with_page_assigned = async (req) => {
         $and: [{ DateIso: { $gte: new Date(date[0] + " 0:0:0").getTime() } }, { DateIso: { $lte: new Date(date[1] + " 23:59:59").getTime() } }],
       };
     }
-    // console.log(date, dateMatch)
+    // //console.log(date, dateMatch)
   }
   const value = await StreamPost.aggregate([
     { $match: { $and: [dateMatch, { suppierId: { $eq: req.userId } }, { status: { $eq: 'Assigned' } }] } },
@@ -1295,7 +1295,7 @@ const remove_one_post = async (req) => {
 };
 
 const create_stream_one = async (req) => {
-  console.log(req.body);
+  //console.log(req.body);
   let data = req.body.streamingDate;
   let time = req.body.streamingTime;
   let startTime = new Date(new Date(data + ' ' + time)).getTime();
@@ -1353,7 +1353,7 @@ const find_and_update_one = async (req) => {
     { new: true }
   );
   let posts = value.post;
-  console.log(posts, req.body.addpost);
+  //console.log(posts, req.body.addpost);
   req.body.addpost.forEach(async (a) => {
     posts.push(a);
     await StreamPost.findByIdAndUpdate({ _id: a }, { isUsed: true, status: 'Assigned' }, { new: true });
@@ -1367,7 +1367,7 @@ const find_and_update_one = async (req) => {
 };
 
 const create_stream_one_image = async (req) => {
-  console.log(req.file, 'asdasda');
+  //console.log(req.file, 'asdasda');
   if (req.file != null) {
     await Streamrequest.findByIdAndUpdate({ _id: req.query.id }, { image: 'images/stream/' + req.file.filename });
     return { image: 'success' };
@@ -1375,7 +1375,7 @@ const create_stream_one_image = async (req) => {
   return { image: 'faild' };
 };
 const create_stream_one_video = async (req) => {
-  // console.log(req.file, "asdasda")
+  // //console.log(req.file, "asdasda")
   if (req.file != null) {
     const s3 = new AWS.S3({
       accessKeyId: 'AKIA3323XNN7Y2RU77UG',
@@ -1391,9 +1391,9 @@ const create_stream_one_video = async (req) => {
     return new Promise((resolve) => {
       s3.upload(params, async (err, data) => {
         if (err) {
-          console.log(err);
+          //console.log(err);
         }
-        console.log(data);
+        //console.log(data);
         stream = await Streamrequest.findByIdAndUpdate({ _id: req.query.id }, { teaser: data.Location });
         resolve({ teaser: 'success', stream });
       });
@@ -1411,7 +1411,7 @@ const create_stream_two = async (req) => {
 };
 const get_all_stream = async (req) => {
   let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : parseInt(req.query.page);
-  console.log(req.userId);
+  //console.log(req.userId);
   const value = await Streamrequest.aggregate([
     { $match: { $and: [{ suppierId: { $eq: req.userId } }] } },
     { $sort: { DateIso: -1 } },
@@ -1591,7 +1591,7 @@ const get_one_stream_assign_host = async (req) => {
 };
 
 const get_one_stream_step_two = async (req) => {
-  console.log('Asas');
+  //console.log('Asas');
   const value = await Streamrequest.findById(req.query.id);
   const myorders = await purchasePlan.aggregate([
     {
@@ -1647,7 +1647,7 @@ const update_one_stream_one = async (req) => {
 const update_one_stream_two = async (req) => {
   let myplan = await purchasePlan.findById(req.body.plan_name);
   let plan = await Streamplan.findById(myplan.planId);
-  console.log(myplan.numberOfStreamused);
+  //console.log(myplan.numberOfStreamused);
   if (myplan.numberOfStreamused + 1 == plan.numberofStream) {
     myplan.active = false;
   }
@@ -1829,7 +1829,7 @@ const end_stream = async (req) => {
 
 const get_all_streams = async (req) => {
   let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : parseInt(req.query.page);
-  console.log(req.userId);
+  //console.log(req.userId);
   var date_now = new Date().getTime();
   let statusFilter = { active: true };
   if (req.query.status == "All") {
@@ -2145,7 +2145,7 @@ const get_all_streams = async (req) => {
 
 const get_subhost_streams = async (req) => {
   let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : parseInt(req.query.page);
-  console.log(req.query, page);
+  //console.log(req.query, page);
 
   var date_now = new Date().getTime();
   let statusFilter = { active: true };
@@ -2167,7 +2167,7 @@ const get_subhost_streams = async (req) => {
   if (req.query.status == "Expired") {
     statusFilter = { $and: [{ tokenGeneration: { $eq: true } }, { originalDate: { $lte: date_now_string } }, { status: { $ne: "Cancelled" } }] };
   }
-  console.log("asdhagfsdyahgsv", statusFilter)
+  //console.log("asdhagfsdyahgsv", statusFilter)
   const value = await Streamrequest.aggregate([
     {
       $addFields: {
@@ -7086,7 +7086,7 @@ const regisetr_strean_instrest = async (req) => {
   let findresult = await StreamPreRegister.findOne({ shopId: req.shopId, streamId: req.body.streamId });
   let count = await StreamPreRegister.find({ streamId: req.body.streamId, status: 'Registered' }).count();
   let participents = await Streamrequest.findById(req.body.streamId);
-  // console.log(count, 231231, participents.noOfParticipants > count, participents.noOfParticipants)
+  // //console.log(count, 231231, participents.noOfParticipants > count, participents.noOfParticipants)
   if (!findresult) {
     findresult = await StreamPreRegister.create({
       shopId: req.shopId,
@@ -7119,7 +7119,7 @@ const regisetr_strean_instrest = async (req) => {
   await single_stream_details(req);
 
   // let update = await StreamPreRegister.find({ streamId: participents._id, eligible: false }).sort({ DateIso: -1 }).limit(participents.noOfParticipants / 2)
-  // console.log(update)
+  // //console.log(update)
   // update.forEach(async (e) => {
   //     e.viewstatus = "RAC"
   //     e.save()
@@ -7142,7 +7142,7 @@ const unregisetr_strean_instrest = async (req) => {
   let go_next = false;
   let remaining = noOfParticipants - count;
   if (remaining > 0) {
-    console.log(remaining, 'if');
+    //console.log(remaining, 'if');
   } else {
     if (noOfParticipants >= user_postion) {
       go_next = true;
@@ -7185,7 +7185,7 @@ const unregisetr_strean_instrest = async (req) => {
   let update = await StreamPreRegister.find({ streamId: participents._id, eligible: false })
     .sort({ DateIso: -1 })
     .limit(participents.noOfParticipants / 2);
-  console.log(update);
+  //console.log(update);
   update.forEach(async (e) => {
     e.viewstatus = 'RAC';
     e.save();
@@ -7196,7 +7196,7 @@ const unregisetr_strean_instrest = async (req) => {
 const single_stream_details = async (req) => {
   setTimeout(async () => {
     let count = await StreamPreRegister.find({ streamId: req.body.streamId, status: 'Registered' }).count();
-    console.log(count);
+    //console.log(count);
     req.io.emit(req.body.streamId + '_userjoined', { count: count, streamId: req.body.streamId });
   }, 300);
 };
@@ -8121,7 +8121,7 @@ const get_completed_stream_upcommming = async (req) => {
     if (date.length == 2) {
       dateMatch = { $and: [{ streamingDate: { $gte: date[0] } }, { streamingDate: { $lte: date[1] } }] };
     }
-    // console.log(date, dateMatch)
+    // //console.log(date, dateMatch)
   }
   const value = await Streamrequest.aggregate([
     { $sort: { DateIso: 1 } },
@@ -8400,7 +8400,7 @@ const get_completed_stream_live = async (req) => {
     if (date.length == 2) {
       dateMatch = { $and: [{ streamingDate: { $gte: date[0] } }, { streamingDate: { $lte: date[1] } }] };
     }
-    // console.log(date, dateMatch)
+    // //console.log(date, dateMatch)
   }
   const value = await Streamrequest.aggregate([
     { $sort: { DateIso: 1 } },
@@ -8697,7 +8697,7 @@ const get_completed_stream_completed = async (req) => {
     if (date.length == 2) {
       dateMatch = { $and: [{ streamingDate: { $gte: date[0] } }, { streamingDate: { $lte: date[1] } }] };
     }
-    // console.log(date, dateMatch)
+    // //console.log(date, dateMatch)
   }
   const value = await Streamrequest.aggregate([
     { $match: { $and: [dateMatch, { endTime: { $lte: date_now } }, { status: { $ne: 'Cancelled' } }] } },
@@ -8977,9 +8977,9 @@ const get_completed_stream_expired = async (req) => {
     if (date.length == 2) {
       dateMatch = { $and: [{ streamingDate: { $gte: date[0] } }, { streamingDate: { $lte: date[1] } }] };
     }
-    // console.log(date, dateMatch)
+    // //console.log(date, dateMatch)
   }
-  // console.log(date_now);
+  // //console.log(date_now);
   const value = await Streamrequest.aggregate([
     { $match: { $and: [dateMatch, { endTime: { $lte: date_now } }, { status: { $ne: 'Cancelled' } }] } },
     { $sort: { DateIso: 1 } },
@@ -9263,9 +9263,9 @@ const get_completed_stream_cancelled = async (req) => {
     if (date.length == 2) {
       dateMatch = { $and: [{ streamingDate: { $gte: date[0] } }, { streamingDate: { $lte: date[1] } }] };
     }
-    // console.log(date, dateMatch)
+    // //console.log(date, dateMatch)
   }
-  // console.log(date_now);
+  // //console.log(date_now);
   const value = await Streamrequest.aggregate([
     { $match: { $and: [dateMatch, { status: { $eq: 'Cancelled' } }] } },
     { $sort: { DateIso: 1 } },
@@ -10529,7 +10529,7 @@ const update_Multiple_productOrders = async (body) => {
 };
 
 const update_Multiple_approval_Status = async (body) => {
-  console.log(body.arr);
+  //console.log(body.arr);
   body.arr.forEach(async (e) => {
     let values = await streamingOrder.findById(e);
     values = await streamingOrder.findByIdAndUpdate({ _id: e }, { approvalStatus: body.status }, { new: true });
@@ -10708,7 +10708,7 @@ const fetch_Stream_Details_For_Buyer = async (buyerId) => {
 
 const update_Joined_User_Status_For_Buyer = async (id, body) => {
   let values = await Joinusers.findById(id);
-  console.log(values);
+  //console.log(values);
   if (!values) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Buyer Not Found 🖕');
   }
@@ -11525,7 +11525,7 @@ const get_stream_post_after_live_stream = async (req) => {
   if (streamnotification.videoconvertStatus != 'Converted') {
     value.temptokens.forEach(async (e) => {
       if (e.convertStatus != 'Converted') {
-        // console.log(e)
+        // //console.log(e)
         const inputFilePath = 'https://streamingupload.s3.ap-south-1.amazonaws.com/' + e.videoLink;
         let store = e._id.replace(/[^a-zA-Z0-9]/g, '');
         const outputFilePath = 'output.mp4';
@@ -11534,7 +11534,7 @@ const get_stream_post_after_live_stream = async (req) => {
           .outputOptions('-c', 'copy')
           .output(outputFilePath)
           .on('end', (e) => {
-            console.log('Conversion completed successfully', e);
+            //console.log('Conversion completed successfully', e);
           })
           .on('error', (err) => {
             console.error('Error while converting:', err);
@@ -11547,10 +11547,10 @@ const get_stream_post_after_live_stream = async (req) => {
         });
         const bucketName = 'streamingupload';
 
-        console.log(outputFilePath);
+        //console.log(outputFilePath);
 
         const fileContent = fs.readFileSync(outputFilePath);
-        console.log(fileContent);
+        //console.log(fileContent);
         if (fileContent != null) {
           const params = {
             Bucket: bucketName,
@@ -11570,9 +11570,9 @@ const get_stream_post_after_live_stream = async (req) => {
               streamnotification.save();
               fs.unlink(outputFilePath, (err) => {
                 if (err) {
-                  console.log('Error deleting file:', err);
+                  //console.log('Error deleting file:', err);
                 } else {
-                  console.log('File deleted successfully!');
+                  //console.log('File deleted successfully!');
                 }
               });
             }
@@ -11621,13 +11621,13 @@ const video_upload_post = async (req) => {
     const s3Upload = s3.upload(params);
 
     s3Upload.on('httpUploadProgress', function (progress) {
-      console.log('Progress:', progress.loaded, '/', progress.total);
+      //console.log('Progress:', progress.loaded, '/', progress.total);
     });
     s3Upload.send(function (err, data) {
       if (err) {
-        // console.log('Error uploading file:', err);
+        // //console.log('Error uploading file:', err);
       } else {
-        console.log('File uploaded successfully:', data.Location);
+        //console.log('File uploaded successfully:', data.Location);
         streamPost.uploadStreamVideo = data.Location;
         streamPost.newVideoUpload = 'video';
         streamPost.save();
@@ -11670,7 +11670,7 @@ const get_video_link = async (req) => {
           .outputOptions('-c', 'copy')
           .output(outputFilePath)
           .on('end', (e) => {
-            console.log('Conversion completed successfully', e);
+            //console.log('Conversion completed successfully', e);
           })
           .on('error', (err) => {
             console.error('Error while converting:', err);
@@ -11683,10 +11683,10 @@ const get_video_link = async (req) => {
         });
         const bucketName = 'streamingupload';
 
-        console.log(outputFilePath);
+        //console.log(outputFilePath);
 
         const fileContent = fs.readFileSync(outputFilePath);
-        console.log(fileContent);
+        //console.log(fileContent);
         if (fileContent != null) {
           const params = {
             Bucket: bucketName,
@@ -11707,9 +11707,9 @@ const get_video_link = async (req) => {
               resolve(val);
               // fs.unlink(outputFilePath, (err) => {
               //   if (err) {
-              //     console.log('Error deleting file:', err);
+              //     //console.log('Error deleting file:', err);
               //   } else {
-              //     console.log('File deleted successfully!');
+              //     //console.log('File deleted successfully!');
               //   }
               // });
             }
@@ -11724,7 +11724,7 @@ const get_video_link = async (req) => {
 
   return Promise.all(promises)
     .then((results) => {
-      console.log(results);
+      //console.log(results);
       notification[0].temptokens = results;
       return notification[0];
     })
@@ -11734,7 +11734,7 @@ const get_video_link = async (req) => {
 };
 
 const get_order_details_by_stream = async (id, query) => {
-  console.log(query);
+  //console.log(query);
   let buyerSearch = { _id: { $ne: null } };
 
   if (query.Buyer) {
@@ -11797,7 +11797,7 @@ const get_order_details_by_stream = async (id, query) => {
 };
 
 const get_post_view = async (req) => {
-  console.log(req.query.id)
+  //console.log(req.query.id)
   let value = await StreamPost.aggregate([
     { $match: { $and: [{ _id: req.query.id },] } },
     {
@@ -11833,7 +11833,7 @@ const get_post_view = async (req) => {
       }
     }
   ])
-  console.log(value)
+  //console.log(value)
 
   return value[0];
 }

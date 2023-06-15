@@ -66,7 +66,7 @@ const getUnBilledDetails = catchAsync(async (req, res) => {
 
 const supplierUnBilledBySupplier = catchAsync(async (req, res) => {
   let userId = req.userId;
-  console.log(userId);
+  //console.log(userId);
   const data = await supplierUnBilledService.supplierUnBilledBySupplier(userId);
   res.send(data);
 });
@@ -93,7 +93,7 @@ const getpaidraisedbyindivitual = catchAsync(async (req, res) => {
 
 const getRaisedUnBilled_PaidUnbilled_Details = catchAsync(async (req, res) => {
   let userId = req.userId;
-  console.log(userId);
+  //console.log(userId);
   let supplierData = await Supplier.findById(userId);
   if (supplierData.active === false) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Supplier Not Active');

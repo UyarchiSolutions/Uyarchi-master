@@ -214,8 +214,8 @@ const getsalesmanName = async () => {
 };
 
 const getShopHistory = async (userId, id) => {
-  console.log(id);
-  console.log(userId);
+  //console.log(id);
+  //console.log(userId);
   // { AssignedUserId: { $eq: userId } },
   let values = await creditBill.aggregate([
     {
@@ -339,12 +339,12 @@ const updateAssignedStatusPerBill = async (id) => {
 
 const createGroup = async (body) => {
   let serverdates = moment().format('YYYY-MM-DD');
-  console.log(typeof serverdates);
+  //console.log(typeof serverdates);
   let servertime = moment().format('hh:mm a');
 
   const group = await creditBillGroup.find({ assignedDate: serverdates });
 
-  console.log(group);
+  //console.log(group);
 
   let center = '';
 
@@ -362,7 +362,7 @@ const createGroup = async (body) => {
   }
   let userId = '';
   let totalcount = group.length + 1;
-  console.log(totalcount);
+  //console.log(totalcount);
   userId = 'G' + center + totalcount;
 
   let values = {
@@ -419,7 +419,7 @@ const payingCAshWithDEorSM = async (id, updateBody) => {
     reasonScheduleOrDate: updateBody.reasonScheduleOrDate,
   });
 
-  console.log(updateProduct);
+  //console.log(updateProduct);
 
   return updateProduct;
 };
@@ -1276,7 +1276,7 @@ const getDeliveryExecutiveName = async () => {
 };
 
 const getGroupAndBill = async (AssignedUserId) => {
-  console.log(AssignedUserId);
+  //console.log(AssignedUserId);
   let data = await creditBillGroup.aggregate([
     {
       $match: {
@@ -2142,7 +2142,7 @@ const getgroupbilldetails = async (id) => {
 };
 
 const submitDispute = async (id, updatebody) => {
-  // console.log(id, updatebody);
+  // //console.log(id, updatebody);
   let product = await creditBillGroup.findById(id);
   if (!product) {
     throw new ApiError(httpStatus.NOT_FOUND, ' srfegfNot Found');
@@ -2152,7 +2152,7 @@ const submitDispute = async (id, updatebody) => {
     { ...updatebody, ...{ finishDate: moment(), receiveStatus: 'received' } },
     { new: true }
   );
-  console.log(product);
+  //console.log(product);
   let creditBill_array = await creditBill.find({ creditbillId: id });
   creditBill_array.forEach(async (e) => {
     await ShopOrderClone.findByIdAndUpdate({ _id: e.orderId }, { creditBillAssignedStatus: 'Pending' }, { new: true });
@@ -2316,8 +2316,8 @@ const getCreditBillMaster = async (query) => {
     date = date.split(',');
     startdate = date[0];
     enddata = date[1];
-    // console.log(startdate)
-    // console.log(enddata)
+    // //console.log(startdate)
+    // //console.log(enddata)
     dateMatch = { $and: [{ Scheduledate: { $gte: startdate } }, { Scheduledate: { $lte: enddata } }] };
   }
   if (user != null && user != '') {
@@ -2326,11 +2326,11 @@ const getCreditBillMaster = async (query) => {
   if (singledate != null && singledate != '') {
     dateM = { creationDate: { $eq: singledate } };
   }
-  // console.log(zone);
-  // console.log(ward);
-  // console.log(search);
-  // console.log(date);
-  // console.log(userMatch);
+  // //console.log(zone);
+  // //console.log(ward);
+  // //console.log(search);
+  // //console.log(date);
+  // //console.log(userMatch);
   // Scheduledate
 
   let values = await ShopOrderClone.aggregate([
@@ -4623,7 +4623,7 @@ const getDisputegroupeOnly = async (de, date, page) => {
 };
 
 const getbilldetails = async (query) => {
-  // console.log(query.id)
+  // //console.log(query.id)
   let id = query.id;
   let order = await ShopOrderClone.aggregate([
     {
@@ -5897,7 +5897,7 @@ const Approved_Mismatch_amount = async (page) => {
 
 const updateFineStatus = async (id, body) => {
   const { status } = body;
-  console.log(status);
+  //console.log(status);
   let creditbill = await creditBillGroup.findById(id);
   if (!creditbill) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Credit Bill Group Not Found');

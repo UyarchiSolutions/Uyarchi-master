@@ -8,7 +8,7 @@ const ReturnStockhistories = require('../models/returnStock.histories.model')
 
 const create_ReturnStock = async (body, userid) => {
   let { groupId, stocks } = body;
-  console.log(stocks)
+  //console.log(stocks)
   let values = {
     ...body,
     ...{ created: moment(), date: moment().format('YYYY-MM-DD'), time: moment().format('HHmmss'), status: 'received' },

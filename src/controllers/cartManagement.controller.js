@@ -6,7 +6,7 @@ const CartManagementService = require('../services/cartManagement.service');
 
 const createCartManagement = catchAsync(async (req, res) => {
   const { body } = req;
-  console.log(body);
+  //console.log(body);
   const cart = await CartManagementService.createCartManagement(body);
   if (req.files) {
     let path = '';

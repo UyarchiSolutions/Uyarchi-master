@@ -29,7 +29,7 @@ callback = function (response) {
     str += chunk;
   });
   response.on('end', function () {
-    console.log(str);
+    //console.log(str);
   });
 };
 

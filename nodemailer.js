@@ -27,8 +27,8 @@ const options = {
 
 transpoter.sendMail(options, (err, info) => {
   if (err) {
-    console.log(err);
+    //console.log(err);
     return;
   }
-  console.log('send' + info.response);
+  //console.log('send' + info.response);
 });

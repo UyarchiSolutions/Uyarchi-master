@@ -14,14 +14,14 @@ const moment = require('moment');
 
 const createSupplier = async (supplierBody) => {
   const check = await Supplier.findOne({ primaryContactNumber: supplierBody.primaryContactNumber });
-  // console.log(check)
+  // //console.log(check)
   if (check) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Already Register this Number');
   }
   if (supplierBody.createdByStatus == 'By Supplier') {
     await Textlocal.Otp(supplierBody.primaryContactNumber);
     await Supplier.create(supplierBody);
-    console.log('OTP send successfully');
+    //console.log('OTP send successfully');
   } else {
     return Supplier.create(supplierBody);
   }
@@ -43,7 +43,7 @@ const already_Customer = async (body) => {
 };
 
 const otpVerify_Setpassword = async (body) => {
-  // console.log(body)
+  // //console.log(body)
   const { OTP } = body;
   const data = await OTPModel.findOne({ OTP: OTP });
   if (!data) {
@@ -79,7 +79,7 @@ const UsersLogin = async (userBody) => {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Phone Number Not Registered (or) User Disable');
   } else {
     if (await userName.isPasswordMatch(password)) {
-      console.log('Password Macthed');
+      //console.log('Password Macthed');
     } else {
       throw new ApiError(httpStatus.UNAUTHORIZED, "Passwoed Doesn't Match");
     }
@@ -277,7 +277,7 @@ const getAllAppOnly_Supplier = async (id) => {
 };
 
 const getAllAppOnly_Supplier_Update = async (id, updateBody) => {
-  console.log(updateBody);
+  //console.log(updateBody);
   const data = await Supplier.findByIdAndUpdate({ _id: id }, updateBody, { new: true });
   return data;
 };
@@ -317,7 +317,7 @@ const getproductsWithSupplierId = async (supplierId, date) => {
           date: { $eq: date },
           productid: { $eq: productsId[i] },
         });
-        console.log(soproducts);
+        //console.log(soproducts);
         product.push(products);
         soproduct.push(soproducts);
       }
@@ -620,7 +620,7 @@ const getSupplierById = async (id) => {
     let ff = await Product.findById(supplier.productDealingWith[i]);
     values.push(ff);
   }
-  console.log(values);
+  //console.log(values);
   return {
     supplier: supplier,
     products: values,
@@ -629,7 +629,7 @@ const getSupplierById = async (id) => {
 
 const updateSupplierById = async (supplierId, updateBody) => {
   let supplier = await Supplier.findById(supplierId);
-  console.log(supplier);
+  //console.log(supplier);
   if (!supplier) {
     throw new ApiError(httpStatus.NOT_FOUND, 'supplier not found');
   }
@@ -757,7 +757,7 @@ const createSuppliers = async (body, userId) => {
     },
   };
   const validate = await Supplier.find({ primaryContactNumber: body.primaryContactNumber });
-  console.log(validate.length);
+  //console.log(validate.length);
   let len = validate.length;
   if (len > 0) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Mobile Number Already Registered');
@@ -827,9 +827,9 @@ const UpdateSupplierByIdThird = async (id, updateBody) => {
 const getSupplierDetails = async (id) => {
   let Id = id.toString();
   let value = [];
-  console.log(Id);
+  //console.log(Id);
   let values = await Supplier.findById(Id);
-  console.log(values);
+  //console.log(values);
   if (!values) {
     throw new ApiError(httpStatus.NOT_FOUND, 'supplier Not Found');
   }
@@ -1000,7 +1000,7 @@ const getSupplierWithverifiedUser = async (key, date, page) => {
 const checkMobileExestOrNot = async (number) => {
   let values = await Supplier.find({ primaryContactNumber: number });
   let len = values.length;
-  console.log(len);
+  //console.log(len);
   if (len > 0) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Mobile Already Exist');
   }

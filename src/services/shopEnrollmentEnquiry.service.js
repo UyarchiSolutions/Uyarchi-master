@@ -219,7 +219,7 @@ const createShops = async (body) =>{
       ...{ date: serverdate, time: servertime, filterDate: filterDate, status: 'Pending', created: createdtime },
     };
     const shop = await Shop.create(values);
-    // console.log(shop)
+    // //console.log(shop)
     // await ShopEnrollmentEnquiry.findOneAndUpdate({mobileNumber:shop.mobile, shopName:shop.SName, contactName:shop.SOwner}, {b2bshopcloneId:shop._id}, {new:true})
     return shop;
 }
@@ -284,13 +284,13 @@ const product = async (id) =>{
   // data.productDealingwith.forEach(async (e) => {
   //   product = await Product.findById(e)
   //   push.push(product)
-  //   console.log(push)
+  //   //console.log(push)
   // })
   // return push;
   data.productDealingwith.forEach(async (e) => {
     // const product = await Product.findById(e)
     product.push(e);
-    // console.log(e)
+    // //console.log(e)
   });
   for (let i = 0; i < product.length; i++) {
     const pro = await Product.findById(product[i]);
@@ -340,7 +340,7 @@ const getIdEnquiryShops = async (id) =>{
 }
 
 const createSupplierEnquiry = async (userId, body) => {
-  console.log(userId)
+  //console.log(userId)
   let value = {...body, ...{createdBy:userId}}
 return SupplierEnrollment.create(value);
 };

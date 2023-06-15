@@ -526,7 +526,7 @@ const BillNumber = async (id, bodydata) => {
   if (!LoadedProduct) {
     throw new ApiError(httpStatus.NOT_FOUND, 'ReceivedProduct Not Found');
   }
-  console.log(LoadedProduct.date);
+  //console.log(LoadedProduct.date);
   let receicedProduct = await ReceivedProduct.find({
     date: LoadedProduct.date,
     status: 'Billed',
@@ -1709,7 +1709,7 @@ const previousOrderdata = async (id) => {
 };
 
 const getbilled_Details = async (pages, userId) => {
-  console.log(userId);
+  //console.log(userId);
   let page = parseInt(pages);
   let approved = await Supplier.findOne({ _id: userId, approvedStatus: 'Approved' });
   if (approved) {

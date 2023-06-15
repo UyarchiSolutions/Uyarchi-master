@@ -51,7 +51,7 @@ const getApprovedProductDateWise = async (date) => {
 
 const updatestatusById = async (statusId, updateBody) => {
   let status = await getStreetById(statusId);
-  console.log(status);
+  //console.log(status);
   if (!status) {
     throw new ApiError(httpStatus.NOT_FOUND, 'status not found');
   }

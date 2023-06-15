@@ -17,7 +17,7 @@ const createTrends = catchAsync(async (req, res) => {
   let shopclone = await Shop.findById({ _id: req.body.shopid });
   let marketshopclone = await MarketShopsClone.findById({ _id: req.body.shopid });
   let streetId;
-  // console.log(shopclone,"sdfsfd")
+  // //console.log(shopclone,"sdfsfd")
   let servertime = moment().format('HHmm');
   let serverdate = moment().format('DD-MM-yyy');
   let created = moment().format('hh:mm a');
@@ -57,7 +57,7 @@ const createTrends = catchAsync(async (req, res) => {
 
 const updateProductFromTrendsClone = catchAsync(async (req, res) => {
   const trends = await trendsCloneService.updateProductFromTrendsClone(req.params.id, req.body);
-  console.log(trends);
+  //console.log(trends);
   req.body.product.forEach(async (e) => {
     let row = {
       productId: e.Pid,

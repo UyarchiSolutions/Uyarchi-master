@@ -287,7 +287,7 @@ const getManageUserdataByIdStatus = async (id, streetId, status, page) => {
   } else {
     match = { $and: [{ _id: { $eq: id } }, { active: { $eq: true } }] };
   }
-  // console.log(match);
+  // //console.log(match);
   const man = await ManageUser.aggregate([
     // {
     //   $match: {
@@ -481,7 +481,7 @@ const getManageUserdataByIdStatus = async (id, streetId, status, page) => {
 
 const loginManageUserEmailAndPassword = async (mobileNumber, dateOfBirth) => {
   const interviewerRegistration = await ManageUser.find({ mobileNumber: mobileNumber });
-  console.log(interviewerRegistration[0].dateOfBirth);
+  //console.log(interviewerRegistration[0].dateOfBirth);
   let dob = interviewerRegistration[0].dateOfBirth.replace(/[^0-9\.]+/g, '');
   if (interviewerRegistration != '') {
     if (dob == dateOfBirth) {
@@ -628,7 +628,7 @@ const manageUserAllTable = async (id, districtId, zoneId, wardId, status, page) 
   } else {
     match = [{ _id: { $ne: null } }];
   }
-  // console.log(match);
+  // //console.log(match);
   const user = await ManageUser.aggregate([
     // {
     //   $match: {
@@ -712,7 +712,7 @@ const manageUserAllTable = async (id, districtId, zoneId, wardId, status, page) 
       $limit: 10,
     },
   ]);
-  // console.log(user.length);
+  // //console.log(user.length);
   const count = await ManageUser.aggregate([
     {
       $lookup: {

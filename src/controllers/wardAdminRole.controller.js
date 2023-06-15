@@ -258,7 +258,7 @@ const createtartget = catchAsync(async (req, res) => {
 });
 
 const get_user_target = catchAsync(async (req, res) => {
-  console.log(req.query.id);
+  //console.log(req.query.id);
   const data = await wardAdminRoleService.get_user_target(req.userId, req.query.id);
   res.send(data);
 });
@@ -275,13 +275,13 @@ const getusertarget = catchAsync(async (req, res) => {
 
 const getAssign_bySalesman = catchAsync(async (req, res) => {
   let userId = req.userId;
-  console.log(userId);
+  //console.log(userId);
   const data = await wardAdminRoleService.getAssign_bySalesman(userId);
   res.send(data);
 });
 const re_getAssign_bySalesman_final_customer= catchAsync(async (req, res) => {
   let userId = req.userId;
-  console.log(userId);
+  //console.log(userId);
   const data = await wardAdminRoleService.re_getAssign_bySalesman_final_customer(userId);
   res.send(data);
 });
@@ -289,7 +289,7 @@ const re_getAssign_bySalesman_final_customer= catchAsync(async (req, res) => {
 
 const re_getAssign_bySalesman = catchAsync(async (req, res) => {
   let userId = req.userId;
-  console.log(userId);
+  //console.log(userId);
   const data = await wardAdminRoleService.re_getAssign_bySalesman(userId);
   res.send(data);
 });

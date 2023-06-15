@@ -576,7 +576,7 @@ const wardloadExecutivepacked = async (status, date, page) => {
 const wardloadExecutivebtgroup = async (query) => {
   let page = query.page;
   let type = query.pickputype;
-  console.log(type);
+  //console.log(type);
   let data = await wardAdminGroup.aggregate([
     {
       $match: {
@@ -1000,8 +1000,8 @@ const wardloadExecutivePacked = async (range, page, type) => {
   let lapsed = timeslot[hover].start;
   let beforelapsed = timeslot[before].start;
 
-  console.log(type);
-  console.log(beforelapsed);
+  //console.log(type);
+  //console.log(beforelapsed);
 
   rangematch = { time_of_delivery: { $eq: range } };
   if (range == 'all') {
@@ -1300,7 +1300,7 @@ const wardDeliveryExecutive = async () => {
   let today = moment().format('YYYY-MM-DD');
 
   // assignDate;
-  console.log('hello');
+  //console.log('hello');
   let value = await Users.aggregate([
     {
       $match: { $and: [{ userRole: { $eq: '36151bdd-a8ce-4f80-987e-1f454cd0993f' } }] },

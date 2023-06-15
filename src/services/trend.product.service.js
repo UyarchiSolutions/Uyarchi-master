@@ -7,7 +7,7 @@ const { Shop } = require('../models/b2b.ShopClone.model');
 const moment = require('moment');
 const Street = require('../models/street.model');
 const getStreetsByWardIdAndProducts = async (wardId, street, date, page) => {
-  console.log(date, 'sdfsa');
+  //console.log(date, 'sdfsa');
 
   let match;
   if (street != 'null') {
@@ -22,7 +22,7 @@ const getStreetsByWardIdAndProducts = async (wardId, street, date, page) => {
   } else {
     wardmatch = { active: true };
   }
-  console.log(match);
+  //console.log(match);
 
   let values = await Product.aggregate([
     {
@@ -135,7 +135,7 @@ const getProductByProductIdFromTrendProduct = async (wardId, street, productId, 
   } else {
     wardmatch = { active: true };
   }
-  console.log(match);
+  //console.log(match);
   let value = await TrendProduct.aggregate([
     {
       $match: {
@@ -272,7 +272,7 @@ const updateTrendsById = async (id, body) => {
   if (!trendproduct) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Not Found');
   }
-  console.log(trendproduct);
+  //console.log(trendproduct);
   trendproduct = await TrendProduct.findByIdAndUpdate({ _id: id }, body, { new: true });
   return trendproduct;
 };
@@ -287,7 +287,7 @@ const getShopsByIdFromTrends = async (id) => {
   var dt = moment(formatter.format(new Date()), ['h:mm A']).format('HHmm');
   let match = [{ active: { $eq: true } }];
   if (600 < dt && 1000 > dt) {
-    console.log('1');
+    //console.log('1');
     match = [{ shopid: { $eq: id } }, { time: { $gte: 600 } }, { time: { $lte: 1000 } }];
   }
   if (1100 < dt && 1400 > dt) {

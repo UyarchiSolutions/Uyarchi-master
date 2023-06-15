@@ -7,7 +7,7 @@ const storage = multer.diskStorage({
     cb(null, path.join(__dirname, '../../public/images/shop'));
   },
   filename: function (req, file, cb) {
-    console.log(file, 'sdfsdfsdfsdfsdf');
+    //console.log(file, 'sdfsdfsdfsdfsdf');
     let ext = path.extname(file.originalname);
     counts++;
     cb(null, Date.now() + counts.toString() + ext);
@@ -20,7 +20,7 @@ const storage = multer.diskStorage({
 //       if (file.mimetype == 'image/png' || file.mimetype == 'image/jpg' || file.mimetype == 'image/jpeg') {
 //         callback(null, true);
 //       } else {
-//         console.log('Only png And Jpg file supported!');
+//         //console.log('Only png And Jpg file supported!');
 //         callback(null, false);
 //       }
 //     },
@@ -30,7 +30,7 @@ const storage = multer.diskStorage({
 //   });
 
 const multerFilter = (req, file, cb) => {
-  // console.log(file,"sdfsdfsdf")
+  // //console.log(file,"sdfsdfsdf")
   if (file.mimetype.startsWith('image')) {
     cb(null, true);
   } else {

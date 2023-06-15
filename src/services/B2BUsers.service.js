@@ -117,7 +117,7 @@ const UsersLogin = async (userBody) => {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Phone Number Not Registered');
   } else {
     if (await userName.isPasswordMatch(password)) {
-      console.log('Password Macthed');
+      //console.log('Password Macthed');
     } else {
       throw new ApiError(httpStatus.UNAUTHORIZED, "Passwoed Doesn't Match");
     }
@@ -126,10 +126,10 @@ const UsersLogin = async (userBody) => {
 };
 const B2bUsersAdminLogin = async (userBody) => {
   const { phoneNumber, password } = userBody;
-  console.log(password);
+  //console.log(password);
   const salt = await bcrypt.genSalt(7);
   let passwor = { password: await bcrypt.hash(password.toString(), salt) };
-  console.log(passwor);
+  //console.log(passwor);
   let userName = await Users.findOne({
     phoneNumber: phoneNumber,
     $or: [
@@ -147,9 +147,9 @@ const B2bUsersAdminLogin = async (userBody) => {
   if (!userName) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Phone Number Not Registered');
   } else {
-    console.log(await userName.isPasswordMatch(password));
+    //console.log(await userName.isPasswordMatch(password));
     if (await userName.isPasswordMatch(password)) {
-      console.log('Password Macthed');
+      //console.log('Password Macthed');
     } else {
       throw new ApiError(httpStatus.UNAUTHORIZED, "Passwoed Doesn't Match");
     }
@@ -211,7 +211,7 @@ const otpVerfiy = async (body) => {
   if (!users) {
     throw new ApiError(httpStatus.NOT_FOUND, 'user not Found');
   }
-  console.log(users)
+  //console.log(users)
   return await Verfy.verfiy(body, users);
 };
 
@@ -220,7 +220,7 @@ const otpVerfiyPurchaseExecutive = async (body) => {
     phoneNumber: body.mobileNumber,
   });
   let otp = await ChatBotOTP.findOne({ OTP: body.OTP, used: false });
-  console.log(otp);
+  //console.log(otp);
   if (!users || otp == null) {
     throw new ApiError(httpStatus.NOT_FOUND, 'user not Found');
   }
@@ -302,7 +302,7 @@ const getusermetaDataById = async (id) => {
 
 const updateMetaUsers = async (id, updateBody) => {
   let metauser = await getusermetaDataById(id);
-  console.log(metauser);
+  //console.log(metauser);
   if (!metauser) {
     throw new ApiError(httpStatus.NOT_FOUND, 'user not Found');
   }
@@ -518,12 +518,12 @@ const PurchaseExecutivelogin = async (userBody) => {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Phone Number Not Registered');
   } else {
     if (await userName.isPasswordMatch(password)) {
-      console.log('Password Macthed');
+      //console.log('Password Macthed');
     } else {
       throw new ApiError(httpStatus.UNAUTHORIZED, "Passwoed Doesn't Match");
     }
   }
-  console.log(userName);
+  //console.log(userName);
   if (userName.userRole !== '3fd66c17-d85b-4cd4-af96-ac8173d8a830') {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Invalid Role');
   }

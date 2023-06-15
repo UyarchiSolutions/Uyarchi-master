@@ -38,24 +38,24 @@ let io = socketIO(server);
 
 server.listen(config.port, () => {
   logger.info(`Listening to port ${config.port}`);
-  // console.log(moment(1674035400000).add(40, 'minutes').format('hh:mm:ss a'));
+  // //console.log(moment(1674035400000).add(40, 'minutes').format('hh:mm:ss a'));
 });
 
 io.sockets.on('connection', async (socket) => {
   socket.on('groupchat', async (data) => {
-    console.log("hello", data)
+    //console.log("hello", data)
     await chetModule.chat_room_create(data, io)
   });
 
   socket.on('groupchatsubhost', async (data) => {
-    console.log("hello", data)
+    //console.log("hello", data)
     await chetModule.chat_room_create_subhost(data, io)
   });
   socket.on('groupchathost', async (data) => {
     await chetModule.chat_room_create_host(data, io)
   });
   socket.on('livetraking', async (data) => {
-    console.log(data)
+    //console.log(data)
     io.sockets.emit('livetraking', data);
   });
   socket.on('toggle_controls', async (data) => {
@@ -73,7 +73,7 @@ io.sockets.on('connection', async (socket) => {
   });
 
   socket.on('', (msg) => {
-    console.log('message: ' + msg);
+    //console.log('message: ' + msg);
   });
   socket.on('host_controll_audio', async (data) => {
     await socketService.host_controll_audio(data, io)
@@ -95,22 +95,22 @@ io.sockets.on('connection', async (socket) => {
     await socketService.ban_user_chat(data, io)
   });
   socket.on('joinRoom', (room) => {
-    console.log(room)
+    //console.log(room)
     socket.join(room);
     // Emit an event to notify other clients in the room about the new user joining
-    console.log(socket.id,2136712)
+    //console.log(socket.id,2136712)
     socket.to(room).emit('userJoined', socket.id);
-    console.log(socket.rooms)
+    //console.log(socket.rooms)
 
   });
 
   socket.on('disconnecting', () => {
-    console.log(socket.rooms)
+    //console.log(socket.rooms)
     // Get the rooms the user is currently in
     const rooms = Object.keys(socket.rooms);
-    console.log(rooms)
+    //console.log(rooms)
     rooms.forEach((room) => {
-      console.log(room)
+      //console.log(room)
       // Emit an event to notify other clients in the room about the user disconnecting
       socket.to(room).emit('userDisconnected', socket.id);
     });
@@ -196,7 +196,7 @@ function parseUserAgent(userAgent) {
 const deviceDetais = async (req, res, next) => {
   const userAgent = req.headers['user-agent'];
   const deviceInfo = parseUserAgent(userAgent);
-  // console.log(deviceInfo)
+  // //console.log(deviceInfo)
   req.deviceInfo = deviceInfo;
   return next();
 }

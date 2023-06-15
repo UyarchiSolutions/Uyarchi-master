@@ -15,10 +15,10 @@ const razorpayOrderId = async (body) => {
         receipt: "order_rcptid_11"
     };
     return createOrder(options).then((orderId) => {
-        console.log(orderId)
+        //console.log(orderId)
         return { orderId }
     }).catch(e => {
-        console.log(e)
+        //console.log(e)
         return { error: e }
     })
 }
@@ -27,10 +27,10 @@ function createOrder(options) {
     return new Promise((resolve, reject) => {
         instance.orders.create(options, (err, order) => {
             if (err !== null) {
-                console.log("failed to create order", err);
+                //console.log("failed to create order", err);
                 return reject(err);
             } else {
-                console.log("ORDERID " + order.id);
+                //console.log("ORDERID " + order.id);
                 return resolve(order.id);
             }
         });
@@ -78,10 +78,10 @@ const verifyRazorpay_Amount = async (body) => {
     hmac.update(body.razorpay_order_id + "|" + body.razorpay_payment_id);
     const generated_signature = hmac.digest('hex');
     if (body.razorpay_signature === generated_signature) {
-        console.log({ success: true, message: "Payment has been verified" })
+        //console.log({ success: true, message: "Payment has been verified" })
     }
     else {
-        console.log({ success: false, message: "Payment verification failed" })
+        //console.log({ success: false, message: "Payment verification failed" })
     }
 
     let payment = instance.payments.fetch(body.razorpay_payment_id)

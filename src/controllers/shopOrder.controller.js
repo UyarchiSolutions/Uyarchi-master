@@ -84,7 +84,7 @@ const getShopNameWithPagination = catchAsync(async (req, res) => {
 
 const getShopNameCloneWithPagination = catchAsync(async (req, res) => {
   let user = req.userId;
-  console.log(user);
+  //console.log(user);
   const shopOrder = await shopOrderService.getShopNameCloneWithPagination(req.params.page, user);
   res.send(shopOrder);
 });
@@ -96,7 +96,7 @@ const getProductDetailsByProductId = catchAsync(async (req, res) => {
 
 const getAllShopOrder = catchAsync(async (req, res) => {
   let UserRole = req.userRole;
-  console.log(UserRole);
+  //console.log(UserRole);
   const shoporder = await shopOrderService.getAllShopOrder(UserRole);
   res.send(shoporder);
 });
@@ -127,7 +127,7 @@ const getAll = catchAsync(async (req, res) => {
 const createOrderId = catchAsync(async (req, res) => {
   const Buy = await ShopOrderClone.find({ date: currentDate }).count();
   let center = '';
-  // console.log(Buy.length);
+  // //console.log(Buy.length);
   if (Buy < 9) {
     center = '00000';
   }
@@ -143,7 +143,7 @@ const createOrderId = catchAsync(async (req, res) => {
   if (Buy < 99999 && Buy >= 9999) {
     center = '0';
   }
-  // console.log(center, 0);
+  // //console.log(center, 0);
   let userId = '';
   let totalcount = Buy + 1;
 
@@ -153,10 +153,10 @@ const createOrderId = catchAsync(async (req, res) => {
   if (userId != '') {
     supplierss = await shopOrderService.createOrderId(req.body);
   }
-  console.log(userId);
+  //console.log(userId);
   supplierss.OrderId = userId;
-  console.log(supplierss);
-  // console.log(supplierss)
+  //console.log(supplierss);
+  // //console.log(supplierss)
   res.status(httpStatus.CREATED).send(supplierss);
   await supplierss.save();
 });
@@ -198,10 +198,10 @@ const get_data_for_lapster = catchAsync(async (req, res) => {
 });
 
 const getLapsed_Data = catchAsync(async (req, res) => {
-  console.log('hello');
+  //console.log('hello');
   let userRoles = req.userRole;
   let UserId = req.userId;
-  console.log(req.params);
+  //console.log(req.params);
   if (req.params.status == 'pending') {
     const data = await shopOrderService.getLapsed_Data(req.params.page, userRoles, UserId, 'lp');
     res.send(data);
@@ -226,7 +226,7 @@ const getLapsed_Data = catchAsync(async (req, res) => {
 const getLapsed_Rejected = catchAsync(async (req, res) => {
   let userRoles = req.userRole;
   let UserId = req.userId;
-  console.log(req.params);
+  //console.log(req.params);
 
   if (req.params.status == 'pending') {
     const data = await shopOrderService.getLapsed_Data(req.params.page, userRoles, UserId, 're');
@@ -253,7 +253,7 @@ const getLapsed_Rejected = catchAsync(async (req, res) => {
 const getLapsed_Undelivered = catchAsync(async (req, res) => {
   let userRoles = req.userRole;
   let UserId = req.userId;
-  console.log(req.params);
+  //console.log(req.params);
 
   if (req.params.status == 'pending') {
     const data = await shopOrderService.getLapsed_Data(req.params.page, userRoles, UserId, 'un');

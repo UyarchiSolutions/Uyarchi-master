@@ -55,14 +55,14 @@ const saveToken = async (token, userId, userRole, expires, type, blacklisted = f
  */
 const verifyToken = async (token) => {
   const payload = jwt.verify(token, config.jwt.secret);
-  console.log(payload);
+  //console.log(payload);
   // const tokenDoc = await Token.findOne({ token, type , user: payload._id, blacklisted: false });
-  // console.log(payload._id)
+  // //console.log(payload._id)
   // if (!tokenDoc) {
   //   return "hello"
   // }
   const userss = await b2busers.findOne({ _id: payload._id });
-  console.log(userss);
+  //console.log(userss);
   if (!userss) {
     return false;
   }
@@ -134,7 +134,7 @@ const generateResetPasswordToken = async (email) => {
 const generateVerifyEmailToken = async (user) => {
   const expires = moment().add(config.jwt.verifyEmailExpirationMinutes, 'minutes');
   const verifyEmailToken = generateToken(user.id, expires, tokenTypes.VERIFY_EMAIL);
-  console.log(verifyEmailToken);
+  //console.log(verifyEmailToken);
   await saveToken(verifyEmailToken, user.id, expires, tokenTypes.VERIFY_EMAIL);
   return verifyEmailToken;
 };

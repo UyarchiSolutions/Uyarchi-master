@@ -20,7 +20,7 @@ const getAllZone = async () => {
 };
 
 const zonePagination = async (id) => {  
-  console.log(id);
+  //console.log(id);
   return Zone.aggregate([
     { $sort: { sqlZoneId: 1 } },
     {

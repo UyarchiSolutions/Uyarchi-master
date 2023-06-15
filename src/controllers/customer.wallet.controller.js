@@ -6,7 +6,7 @@ const customerWalletService = require('../services/customer.wallet.service');
 
 const createCustomerWallet = catchAsync(async (req, res) => {
   let userId = req.shopId;
-  console.log(userId);
+  //console.log(userId);
   const data = await customerWalletService.createWallet(req.body, userId);
   res.send(data);
 });

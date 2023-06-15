@@ -3,9 +3,9 @@ const { SetTrendsValue } = require('../models');
 const ApiError = require('../utils/ApiError');
 
 const createSetTrendsValue = async (trendsbody) => {
-  // console.log(trendsbody)
+  // //console.log(trendsbody)
   // const { product } = trendsbody;
-  // // console.log(product);
+  // // //console.log(product);
   // product.forEach((e) => {
   //   (ProductName = e.PName), (productid = e.Pid), (preferredUnit = e.Unit), (weight = e.Weight), (rate = e.Rate);
   // });

@@ -28,13 +28,13 @@ const updates = async () => {
   // street.forEach(async (e) => {
   //   let wardId = e.wardId;
   //   let oo = await Ward.findById(wardId);
-  //   // console.log(oo.zoneId, e.zone);
+  //   // //console.log(oo.zoneId, e.zone);
   //     await Street.findByIdAndUpdate({ _id: e._id }, {closed:""}, { new: true });
   //     count+=1;
-  //     console.log(count+"new")
+  //     //console.log(count+"new")
 
   // });
-  // await console.log(street.length);
+  // await //console.log(street.length);
   // return street;
   return 'poda panni    dfsd';
 };
@@ -241,7 +241,7 @@ const getDeAllocationaggregationByUserId = async (AllocatedUser) => {
   //     },
   //   },
   // ]);
-  console.log(AllocatedUser);
+  //console.log(AllocatedUser);
 };
 
 const streetDeAllocation = async (allocationbody) => {
@@ -305,7 +305,7 @@ const getwardBystreetAngular = async (wardId) => {
 };
 
 const getWardByStreet = async (wardId, status) => {
-  console.log(status);
+  //console.log(status);
   let match;
   if (status != 'null') {
     match = [{ wardId: { $eq: wardId }, AllocationStatus: { $eq: status } }];
@@ -319,7 +319,7 @@ const getWardByStreet = async (wardId, status) => {
       },
     },
   ]);
-  console.log('Total Street Find : ' + ress.length);
+  //console.log('Total Street Find : ' + ress.length);
   return ress;
 };
 
@@ -386,7 +386,7 @@ const streetPagination = async (key, id) => {
       { locality: { $regex: key, $options: 'i' } },
     ];
   }
-  console.log(match);
+  //console.log(match);
   return Street.aggregate([
     {
       $match: {
@@ -450,7 +450,7 @@ const streetPagination = async (key, id) => {
 };
 
 const getStreetByWardId = async (wardId) => {
-  console.log(wardId);
+  //console.log(wardId);
   const street = await Street.find({ wardId }).sort({ street: 1 });
   if (!street === null) {
     throw new ApiError(httpStatus.NOT_FOUND, 'WardId Is Incorrect');
@@ -463,12 +463,12 @@ const queryStreet = async (filter, options) => {
 };
 
 const updateStreetById = async (streetId, updateBody) => {
-  console.log(streetId);
+  //console.log(streetId);
   let street = await getStreetById(streetId);
   if (!street) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Street not found');
   }
-  console.log(street);
+  //console.log(street);
   street = await Street.findByIdAndUpdate({ _id: streetId }, updateBody, { new: true });
   return street;
 };
@@ -483,7 +483,7 @@ const closedStatus = async (streetId, updatebody) => {
 };
 
 const deleteStreetById = async (streetId) => {
-  console.log(streetId);
+  //console.log(streetId);
   const street = await getStreetById(streetId);
   if (!street) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Street not found');
@@ -555,15 +555,15 @@ const getDummy = async () => {
 // }
 
 // const getStreetByWard = async (wardId) => {
-//   console.log(wardId);
+//   //console.log(wardId);
 //   const street = await Street.find({ dommy: { $ne: true }, wardId: { $eq: wardId } });
 //   return street;
 // };
 
 // const rename = async (body) => {
-//   // console.log(body);
+//   // //console.log(body);
 //   let streetData = await Street.findById(body.sId);
-//   console.log(streetData);
+//   //console.log(streetData);
 //   if (body.type == 'rename') {
 //     await Street.findByIdAndUpdate(
 //       { _id: body.sId },

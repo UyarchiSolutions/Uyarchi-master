@@ -9,15 +9,15 @@ const config = require('../config/config');
 const { Users } = require('../models/B2Busers.model');
 const authorization = async (req, res, next) => {
   const token = req.headers.auth;
-  // console.log(token);
-  // console.log(req.headers.auth);
-  // console.log(req.headers['auth']);
+  // //console.log(token);
+  // //console.log(req.headers.auth);
+  // //console.log(req.headers['auth']);
   if (!token) {
     return res.send(httpStatus.UNAUTHORIZED, 'user must be LoggedIn....');
   }
   try {
     const payload = jwt.verify(token, config.jwt.secret);
-    // console.log(payload);
+    // //console.log(payload);
     const userss = await Users.findOne({ _id: payload._id, active: true });
     if (!userss) {
       return res.send(httpStatus.UNAUTHORIZED, 'User Not Available');

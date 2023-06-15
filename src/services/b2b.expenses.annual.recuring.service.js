@@ -3,13 +3,13 @@ const ApiError = require('../utils/ApiError');
 const expensesAnnualRecuringModel = require('../models/b2b.expenses.annual.recuring.model');
 
 const createAnnualExpense = async (body) => {
-  console.log(body);
+  //console.log(body);
 
   const { principal, simpleInterest, periodRepaymentMonth, totalDays } = body;
 
   let interestPerYear = (principal * simpleInterest * periodRepaymentMonth) / 100;
 
-  console.log(interestPerYear);
+  //console.log(interestPerYear);
 
   let totalAmount = principal + interestPerYear;
   // let amountPerMonth = interestPerYear / 12;
@@ -27,7 +27,7 @@ const createAnnualExpense = async (body) => {
   };
 
   let expenses = await expensesAnnualRecuringModel.create(values);
-  console.log(values);
+  //console.log(values);
 
   return expenses;
 };

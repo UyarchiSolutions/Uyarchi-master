@@ -24,12 +24,12 @@ const createB2bSalaryInfo = catchAsync(async (req, res) => {
   }
   if (salary < 9999 && salary >= 999) {
     center = '0';
-    console.log('4');
+    //console.log('4');
   }
   let total = salary + 1;
   let employeId = id + center + total;
   let salaryInfo;
-  console.log(req.body.userId);
+  //console.log(req.body.userId);
   let check = await b2buserSalary.findOne({ userId: req.body.userId });
   if (check != null) {
     let hh = await b2buserSalary.findByIdAndUpdate({ _id: check._id }, req.body, { new: true });

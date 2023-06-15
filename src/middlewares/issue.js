@@ -12,7 +12,7 @@ const storage = multer.diskStorage({
     cb(null, Date.now() + counts.toString() + ext);
   },
 });
-console.log('askdjfh');
+//console.log('askdjfh');
 const uploadImage = multer({
   storage: storage,
   fileFilter: function (req, file, callback) {
@@ -24,7 +24,7 @@ const uploadImage = multer({
     ) {
       callback(null, true);
     } else {
-      console.log('Only png And Jpg file supported!');
+      //console.log('Only png And Jpg file supported!');
       callback(null, false);
     }
   },

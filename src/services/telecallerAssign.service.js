@@ -4317,7 +4317,7 @@ const getNewEdite = async (page, limit, mobile, status, pincode, verify) => {
   }
 
   if (pincode != 'null') {
-    PincodeMatch = { Pincode: { $eq: pincode } };
+    PincodeMatch = { Pincode: { $eq: parseInt(pincode) } };
   }
   if (verify != 'null') {
     if (verify == 'verified') {

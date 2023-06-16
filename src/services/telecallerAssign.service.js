@@ -4395,6 +4395,34 @@ const getNewEdite = async (page, limit, mobile, status, pincode, verify) => {
         preserveNullAndEmptyArrays: true,
       },
     },
+    {
+      $lookup: {
+        from: 'wards',
+        localField: 'Wardid',
+        foreignField: '_id',
+        as: 'wards',
+      },
+    },
+    {
+      $unwind: {
+        path: '$wards',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: 'shoplists',
+        localField: 'SType',
+        foreignField: '_id',
+        as: 'shopType',
+      },
+    },
+    {
+      $unwind: {
+        path: '$shopType',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
     { $skip: limit * page },
     { $limit: limit },
   ]);

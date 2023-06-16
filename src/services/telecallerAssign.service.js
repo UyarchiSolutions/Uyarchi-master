@@ -4423,6 +4423,20 @@ const getNewEdite = async (page, limit, mobile, status, pincode, verify) => {
         preserveNullAndEmptyArrays: true,
       },
     },
+    {
+      $lookup: {
+        from: 'streets',
+        localField: 'Strid',
+        foreignField: '_id',
+        as: 'streets',
+      },
+    },
+    {
+      $unwind: {
+        path: '$streets',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
     { $skip: limit * page },
     { $limit: limit },
   ]);

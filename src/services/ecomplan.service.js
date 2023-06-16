@@ -11469,11 +11469,9 @@ const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 const ffmpeg = require('fluent-ffmpeg');
 const { parse } = require('path');
 ffmpeg.setFfmpegPath(ffmpegPath);
-
 const get_stream_post_after_live_stream = async (req) => {
   let streamId = req.query.id;
   let streamnotification = await Streamrequest.findById(streamId);
-
   let notification = await Streamrequest.aggregate([
     { $match: { $and: [{ _id: { $eq: streamId } }] } },
     {
@@ -11548,20 +11546,21 @@ const get_stream_post_after_live_stream = async (req) => {
   if (notification.length == 0) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Not Found');
   }
+  let cloud_record=await tempTokenModel.findOne({streamId:{$eq:streamId}});
+  console.log(cloud_record,streamnotification)
   let value = notification[0];
-  if (streamnotification.videoconvertStatus != 'Converted') {
-    value.temptokens.forEach(async (e) => {
-      if (e.convertStatus != 'Converted') {
-        // //console.log(e)
-        const inputFilePath = 'https://streamingupload.s3.ap-south-1.amazonaws.com/' + e.videoLink;
-        let store = e._id.replace(/[^a-zA-Z0-9]/g, '');
+  // if (streamnotification.videoconvertStatus != 'Converted') {
+    console.log(cloud_record)
+    // value.temptokens.forEach(async (e) => {
+      if (cloud_record.convertStatus != 'Converted' && cloud_record.videoLink !=null && cloud_record.videoLink !='') {
+        const inputFilePath = 'https://streamingupload.s3.ap-south-1.amazonaws.com/' + cloud_record.videoLink;
+        let store = cloud_record._id.replace(/[^a-zA-Z0-9]/g, '');
         const outputFilePath = 'output.mp4';
 
         ffmpeg(inputFilePath)
           .outputOptions('-c', 'copy')
           .output(outputFilePath)
           .on('end', (e) => {
-            //console.log('Conversion completed successfully', e);
           })
           .on('error', (err) => {
             console.error('Error while converting:', err);
@@ -11574,10 +11573,8 @@ const get_stream_post_after_live_stream = async (req) => {
         });
         const bucketName = 'streamingupload';
 
-        //console.log(outputFilePath);
 
         const fileContent = fs.readFileSync(outputFilePath);
-        //console.log(fileContent);
         if (fileContent != null) {
           const params = {
             Bucket: bucketName,
@@ -11588,26 +11585,23 @@ const get_stream_post_after_live_stream = async (req) => {
             if (err) {
               console.error(err);
             } else {
-              e.convertedVideo = data.Location;
-              let val = await tempTokenModel.findById(e._id);
-              val.convertedVideo = data.Location;
-              val.convertStatus = 'Converted';
-              val.save();
-              streamnotification.videoconvertStatus = 'Converted';
-              streamnotification.save();
+              cloud_record.convertedVideo = data.Location;
+              cloud_record.convertedVideo = data.Location;
+              cloud_record.convertStatus = 'Converted';
+              cloud_record.save();
+              // streamnotification.videoconvertStatus = 'Converted';
+              // streamnotification.save();
               fs.unlink(outputFilePath, (err) => {
                 if (err) {
-                  //console.log('Error deleting file:', err);
                 } else {
-                  //console.log('File deleted successfully!');
                 }
               });
             }
           });
         }
       }
-    });
-  }
+    // });
+  // }
   return value;
 };
 
@@ -11621,7 +11615,7 @@ const update_start_end_time = async (req) => {
   streamPost.streamStart = req.body.videoStart;
   streamPost.streamEnd = req.body.videoEnd;
   streamPost.newVideoUpload = 'time';
-  streamPost.save();
+  // streamPost.save();
 
   return;
 };

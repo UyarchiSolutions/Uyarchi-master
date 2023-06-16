@@ -4320,7 +4320,34 @@ const getNewEdite = async (page, limit, mobile, status, pincode, verify) => {
     PincodeMatch = { Pincode: { $eq: pincode } };
   }
   if (verify != 'null') {
-    statusMatch = { new_re_approve: { $eq: verify } };
+    if (verify == 'verified') {
+      statusMatch = {
+        new_re_approve: {
+          $in: [
+            'Shop Closed/ Shifted',
+            'Recognised & Fence Sitter',
+            'Recognised & Interested',
+            'Cannot Spot the shop',
+            'Not interested',
+            'Irrelevant Shop',
+          ],
+        },
+      };
+    }
+    if (verify == 'pending') {
+      statusMatch = {
+        new_re_approve: {
+          $nin: [
+            'Shop Closed/ Shifted',
+            'Recognised & Fence Sitter',
+            'Recognised & Interested',
+            'Cannot Spot the shop',
+            'Not interested',
+            'Irrelevant Shop',
+          ],
+        },
+      };
+    }
   }
 
   let dastatusMatch = { active: true };

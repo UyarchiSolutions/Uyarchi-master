@@ -4300,12 +4300,13 @@ const tempAssign = async (body) => {
   return 'works';
 };
 
-const getNewEdite = async (page, limit, mobile, status) => {
+const getNewEdite = async (page, limit, mobile, status, pincode) => {
   // let userMatch = { Uid: id };
   page = parseInt(page);
   limit = parseInt(limit);
   let statusMatch = { active: true };
   let mobileMatch = { active: true };
+  let PincodeMatch = { active: true };
   if (mobile != 'null') {
     mobileMatch = { mobile: { $eq: mobile } };
   }
@@ -4314,14 +4315,18 @@ const getNewEdite = async (page, limit, mobile, status) => {
     statusMatch = { daStatus: { $eq: status } };
   }
 
+  if (pincode != 'null') {
+    PincodeMatch = { Pincode: { $eq: pincode } };
+  }
+
   let dastatusMatch = { active: true };
   const data = await Shop.aggregate([
-    { $match: { $and: [statusMatch, mobileMatch, statusMatch] } },
+    { $match: { $and: [statusMatch, mobileMatch, statusMatch, PincodeMatch] } },
     { $skip: limit * page },
     { $limit: limit },
   ]);
 
-  const total = await Shop.aggregate([{ $match: { $and: [dastatusMatch, mobileMatch, statusMatch] } }]);
+  const total = await Shop.aggregate([{ $match: { $and: [dastatusMatch, mobileMatch, statusMatch, PincodeMatch] } }]);
   return { data: data, total: total.length };
 };
 

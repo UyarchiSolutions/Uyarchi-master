@@ -235,6 +235,11 @@ const getNewEdite = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const newliEdit = catchAsync(async (req, res) => {
+  const data = await telecallerService.newliEdit(req.params.id, req.body);
+  res.send(data);
+});
+
 module.exports = {
   createtelecallerAssignReassign,
   getAllTelecallerHead,
@@ -276,4 +281,5 @@ module.exports = {
   getLat_long,
   tempAssign,
   getNewEdite,
+  newliEdit,
 };

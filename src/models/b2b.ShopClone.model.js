@@ -50,6 +50,11 @@ const shopSchema = mongoose.Schema({
     type: String,
     default: 'Pending',
   },
+
+  editStatus: {
+    type: String,
+    default: 'Pending',
+  },
   changeMap: {
     type: Boolean,
     default: false,

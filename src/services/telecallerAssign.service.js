@@ -4325,6 +4325,16 @@ const getNewEdite = async (page, limit, mobile, status) => {
   return { data: data, total: total.length };
 };
 
+const newliEdit = async (id, body) => {
+  let data = await Shop.findById(id);
+  if (!data) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Shop Not Available');
+  }
+  let edite = { ...body, ...{ editStatus: 'Edited' } };
+  data = await Shop.findByIdAndUpdate({ _id: id }, edite, { new: true });
+  return edite;
+};
+
 module.exports = {
   createtelecallerAssignReassign,
   getAllTelecallerHead,
@@ -4366,4 +4376,5 @@ module.exports = {
   getLat_long,
   tempAssign,
   getNewEdite,
+  newliEdit,
 };

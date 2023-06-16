@@ -4300,13 +4300,14 @@ const tempAssign = async (body) => {
   return 'works';
 };
 
-const getNewEdite = async (page, limit, mobile, status, pincode) => {
+const getNewEdite = async (page, limit, mobile, status, pincode, verify) => {
   // let userMatch = { Uid: id };
   page = parseInt(page);
   limit = parseInt(limit);
   let statusMatch = { active: true };
   let mobileMatch = { active: true };
   let PincodeMatch = { active: true };
+  let verifyMatch = { active: true };
   if (mobile != 'null') {
     mobileMatch = { mobile: { $eq: mobile } };
   }
@@ -4318,10 +4319,13 @@ const getNewEdite = async (page, limit, mobile, status, pincode) => {
   if (pincode != 'null') {
     PincodeMatch = { Pincode: { $eq: pincode } };
   }
+  if (verify != 'null') {
+    statusMatch = { new_re_approve: { $eq: verify } };
+  }
 
   let dastatusMatch = { active: true };
   const data = await Shop.aggregate([
-    { $match: { $and: [statusMatch, mobileMatch, statusMatch, PincodeMatch] } },
+    { $match: { $and: [statusMatch, mobileMatch, statusMatch, PincodeMatch, statusMatch] } },
     {
       $lookup: {
         from: 'b2busers',
@@ -4368,7 +4372,9 @@ const getNewEdite = async (page, limit, mobile, status, pincode) => {
     { $limit: limit },
   ]);
 
-  const total = await Shop.aggregate([{ $match: { $and: [dastatusMatch, mobileMatch, statusMatch, PincodeMatch] } }]);
+  const total = await Shop.aggregate([
+    { $match: { $and: [statusMatch, mobileMatch, statusMatch, PincodeMatch, statusMatch] } },
+  ]);
   return { data: data, total: total.length };
 };
 

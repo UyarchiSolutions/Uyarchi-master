@@ -236,7 +236,8 @@ const getNewEdite = catchAsync(async (req, res) => {
     req.params.limit,
     req.params.mobile,
     req.params.status,
-    req.params.pincode
+    req.params.pincode,
+    req.params.verify
   );
   res.send(data);
 });

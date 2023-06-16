@@ -1046,7 +1046,7 @@ const production_supplier_token_cloudrecording = async (req) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
   }
   console.log(stream)
-  value = await tempTokenModel.findOne({ chennel: streamId, type: 'CloudRecording', recoredStart: { $ne: "stop" } });
+  value = await tempTokenModel.findOne({ chennel: streamId, type: 'CloudRecording', recoredStart: { $eq: "Pending" } });
   if (!value ) {
     const uid = await generateUid();
     const role = Agora.RtcRole.SUBSCRIBER;

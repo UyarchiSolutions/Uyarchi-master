@@ -4322,6 +4322,48 @@ const getNewEdite = async (page, limit, mobile, status, pincode) => {
   let dastatusMatch = { active: true };
   const data = await Shop.aggregate([
     { $match: { $and: [statusMatch, mobileMatch, statusMatch, PincodeMatch] } },
+    {
+      $lookup: {
+        from: 'b2busers',
+        localField: 'Uid',
+        foreignField: '_id',
+        as: 'firstUsers',
+      },
+    },
+    {
+      $unwind: {
+        path: '$firstUsers',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: 'b2busers',
+        localField: 'DA_USER',
+        foreignField: '_id',
+        as: 'secondUsers',
+      },
+    },
+    {
+      $unwind: {
+        path: '$secondUsers',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: 'b2busers',
+        localField: 'customer_final_USER',
+        foreignField: '_id',
+        as: 'thirdUsers',
+      },
+    },
+    {
+      $unwind: {
+        path: '$thirdUsers',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
     { $skip: limit * page },
     { $limit: limit },
   ]);

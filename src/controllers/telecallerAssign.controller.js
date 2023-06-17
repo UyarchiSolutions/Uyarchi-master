@@ -231,7 +231,14 @@ const tempAssign = catchAsync(async (req, res) => {
 });
 
 const getNewEdite = catchAsync(async (req, res) => {
-  const data = await telecallerService.getNewEdite(req.params.page, req.params.limit, req.params.mobile, req.params.status);
+  const data = await telecallerService.getNewEdite(
+    req.params.page,
+    req.params.limit,
+    req.params.mobile,
+    req.params.status,
+    req.params.pincode,
+    req.params.verify
+  );
   res.send(data);
 });
 

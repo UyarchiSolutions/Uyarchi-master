@@ -4300,12 +4300,14 @@ const tempAssign = async (body) => {
   return 'works';
 };
 
-const getNewEdite = async (page, limit, mobile, status) => {
+const getNewEdite = async (page, limit, mobile, status, pincode, verify) => {
   // let userMatch = { Uid: id };
   page = parseInt(page);
   limit = parseInt(limit);
   let statusMatch = { active: true };
   let mobileMatch = { active: true };
+  let PincodeMatch = { active: true };
+  let verifyMatch = { active: true };
   if (mobile != 'null') {
     mobileMatch = { mobile: { $eq: mobile } };
   }
@@ -4314,14 +4316,134 @@ const getNewEdite = async (page, limit, mobile, status) => {
     statusMatch = { daStatus: { $eq: status } };
   }
 
+  if (pincode != 'null') {
+    PincodeMatch = { Pincode: { $eq: parseInt(pincode) } };
+  }
+  if (verify != 'null') {
+    if (verify == 'verified') {
+      statusMatch = {
+        new_re_approve: {
+          $in: [
+            'Shop Closed/ Shifted',
+            'Recognised & Fence Sitter',
+            'Recognised & Interested',
+            'Cannot Spot the shop',
+            'Not interested',
+            'Irrelevant Shop',
+          ],
+        },
+      };
+    }
+    if (verify == 'pending') {
+      statusMatch = {
+        new_re_approve: {
+          $nin: [
+            'Shop Closed/ Shifted',
+            'Recognised & Fence Sitter',
+            'Recognised & Interested',
+            'Cannot Spot the shop',
+            'Not interested',
+            'Irrelevant Shop',
+          ],
+        },
+      };
+    }
+  }
+
   let dastatusMatch = { active: true };
   const data = await Shop.aggregate([
-    { $match: { $and: [statusMatch, mobileMatch, statusMatch] } },
+    { $match: { $and: [statusMatch, mobileMatch, statusMatch, PincodeMatch, statusMatch] } },
+    {
+      $lookup: {
+        from: 'b2busers',
+        localField: 'Uid',
+        foreignField: '_id',
+        as: 'firstUsers',
+      },
+    },
+    {
+      $unwind: {
+        path: '$firstUsers',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: 'b2busers',
+        localField: 'DA_USER',
+        foreignField: '_id',
+        as: 'secondUsers',
+      },
+    },
+    {
+      $unwind: {
+        path: '$secondUsers',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: 'b2busers',
+        localField: 'customer_final_USER',
+        foreignField: '_id',
+        as: 'thirdUsers',
+      },
+    },
+    {
+      $unwind: {
+        path: '$thirdUsers',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: 'wards',
+        localField: 'Wardid',
+        foreignField: '_id',
+        as: 'wards',
+      },
+    },
+    {
+      $unwind: {
+        path: '$wards',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: 'shoplists',
+        localField: 'SType',
+        foreignField: '_id',
+        as: 'shopType',
+      },
+    },
+    {
+      $unwind: {
+        path: '$shopType',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $lookup: {
+        from: 'streets',
+        localField: 'Strid',
+        foreignField: '_id',
+        as: 'streets',
+      },
+    },
+    {
+      $unwind: {
+        path: '$streets',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
     { $skip: limit * page },
     { $limit: limit },
   ]);
 
-  const total = await Shop.aggregate([{ $match: { $and: [dastatusMatch, mobileMatch, statusMatch] } }]);
+  const total = await Shop.aggregate([
+    { $match: { $and: [statusMatch, mobileMatch, statusMatch, PincodeMatch, statusMatch] } },
+  ]);
   return { data: data, total: total.length };
 };
 

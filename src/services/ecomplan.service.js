@@ -212,7 +212,10 @@ const get_all_Post_with_page_live = async (req) => {
     let date = filterdate.split(',');
     if (date.length == 2) {
       dateMatch = {
-        $and: [{ DateIso: { $gte: new Date(date[0] + " 0:0:0").getTime() } }, { DateIso: { $lte: new Date(date[1] + " 23:59:59").getTime() } }],
+        $and: [
+          { DateIso: { $gte: new Date(date[0] + ' 0:0:0').getTime() } },
+          { DateIso: { $lte: new Date(date[1] + ' 23:59:59').getTime() } },
+        ],
       };
     }
     // //console.log(date, dateMatch)
@@ -385,7 +388,10 @@ const get_all_Post_with_page_completed = async (req) => {
     let date = filterdate.split(',');
     if (date.length == 2) {
       dateMatch = {
-        $and: [{ DateIso: { $gte: new Date(date[0] + " 0:0:0").getTime() } }, { DateIso: { $lte: new Date(date[1] + " 23:59:59").getTime() } }],
+        $and: [
+          { DateIso: { $gte: new Date(date[0] + ' 0:0:0').getTime() } },
+          { DateIso: { $lte: new Date(date[1] + ' 23:59:59').getTime() } },
+        ],
       };
     }
     // //console.log(date, dateMatch)
@@ -576,7 +582,10 @@ const get_all_Post_with_page_exhausted = async (req) => {
     let date = filterdate.split(',');
     if (date.length == 2) {
       dateMatch = {
-        $and: [{ DateIso: { $gte: new Date(date[0] + " 0:0:0").getTime() } }, { DateIso: { $lte: new Date(date[1] + " 23:59:59").getTime() } }],
+        $and: [
+          { DateIso: { $gte: new Date(date[0] + ' 0:0:0').getTime() } },
+          { DateIso: { $lte: new Date(date[1] + ' 23:59:59').getTime() } },
+        ],
       };
     }
     // //console.log(date, dateMatch)
@@ -650,8 +659,11 @@ const get_all_Post_with_page_removed = async (req) => {
     let date = filterdate.split(',');
     if (date.length == 2) {
       dateMatch = {
-        $and: [{ DateIso: { $gte: new Date(date[0] + " 0:0:0").getTime() } }, { DateIso: { $lte: new Date(date[1] + " 23:59:59").getTime() } }],
-      };;
+        $and: [
+          { DateIso: { $gte: new Date(date[0] + ' 0:0:0').getTime() } },
+          { DateIso: { $lte: new Date(date[1] + ' 23:59:59').getTime() } },
+        ],
+      };
     }
     // //console.log(date, dateMatch)
   }
@@ -816,7 +828,10 @@ const get_all_Post_with_page_all = async (req, status) => {
     if (date.length == 2) {
       //console.log();
       dateMatch = {
-        $and: [{ DateIso: { $gte: new Date(date[0] + " 0:0:0").getTime() } }, { DateIso: { $lte: new Date(date[1] + " 23:59:59").getTime() } }],
+        $and: [
+          { DateIso: { $gte: new Date(date[0] + ' 0:0:0').getTime() } },
+          { DateIso: { $lte: new Date(date[1] + ' 23:59:59').getTime() } },
+        ],
       };
     }
     //console.log(date, dateMatch);
@@ -961,7 +976,10 @@ const get_all_Post_with_page = async (req, status) => {
     if (date.length == 2) {
       //console.log();
       dateMatch = {
-        $and: [{ DateIso: { $gte: new Date(date[0] + " 0:0:0").getTime() } }, { DateIso: { $lte: new Date(date[1] + " 23:59:59").getTime() } }],
+        $and: [
+          { DateIso: { $gte: new Date(date[0] + ' 0:0:0').getTime() } },
+          { DateIso: { $lte: new Date(date[1] + ' 23:59:59').getTime() } },
+        ],
       };
     }
     //console.log(date, dateMatch);
@@ -1105,7 +1123,10 @@ const get_all_Post_with_page_assigned = async (req) => {
     let date = filterdate.split(',');
     if (date.length == 2) {
       dateMatch = {
-        $and: [{ DateIso: { $gte: new Date(date[0] + " 0:0:0").getTime() } }, { DateIso: { $lte: new Date(date[1] + " 23:59:59").getTime() } }],
+        $and: [
+          { DateIso: { $gte: new Date(date[0] + ' 0:0:0').getTime() } },
+          { DateIso: { $lte: new Date(date[1] + ' 23:59:59').getTime() } },
+        ],
       };
     }
     // //console.log(date, dateMatch)
@@ -1496,7 +1517,8 @@ const get_all_stream = async (req) => {
   const total = await Streamrequest.aggregate([
     { $match: { $and: [{ suppierId: { $eq: req.userId } }] } },
     { $skip: 10 * (page + 1) },
-    { $limit: 10 },]);
+    { $limit: 10 },
+  ]);
   return { value, next: total.length != 0 };
 };
 const get_one_stream = async (req) => {
@@ -1547,14 +1569,13 @@ const get_one_stream = async (req) => {
           {
             $project: {
               _id: 1,
-              productName: "$streamposts.products.productTitle"
-            }
-          }
+              productName: '$streamposts.products.productTitle',
+            },
+          },
         ],
         as: 'streamrequestposts',
       },
     },
-
   ]);
   if (value.length == 0) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Not Found');
@@ -1830,9 +1851,9 @@ const end_stream = async (req) => {
   });
   const mode = 'mix';
   // value = await tempTokenModel.findOne({ chennel: streamId, type: 'CloudRecording', recoredStart: { $ne: "stop" } });
-  let token = await tempTokenModel.findOne({ chennel: req.query.id, type: 'CloudRecording', recoredStart: { $ne: "stop" } });
+  let token = await tempTokenModel.findOne({ chennel: req.query.id, type: 'CloudRecording', recoredStart: { $ne: 'stop' } });
   if (token != null) {
-    token.recoredStart = "stop";
+    token.recoredStart = 'stop';
     token.save();
     const resource = token.resourceId;
     const sid = token.sid;
@@ -1858,35 +1879,52 @@ const get_all_streams = async (req) => {
   //console.log(req.userId);
   var date_now = new Date().getTime();
   let statusFilter = { active: true };
-  if (req.query.status == "All") {
+  if (req.query.status == 'All') {
     statusFilter = { active: true };
   }
 
-  if (req.query.status == "Completed") {
-    statusFilter = { $and: [{ stream_expired: { $eq: false } }, { $or: [{ status: { $eq: "Completed" } }, { $and: [{ tokenGeneration: { $eq: true } }, { endTime: { $lte: date_now } }, { status: { $ne: "Cancelled" } }] }] }] };
+  if (req.query.status == 'Completed') {
+    statusFilter = {
+      $and: [
+        { stream_expired: { $eq: false } },
+        {
+          $or: [
+            { status: { $eq: 'Completed' } },
+            {
+              $and: [{ tokenGeneration: { $eq: true } }, { endTime: { $lte: date_now } }, { status: { $ne: 'Cancelled' } }],
+            },
+          ],
+        },
+      ],
+    };
   }
-  if (req.query.status == "Cancelled") {
-    statusFilter = { status: { $eq: "Cancelled" } };
+  if (req.query.status == 'Cancelled') {
+    statusFilter = { status: { $eq: 'Cancelled' } };
   }
-  if (req.query.status == "Waiting") {
-    statusFilter = { $and: [{ tokenGeneration: { $eq: false } }, { startTime: { $gte: date_now } }, { status: { $ne: "Cancelled" } }] };
+  if (req.query.status == 'Waiting') {
+    statusFilter = {
+      $and: [{ tokenGeneration: { $eq: false } }, { startTime: { $gte: date_now } }, { status: { $ne: 'Cancelled' } }],
+    };
   }
 
   var date_now_string = new Date();
-  if (req.query.status == "Expired") {
-    statusFilter = { $and: [{ tokenGeneration: { $eq: true } }, { originalDate: { $lte: date_now_string } }, { status: { $ne: "Cancelled" } }] };
+  if (req.query.status == 'Expired') {
+    statusFilter = {
+      $and: [
+        { tokenGeneration: { $eq: true } },
+        { originalDate: { $lte: date_now_string } },
+        { status: { $ne: 'Cancelled' } },
+      ],
+    };
   }
 
   const value = await Streamrequest.aggregate([
     {
       $addFields: {
         originalDate: {
-          $add: [
-            { $toDate: "$startTime" },
-            { $multiply: [30, 24, 60, 60, 1000] }
-          ]
-        }
-      }
+          $add: [{ $toDate: '$startTime' }, { $multiply: [30, 24, 60, 60, 1000] }],
+        },
+      },
     },
     {
       $addFields: {
@@ -2137,8 +2175,7 @@ const get_all_streams = async (req) => {
         primarycommunication: 1,
         secondarycommunication: 1,
         originalDate: 1,
-        stream_expired: 1
-
+        stream_expired: 1,
       },
     },
 
@@ -2150,12 +2187,9 @@ const get_all_streams = async (req) => {
     {
       $addFields: {
         originalDate: {
-          $add: [
-            { $toDate: "$startTime" },
-            { $multiply: [30, 24, 60, 60, 1000] }
-          ]
-        }
-      }
+          $add: [{ $toDate: '$startTime' }, { $multiply: [30, 24, 60, 60, 1000] }],
+        },
+      },
     },
     {
       $addFields: {
@@ -2175,35 +2209,52 @@ const get_subhost_streams = async (req) => {
 
   var date_now = new Date().getTime();
   let statusFilter = { active: true };
-  if (req.query.status == "All") {
+  if (req.query.status == 'All') {
     statusFilter = { active: true };
   }
 
-  if (req.query.status == "Completed") {
-    statusFilter = { $and: [{ stream_expired: { $eq: false } }, { $or: [{ status: { $eq: "Completed" } }, { $and: [{ tokenGeneration: { $eq: true } }, { endTime: { $lte: date_now } }, { status: { $ne: "Cancelled" } }] }] }] };
+  if (req.query.status == 'Completed') {
+    statusFilter = {
+      $and: [
+        { stream_expired: { $eq: false } },
+        {
+          $or: [
+            { status: { $eq: 'Completed' } },
+            {
+              $and: [{ tokenGeneration: { $eq: true } }, { endTime: { $lte: date_now } }, { status: { $ne: 'Cancelled' } }],
+            },
+          ],
+        },
+      ],
+    };
   }
-  if (req.query.status == "Cancelled") {
-    statusFilter = { status: { $eq: "Cancelled" } };
+  if (req.query.status == 'Cancelled') {
+    statusFilter = { status: { $eq: 'Cancelled' } };
   }
-  if (req.query.status == "Waiting") {
-    statusFilter = { $and: [{ tokenGeneration: { $eq: false } }, { startTime: { $gte: date_now } }, { status: { $ne: "Cancelled" } }] };
+  if (req.query.status == 'Waiting') {
+    statusFilter = {
+      $and: [{ tokenGeneration: { $eq: false } }, { startTime: { $gte: date_now } }, { status: { $ne: 'Cancelled' } }],
+    };
   }
 
   var date_now_string = new Date();
-  if (req.query.status == "Expired") {
-    statusFilter = { $and: [{ tokenGeneration: { $eq: true } }, { originalDate: { $lte: date_now_string } }, { status: { $ne: "Cancelled" } }] };
+  if (req.query.status == 'Expired') {
+    statusFilter = {
+      $and: [
+        { tokenGeneration: { $eq: true } },
+        { originalDate: { $lte: date_now_string } },
+        { status: { $ne: 'Cancelled' } },
+      ],
+    };
   }
   //console.log("asdhagfsdyahgsv", statusFilter)
   const value = await Streamrequest.aggregate([
     {
       $addFields: {
         originalDate: {
-          $add: [
-            { $toDate: "$startTime" },
-            { $multiply: [30, 24, 60, 60, 1000] }
-          ]
-        }
-      }
+          $add: [{ $toDate: '$startTime' }, { $multiply: [30, 24, 60, 60, 1000] }],
+        },
+      },
     },
     {
       $addFields: {
@@ -2474,12 +2525,9 @@ const get_subhost_streams = async (req) => {
     {
       $addFields: {
         originalDate: {
-          $add: [
-            { $toDate: "$startTime" },
-            { $multiply: [30, 24, 60, 60, 1000] }
-          ]
-        }
-      }
+          $add: [{ $toDate: '$startTime' }, { $multiply: [30, 24, 60, 60, 1000] }],
+        },
+      },
     },
     {
       $addFields: {
@@ -2538,19 +2586,19 @@ const go_live_stream_host = async (req, userId) => {
                           localField: 'streamingCart',
                           foreignField: '_id',
                           pipeline: [
-                            { $match: { $and: [{ status: { $ne: "ordered" } }] } },
+                            { $match: { $and: [{ status: { $ne: 'ordered' } }] } },
                             {
                               $project: {
-                                _id: 1
-                              }
-                            }
+                                _id: 1,
+                              },
+                            },
                           ],
                           as: 'streamingcarts',
-                        }
+                        },
                       },
-                      { $unwind: "$streamingcarts" },
+                      { $unwind: '$streamingcarts' },
                       { $match: { $and: [{ cardStatus: { $eq: true } }, { add_to_cart: { $eq: true } }] } },
-                      { $group: { _id: null, count: { $sum: "$cartQTY" } } },
+                      { $group: { _id: null, count: { $sum: '$cartQTY' } } },
                     ],
                     as: 'stream_cart',
                   },
@@ -2566,9 +2614,7 @@ const go_live_stream_host = async (req, userId) => {
                     from: 'streamingorderproducts',
                     localField: '_id',
                     foreignField: 'streamPostId',
-                    pipeline: [
-                      { $group: { _id: null, count: { $sum: "$purchase_price" } } },
-                    ],
+                    pipeline: [{ $group: { _id: null, count: { $sum: '$purchase_price' } } }],
                     as: 'stream_checkout',
                   },
                 },
@@ -2607,11 +2653,9 @@ const go_live_stream_host = async (req, userId) => {
                     created: 1,
                     streamStart: 1,
                     streamEnd: 1,
-                    stream_cart: { $ifNull: ["$stream_cart.count", 0] },
-                    stream_checkout: { $ifNull: ["$stream_checkout.count", 0] },
-
+                    stream_cart: { $ifNull: ['$stream_cart.count', 0] },
+                    stream_checkout: { $ifNull: ['$stream_checkout.count', 0] },
                   },
-
                 },
               ],
               as: 'streamposts',
@@ -2634,8 +2678,8 @@ const go_live_stream_host = async (req, userId) => {
               streamStart: '$streamposts.streamStart',
               streamEnd: '$streamposts.streamEnd',
               streampostsId: '$streamposts._id',
-              stream_cart: "$streamposts.stream_cart",
-              stream_checkout: "$streamposts.stream_checkout",
+              stream_cart: '$streamposts.stream_cart',
+              stream_checkout: '$streamposts.stream_checkout',
             },
           },
         ],
@@ -3181,7 +3225,7 @@ const get_watch_live_steams_upcoming_byid = async (req) => {
                 { $unwind: '$products' },
                 {
                   $addFields: {
-                    productTitle: "$products.productTitle"
+                    productTitle: '$products.productTitle',
                   },
                 },
               ],
@@ -3191,36 +3235,36 @@ const get_watch_live_steams_upcoming_byid = async (req) => {
           { $unwind: '$streamposts' },
           {
             $project: {
-              DateIso: "$streamposts.DateIso",
-              active: "$streamposts.active",
-              afterStreaming: "$streamposts.afterStreaming",
-              archive: "$streamposts.archive",
-              bookingAmount: "$streamposts.bookingAmount",
-              categoryId: "$streamposts.categoryId",
-              created: "$streamposts.created",
-              discription: "$streamposts.discription",
-              images: "$streamposts.images",
-              incrementalLots: "$streamposts.incrementalLots",
-              isUsed: "$streamposts.isUsed",
-              location: "$streamposts.location",
-              marketPlace: "$streamposts.marketPlace",
-              minLots: "$streamposts.minLots",
-              newVideoUpload: "$streamposts.newVideoUpload",
-              offerPrice: "$streamposts.offerPrice",
-              orderedQTY: "$streamposts.orderedQTY",
-              pendingQTY: "$streamposts.pendingQTY",
-              postLiveStreamingPirce: "$streamposts.postLiveStreamingPirce",
-              productId: "$streamposts.productId",
-              productTitle: "$streamposts.productTitle",
-              quantity: "$streamposts.quantity",
-              status: "$streamposts.status",
-              suppierId: "$streamposts.suppierId",
-              video: "$streamposts.video",
-              postId: "$streamposts._id",
+              DateIso: '$streamposts.DateIso',
+              active: '$streamposts.active',
+              afterStreaming: '$streamposts.afterStreaming',
+              archive: '$streamposts.archive',
+              bookingAmount: '$streamposts.bookingAmount',
+              categoryId: '$streamposts.categoryId',
+              created: '$streamposts.created',
+              discription: '$streamposts.discription',
+              images: '$streamposts.images',
+              incrementalLots: '$streamposts.incrementalLots',
+              isUsed: '$streamposts.isUsed',
+              location: '$streamposts.location',
+              marketPlace: '$streamposts.marketPlace',
+              minLots: '$streamposts.minLots',
+              newVideoUpload: '$streamposts.newVideoUpload',
+              offerPrice: '$streamposts.offerPrice',
+              orderedQTY: '$streamposts.orderedQTY',
+              pendingQTY: '$streamposts.pendingQTY',
+              postLiveStreamingPirce: '$streamposts.postLiveStreamingPirce',
+              productId: '$streamposts.productId',
+              productTitle: '$streamposts.productTitle',
+              quantity: '$streamposts.quantity',
+              status: '$streamposts.status',
+              suppierId: '$streamposts.suppierId',
+              video: '$streamposts.video',
+              postId: '$streamposts._id',
               // streamposts:"$streamposts",
-              _id: 1
-            }
-          }
+              _id: 1,
+            },
+          },
         ],
         as: 'streamrequestposts',
       },
@@ -3259,19 +3303,18 @@ const get_watch_live_steams_upcoming_byid = async (req) => {
         joinedusers_user: '$joinedusers_user',
         alreadyJoined: 1,
         suppliersName: '$suppliers.contactName',
-        tradeName: "$suppliers.tradeName",
+        tradeName: '$suppliers.tradeName',
         registerStatus: 1,
         eligible: 1,
         viewstatus: 1,
         status: 1,
         streamrequestposts_count: 1,
         streamEnd_Time: 1,
-        streamrequestposts: "$streamrequestposts",
+        streamrequestposts: '$streamrequestposts',
         image: 1,
         teaser: 1,
         primarycommunication: 1,
         secondarycommunication: 1,
-
       },
     },
   ]);
@@ -3279,16 +3322,23 @@ const get_watch_live_steams_upcoming_byid = async (req) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'Stream Not Found');
   }
   return value[0];
-
 };
-
 
 const get_watch_live_steams_current = async (req) => {
   var date_now = new Date().getTime();
   let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : parseInt(req.query.page);
   let currentLives = await Streamrequest.aggregate([
     { $sort: { startTime: 1 } },
-    { $match: { $and: [{ startTime: { $lt: date_now } }, { streamEnd_Time: { $gt: date_now } }, { adminApprove: { $eq: 'Approved' } }, { status: { $ne: "Cancelled" } }] } },
+    {
+      $match: {
+        $and: [
+          { startTime: { $lt: date_now } },
+          { streamEnd_Time: { $gt: date_now } },
+          { adminApprove: { $eq: 'Approved' } },
+          { status: { $ne: 'Cancelled' } },
+        ],
+      },
+    },
     {
       $lookup: {
         from: 'joinedusers',
@@ -3434,15 +3484,15 @@ const get_watch_live_steams_current = async (req) => {
                 { $unwind: '$products' },
                 {
                   $addFields: {
-                    productTitle: "$products.productTitle"
+                    productTitle: '$products.productTitle',
                   },
                 },
                 {
                   $project: {
                     _id: 1,
-                    productTitle: 1
-                  }
-                }
+                    productTitle: 1,
+                  },
+                },
               ],
               as: 'streamposts',
             },
@@ -3452,14 +3502,14 @@ const get_watch_live_steams_current = async (req) => {
           {
             $group: {
               _id: null,
-              productTitle: { $push: "$streamposts.productTitle" },
-            }
+              productTitle: { $push: '$streamposts.productTitle' },
+            },
           },
         ],
         as: 'streamrequestposts',
       },
     },
-    { $unwind: "$streamrequestposts" },
+    { $unwind: '$streamrequestposts' },
     {
       $project: {
         _id: 1,
@@ -3499,18 +3549,24 @@ const get_watch_live_steams_current = async (req) => {
         status: 1,
         streamrequestposts_count: 1,
         streamEnd_Time: 1,
-        productArray: "$streamrequestposts.productTitle"
-
+        productArray: '$streamrequestposts.productTitle',
       },
     },
     { $skip: 10 * page },
     { $limit: 10 },
   ]);
 
-
   let total = await Streamrequest.aggregate([
     { $sort: { startTime: 1 } },
-    { $match: { $and: [{ startTime: { $lt: date_now } }, { streamEnd_Time: { $gt: date_now } }, { adminApprove: { $eq: 'Approved' } }] } },
+    {
+      $match: {
+        $and: [
+          { startTime: { $lt: date_now } },
+          { streamEnd_Time: { $gt: date_now } },
+          { adminApprove: { $eq: 'Approved' } },
+        ],
+      },
+    },
     {
       $lookup: {
         from: 'joinedusers',
@@ -3657,15 +3713,15 @@ const get_watch_live_steams_current = async (req) => {
                 { $unwind: '$products' },
                 {
                   $addFields: {
-                    productTitle: "$products.productTitle"
+                    productTitle: '$products.productTitle',
                   },
                 },
                 {
                   $project: {
                     _id: 1,
-                    productTitle: 1
-                  }
-                }
+                    productTitle: 1,
+                  },
+                },
               ],
               as: 'streamposts',
             },
@@ -3675,14 +3731,14 @@ const get_watch_live_steams_current = async (req) => {
           {
             $group: {
               _id: null,
-              productTitle: { $push: "$streamposts.productTitle" },
-            }
+              productTitle: { $push: '$streamposts.productTitle' },
+            },
           },
         ],
         as: 'streamrequestposts',
       },
     },
-    { $unwind: "$streamrequestposts" },
+    { $unwind: '$streamrequestposts' },
     {
       $project: {
         _id: 1,
@@ -3722,15 +3778,14 @@ const get_watch_live_steams_current = async (req) => {
         status: 1,
         streamrequestposts_count: 1,
         streamEnd_Time: 1,
-        productArray: "$streamrequestposts.productTitle"
-
+        productArray: '$streamrequestposts.productTitle',
       },
     },
     { $skip: 10 * (page + 1) },
     { $limit: 10 },
   ]);
-  return { value: currentLives, next: total.length != 0 }
-}
+  return { value: currentLives, next: total.length != 0 };
+};
 
 const get_watch_live_steams_upcoming = async (req) => {
   let page = req.query.page == '' || req.query.page == null || req.query.page == null ? 0 : parseInt(req.query.page);
@@ -3740,7 +3795,7 @@ const get_watch_live_steams_upcoming = async (req) => {
 
   let value = await Streamrequest.aggregate([
     { $sort: { startTime: 1 } },
-    { $match: { $and: [statusFilter, { adminApprove: { $eq: 'Approved' } }, { status: { $ne: "Cancelled" } }] } },
+    { $match: { $and: [statusFilter, { adminApprove: { $eq: 'Approved' } }, { status: { $ne: 'Cancelled' } }] } },
     {
       $lookup: {
         from: 'joinedusers',
@@ -3886,15 +3941,15 @@ const get_watch_live_steams_upcoming = async (req) => {
                 { $unwind: '$products' },
                 {
                   $addFields: {
-                    productTitle: "$products.productTitle"
+                    productTitle: '$products.productTitle',
                   },
                 },
                 {
                   $project: {
                     _id: 1,
-                    productTitle: 1
-                  }
-                }
+                    productTitle: 1,
+                  },
+                },
               ],
               as: 'streamposts',
             },
@@ -3904,14 +3959,14 @@ const get_watch_live_steams_upcoming = async (req) => {
           {
             $group: {
               _id: null,
-              productTitle: { $push: "$streamposts.productTitle" },
-            }
+              productTitle: { $push: '$streamposts.productTitle' },
+            },
           },
         ],
         as: 'streamrequestposts',
       },
     },
-    { $unwind: "$streamrequestposts" },
+    { $unwind: '$streamrequestposts' },
     {
       $project: {
         _id: 1,
@@ -3951,8 +4006,7 @@ const get_watch_live_steams_upcoming = async (req) => {
         status: 1,
         streamrequestposts_count: 1,
         streamEnd_Time: 1,
-        productArray: "$streamrequestposts.productTitle"
-
+        productArray: '$streamrequestposts.productTitle',
       },
     },
     { $skip: 10 * page },
@@ -4125,7 +4179,7 @@ const get_watch_live_steams_interested = async (req) => {
       },
     },
     {
-      $unwind: "$streampreregister"
+      $unwind: '$streampreregister',
     },
     {
       $addFields: {
@@ -4134,17 +4188,17 @@ const get_watch_live_steams_interested = async (req) => {
     },
     {
       $addFields: {
-        eligible: '$streampreregister.eligible'
+        eligible: '$streampreregister.eligible',
       },
     },
     {
       $addFields: {
-        viewstatus: '$streampreregister.viewstatus'
+        viewstatus: '$streampreregister.viewstatus',
       },
     },
     {
       $addFields: {
-        reg_DateIso: '$streampreregister.DateIso'
+        reg_DateIso: '$streampreregister.DateIso',
       },
     },
     { $sort: { reg_DateIso: -1 } },
@@ -4210,15 +4264,15 @@ const get_watch_live_steams_interested = async (req) => {
                 { $unwind: '$products' },
                 {
                   $addFields: {
-                    productTitle: "$products.productTitle"
+                    productTitle: '$products.productTitle',
                   },
                 },
                 {
                   $project: {
                     _id: 1,
-                    productTitle: 1
-                  }
-                }
+                    productTitle: 1,
+                  },
+                },
               ],
               as: 'streamposts',
             },
@@ -4228,14 +4282,14 @@ const get_watch_live_steams_interested = async (req) => {
           {
             $group: {
               _id: null,
-              productTitle: { $push: "$streamposts.productTitle" },
-            }
+              productTitle: { $push: '$streamposts.productTitle' },
+            },
           },
         ],
         as: 'streamrequestposts',
       },
     },
-    { $unwind: "$streamrequestposts" },
+    { $unwind: '$streamrequestposts' },
     {
       $project: {
         _id: 1,
@@ -4276,8 +4330,7 @@ const get_watch_live_steams_interested = async (req) => {
         status: 1,
         streamrequestposts_count: 1,
         streamEnd_Time: 1,
-        productArray: "$streamrequestposts.productTitle"
-
+        productArray: '$streamrequestposts.productTitle',
       },
     },
     { $skip: 10 * page },
@@ -4379,7 +4432,6 @@ const get_watch_live_steams_interested = async (req) => {
   return { value, next: total.length != 0 };
 };
 const get_watch_live_steams_completed = async (req) => {
-
   var date_now = new Date().getTime();
   let statusFilter = {
     $or: [
@@ -4392,7 +4444,7 @@ const get_watch_live_steams_completed = async (req) => {
   let registeredFilter = { registerStatus: { $in: ['Not Registered', 'Unregistered'] } };
   let value = await Streamrequest.aggregate([
     { $sort: { startTime: -1 } },
-    { $match: { $and: [statusFilter, { adminApprove: { $eq: 'Approved' } }, { status: { $ne: "Cancelled" } }] } },
+    { $match: { $and: [statusFilter, { adminApprove: { $eq: 'Approved' } }, { status: { $ne: 'Cancelled' } }] } },
     {
       $lookup: {
         from: 'joinedusers',
@@ -4492,7 +4544,7 @@ const get_watch_live_steams_completed = async (req) => {
               from: 'streamposts',
               localField: 'postId',
               foreignField: '_id',
-              pipeline: [{ $match: { $and: [{ afterStreaming: { $eq: 'yes' } }, { status: { $ne: "Removed" } }] } }],
+              pipeline: [{ $match: { $and: [{ afterStreaming: { $eq: 'yes' } }, { status: { $ne: 'Removed' } }] } }],
               as: 'streamposts',
             },
           },
@@ -4543,15 +4595,15 @@ const get_watch_live_steams_completed = async (req) => {
                 { $unwind: '$products' },
                 {
                   $addFields: {
-                    productTitle: "$products.productTitle"
+                    productTitle: '$products.productTitle',
                   },
                 },
                 {
                   $project: {
                     _id: 1,
-                    productTitle: 1
-                  }
-                }
+                    productTitle: 1,
+                  },
+                },
               ],
               as: 'streamposts',
             },
@@ -4561,14 +4613,14 @@ const get_watch_live_steams_completed = async (req) => {
           {
             $group: {
               _id: null,
-              productTitle: { $push: "$streamposts.productTitle" },
-            }
+              productTitle: { $push: '$streamposts.productTitle' },
+            },
           },
         ],
         as: 'streamrequestposts',
       },
     },
-    { $unwind: "$streamrequestposts" },
+    { $unwind: '$streamrequestposts' },
     {
       $project: {
         _id: 1,
@@ -4608,7 +4660,7 @@ const get_watch_live_steams_completed = async (req) => {
         status: 1,
         streamrequestposts_count: 1,
         streamEnd_Time: 1,
-        productArray: "$streamrequestposts.productTitle"
+        productArray: '$streamrequestposts.productTitle',
       },
     },
     { $skip: 10 * page },
@@ -4747,7 +4799,6 @@ const get_watch_live_steams_completed = async (req) => {
     { $limit: 10 },
   ]);
   return { value, total: total.length };
-
 };
 
 const get_watch_live_steams = async (req) => {
@@ -4955,8 +5006,7 @@ const get_watch_live_steams = async (req) => {
         viewstatus: 1,
         status: 1,
         streamrequestposts_count: 1,
-        streamEnd_Time: 1
-
+        streamEnd_Time: 1,
       },
     },
     { $skip: 10 * page },
@@ -5078,7 +5128,7 @@ const get_watch_live_token = async (req) => {
 
 const on_going_stream = async (req) => {
   var date_now = new Date().getTime();
-  let userjoin = await Joinusers.findById(req.query.id)
+  let userjoin = await Joinusers.findById(req.query.id);
   let streamId = userjoin.streamId;
 
   let statusFilter = {
@@ -5088,7 +5138,16 @@ const on_going_stream = async (req) => {
     ],
   };
   let completedStream = await Streamrequest.aggregate([
-    { $match: { $and: [{ _id: { $ne: streamId } }, statusFilter, { adminApprove: { $eq: 'Approved' } }, { status: { $ne: 'Cancelled' } }] } },
+    {
+      $match: {
+        $and: [
+          { _id: { $ne: streamId } },
+          statusFilter,
+          { adminApprove: { $eq: 'Approved' } },
+          { status: { $ne: 'Cancelled' } },
+        ],
+      },
+    },
     {
       $lookup: {
         from: 'joinedusers',
@@ -5156,7 +5215,7 @@ const on_going_stream = async (req) => {
       },
     },
     {
-      $unwind: "$streampreregister"
+      $unwind: '$streampreregister',
     },
     {
       $addFields: {
@@ -5165,17 +5224,17 @@ const on_going_stream = async (req) => {
     },
     {
       $addFields: {
-        eligible: '$streampreregister.eligible'
+        eligible: '$streampreregister.eligible',
       },
     },
     {
       $addFields: {
-        viewstatus: '$streampreregister.viewstatus'
+        viewstatus: '$streampreregister.viewstatus',
       },
     },
     {
       $addFields: {
-        reg_DateIso: '$streampreregister.DateIso'
+        reg_DateIso: '$streampreregister.DateIso',
       },
     },
     { $sort: { reg_DateIso: -1 } },
@@ -5241,15 +5300,15 @@ const on_going_stream = async (req) => {
                 { $unwind: '$products' },
                 {
                   $addFields: {
-                    productTitle: "$products.productTitle"
+                    productTitle: '$products.productTitle',
                   },
                 },
                 {
                   $project: {
                     _id: 1,
-                    productTitle: 1
-                  }
-                }
+                    productTitle: 1,
+                  },
+                },
               ],
               as: 'streamposts',
             },
@@ -5259,14 +5318,14 @@ const on_going_stream = async (req) => {
           {
             $group: {
               _id: null,
-              productTitle: { $push: "$streamposts.productTitle" },
-            }
+              productTitle: { $push: '$streamposts.productTitle' },
+            },
           },
         ],
         as: 'streamrequestposts',
       },
     },
-    { $unwind: "$streamrequestposts" },
+    { $unwind: '$streamrequestposts' },
     {
       $project: {
         _id: 1,
@@ -5308,7 +5367,7 @@ const on_going_stream = async (req) => {
         status: 1,
         streamrequestposts_count: 1,
         streamEnd_Time: 1,
-        productArray: "$streamrequestposts.productTitle",
+        productArray: '$streamrequestposts.productTitle',
         teaser: 1,
       },
     },
@@ -5317,7 +5376,16 @@ const on_going_stream = async (req) => {
 
   let upcoming = await Streamrequest.aggregate([
     { $sort: { startTime: 1 } },
-    { $match: { $and: [{ _id: { $ne: streamId } }, { startTime: { $gt: date_now } }, { adminApprove: { $eq: 'Approved' } }, { status: { $ne: 'Cancelled' } }] } },
+    {
+      $match: {
+        $and: [
+          { _id: { $ne: streamId } },
+          { startTime: { $gt: date_now } },
+          { adminApprove: { $eq: 'Approved' } },
+          { status: { $ne: 'Cancelled' } },
+        ],
+      },
+    },
     {
       $lookup: {
         from: 'joinedusers',
@@ -5460,15 +5528,15 @@ const on_going_stream = async (req) => {
                 { $unwind: '$products' },
                 {
                   $addFields: {
-                    productTitle: "$products.productTitle"
+                    productTitle: '$products.productTitle',
                   },
                 },
                 {
                   $project: {
                     _id: 1,
-                    productTitle: 1
-                  }
-                }
+                    productTitle: 1,
+                  },
+                },
               ],
               as: 'streamposts',
             },
@@ -5478,14 +5546,14 @@ const on_going_stream = async (req) => {
           {
             $group: {
               _id: null,
-              productTitle: { $push: "$streamposts.productTitle" },
-            }
+              productTitle: { $push: '$streamposts.productTitle' },
+            },
           },
         ],
         as: 'streamrequestposts',
       },
     },
-    { $unwind: "$streamrequestposts" },
+    { $unwind: '$streamrequestposts' },
     {
       $project: {
         _id: 1,
@@ -5527,15 +5595,24 @@ const on_going_stream = async (req) => {
         streamrequestposts_count: 1,
         streamEnd_Time: 1,
         teaser: 1,
-        productArray: "$streamrequestposts.productTitle",
-
+        productArray: '$streamrequestposts.productTitle',
       },
     },
     { $limit: 5 },
   ]);
   let currentLives = await Streamrequest.aggregate([
     { $sort: { startTime: 1 } },
-    { $match: { $and: [{ _id: { $ne: streamId } }, { startTime: { $lt: date_now } }, { streamEnd_Time: { $gt: date_now } }, { adminApprove: { $eq: 'Approved' } }, { status: { $ne: 'Cancelled' } }] } },
+    {
+      $match: {
+        $and: [
+          { _id: { $ne: streamId } },
+          { startTime: { $lt: date_now } },
+          { streamEnd_Time: { $gt: date_now } },
+          { adminApprove: { $eq: 'Approved' } },
+          { status: { $ne: 'Cancelled' } },
+        ],
+      },
+    },
     {
       $lookup: {
         from: 'joinedusers',
@@ -5678,15 +5755,15 @@ const on_going_stream = async (req) => {
                 { $unwind: '$products' },
                 {
                   $addFields: {
-                    productTitle: "$products.productTitle"
+                    productTitle: '$products.productTitle',
                   },
                 },
                 {
                   $project: {
                     _id: 1,
-                    productTitle: 1
-                  }
-                }
+                    productTitle: 1,
+                  },
+                },
               ],
               as: 'streamposts',
             },
@@ -5696,14 +5773,14 @@ const on_going_stream = async (req) => {
           {
             $group: {
               _id: null,
-              productTitle: { $push: "$streamposts.productTitle" },
-            }
+              productTitle: { $push: '$streamposts.productTitle' },
+            },
           },
         ],
         as: 'streamrequestposts',
       },
     },
-    { $unwind: "$streamrequestposts" },
+    { $unwind: '$streamrequestposts' },
     {
       $project: {
         _id: 1,
@@ -5745,8 +5822,7 @@ const on_going_stream = async (req) => {
         streamEnd_Time: 1,
         image: 1,
         teaser: 1,
-        productArray: "$streamrequestposts.productTitle",
-
+        productArray: '$streamrequestposts.productTitle',
       },
     },
     { $limit: 5 },
@@ -5824,7 +5900,7 @@ const getall_homeage_streams = async (req) => {
       },
     },
     {
-      $unwind: "$streampreregister"
+      $unwind: '$streampreregister',
     },
     {
       $addFields: {
@@ -5833,17 +5909,17 @@ const getall_homeage_streams = async (req) => {
     },
     {
       $addFields: {
-        eligible: '$streampreregister.eligible'
+        eligible: '$streampreregister.eligible',
       },
     },
     {
       $addFields: {
-        viewstatus: '$streampreregister.viewstatus'
+        viewstatus: '$streampreregister.viewstatus',
       },
     },
     {
       $addFields: {
-        reg_DateIso: '$streampreregister.DateIso'
+        reg_DateIso: '$streampreregister.DateIso',
       },
     },
     { $sort: { reg_DateIso: -1 } },
@@ -5908,15 +5984,15 @@ const getall_homeage_streams = async (req) => {
                 { $unwind: '$products' },
                 {
                   $addFields: {
-                    productTitle: "$products.productTitle"
+                    productTitle: '$products.productTitle',
                   },
                 },
                 {
                   $project: {
                     _id: 1,
-                    productTitle: 1
-                  }
-                }
+                    productTitle: 1,
+                  },
+                },
               ],
               as: 'streamposts',
             },
@@ -5926,14 +6002,14 @@ const getall_homeage_streams = async (req) => {
           {
             $group: {
               _id: null,
-              productTitle: { $push: "$streamposts.productTitle" },
-            }
+              productTitle: { $push: '$streamposts.productTitle' },
+            },
           },
         ],
         as: 'streamrequestposts',
       },
     },
-    { $unwind: "$streamrequestposts" },
+    { $unwind: '$streamrequestposts' },
     {
       $project: {
         _id: 1,
@@ -5975,7 +6051,7 @@ const getall_homeage_streams = async (req) => {
         status: 1,
         streamrequestposts_count: 1,
         streamEnd_Time: 1,
-        productArray: "$streamrequestposts.productTitle",
+        productArray: '$streamrequestposts.productTitle',
         teaser: 1,
       },
     },
@@ -6050,7 +6126,7 @@ const getall_homeage_streams = async (req) => {
       },
     },
     {
-      $unwind: "$streampreregister"
+      $unwind: '$streampreregister',
     },
     {
       $addFields: {
@@ -6059,17 +6135,17 @@ const getall_homeage_streams = async (req) => {
     },
     {
       $addFields: {
-        eligible: '$streampreregister.eligible'
+        eligible: '$streampreregister.eligible',
       },
     },
     {
       $addFields: {
-        viewstatus: '$streampreregister.viewstatus'
+        viewstatus: '$streampreregister.viewstatus',
       },
     },
     {
       $addFields: {
-        reg_DateIso: '$streampreregister.DateIso'
+        reg_DateIso: '$streampreregister.DateIso',
       },
     },
     { $sort: { reg_DateIso: -1 } },
@@ -6134,15 +6210,15 @@ const getall_homeage_streams = async (req) => {
                 { $unwind: '$products' },
                 {
                   $addFields: {
-                    productTitle: "$products.productTitle"
+                    productTitle: '$products.productTitle',
                   },
                 },
                 {
                   $project: {
                     _id: 1,
-                    productTitle: 1
-                  }
-                }
+                    productTitle: 1,
+                  },
+                },
               ],
               as: 'streamposts',
             },
@@ -6152,14 +6228,14 @@ const getall_homeage_streams = async (req) => {
           {
             $group: {
               _id: null,
-              productTitle: { $push: "$streamposts.productTitle" },
-            }
+              productTitle: { $push: '$streamposts.productTitle' },
+            },
           },
         ],
         as: 'streamrequestposts',
       },
     },
-    { $unwind: "$streamrequestposts" },
+    { $unwind: '$streamrequestposts' },
     {
       $project: {
         _id: 1,
@@ -6201,7 +6277,7 @@ const getall_homeage_streams = async (req) => {
         status: 1,
         streamrequestposts_count: 1,
         streamEnd_Time: 1,
-        productArray: "$streamrequestposts.productTitle",
+        productArray: '$streamrequestposts.productTitle',
         teaser: 1,
       },
     },
@@ -6212,7 +6288,11 @@ const getall_homeage_streams = async (req) => {
   var date_now = new Date().getTime();
   let upcoming = await Streamrequest.aggregate([
     { $sort: { startTime: 1 } },
-    { $match: { $and: [{ startTime: { $gt: date_now } }, { adminApprove: { $eq: 'Approved' } }, { status: { $ne: 'Cancelled' } }] } },
+    {
+      $match: {
+        $and: [{ startTime: { $gt: date_now } }, { adminApprove: { $eq: 'Approved' } }, { status: { $ne: 'Cancelled' } }],
+      },
+    },
     {
       $lookup: {
         from: 'joinedusers',
@@ -6358,15 +6438,15 @@ const getall_homeage_streams = async (req) => {
                 { $unwind: '$products' },
                 {
                   $addFields: {
-                    productTitle: "$products.productTitle"
+                    productTitle: '$products.productTitle',
                   },
                 },
                 {
                   $project: {
                     _id: 1,
-                    productTitle: 1
-                  }
-                }
+                    productTitle: 1,
+                  },
+                },
               ],
               as: 'streamposts',
             },
@@ -6376,14 +6456,14 @@ const getall_homeage_streams = async (req) => {
           {
             $group: {
               _id: null,
-              productTitle: { $push: "$streamposts.productTitle" },
-            }
+              productTitle: { $push: '$streamposts.productTitle' },
+            },
           },
         ],
         as: 'streamrequestposts',
       },
     },
-    { $unwind: "$streamrequestposts" },
+    { $unwind: '$streamrequestposts' },
     {
       $project: {
         _id: 1,
@@ -6424,16 +6504,19 @@ const getall_homeage_streams = async (req) => {
         status: 1,
         streamrequestposts_count: 1,
         streamEnd_Time: 1,
-        productArray: "$streamrequestposts.productTitle",
+        productArray: '$streamrequestposts.productTitle',
         teaser: 1,
-
       },
     },
     { $limit: 5 },
   ]);
   let upcoming_next = await Streamrequest.aggregate([
     { $sort: { startTime: 1 } },
-    { $match: { $and: [{ startTime: { $gt: date_now } }, { adminApprove: { $eq: 'Approved' } }, { status: { $ne: 'Cancelled' } }] } },
+    {
+      $match: {
+        $and: [{ startTime: { $gt: date_now } }, { adminApprove: { $eq: 'Approved' } }, { status: { $ne: 'Cancelled' } }],
+      },
+    },
     {
       $lookup: {
         from: 'joinedusers',
@@ -6579,15 +6662,15 @@ const getall_homeage_streams = async (req) => {
                 { $unwind: '$products' },
                 {
                   $addFields: {
-                    productTitle: "$products.productTitle"
+                    productTitle: '$products.productTitle',
                   },
                 },
                 {
                   $project: {
                     _id: 1,
-                    productTitle: 1
-                  }
-                }
+                    productTitle: 1,
+                  },
+                },
               ],
               as: 'streamposts',
             },
@@ -6597,14 +6680,14 @@ const getall_homeage_streams = async (req) => {
           {
             $group: {
               _id: null,
-              productTitle: { $push: "$streamposts.productTitle" },
-            }
+              productTitle: { $push: '$streamposts.productTitle' },
+            },
           },
         ],
         as: 'streamrequestposts',
       },
     },
-    { $unwind: "$streamrequestposts" },
+    { $unwind: '$streamrequestposts' },
     {
       $project: {
         _id: 1,
@@ -6645,9 +6728,8 @@ const getall_homeage_streams = async (req) => {
         status: 1,
         streamrequestposts_count: 1,
         streamEnd_Time: 1,
-        productArray: "$streamrequestposts.productTitle",
+        productArray: '$streamrequestposts.productTitle',
         teaser: 1,
-
       },
     },
     { $skip: 5 },
@@ -6655,7 +6737,16 @@ const getall_homeage_streams = async (req) => {
   ]);
   let currentLives = await Streamrequest.aggregate([
     { $sort: { startTime: 1 } },
-    { $match: { $and: [{ startTime: { $lt: date_now } }, { streamEnd_Time: { $gt: date_now } }, { adminApprove: { $eq: 'Approved' } }, { status: { $ne: 'Cancelled' } }] } },
+    {
+      $match: {
+        $and: [
+          { startTime: { $lt: date_now } },
+          { streamEnd_Time: { $gt: date_now } },
+          { adminApprove: { $eq: 'Approved' } },
+          { status: { $ne: 'Cancelled' } },
+        ],
+      },
+    },
     {
       $lookup: {
         from: 'joinedusers',
@@ -6801,15 +6892,15 @@ const getall_homeage_streams = async (req) => {
                 { $unwind: '$products' },
                 {
                   $addFields: {
-                    productTitle: "$products.productTitle"
+                    productTitle: '$products.productTitle',
                   },
                 },
                 {
                   $project: {
                     _id: 1,
-                    productTitle: 1
-                  }
-                }
+                    productTitle: 1,
+                  },
+                },
               ],
               as: 'streamposts',
             },
@@ -6819,14 +6910,14 @@ const getall_homeage_streams = async (req) => {
           {
             $group: {
               _id: null,
-              productTitle: { $push: "$streamposts.productTitle" },
-            }
+              productTitle: { $push: '$streamposts.productTitle' },
+            },
           },
         ],
         as: 'streamrequestposts',
       },
     },
-    { $unwind: "$streamrequestposts" },
+    { $unwind: '$streamrequestposts' },
     {
       $project: {
         _id: 1,
@@ -6866,18 +6957,26 @@ const getall_homeage_streams = async (req) => {
         status: 1,
         streamrequestposts_count: 1,
         streamEnd_Time: 1,
-        productArray: "$streamrequestposts.productTitle",
+        productArray: '$streamrequestposts.productTitle',
         // streamrequestposts:"$streamrequestposts",
         image: 1,
         teaser: 1,
-
       },
     },
     { $limit: 5 },
   ]);
   let currentLives_next = await Streamrequest.aggregate([
     { $sort: { startTime: 1 } },
-    { $match: { $and: [{ startTime: { $lt: date_now } }, { streamEnd_Time: { $gt: date_now } }, { adminApprove: { $eq: 'Approved' } }, { status: { $ne: 'Cancelled' } }] } },
+    {
+      $match: {
+        $and: [
+          { startTime: { $lt: date_now } },
+          { streamEnd_Time: { $gt: date_now } },
+          { adminApprove: { $eq: 'Approved' } },
+          { status: { $ne: 'Cancelled' } },
+        ],
+      },
+    },
     {
       $lookup: {
         from: 'joinedusers',
@@ -7023,15 +7122,15 @@ const getall_homeage_streams = async (req) => {
                 { $unwind: '$products' },
                 {
                   $addFields: {
-                    productTitle: "$products.productTitle"
+                    productTitle: '$products.productTitle',
                   },
                 },
                 {
                   $project: {
                     _id: 1,
-                    productTitle: 1
-                  }
-                }
+                    productTitle: 1,
+                  },
+                },
               ],
               as: 'streamposts',
             },
@@ -7041,14 +7140,14 @@ const getall_homeage_streams = async (req) => {
           {
             $group: {
               _id: null,
-              productTitle: { $push: "$streamposts.productTitle" },
-            }
+              productTitle: { $push: '$streamposts.productTitle' },
+            },
           },
         ],
         as: 'streamrequestposts',
       },
     },
-    { $unwind: "$streamrequestposts" },
+    { $unwind: '$streamrequestposts' },
     {
       $project: {
         _id: 1,
@@ -7088,11 +7187,10 @@ const getall_homeage_streams = async (req) => {
         status: 1,
         streamrequestposts_count: 1,
         streamEnd_Time: 1,
-        productArray: "$streamrequestposts.productTitle",
+        productArray: '$streamrequestposts.productTitle',
         // streamrequestposts:"$streamrequestposts",
         image: 1,
         teaser: 1,
-
       },
     },
     { $skip: 5 },
@@ -7104,7 +7202,7 @@ const getall_homeage_streams = async (req) => {
     upcoming,
     interested_next: interested_next.length != 0,
     currentLives_next: currentLives_next.length != 0,
-    upcoming_next: upcoming_next.length != 0
+    upcoming_next: upcoming_next.length != 0,
   };
 };
 
@@ -7124,8 +7222,8 @@ const regisetr_strean_instrest = async (req) => {
       participents.noOfParticipants > count
         ? 'Confirmed'
         : participents.noOfParticipants + participents.noOfParticipants / 2 > count
-          ? 'RAC'
-          : 'Waiting';
+        ? 'RAC'
+        : 'Waiting';
     await Dates.create_date(findresult);
   } else {
     if (findresult.status != 'Registered') {
@@ -7134,8 +7232,8 @@ const regisetr_strean_instrest = async (req) => {
         participents.noOfParticipants > count
           ? 'Confirmed'
           : participents.noOfParticipants + participents.noOfParticipants / 2 > count
-            ? 'RAC'
-            : 'Waiting';
+          ? 'RAC'
+          : 'Waiting';
       findresult.eligible = participents.noOfParticipants > count;
       findresult.status = 'Registered';
       await Dates.create_date(findresult);
@@ -7733,7 +7831,7 @@ const get_completed_stream_buyer = async (req) => {
               localField: 'postId',
               foreignField: '_id',
               pipeline: [
-                { $match: { $and: [{ afterStreaming: { $eq: 'yes' } }, { status: { $ne: "Removed" } }] } },
+                { $match: { $and: [{ afterStreaming: { $eq: 'yes' } }, { status: { $ne: 'Removed' } }] } },
                 {
                   $lookup: {
                     from: 'products',
@@ -7762,7 +7860,7 @@ const get_completed_stream_buyer = async (req) => {
                     created: 1,
                     bookingAmount: 1,
                     products: '$products',
-                    status: 1
+                    status: 1,
                   },
                 },
               ],
@@ -7792,7 +7890,7 @@ const get_completed_stream_buyer = async (req) => {
               suppierId: 1,
               DateIso: 1,
               created: '2023-01-20T11:46:58.201Z',
-              postStatus: "$streamposts.status"
+              postStatus: '$streamposts.status',
             },
           },
         ],
@@ -7816,11 +7914,7 @@ const get_completed_stream_buyer = async (req) => {
         pipeline: [
           {
             $match: {
-              $and: [
-                { type: { $eq: 'CloudRecording' } },
-                { videoLink: { $ne: '' } },
-                { videoLink: { $ne: null } },
-              ],
+              $and: [{ type: { $eq: 'CloudRecording' } }, { videoLink: { $ne: '' } }, { videoLink: { $ne: null } }],
             },
           },
         ],
@@ -9561,13 +9655,18 @@ const get_completed_stream_cancelled = async (req) => {
 // completed Stream Supplier Side Flow
 
 const getStock_Manager = async (req) => {
-  let page = req.params.page == '' || req.params.page == null || req.params.page == null ? 0 : req.params.page
+  let page = req.params.page == '' || req.params.page == null || req.params.page == null ? 0 : req.params.page;
   let accessBy = req.accessBy;
   let currentTime = new Date().getTime();
   let values = await Streamrequest.aggregate([
     // endTime: { $lt: currentTime }
     {
-      $match: { $or: [{ endTime: { $lt: currentTime }, suppierId: { $eq: accessBy } }, { status: 'Completed', suppierId: { $eq: accessBy } }] },
+      $match: {
+        $or: [
+          { endTime: { $lt: currentTime }, suppierId: { $eq: accessBy } },
+          { status: 'Completed', suppierId: { $eq: accessBy } },
+        ],
+      },
     },
     {
       $sort: { created: -1 },
@@ -9657,7 +9756,7 @@ const getStock_Manager = async (req) => {
           },
         ],
         as: 'streamPost',
-      }
+      },
     },
     {
       $project: {
@@ -9670,7 +9769,7 @@ const getStock_Manager = async (req) => {
         endTime: 1,
         created: 1,
         status: 'Pending',
-        streamPost: "$streamPost"
+        streamPost: '$streamPost',
       },
     },
     {
@@ -9682,7 +9781,12 @@ const getStock_Manager = async (req) => {
   ]);
   let total = await Streamrequest.aggregate([
     {
-      $match: { $or: [{ endTime: { $lt: currentTime }, suppierId: { $eq: accessBy } }, { status: 'Completed', suppierId: { $eq: accessBy } }] },
+      $match: {
+        $or: [
+          { endTime: { $lt: currentTime }, suppierId: { $eq: accessBy } },
+          { status: 'Completed', suppierId: { $eq: accessBy } },
+        ],
+      },
     },
     {
       $sort: { created: -1 },
@@ -9700,7 +9804,7 @@ const getStock_Manager = async (req) => {
     },
     {
       $limit: 10,
-    }
+    },
   ]);
   return { values: values, next: total.length != 0 };
 };
@@ -9786,7 +9890,7 @@ const getPosted_Details_By_Stream = async (id) => {
 // fetch specific streaming details
 
 const fetchStream_Details_ById = async (id) => {
-  let stream = await Streamrequest.findById(id)
+  let stream = await Streamrequest.findById(id);
   let values = await StreamrequestPost.aggregate([
     {
       $match: {
@@ -10175,7 +10279,7 @@ const fetch_Stream_Ordered_Details = async (id, query) => {
     },
     {
       $limit: 10,
-    }
+    },
   ]);
   return { values: values, total: total.length, stream };
 };
@@ -10220,12 +10324,12 @@ const fetch_streaming_Details_Approval = async (id, query, req) => {
               as: 'products',
             },
           },
-          { $unwind: "$products" }
+          { $unwind: '$products' },
         ],
         as: 'streamposts',
       },
     },
-    { $unwind: "$streamposts" },
+    { $unwind: '$streamposts' },
     {
       $lookup: {
         from: 'streamrequests',
@@ -10234,17 +10338,17 @@ const fetch_streaming_Details_Approval = async (id, query, req) => {
         as: 'streamrequests',
       },
     },
-    { $unwind: "$streamrequests" },
+    { $unwind: '$streamrequests' },
     {
       $project: {
         _id: 1,
-        streamName: "$streamrequests.streamName",
-        startTime: "$streamrequests.startTime",
-        productTitle: "$streamposts.products.productTitle",
-        streamEnd_Time: "$streamrequests.streamEnd_Time"
-      }
-    }
-  ])
+        streamName: '$streamrequests.streamName',
+        startTime: '$streamrequests.startTime',
+        productTitle: '$streamposts.products.productTitle',
+        streamEnd_Time: '$streamrequests.streamEnd_Time',
+      },
+    },
+  ]);
   let values = await streamingorderProduct.aggregate([
     {
       $match: {
@@ -10329,7 +10433,7 @@ const fetch_streaming_Details_Approval = async (id, query, req) => {
     },
 
     {
-      $skip: 10 * page
+      $skip: 10 * page,
     },
     {
       $limit: 10,
@@ -10474,7 +10578,7 @@ const fetch_streaming_Details_Approval = async (id, query, req) => {
     cancelledKg: cancelled.length > 0 ? cancelled[0].orderedKg : 0,
     deniedKg: denied.length > 0 ? denied[0].orderedKg : 0,
     next: total.length != 0,
-    streamdetails: streamdetails[0]
+    streamdetails: streamdetails[0],
   };
 };
 
@@ -11546,62 +11650,60 @@ const get_stream_post_after_live_stream = async (req) => {
   if (notification.length == 0) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Not Found');
   }
-  let cloud_record=await tempTokenModel.findOne({streamId:{$eq:streamId}});
-  console.log(cloud_record,streamnotification)
+  let cloud_record = await tempTokenModel.findOne({ streamId: { $eq: streamId } });
+  console.log(cloud_record, streamnotification);
   let value = notification[0];
-  // if (streamnotification.videoconvertStatus != 'Converted') {
-    console.log(cloud_record)
+  if (cloud_record) {
+    console.log(cloud_record);
     // value.temptokens.forEach(async (e) => {
-      if (cloud_record.convertStatus != 'Converted' && cloud_record.videoLink !=null && cloud_record.videoLink !='') {
-        const inputFilePath = 'https://streamingupload.s3.ap-south-1.amazonaws.com/' + cloud_record.videoLink;
-        let store = cloud_record._id.replace(/[^a-zA-Z0-9]/g, '');
-        const outputFilePath = 'output.mp4';
+    if (cloud_record.convertStatus != 'Converted' && cloud_record.videoLink != null && cloud_record.videoLink != '') {
+      const inputFilePath = 'https://streamingupload.s3.ap-south-1.amazonaws.com/' + cloud_record.videoLink;
+      let store = cloud_record._id.replace(/[^a-zA-Z0-9]/g, '');
+      const outputFilePath = 'output.mp4';
 
-        ffmpeg(inputFilePath)
-          .outputOptions('-c', 'copy')
-          .output(outputFilePath)
-          .on('end', (e) => {
-          })
-          .on('error', (err) => {
-            console.error('Error while converting:', err);
-          })
-          .run();
-        const s3 = new AWS.S3({
-          accessKeyId: 'AKIA3323XNN7Y2RU77UG',
-          secretAccessKey: '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',
-          region: 'ap-south-1',
+      ffmpeg(inputFilePath)
+        .outputOptions('-c', 'copy')
+        .output(outputFilePath)
+        .on('end', (e) => {})
+        .on('error', (err) => {
+          console.error('Error while converting:', err);
+        })
+        .run();
+      const s3 = new AWS.S3({
+        accessKeyId: 'AKIA3323XNN7Y2RU77UG',
+        secretAccessKey: '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',
+        region: 'ap-south-1',
+      });
+      const bucketName = 'streamingupload';
+
+      const fileContent = fs.readFileSync(outputFilePath);
+      if (fileContent != null) {
+        const params = {
+          Bucket: bucketName,
+          Key: store + '/mp4/' + outputFilePath,
+          Body: fileContent,
+        };
+        s3.upload(params, async (err, data) => {
+          if (err) {
+            console.error(err);
+          } else {
+            cloud_record.convertedVideo = data.Location;
+            cloud_record.convertedVideo = data.Location;
+            cloud_record.convertStatus = 'Converted';
+            cloud_record.save();
+            // streamnotification.videoconvertStatus = 'Converted';
+            // streamnotification.save();
+            fs.unlink(outputFilePath, (err) => {
+              if (err) {
+              } else {
+              }
+            });
+          }
         });
-        const bucketName = 'streamingupload';
-
-
-        const fileContent = fs.readFileSync(outputFilePath);
-        if (fileContent != null) {
-          const params = {
-            Bucket: bucketName,
-            Key: store + '/mp4/' + outputFilePath,
-            Body: fileContent,
-          };
-          s3.upload(params, async (err, data) => {
-            if (err) {
-              console.error(err);
-            } else {
-              cloud_record.convertedVideo = data.Location;
-              cloud_record.convertedVideo = data.Location;
-              cloud_record.convertStatus = 'Converted';
-              cloud_record.save();
-              // streamnotification.videoconvertStatus = 'Converted';
-              // streamnotification.save();
-              fs.unlink(outputFilePath, (err) => {
-                if (err) {
-                } else {
-                }
-              });
-            }
-          });
-        }
       }
+    }
     // });
-  // }
+  }
   return value;
 };
 
@@ -11812,7 +11914,6 @@ const get_order_details_by_stream = async (id, query) => {
         Buyer: '$shop.SName',
       },
     },
-
   ]);
   return values;
 };
@@ -11820,7 +11921,7 @@ const get_order_details_by_stream = async (id, query) => {
 const get_post_view = async (req) => {
   //console.log(req.query.id)
   let value = await StreamPost.aggregate([
-    { $match: { $and: [{ _id: req.query.id },] } },
+    { $match: { $and: [{ _id: req.query.id }] } },
     {
       $lookup: {
         from: 'products',
@@ -11848,16 +11949,15 @@ const get_post_view = async (req) => {
         location: 1,
         afterStreaming: 1,
         DateIso: 1,
-        productTitle: "$products.productTitle",
+        productTitle: '$products.productTitle',
         video: 1,
-
-      }
-    }
-  ])
+      },
+    },
+  ]);
   //console.log(value)
 
   return value[0];
-}
+};
 
 module.exports = {
   create_Plans,
@@ -11973,5 +12073,5 @@ module.exports = {
   getall_homeage_streams,
   get_watch_live_steams_current,
   get_post_view,
-  on_going_stream
+  on_going_stream,
 };

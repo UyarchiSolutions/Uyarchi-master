@@ -10,8 +10,14 @@ const appCertificate = '8ae85f97802448c2a47b98715ff90ffb';
 const Authorization = `Basic ${Buffer.from(`61b817e750214d58ba9d8148e7c89a1b:88401de254b2436a9da15b2f872937de`).toString(
   'base64'
 )}`;
-const Dates = require('../Date.serive')
-const { Streamplan, StreamPost, Streamrequest, StreamrequestPost, StreamPreRegister } = require('../../models/ecomplan.model');
+const Dates = require('../Date.serive');
+const {
+  Streamplan,
+  StreamPost,
+  Streamrequest,
+  StreamrequestPost,
+  StreamPreRegister,
+} = require('../../models/ecomplan.model');
 const { request } = require('express');
 
 const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
@@ -30,7 +36,7 @@ const generateToken = async (req) => {
   let supplierId = req.userId;
   let streamId = req.body.streamId;
   //console.log(streamId)
-  let stream = await Streamrequest.findById(streamId)
+  let stream = await Streamrequest.findById(streamId);
   if (!streamId) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
   }
@@ -53,7 +59,7 @@ const generateToken = async (req) => {
       participents: 3,
       created_num: new Date(new Date(moment().format('YYYY-MM-DD') + ' ' + moment().format('HH:mm:ss'))).getTime(),
       expDate: expirationTimestamp * 1000,
-      Duration: stream.Duration
+      Duration: stream.Duration,
     },
   });
   const token = await geenerate_rtc_token(streamId, uid, role, expirationTimestamp);
@@ -69,7 +75,7 @@ const generateToken = async (req) => {
   stream.tokenGeneration = true;
   stream.goLive = true;
   stream.save();
-  req.io.emit(streamId + "_golive", { streamId: streamId, })
+  req.io.emit(streamId + '_golive', { streamId: streamId });
   return { uid, token, value, cloud_recording, stream };
 };
 const geenerate_rtc_token = async (chennel, uid, role, expirationTimestamp) => {
@@ -96,7 +102,7 @@ const generateToken_sub_record = async (channel, isPublisher, req, hostIdss, exp
       created_num: new Date(new Date(moment().format('YYYY-MM-DD') + ' ' + moment().format('HH:mm:ss'))).getTime(),
       expDate: expirationTimestamp * 1000,
       type: 'subhost',
-      hostId: hostIdss._id
+      hostId: hostIdss._id,
     },
   });
   //console.log(role);
@@ -108,15 +114,15 @@ const generateToken_sub_record = async (channel, isPublisher, req, hostIdss, exp
 
 const generateToken_sub = async (req) => {
   const channel = req.query.id;
-  let str = await Streamrequest.findById(channel)
-  let users = await Joinusers.find({ streamId: channel }).count()
+  let str = await Streamrequest.findById(channel);
+  let users = await Joinusers.find({ streamId: channel }).count();
   //console.log(users, str.noOfParticipants)
-  let user = await Joinusers.findOne({ streamId: channel, shopId: req.shopId, })
+  let user = await Joinusers.findOne({ streamId: channel, shopId: req.shopId });
   if (!user) {
     user = await Joinusers.create({ shopId: req.shopId, streamId: channel, hostId: str.tokenDetails });
     await Dates.create_date(user);
   }
-  let stream = await tempTokenModel.findOne({ streamId: channel, type: "sub", hostId: { $ne: null }, shopId: req.shopId });
+  let stream = await tempTokenModel.findOne({ streamId: channel, type: 'sub', hostId: { $ne: null }, shopId: req.shopId });
   if (!stream) {
     const uid = await generateUid();
     const role = Agora.RtcRole.SUBSCRIBER;
@@ -140,8 +146,7 @@ const generateToken_sub = async (req) => {
         expDate: str.endTime,
         shopId: req.shopId,
         streamId: channel,
-        joinedUser: user._id
-
+        joinedUser: user._id,
       },
     });
     const token = await geenerate_rtc_token(channel, uid, role, str.endTime / 1000);
@@ -149,8 +154,8 @@ const generateToken_sub = async (req) => {
     value.save();
     stream = value;
   }
-  await Joinusers.findByIdAndUpdate({ _id: user._id }, { latestedToken: stream._id, token: stream._id }, { new: true })
-  await get_participents_limit(req)
+  await Joinusers.findByIdAndUpdate({ _id: user._id }, { latestedToken: stream._id, token: stream._id }, { new: true });
+  await get_participents_limit(req);
   // return user
   return { stream: stream, user: user };
   // }
@@ -277,8 +282,10 @@ const participents_limit = async (req) => {
   return { participents: value >= participents.participents ? false : true };
 };
 
-const agora_acquire = async (req) => {
-  let token = await tempTokenModel.findById(req.body.id);
+const agora_acquire = async (req, id) => {
+  let temtoken = id;
+  // let temtoken=req.body.id;
+  let token = await tempTokenModel.findById(temtoken);
   const acquire = await axios.post(
     `https://api.agora.io/v1/apps/${appID}/cloud_recording/acquire`,
     {
@@ -292,62 +299,78 @@ const agora_acquire = async (req) => {
     { headers: { Authorization } }
   );
   token.resourceId = acquire.data.resourceId;
-  token.recoredStart = "acquire";
+  token.recoredStart = 'acquire';
   token.save();
-  return acquire.data;
+  // setTimeout(async () => {
+  //   console.log(2, 3);
+  //   await recording_start(req, temtoken);
+  // }, 8000);
+  // return acquire.data;
 };
 
-const recording_start = async (req) => {
-  let token = await tempTokenModel.findById(req.body.id);
-  const resource = token.resourceId;
-  //console.log(resource)
-  //console.log(token)
-  const mode = 'mix';
-  const start = await axios.post(
-    `https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/mode/${mode}/start`,
-    {
-      cname: token.chennel,
-      uid: token.Uid.toString(),
-      clientRequest: {
-        token: token.token,
-        recordingConfig: {
-          maxIdleTime: 30,
-          streamTypes: 2,
-          channelType: 1,
-          videoStreamType: 0,
-          transcodingConfig: {
-            height: 640,
-            width: 1080,
-            bitrate: 1000,
-            fps: 15,
-            mixedVideoLayout: 1,
-            backgroundColor: '#FFFFFF',
+const recording_start = async (req, id) => {
+  // let temtoken = id;
+  let token = await tempTokenModel.findOne({ chennel: id, type: 'CloudRecording' });
+  // let temtoken=req.body.id;
+  // let token = await tempTokenModel.findById(temtoken);
+  if (token.recoredStart == 'acquire') {
+    const resource = token.resourceId;
+    //console.log(resource)
+    //console.log(token)
+    const mode = 'mix';
+    const start = await axios.post(
+      `https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/mode/${mode}/start`,
+      {
+        cname: token.chennel,
+        uid: token.Uid.toString(),
+        clientRequest: {
+          token: token.token,
+          recordingConfig: {
+            maxIdleTime: 30,
+            streamTypes: 2,
+            channelType: 1,
+            videoStreamType: 0,
+            transcodingConfig: {
+              height: 640,
+              width: 1080,
+              bitrate: 1000,
+              fps: 15,
+              mixedVideoLayout: 1,
+              backgroundColor: '#FFFFFF',
+            },
+          },
+          recordingFileConfig: {
+            avFileType: ['hls'],
+          },
+          storageConfig: {
+            vendor: 1,
+            region: 14,
+            bucket: 'streamingupload',
+            accessKey: 'AKIA3323XNN7Y2RU77UG',
+            secretKey: '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',
+            fileNamePrefix: [token.store, token.Uid.toString()],
           },
         },
-        recordingFileConfig: {
-          avFileType: ['hls'],
-        },
-        storageConfig: {
-          vendor: 1,
-          region: 14,
-          bucket: 'streamingupload',
-          accessKey: 'AKIA3323XNN7Y2RU77UG',
-          secretKey: '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',
-          fileNamePrefix: [token.store, token.Uid.toString()],
-        },
       },
-    },
-    { headers: { Authorization } }
-  );
-  token.resourceId = start.data.resourceId;
-  token.sid = start.data.sid;
-  token.recoredStart = "start";
-  token.save();
-  return start.data;
+      { headers: { Authorization } }
+    );
+    token.resourceId = start.data.resourceId;
+    token.sid = start.data.sid;
+    token.recoredStart = 'start';
+    token.save();
+    setTimeout(async () => {
+      await recording_query(req, token._id);
+    }, 3000);
+    return start.data;
+  } else {
+    return { message: 'Already Started' };
+  }
 };
-const recording_query = async (req) => {
+const recording_query = async (req, id) => {
+  let temtoken = id;
+  // let temtoken=req.body.id;
   // //console.log(req.body);
-  let token = await tempTokenModel.findById(req.body.id);
+  let token = await tempTokenModel.findById(temtoken);
   const resource = token.resourceId;
   const sid = token.sid;
   const mode = 'mix';
@@ -357,12 +380,13 @@ const recording_query = async (req) => {
     { headers: { Authorization } }
   );
   token.videoLink = query.data.serverResponse.fileList;
-  token.recoredStart = "query";
+  token.recoredStart = 'query';
   token.save();
+  console.log(4, 5);
   return query.data;
 };
-const recording_stop = async (req) => {
 
+const recording_stop = async (req) => {
   // const mode = 'mix';
   // let token = await tempTokenModel.findById(req.body.id);
   // token.recoredStart = "stop";
@@ -384,7 +408,7 @@ const recording_stop = async (req) => {
   // );
 
   // return stop.data;
-  return {message:"asdhajs"}
+  return { message: 'asdhajs' };
 };
 const recording_updateLayout = async (req) => {
   const acquire = await axios.post(
@@ -418,7 +442,7 @@ const get_sub_token = async (req) => {
         as: 'active_users',
       },
     },
-    { $unwind: "$active_users" },
+    { $unwind: '$active_users' },
     {
       $project: {
         _id: 1,
@@ -435,12 +459,11 @@ const get_sub_token = async (req) => {
         created_num: 1,
         expDate: 1,
         token: 1,
-        hostUid: "$active_users.Uid",
-        expDate_host: "$active_users.expDate",
-
-      }
-    }
-  ])
+        hostUid: '$active_users.Uid',
+        expDate_host: '$active_users.expDate',
+      },
+    },
+  ]);
   if (value.length == 0) {
     throw new ApiError(httpStatus.NOT_FOUND, 'plan_not_found');
   }
@@ -450,7 +473,7 @@ const get_sub_token = async (req) => {
 const get_sub_golive = async (req, io) => {
   let code = req.query.code;
   let streamId = req.query.id;
-  io.emit(streamId + "watching_live", { code: code, stream: streamId })
+  io.emit(streamId + 'watching_live', { code: code, stream: streamId });
   //console.log(req.query.id,code)
   let value = await Joinusers.aggregate([
     { $match: { $and: [{ _id: { $eq: req.query.id } }, { shopId: { $eq: req.shopId } }] } },
@@ -487,13 +510,13 @@ const get_sub_golive = async (req, io) => {
               // hostUid: "$active_users.Uid",
               // expDate_host: "$active_users.expDate",
               // active_users: "$active_users"
-            }
-          }
+            },
+          },
         ],
         as: 'temptokens',
       },
     },
-    { $unwind: "$temptokens" },
+    { $unwind: '$temptokens' },
     {
       $lookup: {
         from: 'streamrequests',
@@ -514,18 +537,17 @@ const get_sub_golive = async (req, io) => {
                     as: 'streamplans',
                   },
                 },
-                { $unwind: "$streamplans" },
+                { $unwind: '$streamplans' },
               ],
               as: 'purchasedplans',
             },
           },
-          { $unwind: "$purchasedplans" },
-
+          { $unwind: '$purchasedplans' },
         ],
         as: 'streamrequests',
       },
     },
-    { $unwind: "$streamrequests" },
+    { $unwind: '$streamrequests' },
     {
       $lookup: {
         from: 'streamrequests',
@@ -552,37 +574,36 @@ const get_sub_golive = async (req, io) => {
                           as: 'products',
                         },
                       },
-                      { $unwind: "$products" },
+                      { $unwind: '$products' },
                     ],
                     as: 'streamposts',
                   },
                 },
-                { $unwind: "$streamposts" },
+                { $unwind: '$streamposts' },
                 {
                   $project: {
                     _id: 1,
-                    "active": 1,
-                    "archive": 1,
-                    "productId": "$streamposts.productId",
-                    "productTitle": "$streamposts.products.productTitle",
-                    "image": "$streamposts.products.image",
-                    "categoryId": "a7c95af4-abd5-4fe0-b685-fd93bb98f5ec",
-                    "quantity": "$streamposts.quantity",
-                    "marketPlace": "$streamposts.marketPlace",
-                    "offerPrice": "$streamposts.offerPrice",
-                    "postLiveStreamingPirce": "$streamposts.postLiveStreamingPirce",
-                    "validity": "$streamposts.validity",
-                    "minLots": "$streamposts.minLots",
-                    "incrementalLots": "$streamposts.incrementalLots",
-                    bookingAmount: "$streamposts.bookingAmount",
-                    streamPostId: "$streamposts._id",
-                    allowAdd_to_cart: { $gte: ["$streamposts.pendingQTY", "$streamposts.minLots"] },
-                    "suppierId": 1,
-                    "DateIso": 1,
-                    "created": "2023-01-20T11:46:58.201Z",
-
-                  }
-                }
+                    active: 1,
+                    archive: 1,
+                    productId: '$streamposts.productId',
+                    productTitle: '$streamposts.products.productTitle',
+                    image: '$streamposts.products.image',
+                    categoryId: 'a7c95af4-abd5-4fe0-b685-fd93bb98f5ec',
+                    quantity: '$streamposts.quantity',
+                    marketPlace: '$streamposts.marketPlace',
+                    offerPrice: '$streamposts.offerPrice',
+                    postLiveStreamingPirce: '$streamposts.postLiveStreamingPirce',
+                    validity: '$streamposts.validity',
+                    minLots: '$streamposts.minLots',
+                    incrementalLots: '$streamposts.incrementalLots',
+                    bookingAmount: '$streamposts.bookingAmount',
+                    streamPostId: '$streamposts._id',
+                    allowAdd_to_cart: { $gte: ['$streamposts.pendingQTY', '$streamposts.minLots'] },
+                    suppierId: 1,
+                    DateIso: 1,
+                    created: '2023-01-20T11:46:58.201Z',
+                  },
+                },
               ],
               as: 'streamrequestposts',
             },
@@ -591,7 +612,7 @@ const get_sub_golive = async (req, io) => {
         as: 'streamrequests_post',
       },
     },
-    { $unwind: "$streamrequests_post" },
+    { $unwind: '$streamrequests_post' },
 
     {
       $lookup: {
@@ -601,8 +622,8 @@ const get_sub_golive = async (req, io) => {
         pipeline: [
           {
             $match: {
-              $or: [{ $and: [{ type: { $eq: 'subhost' } }] }, { type: { $eq: 'Supplier' } }]
-            }
+              $or: [{ $and: [{ type: { $eq: 'subhost' } }] }, { type: { $eq: 'Supplier' } }],
+            },
           },
           {
             $lookup: {
@@ -644,33 +665,32 @@ const get_sub_golive = async (req, io) => {
     {
       $project: {
         _id: 1,
-        active: "$temptokens.active",
-        archived: "$temptokens.archived",
-        hostId: "$temptokens.hostId",
-        type: "$temptokens.type",
-        date: "$temptokens.date",
-        time: "$temptokens.time",
-        created: "$temptokens.created",
-        Uid: "$temptokens.Uid",
-        chennel: "$temptokens.chennel",
-        participents: "$temptokens.participents",
-        created_num: "$temptokens.created_num",
-        expDate: "$temptokens.expDate",
-        token: "$temptokens.token",
-        hostUid: "$temptokens.hostUid",
-        expDate_host: "$temptokens.expDate_host",
-        temptokens: "$temptokens",
-        streamrequests: "$streamrequests",
-        chat: "$streamrequests.purchasedplans.streamplans.chatNeed",
-        streamrequests_post: "$streamrequests_post",
-        streamrequestposts: "$streamrequests_post.streamrequestposts",
-        chat_need: "$streamrequests.chat_need",
-        temptokens_sub: "$temptokens_sub",
-        joindedUserBan: 1
-
-      }
-    }
-  ])
+        active: '$temptokens.active',
+        archived: '$temptokens.archived',
+        hostId: '$temptokens.hostId',
+        type: '$temptokens.type',
+        date: '$temptokens.date',
+        time: '$temptokens.time',
+        created: '$temptokens.created',
+        Uid: '$temptokens.Uid',
+        chennel: '$temptokens.chennel',
+        participents: '$temptokens.participents',
+        created_num: '$temptokens.created_num',
+        expDate: '$temptokens.expDate',
+        token: '$temptokens.token',
+        hostUid: '$temptokens.hostUid',
+        expDate_host: '$temptokens.expDate_host',
+        temptokens: '$temptokens',
+        streamrequests: '$streamrequests',
+        chat: '$streamrequests.purchasedplans.streamplans.chatNeed',
+        streamrequests_post: '$streamrequests_post',
+        streamrequestposts: '$streamrequests_post.streamrequestposts',
+        chat_need: '$streamrequests.chat_need',
+        temptokens_sub: '$temptokens_sub',
+        joindedUserBan: 1,
+      },
+    },
+  ]);
   if (value.length == 0) {
     throw new ApiError(httpStatus.NOT_FOUND, 'plan_not_found');
   }
@@ -678,10 +698,10 @@ const get_sub_golive = async (req, io) => {
 };
 
 const get_participents_limit = async (req) => {
-  let result = await find_userLimt(req.query.id)
-  req.io.emit(req.query.id + "_count", result)
+  let result = await find_userLimt(req.query.id);
+  req.io.emit(req.query.id + '_count', result);
 
-  return result
+  return result;
 };
 
 const get_current_live_stream = async (req) => {
@@ -690,7 +710,16 @@ const get_current_live_stream = async (req) => {
   var date_now = new Date().getTime();
   let currentLives = await Streamrequest.aggregate([
     { $sort: { startTime: 1 } },
-    { $match: { $and: [{ _id: { $ne: streamId } }, { startTime: { $lt: date_now } }, { streamEnd_Time: { $gt: date_now } }, { adminApprove: { $eq: 'Approved' } }] } },
+    {
+      $match: {
+        $and: [
+          { _id: { $ne: streamId } },
+          { startTime: { $lt: date_now } },
+          { streamEnd_Time: { $gt: date_now } },
+          { adminApprove: { $eq: 'Approved' } },
+        ],
+      },
+    },
     {
       $lookup: {
         from: 'joinedusers',
@@ -836,15 +865,15 @@ const get_current_live_stream = async (req) => {
                 { $unwind: '$products' },
                 {
                   $addFields: {
-                    productTitle: "$products.productTitle"
+                    productTitle: '$products.productTitle',
                   },
                 },
                 {
                   $project: {
                     _id: 1,
-                    productTitle: 1
-                  }
-                }
+                    productTitle: 1,
+                  },
+                },
               ],
               as: 'streamposts',
             },
@@ -854,14 +883,14 @@ const get_current_live_stream = async (req) => {
           {
             $group: {
               _id: null,
-              productTitle: { $push: "$streamposts.productTitle" },
-            }
+              productTitle: { $push: '$streamposts.productTitle' },
+            },
           },
         ],
         as: 'streamrequestposts',
       },
     },
-    { $unwind: "$streamrequestposts" },
+    { $unwind: '$streamrequestposts' },
     {
       $project: {
         _id: 1,
@@ -901,34 +930,32 @@ const get_current_live_stream = async (req) => {
         status: 1,
         streamrequestposts_count: 1,
         streamEnd_Time: 1,
-        productArray: "$streamrequestposts.productTitle",
+        productArray: '$streamrequestposts.productTitle',
         image: 1,
         teaser: 1,
         // streamrequestposts:"$streamrequestposts"
-
       },
     },
     { $limit: 5 },
   ]);
   return currentLives;
-
-}
+};
 const find_userLimt = async (channel) => {
-  const user = await StreamPreRegister.find({ streamId: channel, status: "Registered" }).count()
-  const stream = await Streamrequest.findById(channel)
+  const user = await StreamPreRegister.find({ streamId: channel, status: 'Registered' }).count();
+  const stream = await Streamrequest.findById(channel);
   return { userActive: user, noOfParticipants: stream.noOfParticipants };
 };
 
 const remove_host_live = async (req) => {
-  req.io.emit(req.query.id + "admin_action", { remove: true });
-  return { removed: "success" }
+  req.io.emit(req.query.id + 'admin_action', { remove: true });
+  return { removed: 'success' };
 };
 
 const create_subhost_token = async (req) => {
   let supplierId = req.userId;
   let streamId = req.body.streamId;
   //console.log(streamId)
-  let stream = await Streamrequest.findById(streamId)
+  let stream = await Streamrequest.findById(streamId);
   let value = await tempTokenModel.findOne({ streamId: stream._id, supplierId: supplierId });
   if (!value) {
     if (!streamId) {
@@ -959,15 +986,16 @@ const create_subhost_token = async (req) => {
     stream.goLive = true;
     stream.save();
   }
-  req.io.emit(streamId + "_golive", { streamId: streamId, });
+  req.io.emit(streamId + '_golive', { streamId: streamId });
+  await production_supplier_token_cloudrecording(req, streamId);
   return value;
 };
 
 const create_raice_token = async (req) => {
   let streamId = req.body.streamId;
   //console.log(streamId)
-  let stream = await Streamrequest.findById(streamId)
-  let value = await tempTokenModel.findOne({ streamId: stream._id, type: 'raice-your-hand', });
+  let stream = await Streamrequest.findById(streamId);
+  let value = await tempTokenModel.findOne({ streamId: stream._id, type: 'raice-your-hand' });
   if (!value) {
     if (!streamId) {
       throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
@@ -998,11 +1026,10 @@ const create_raice_token = async (req) => {
   return value;
 };
 
-
 const production_supplier_token = async (req) => {
   let supplierId = req.userId;
   let streamId = req.body.streamId;
-  let stream = await Streamrequest.findById(streamId)
+  let stream = await Streamrequest.findById(streamId);
   if (!stream) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
   }
@@ -1024,7 +1051,7 @@ const production_supplier_token = async (req) => {
         created_num: new Date(new Date(moment().format('YYYY-MM-DD') + ' ' + moment().format('HH:mm:ss'))).getTime(),
         expDate: expirationTimestamp * 1000,
         Duration: stream.Durationm,
-        type: "Supplier"
+        type: 'Supplier',
       },
     });
     const token = await geenerate_rtc_token(streamId, uid, role, expirationTimestamp);
@@ -1035,19 +1062,23 @@ const production_supplier_token = async (req) => {
     stream.goLive = true;
     stream.save();
   }
-  req.io.emit(streamId + "_golive", { streamId: streamId, })
+
+  req.io.emit(streamId + '_golive', { streamId: streamId });
+  console.log(streamId);
+  await production_supplier_token_cloudrecording(req, streamId);
   return value;
 };
 
-const production_supplier_token_cloudrecording = async (req) => {
-  let streamId = req.body.streamId;
-  let stream = await Streamrequest.findById(streamId)
+const production_supplier_token_cloudrecording = async (req, id) => {
+  let streamId = id;
+  // let streamId = req.body.streamId;
+  let stream = await Streamrequest.findById(streamId);
   if (!stream) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
   }
-  console.log(stream)
-  value = await tempTokenModel.findOne({ chennel: streamId, type: 'CloudRecording', recoredStart: { $eq: "Pending" } });
-  if (!value ) {
+  console.log(stream);
+  value = await tempTokenModel.findOne({ chennel: streamId, type: 'CloudRecording'});
+  if (!value) {
     const uid = await generateUid();
     const role = Agora.RtcRole.SUBSCRIBER;
     const expirationTimestamp = stream.endTime / 1000;
@@ -1068,17 +1099,32 @@ const production_supplier_token_cloudrecording = async (req) => {
     value.token = token;
     value.store = value._id.replace(/[^a-zA-Z0-9]/g, '');
     value.save();
+  } else {
+    if (value.videoLink == '' || value.videoLink == null) {
+      const uid = await generateUid();
+      const role = Agora.RtcRole.SUBSCRIBER;
+      const expirationTimestamp = stream.endTime / 1000;
+      const token = await geenerate_rtc_token(stream._id, uid, role, expirationTimestamp);
+      value.Uid = uid;
+      value.expDate = expirationTimestamp * 1000;
+      value.token = token;
+      value.recoredStart = 'Pending';
+      value.save();
+    }
   }
-  return value
-}
+  if (value.videoLink == '' || value.videoLink == null) {
+    await agora_acquire(req, value._id);
+  }
+  return value;
+};
 
 const production_supplier_token_watchamin = async (req) => {
   let streamId = req.body.streamId;
-  let stream = await Streamrequest.findById(streamId)
+  let stream = await Streamrequest.findById(streamId);
   if (!stream) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
   }
-  value = await tempTokenModel.findOne({ chennel: streamId, type: 'adminwatch', });
+  value = await tempTokenModel.findOne({ chennel: streamId, type: 'adminwatch' });
   if (!value) {
     const uid = await generateUid();
     const role = Agora.RtcRole.SUBSCRIBER;
@@ -1100,9 +1146,9 @@ const production_supplier_token_watchamin = async (req) => {
     value.token = token;
     value.save();
   }
-  return value
-}
 
+  return value;
+};
 
 const get_stream_complete_videos = async (req) => {
   let streamId = req.query.id;
@@ -1116,27 +1162,30 @@ const get_stream_complete_videos = async (req) => {
         pipeline: [
           {
             $match: {
-              $and: [{ type: { $eq: "CloudRecording" } }, { $or: [{ recoredStart: { $eq: "stop" } }, { recoredStart: { $eq: "query" } }] }],
+              $and: [
+                { type: { $eq: 'CloudRecording' } },
+                { $or: [{ recoredStart: { $eq: 'stop' } }, { recoredStart: { $eq: 'query' } }] },
+              ],
             },
           },
         ],
         as: 'temptokens',
       },
     },
-  ])
+  ]);
   if (value.length == 0) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
   }
 
   return value[0];
+};
 
-}
-
-
-const fs = require('fs')
+const fs = require('fs');
+const { TokenList } = require('twilio/lib/rest/oauth/v1/token');
 
 const videoConverter = async () => {
-  const inputFilePath = 'https://streamingupload.s3.ap-south-1.amazonaws.com/f7e4c26bade144a8a848ae24385e4a4e/16293/43d33e0a3a4f4ddbfa1e6098fb5248e0_5f304c8b-f8ca-42dc-a354-1845528f41fd.m3u8';
+  const inputFilePath =
+    'https://streamingupload.s3.ap-south-1.amazonaws.com/f7e4c26bade144a8a848ae24385e4a4e/16293/43d33e0a3a4f4ddbfa1e6098fb5248e0_5f304c8b-f8ca-42dc-a354-1845528f41fd.m3u8';
   const outputFilePath = 'output1.mp4';
 
   ffmpeg(inputFilePath)
@@ -1173,7 +1222,7 @@ const videoConverter = async () => {
       //console.log(`File uploaded successfully. Location: ${data.Location}`);
     }
   });
-}
+};
 
 module.exports = {
   generateToken,
@@ -1202,5 +1251,5 @@ module.exports = {
   production_supplier_token_watchamin,
   get_stream_complete_videos,
   videoConverter,
-  get_current_live_stream
+  get_current_live_stream,
 };

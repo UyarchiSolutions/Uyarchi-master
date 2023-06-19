@@ -13,6 +13,7 @@ const ReceivedProduct = require('../models/receivedProduct.model');
 const { MarketClone } = require('../models/market.model');
 const Trendproductsclones = require('../models/trendsProduct.clocne.model');
 const { ProductorderClone } = require('../models/shopOrder.model');
+const { Category } = require('../models');
 const createProduct = async (productBody) => {
   let { needBidding, biddingStartDate, biddingStartTime, biddingEndDate, biddingEndTime, maxBidAomunt, minBidAmount } =
     productBody;
@@ -2056,6 +2057,22 @@ const getProductbycategory = async (id) => {
   }
 };
 
+const getDatabyCategories = async (value) => {
+  let id;
+  if (value == 'vegetable') {
+    id = 'a7c95af4-abd5-4fe0-b685-fd93bb98f5ec';
+  } else {
+    id = '8de34c08-b50b-43cf-85b0-0fb2249495c0';
+  }
+
+  const data = await Product.aggregate([
+    {
+      $match: { category: id },
+    },
+  ]);
+  return data;
+};
+
 module.exports = {
   createProduct,
   getTrendsData,
@@ -2129,4 +2146,5 @@ module.exports = {
   getstock_random_product,
   getstock_opening_product,
   getProductbycategory,
+  getDatabyCategories,
 };

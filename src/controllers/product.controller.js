@@ -485,6 +485,11 @@ const getProductbycategory = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const getDatabyCategories = catchAsync(async (req, res) => {
+  const data = await productService.getDatabyCategories(req.params.value);
+  res.send(data);
+});
+
 module.exports = {
   createProduct,
   getAllienceBySupplierId,
@@ -555,4 +560,5 @@ module.exports = {
   get_Set_price_product,
   get_random_product,
   getProductbycategory,
+  getDatabyCategories,
 };

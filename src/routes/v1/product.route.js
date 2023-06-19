@@ -102,5 +102,5 @@ router.route('/getsetsales/dataOnly/:page').get(productController.getDataOnlySet
 router.route('/setprice/details/:page').get(productController.get_Set_price_product);
 router.route('/getproduct/stock/:type').get(productController.get_random_product);
 router.route('/get/product/by/category/:id').get(productController.getProductbycategory);
-
+router.route('/getDataby/Categories/:value').get(productController.getDatabyCategories);
 module.exports = router;

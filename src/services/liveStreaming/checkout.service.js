@@ -204,6 +204,8 @@ const emit_cart_qty = async (req,streamId) => {
     },
   ]);
   req.io.emit(streamId + "cart_qty", socket_cart[0].streamrequestposts);
+
+  return socket_cart[0].streamrequestposts;
 }
 const get_addTocart = async (req) => {
   let timeNow = new Date().getTime();
@@ -357,7 +359,7 @@ const confirmOrder_cod = async (shopId, body,req) => {
   });
 };
 const confirmOrder_razerpay = async (shopId, body,req) => {
-  let orders;
+  // let orders;
   let streamId = body.OdrerDetails.cart;
   //console.log(body);
   //console.log(streamId);
@@ -366,18 +368,21 @@ const confirmOrder_razerpay = async (shopId, body,req) => {
     let collectedAmount = payment.amount / 100;
     let collectedstatus = payment.status;
     if (collectedstatus == 'captured' && collectedAmount == body.OdrerDetails.Amount) {
-      let cart = await streamingCart.findById(streamId);
-      if (!cart || cart.status == 'ordered') {
-        throw new ApiError(httpStatus.NOT_FOUND, 'cart not found 🖕');
-      }
-      let orders = await addstreaming_order(shopId, body, cart, collectedAmount);
-      let paymantss = await add_odrerPayment(shopId, body, orders, payment);
-      cart.cart.forEach(async (e) => {
-        await addstreaming_order_product(shopId, e, orders);
-      });
-      cart.status = 'ordered';
-      cart.save();
-      return orders;
+      return new Promise(async (resolve) => {
+        let cart = await streamingCart.findById(streamId);
+        if (!cart || cart.status == 'ordered') {
+          throw new ApiError(httpStatus.NOT_FOUND, 'cart not found 🖕');
+        }
+        let orders = await addstreaming_order(shopId, body, cart, collectedAmount);
+        let paymantss = await add_odrerPayment(shopId, body, orders, payment);
+        cart.cart.forEach(async (e) => {
+          await addstreaming_order_product(shopId, e, orders);
+        });
+        cart.status = 'ordered';
+        cart.save();
+        // return orders;
+        resolve(orders);
+    });
     }
   }
 };

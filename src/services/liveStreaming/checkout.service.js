@@ -121,7 +121,7 @@ const emit_cart_qty = async (req,streamId) => {
                     localField: '_id',
                     foreignField: 'streamPostId',
                     pipeline: [
-                      { $group: { _id: null, count: { $sum: "$purchase_price" } } },
+                      { $group: { _id: null, count: { $sum: "$purchase_quantity" } } },
                     ],
                     as: 'stream_checkout',
                   },

@@ -22,7 +22,9 @@ const confirmOrder_razerpay = catchAsync(async (req, res) => {
 
 const confirmOrder_cod = catchAsync(async (req, res) => {
   const category = await checkout.confirmOrder_cod(req.shopId, req.body, req);
+  setTimeout(async () => {
   await checkout.emit_cart_qty(req, req.body.OdrerDetails.streamId);
+  },3000)
   res.send(category);
 });
 

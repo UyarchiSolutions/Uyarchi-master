@@ -2614,7 +2614,7 @@ const go_live_stream_host = async (req, userId) => {
                     from: 'streamingorderproducts',
                     localField: '_id',
                     foreignField: 'streamPostId',
-                    pipeline: [{ $group: { _id: null, count: { $sum: '$purchase_price' } } }],
+                    pipeline: [{ $group: { _id: null, count: { $sum: '$purchase_quantity' } } }],
                     as: 'stream_checkout',
                   },
                 },

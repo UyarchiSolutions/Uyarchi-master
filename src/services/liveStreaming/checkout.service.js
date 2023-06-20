@@ -352,7 +352,7 @@ const confirmOrder_cod = async (shopId, body,req) => {
     });
     cart.status = 'ordered';
     cart.save();
-    await emit_cart_qty(req,body.OdrerDetails.streamId);
+    // await emit_cart_qty(req,body.OdrerDetails.streamId);
     resolve(orders);
   });
 };
@@ -377,7 +377,6 @@ const confirmOrder_razerpay = async (shopId, body,req) => {
       });
       cart.status = 'ordered';
       cart.save();
-      await emit_cart_qty(req,body.OdrerDetails.streamId);
       return orders;
     }
   }
@@ -634,5 +633,6 @@ module.exports = {
   get_streamingorderproducts,
   Buyer_Status_Update,
   proceed_to_pay_start,
-  proceed_to_pay_stop
+  proceed_to_pay_stop,
+  emit_cart_qty
 };

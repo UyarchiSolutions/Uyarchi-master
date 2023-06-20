@@ -528,17 +528,17 @@ const get_sub_golive = async (req, io) => {
               from: 'purchasedplans',
               localField: 'planId',
               foreignField: '_id',
-              pipeline: [
-                {
-                  $lookup: {
-                    from: 'streamplans',
-                    localField: 'planId',
-                    foreignField: '_id',
-                    as: 'streamplans',
-                  },
-                },
-                { $unwind: '$streamplans' },
-              ],
+              // pipeline: [
+              //   {
+              //     $lookup: {
+              //       from: 'streamplans',
+              //       localField: 'planId',
+              //       foreignField: '_id',
+              //       as: 'streamplans',
+              //     },
+              //   },
+              //   { $unwind: '$streamplans' },
+              // ],
               as: 'purchasedplans',
             },
           },

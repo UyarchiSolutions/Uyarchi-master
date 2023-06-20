@@ -682,7 +682,7 @@ const get_sub_golive = async (req, io) => {
         expDate_host: '$temptokens.expDate_host',
         temptokens: '$temptokens',
         streamrequests: '$streamrequests',
-        chat: '$streamrequests.purchasedplans.streamplans.chatNeed',
+        chat: '$streamrequests.purchasedplans.chatNeed',
         streamrequests_post: '$streamrequests_post',
         streamrequestposts: '$streamrequests_post.streamrequestposts',
         chat_need: '$streamrequests.chat_need',

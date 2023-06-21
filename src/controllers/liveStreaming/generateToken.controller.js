@@ -147,6 +147,11 @@ const videoConverter= catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).send(tokens);
 });
 
+const cloud_recording_start= catchAsync(async (req, res) => {
+  let tokens = await generateTokenService.cloud_recording_start(req);
+  res.status(httpStatus.CREATED).send(tokens);
+});
+
 
 module.exports = {
   generateToken,
@@ -175,5 +180,6 @@ module.exports = {
   production_supplier_token_watchamin,
   get_stream_complete_videos,
   videoConverter,
-  get_current_live_stream
+  get_current_live_stream,
+  cloud_recording_start
 };

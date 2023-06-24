@@ -310,59 +310,65 @@ const agora_acquire = async (req, id) => {
 
 const recording_start = async (req, id) => {
   // let temtoken = id;
-  let token = await tempTokenModel.findOne({ chennel: id, type: 'CloudRecording' });
+  let token = await tempTokenModel.findOne({ chennel: id, type: 'CloudRecording', recoredStart: { $eq: "acquire" } });
   // let temtoken=req.body.id;
   // let token = await tempTokenModel.findById(temtoken);
-  if (token.recoredStart == 'acquire') {
-    const resource = token.resourceId;
-    //console.log(resource)
-    //console.log(token)
-    const mode = 'mix';
-    const start = await axios.post(
-      `https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/mode/${mode}/start`,
-      {
-        cname: token.chennel,
-        uid: token.Uid.toString(),
-        clientRequest: {
-          token: token.token,
-          recordingConfig: {
-            maxIdleTime: 30,
-            streamTypes: 2,
-            channelType: 1,
-            videoStreamType: 0,
-            transcodingConfig: {
-              height: 640,
-              width: 1080,
-              bitrate: 1000,
-              fps: 15,
-              mixedVideoLayout: 1,
-              backgroundColor: '#FFFFFF',
+  if (token) {
+    if (token.recoredStart == 'acquire') {
+      const resource = token.resourceId;
+      //console.log(resource)
+      //console.log(token)
+      const mode = 'mix';
+      const start = await axios.post(
+        `https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/mode/${mode}/start`,
+        {
+          cname: token.chennel,
+          uid: token.Uid.toString(),
+          clientRequest: {
+            token: token.token,
+            recordingConfig: {
+              maxIdleTime: 30,
+              streamTypes: 2,
+              channelType: 1,
+              videoStreamType: 0,
+              transcodingConfig: {
+                height: 640,
+                width: 1080,
+                bitrate: 1000,
+                fps: 15,
+                mixedVideoLayout: 1,
+                backgroundColor: '#FFFFFF',
+              },
+            },
+            recordingFileConfig: {
+              avFileType: ['hls'],
+            },
+            storageConfig: {
+              vendor: 1,
+              region: 14,
+              bucket: 'streamingupload',
+              accessKey: 'AKIA3323XNN7Y2RU77UG',
+              secretKey: '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',
+              fileNamePrefix: [token.store, token.Uid.toString()],
             },
           },
-          recordingFileConfig: {
-            avFileType: ['hls'],
-          },
-          storageConfig: {
-            vendor: 1,
-            region: 14,
-            bucket: 'streamingupload',
-            accessKey: 'AKIA3323XNN7Y2RU77UG',
-            secretKey: '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',
-            fileNamePrefix: [token.store, token.Uid.toString()],
-          },
         },
-      },
-      { headers: { Authorization } }
-    );
-    token.resourceId = start.data.resourceId;
-    token.sid = start.data.sid;
-    token.recoredStart = 'start';
-    token.save();
-    setTimeout(async () => {
-      await recording_query(req, token._id);
-    }, 3000);
-    return start.data;
-  } else {
+        { headers: { Authorization } }
+      );
+      token.resourceId = start.data.resourceId;
+      token.sid = start.data.sid;
+      token.recoredStart = 'start';
+      token.save();
+      setTimeout(async () => {
+        await recording_query(req, token._id);
+      }, 3000);
+      return start.data;
+    }
+    else {
+      return { message: 'Already Started' };
+    }
+  }
+  else {
     return { message: 'Already Started' };
   }
 };
@@ -528,17 +534,17 @@ const get_sub_golive = async (req, io) => {
               from: 'purchasedplans',
               localField: 'planId',
               foreignField: '_id',
-              pipeline: [
-                {
-                  $lookup: {
-                    from: 'streamplans',
-                    localField: 'planId',
-                    foreignField: '_id',
-                    as: 'streamplans',
-                  },
-                },
-                { $unwind: '$streamplans' },
-              ],
+              // pipeline: [
+              //   {
+              //     $lookup: {
+              //       from: 'streamplans',
+              //       localField: 'planId',
+              //       foreignField: '_id',
+              //       as: 'streamplans',
+              //     },
+              //   },
+              //   { $unwind: '$streamplans' },
+              // ],
               as: 'purchasedplans',
             },
           },
@@ -682,7 +688,7 @@ const get_sub_golive = async (req, io) => {
         expDate_host: '$temptokens.expDate_host',
         temptokens: '$temptokens',
         streamrequests: '$streamrequests',
-        chat: '$streamrequests.purchasedplans.streamplans.chatNeed',
+        chat: '$streamrequests.purchasedplans.chatNeed',
         streamrequests_post: '$streamrequests_post',
         streamrequestposts: '$streamrequests_post.streamrequestposts',
         chat_need: '$streamrequests.chat_need',
@@ -1077,7 +1083,7 @@ const production_supplier_token_cloudrecording = async (req, id) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
   }
   console.log(stream);
-  value = await tempTokenModel.findOne({ chennel: streamId, type: 'CloudRecording'});
+  value = await tempTokenModel.findOne({ chennel: streamId, type: 'CloudRecording', recoredStart: { $in: ["query", 'start'] } });
   if (!value) {
     const uid = await generateUid();
     const role = Agora.RtcRole.SUBSCRIBER;
@@ -1099,21 +1105,49 @@ const production_supplier_token_cloudrecording = async (req, id) => {
     value.token = token;
     value.store = value._id.replace(/[^a-zA-Z0-9]/g, '');
     value.save();
-  } else {
     if (value.videoLink == '' || value.videoLink == null) {
+      await agora_acquire(req, value._id);
+    }
+  } else {
+    // try {
+    let token = value;
+    const resource = token.resourceId;
+    const sid = token.sid;
+    console.log(1234567890123456, resource)
+    const mode = 'mix';
+    // //console.log(`https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/query`);
+    await axios.get(
+      `https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/query`,
+      { headers: { Authorization } }
+    ).then((res) => {
+
+    }).catch(async (error) => {
+      await tempTokenModel.findByIdAndUpdate({ _id: value._id }, { recoredStart: "stop" }, { new: true });
       const uid = await generateUid();
       const role = Agora.RtcRole.SUBSCRIBER;
       const expirationTimestamp = stream.endTime / 1000;
+      value = await tempTokenModel.create({
+        ...req.body,
+        ...{
+          date: moment().format('YYYY-MM-DD'),
+          time: moment().format('HHMMSS'),
+          created: moment(),
+          Uid: uid,
+          chennel: stream._id,
+          created_num: new Date(new Date(moment().format('YYYY-MM-DD') + ' ' + moment().format('HH:mm:ss'))).getTime(),
+          expDate: expirationTimestamp * 1000,
+          type: 'CloudRecording',
+        },
+      });
       const token = await geenerate_rtc_token(stream._id, uid, role, expirationTimestamp);
-      value.Uid = uid;
-      value.expDate = expirationTimestamp * 1000;
       value.token = token;
-      value.recoredStart = 'Pending';
+      value.store = value._id.replace(/[^a-zA-Z0-9]/g, '');
       value.save();
-    }
-  }
-  if (value.videoLink == '' || value.videoLink == null) {
-    await agora_acquire(req, value._id);
+
+      if (value.videoLink == '' || value.videoLink == null) {
+        await agora_acquire(req, value._id);
+      }
+    });
   }
   return value;
 };
@@ -1224,6 +1258,26 @@ const videoConverter = async () => {
   });
 };
 
+const cloud_recording_start = async (req) => {
+
+  // let recording=await tempTokenModel.findById(req.query.id);
+
+  let token = await tempTokenModel.findById(req.query.id);
+  console.log(token)
+  const resource = token.resourceId;
+  const sid = token.sid;
+  const mode = 'mix';
+  // //console.log(`https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/query`);
+  const query = await axios.get(
+    `https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/query`,
+    { headers: { Authorization } }
+  );
+
+  return query.data;
+  // return recording;
+
+};
+
 module.exports = {
   generateToken,
   getHostTokens,
@@ -1252,4 +1306,5 @@ module.exports = {
   get_stream_complete_videos,
   videoConverter,
   get_current_live_stream,
+  cloud_recording_start
 };

@@ -45,6 +45,7 @@ router.route('/get/live/stream/videos').get(generateToken.get_stream_complete_vi
 router.route('/download/video/aws').get(generateToken.videoConverter);
 
 
+router.route('/cloud/recording/start').get(generateToken.cloud_recording_start);
 
 
 module.exports = router;

@@ -2614,7 +2614,7 @@ const go_live_stream_host = async (req, userId) => {
                     from: 'streamingorderproducts',
                     localField: '_id',
                     foreignField: 'streamPostId',
-                    pipeline: [{ $group: { _id: null, count: { $sum: '$purchase_price' } } }],
+                    pipeline: [{ $group: { _id: null, count: { $sum: '$purchase_quantity' } } }],
                     as: 'stream_checkout',
                   },
                 },
@@ -2843,18 +2843,69 @@ const get_subhost_token = async (req, userId) => {
               pipeline: [
                 {
                   $lookup: {
+                    from: 'streamingcartproducts',
+                    localField: '_id',
+                    foreignField: 'streamPostId',
+                    pipeline: [
+                      {
+                        $lookup: {
+                          from: 'streamingcarts',
+                          localField: 'streamingCart',
+                          foreignField: '_id',
+                          pipeline: [
+                            { $match: { $and: [{ status: { $ne: 'ordered' } }] } },
+                            {
+                              $project: {
+                                _id: 1,
+                              },
+                            },
+                          ],
+                          as: 'streamingcarts',
+                        },
+                      },
+                      { $unwind: '$streamingcarts' },
+                      { $match: { $and: [{ cardStatus: { $eq: true } }, { add_to_cart: { $eq: true } }] } },
+                      { $group: { _id: null, count: { $sum: '$cartQTY' } } },
+                    ],
+                    as: 'stream_cart',
+                  },
+                },
+                {
+                  $unwind: {
+                    preserveNullAndEmptyArrays: true,
+                    path: '$stream_cart',
+                  },
+                },
+                {
+                  $lookup: {
+                    from: 'streamingorderproducts',
+                    localField: '_id',
+                    foreignField: 'streamPostId',
+                    pipeline: [{ $group: { _id: null, count: { $sum: '$purchase_quantity' } } }],
+                    as: 'stream_checkout',
+                  },
+                },
+                {
+                  $unwind: {
+                    preserveNullAndEmptyArrays: true,
+                    path: '$stream_checkout',
+                  },
+                },
+                {
+                  $lookup: {
                     from: 'products',
                     localField: 'productId',
                     foreignField: '_id',
                     as: 'products',
                   },
                 },
+
                 { $unwind: '$products' },
                 {
                   $project: {
                     _id: 1,
                     productTitle: '$products.productTitle',
-                    productImage: '$products.image',
+                    image: '$products.image',
                     productId: 1,
                     categoryId: 1,
                     quantity: 1,
@@ -2869,6 +2920,8 @@ const get_subhost_token = async (req, userId) => {
                     created: 1,
                     streamStart: 1,
                     streamEnd: 1,
+                    stream_cart: { $ifNull: ['$stream_cart.count', 0] },
+                    stream_checkout: { $ifNull: ['$stream_checkout.count', 0] },
                   },
                 },
               ],
@@ -2888,10 +2941,12 @@ const get_subhost_token = async (req, userId) => {
               validity: '$streamposts.validity',
               minLots: '$streamposts.minLots',
               incrementalLots: '$streamposts.incrementalLots',
-              productImage: '$streamposts.productImage',
+              image: '$streamposts.image',
               streamStart: '$streamposts.streamStart',
               streamEnd: '$streamposts.streamEnd',
               streampostsId: '$streamposts._id',
+              stream_cart: '$streamposts.stream_cart',
+              stream_checkout: '$streamposts.stream_checkout',
             },
           },
         ],

@@ -154,7 +154,7 @@ const B2bUsersAdminLogin = async (userBody) => {
       throw new ApiError(httpStatus.UNAUTHORIZED, "Passwoed Doesn't Match");
     }
   }
-  consoe.log(fcm_tokan)
+  console.log(fcm_tokan)
   if (fcm_tokan != null) {
     let token = userName.fcmToken;
     if (token != null) {

@@ -158,7 +158,6 @@ const push_notification= catchAsync(async (req, res) => {
 });
 
 
-
 module.exports = {
   generateToken,
   getHostTokens,
@@ -188,5 +187,5 @@ module.exports = {
   videoConverter,
   get_current_live_stream,
   cloud_recording_start,
-  push_notification
+  push_notification,
 };

@@ -1122,7 +1122,7 @@ const production_supplier_token_cloudrecording = async (req, id) => {
       .get(`https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/query`, {
         headers: { Authorization },
       })
-      .then((res) => {})
+      .then((res) => { })
       .catch(async (error) => {
         await tempTokenModel.findByIdAndUpdate({ _id: value._id }, { recoredStart: 'stop' }, { new: true });
         const uid = await generateUid();
@@ -1261,45 +1261,60 @@ const videoConverter = async () => {
 };
 
 const cloud_recording_start = async (req) => {
+  AWS.config.update({
+    accessKeyId: 'AKIA3323XNN7Y2RU77UG',
+    secretAccessKey: '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',
+    region: 'ap-south-1',
+  });
+  const mediaConvert = new AWS.MediaConvert();
 
-  // let recording=await tempTokenModel.findById(req.query.id);
+  // Specify the input M3U8 file and output MP4 file locations
+  const inputBucket = 'streamingupload';
+  const inputKey = '00360565530b44c49a7cb766068be648/18555/e22eb99a93459ec3e5294aba591afc92_6972d8ef-e89d-4101-821a-e7e71ebd8178.m3u8';
+  const outputBucket = 'streamingupload';
+  const outputKey = 'converted/upload/91afc92_6972d8ef-e89d-4101-821a-e7e71ebd8178.mp4';
 
-  let token = await tempTokenModel.findById(req.query.id);
-  console.log(token)
-  const resource = token.resourceId;
-  const sid = token.sid;
-  const mode = 'mix';
-  // //console.log(`https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/query`);
-  const query = await axios.get(
-    `https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/query`,
-    { headers: { Authorization } }
-  );
+  // streamingupload
 
-  return query.data;
-  // return recording;
+
+};
+const { Users } = require('../../models/B2Busers.model');
 
 const push_notification = async (req) => {
-  const admin = require('../firebase.service');
-const token=['fV14fUCtTsiuByJoV0b5sv:APA91bGDmqm7XZhVbiz5Pl7sBSATQZlf3fF1RRQqIVJFwwlzuPLO9kKKUWd4gLidxOnd8gTUVO8z1SypxnvfUUcuWeaKQmpHWDA4K-kDeZBAH-UyKKFknvJF6RsW8NnT5TJMrc_1FfuC','eopV857mRIeqUihxdHPpGz:APA91bEyYLY1NKs6lpqomEyNYOGRYTr89UCpOICJX0RENUNYNokqz3eaIezLqRA1TfMVgzIyKwNGu7ayx4DDGzD875E9aPmkJgI8agIeozGeL_PH5WPBR1Y0qrK2NguolWGxHW4mFU2w','f8fGsVgvTlKrN307hL4fAX:APA91bHd7uGVxPDHAVTh3Uv-dBuxAKVBvgk_2eVmqg7b9Vxu_bMjpotlr9QG7AsKTKHnyK5gkur6mXYA4yhtSkVszvpJxr-akEPd-Btds1eZpEBXumdjqZYkg8iBf3_yJItNdJ5w7ECK','c887tUnkTVyENoJLlvcJPz:APA91bG58QTaNk-gtxJwNIxOP-tbPKvKF04HaLFpvYR4lx5GFvlBsCqf_KpzNrZn0j4BjLrtgJU8OLRTYzerTOsTitdCk9suM6p53SrbrBIjXNfGq0aw538nYRi-yDiIUDP3NVmJcmTx',]
-  const message = {
-    tokens:token,
-    notification: {
-      title: 'Warmy !',
-      body: 'This is a test notification.',
-      image:"https://warmy.co.in/wp-content/uploads/2023/06/Warmy.png"
-    },
-    // topic: 'your-topic', // Replace with the topic or device token you want to send the notification to
-  };
+  const { text, title, image, user } = req.body
 
-  await admin
-    .messaging()
-    .sendEachForMulticast(message)
-    .then((response) => {
-      console.log(response);
-      return 'Notification sent successfully:', response;
-    })
-    .catch((error) => console.log(error));
+  let userss = await Users.findById(user);
+  if (userss) {
+    if (userss.fcmToken.length != 0) {
+      const admin = require('../firebase.service');
+      const token = userss.fcmToken;
+      const message = {
+        tokens: token,
+        notification: {
+          title: text,
+          body: title,
+          image: image
+        },
+        // topic: 'your-topic', // Replace with the topic or device token you want to send the notification to
+      };
+      let messages = await admin
+        .messaging()
+        .sendEachForMulticast(message)
+        .then((response) => {
+          return response;
+        })
+        .catch((error) => console.log(error));
+
+      return messages;
+    }
+    else {
+      return { message: "device Not found" }
+    }
+  }
+  return { message: "user Not found" }
 };
+
+
 module.exports = {
   generateToken,
   getHostTokens,

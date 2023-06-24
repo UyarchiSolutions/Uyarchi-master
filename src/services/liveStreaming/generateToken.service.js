@@ -1259,22 +1259,21 @@ const videoConverter = async () => {
 };
 
 const cloud_recording_start = async (req) => {
+  AWS.config.update({
+    accessKeyId: 'AKIA3323XNN7Y2RU77UG',
+    secretAccessKey: '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',
+    region: 'ap-south-1',
+  });
+  const mediaConvert = new AWS.MediaConvert();
 
-  // let recording=await tempTokenModel.findById(req.query.id);
+  // Specify the input M3U8 file and output MP4 file locations
+  const inputBucket = 'streamingupload';
+  const inputKey = '00360565530b44c49a7cb766068be648/18555/e22eb99a93459ec3e5294aba591afc92_6972d8ef-e89d-4101-821a-e7e71ebd8178.m3u8';
+  const outputBucket = 'streamingupload';
+  const outputKey = 'converted/upload/91afc92_6972d8ef-e89d-4101-821a-e7e71ebd8178.mp4';
 
-  let token = await tempTokenModel.findById(req.query.id);
-  console.log(token)
-  const resource = token.resourceId;
-  const sid = token.sid;
-  const mode = 'mix';
-  // //console.log(`https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/query`);
-  const query = await axios.get(
-    `https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/query`,
-    { headers: { Authorization } }
-  );
+  // streamingupload
 
-  return query.data;
-  // return recording;
 
 };
 

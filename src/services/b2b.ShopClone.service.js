@@ -1058,7 +1058,7 @@ const getshopWardStreetNamesWithAggregation_withfilter_all = async (district, zo
     streetMatch = { Strid: { $eq: street } };
   }
   if (pincode != 'null') {
-    pincodeMatch = { Pincode: { $eq: pincode } };
+    pincodeMatch = { Pincode: { $eq: parseInt(pincode) } };
   }
   //console.log(districtMatch);
 

@@ -15,18 +15,18 @@ router
 router.route('/aggregation/Names/:page').get(b2bShopCloneController.getshopWardStreetNamesWithAggregation);
 router.route('/myshops/assigned/Names/:page').get(authorization, b2bShopCloneController.getshopmyshops);
 router
-  .route('/aggregation/filter/:district/:zone/:ward/:street/:status/:page')
+  .route('/aggregation/filter/:district/:zone/:ward/:street/:status/:page/:pincode')
   .get(b2bShopCloneController.getshopWardStreetNamesWithAggregation_withfilter);
 router
-  .route('/aggregation/filter/daily/:user/:startdata/:enddate/:starttime/:endtime/:status/:page')
+  .route('/aggregation/filter/daily/:user/:startdata/:enddate/:starttime/:endtime/:status/:page/:pincode')
   .get(b2bShopCloneController.getshopWardStreetNamesWithAggregation_withfilter_daily);
 
 // clone
 router
-  .route('/aggregationgetAll/filter/:district/:zone/:ward/:street')
+  .route('/aggregationgetAll/filter/:district/:zone/:ward/:street/:pincode')
   .get(b2bShopCloneController.getshopWardStreetNamesWithAggregation_withfilter_all);
 router
-  .route('/aggregationdaily/filter/daily/:user/:startdata/:enddate/:starttime/:endtime')
+  .route('/aggregationdaily/filter/daily/:user/:startdata/:enddate/:starttime/:endtime/:pincode')
   .get(b2bShopCloneController.getshopWardStreetNamesWithAggregation_withfilter_daily_all);
 
 router
@@ -125,4 +125,6 @@ router.route('/get/final/map/view').get(b2bShopCloneController.finalmap_view);
 router.route('/get/final/map/view/pincode').get(b2bShopCloneController.finalmap_view_picode);
 router.route('/get/final/customer/final').get(b2bShopCloneController.get_final_customer_shops);
 router.route('/getSales/Executives').get(b2bShopCloneController.getSalesExecutives);
+router.route('/sorting/bysaleman/pincode/:id').get(b2bShopCloneController.getPincodeByUser);
+router.route('/Pincod/For/All').get(b2bShopCloneController.Pincodes_For_All);
 module.exports = router;

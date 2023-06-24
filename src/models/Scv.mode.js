@@ -58,10 +58,13 @@ const CartSchema = new mongoose.Schema(
       type: Object,
       default: {},
     },
+    location: {
+      type: Object,
+    },
   },
   { timestamps: true }
 );
-
+CartSchema.index({ location: '2dsphere' });
 const ScvCart = mongoose.model('scvCart', CartSchema);
 
 const SCVSchema = new mongoose.Schema(

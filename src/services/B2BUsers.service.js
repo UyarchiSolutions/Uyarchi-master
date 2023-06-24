@@ -171,6 +171,7 @@ const B2bUsersAdminLogin = async (userBody) => {
 };
 const B2bUsersAdminlogout = async (req) => {
   let userName = await Users.findById(req.userId);
+  console.log(req.body.fcmToken)
   if (userName != null) {
     let token = userName.fcmToken;
     if (token != null) {

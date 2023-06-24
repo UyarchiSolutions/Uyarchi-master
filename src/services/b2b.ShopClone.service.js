@@ -5745,6 +5745,31 @@ const getPincodeByUser = async (id) => {
   return Pincode;
 };
 
+const Pincodes_For_All = async () => {
+  const data = await Shop.aggregate([
+    {
+      $group: {
+        _id: '$Pincode',
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        pincodes: { $addToSet: '$_id' },
+      },
+    },
+    { $unwind: { preserveNullAndEmptyArrays: true, path: '$pincodes' } },
+    { $match: { pincodes: { $ne: null } } },
+    {
+      $project: {
+        _id: 0,
+        pincodes: 1,
+      },
+    },
+  ]);
+  return data;
+};
+
 module.exports = {
   createShopClone,
   getAllShopClone,
@@ -5819,4 +5844,5 @@ module.exports = {
   get_final_customer_shops,
   getSalesExecutives,
   getPincodeByUser,
+  Pincodes_For_All,
 };

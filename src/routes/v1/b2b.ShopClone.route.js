@@ -126,4 +126,5 @@ router.route('/get/final/map/view/pincode').get(b2bShopCloneController.finalmap_
 router.route('/get/final/customer/final').get(b2bShopCloneController.get_final_customer_shops);
 router.route('/getSales/Executives').get(b2bShopCloneController.getSalesExecutives);
 router.route('/sorting/bysaleman/pincode/:id').get(b2bShopCloneController.getPincodeByUser);
+router.route('/Pincod/For/All').get(b2bShopCloneController.Pincodes_For_All);
 module.exports = router;

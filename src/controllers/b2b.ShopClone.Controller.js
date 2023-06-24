@@ -597,6 +597,11 @@ const getSalesExecutives = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const Pincodes_For_All = catchAsync(async (req, res) => {
+  const data = await b2bCloneService.Pincodes_For_All();
+  res.send(data);
+});
+
 module.exports = {
   createB2bShopClone,
   getAllB2BshopClone,
@@ -672,4 +677,5 @@ module.exports = {
   get_final_customer_shops,
   getSalesExecutives,
   getPincodeByUser,
+  Pincodes_For_All,
 };

@@ -1039,11 +1039,12 @@ const getshopWardStreetNamesWithAggregation = async (page) => {
   };
 };
 
-const getshopWardStreetNamesWithAggregation_withfilter_all = async (district, zone, ward, street) => {
+const getshopWardStreetNamesWithAggregation_withfilter_all = async (district, zone, ward, street, pincode) => {
   let districtMatch = { active: true };
   let zoneMatch = { active: true };
   let wardMatch = { active: true };
   let streetMatch = { active: true };
+  let pincodeMatch = { active: true };
   if (district != 'null') {
     districtMatch = { ...districtMatch, ...{ district: district } };
   }
@@ -1056,12 +1057,15 @@ const getshopWardStreetNamesWithAggregation_withfilter_all = async (district, zo
   if (street != 'null') {
     streetMatch = { Strid: { $eq: street } };
   }
+  if (pincode != 'null') {
+    pincodeMatch = { Pincode: { $eq: pincode } };
+  }
   //console.log(districtMatch);
 
   let values = await Shop.aggregate([
     {
       $match: {
-        $and: [wardMatch, streetMatch],
+        $and: [wardMatch, streetMatch, pincodeMatch],
       },
     },
     {

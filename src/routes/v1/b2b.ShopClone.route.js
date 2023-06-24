@@ -23,7 +23,7 @@ router
 
 // clone
 router
-  .route('/aggregationgetAll/filter/:district/:zone/:ward/:street')
+  .route('/aggregationgetAll/filter/:district/:zone/:ward/:street/:pincode')
   .get(b2bShopCloneController.getshopWardStreetNamesWithAggregation_withfilter_all);
 router
   .route('/aggregationdaily/filter/daily/:user/:startdata/:enddate/:starttime/:endtime/:pincode')

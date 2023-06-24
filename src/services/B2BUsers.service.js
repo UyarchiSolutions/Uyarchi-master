@@ -125,7 +125,7 @@ const UsersLogin = async (userBody) => {
   return userName;
 };
 const B2bUsersAdminLogin = async (userBody) => {
-  const { phoneNumber, password, fcm_tokan } = userBody;
+  const { phoneNumber, password, fcmToken } = userBody;
   //console.log(password);
   const salt = await bcrypt.genSalt(7);
   let passwor = { password: await bcrypt.hash(password.toString(), salt) };
@@ -154,16 +154,16 @@ const B2bUsersAdminLogin = async (userBody) => {
       throw new ApiError(httpStatus.UNAUTHORIZED, "Passwoed Doesn't Match");
     }
   }
-  console.log(fcm_tokan)
-  if (fcm_tokan != null) {
+  console.log(fcmToken)
+  if (fcmToken != null) {
     let token = userName.fcmToken;
     if (token != null) {
-      if (token.indexOf(fcm_tokan) == -1) {
+      if (token.indexOf(fcmToken) == -1) {
         token.push(fcmToken);
         userName.fcmToken = token;
       }
     } else {
-      userName.fcmToken = [fcm_tokan];
+      userName.fcmToken = [fcmToken];
     }
     userName.save();
   }

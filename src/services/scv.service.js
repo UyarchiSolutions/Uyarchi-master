@@ -62,7 +62,7 @@ const deleteSCVById = async (scvId) => {
 const AddCart = async (body, userId) => {
   const data = {
     ...body,
-    ...{ partnerId: userId, loc: { type: 'Point', coordinates: [parseInt(body.lat), parseInt(body.long)] } },
+    ...{ partnerId: userId, loc: { type: 'Point', coordinates: [parseFloat(body.lat), parseFloat(body.long)] } },
   };
   let values = await ScvCart.create(data);
   return values;

@@ -49,5 +49,6 @@ router.route('/allocateSCV_To_Partner/ByAdmin').post(scvController.allocateSCV_T
 router.route('/getAllscv/Admin').get(scvController.getAllscv_Admin);
 router.route('/scv/attendance').post(scvController.scv_attendance);
 router.route('/getScv/Attendance/Reports').post(scvController.getScv_Attendance_Reports);
+router.route('/getNearByCartBy/CurrrentLocation').post(scvController.getNearByCartBy_CurrrentLocation);
 
 module.exports = router;

@@ -1167,13 +1167,17 @@ const getshopWardStreetNamesWithAggregation_withfilter_all = async (district, zo
   return values;
 };
 
-const getshopWardStreetNamesWithAggregation_withfilter = async (district, zone, ward, street, status, page) => {
+const getshopWardStreetNamesWithAggregation_withfilter = async (district, zone, ward, street, status, page, pincode) => {
   // await Shop.updateMany({ active: true }, { $set: { status: 'Pending' } });
   let districtMatch = { active: true };
   let zoneMatch = { active: true };
   let wardMatch = { active: true };
   let streetMatch = { active: true };
   let statusMatch = { active: true };
+  let pincodeMatch = { active: true };
+  if (pincode != 'null') {
+    pincodeMatch = { Pincode: pincode };
+  }
   if (status != 'null') {
     streetMatch = { status: status };
   }
@@ -1194,7 +1198,7 @@ const getshopWardStreetNamesWithAggregation_withfilter = async (district, zone, 
   let values = await Shop.aggregate([
     {
       $match: {
-        $and: [wardMatch, streetMatch, statusMatch],
+        $and: [wardMatch, streetMatch, statusMatch, pincodeMatch],
       },
     },
     {
@@ -1312,7 +1316,7 @@ const getshopWardStreetNamesWithAggregation_withfilter = async (district, zone, 
   let total = await Shop.aggregate([
     {
       $match: {
-        $and: [wardMatch, streetMatch, statusMatch],
+        $and: [wardMatch, streetMatch, statusMatch, pincodeMatch],
       },
     },
     {

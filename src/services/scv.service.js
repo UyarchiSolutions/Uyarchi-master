@@ -680,6 +680,25 @@ const Remove__ScvFrom_Cart = async (body) => {
   return carts;
 };
 
+const getNearByCartBy_CurrrentLocation = async (body) => {
+  const { lat, long } = body;
+  const data = await ScvCart.aggregate([
+    {
+      $match: {
+        loc: {
+          $near: {
+            $geometry: {
+              type: 'Point',
+              coordinates: [lat, long],
+            },
+          },
+        },
+      },
+    },
+  ]);
+  return data;
+};
+
 module.exports = {
   createSCV,
   getAllSCV,
@@ -716,4 +735,5 @@ module.exports = {
   cartOn,
   getCartBy_Allocated_Scv,
   Remove__ScvFrom_Cart,
+  getNearByCartBy_CurrrentLocation,
 };

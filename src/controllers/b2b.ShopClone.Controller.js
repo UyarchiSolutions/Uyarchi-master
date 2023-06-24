@@ -73,7 +73,8 @@ const getshopWardStreetNamesWithAggregation_withfilter = catchAsync(async (req, 
     req.params.ward,
     req.params.street,
     req.params.status,
-    req.params.page
+    req.params.page,
+    req.params.pincode
   );
   res.send(shop);
 });

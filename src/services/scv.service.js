@@ -60,7 +60,10 @@ const deleteSCVById = async (scvId) => {
 // Scv Partner Flow
 
 const AddCart = async (body, userId) => {
-  const data = { ...body, ...{ partnerId: userId } };
+  const data = {
+    ...body,
+    ...{ partnerId: userId, location: { type: 'Point', coordinates: [parseFloat(body.lat), parseFloat(body.long)] } },
+  };
   let values = await ScvCart.create(data);
   return values;
 };
@@ -677,6 +680,24 @@ const Remove__ScvFrom_Cart = async (body) => {
   return carts;
 };
 
+const getNearByCartBy_CurrrentLocation = async (body) => {
+  const { lat, long } = body;
+  const data = await ScvCart.aggregate([
+    {
+      $geoNear: {
+        includeLocs: 'location',
+        near: {
+          type: 'Point',
+          coordinates: [parseFloat(long), parseFloat(lat)],
+        },
+        distanceField: 'distance',
+        spherical: true,
+      },
+    },
+  ]);
+  return data;
+};
+
 module.exports = {
   createSCV,
   getAllSCV,
@@ -713,4 +734,5 @@ module.exports = {
   cartOn,
   getCartBy_Allocated_Scv,
   Remove__ScvFrom_Cart,
+  getNearByCartBy_CurrrentLocation,
 };

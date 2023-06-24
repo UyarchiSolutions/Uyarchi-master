@@ -75,6 +75,9 @@ const B2BusersSchema = mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    fcmToken: {
+      type: Array,
+    },
   },
   {
     timestamps: true,

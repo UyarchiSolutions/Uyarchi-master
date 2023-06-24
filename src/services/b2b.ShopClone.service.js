@@ -1039,11 +1039,12 @@ const getshopWardStreetNamesWithAggregation = async (page) => {
   };
 };
 
-const getshopWardStreetNamesWithAggregation_withfilter_all = async (district, zone, ward, street) => {
+const getshopWardStreetNamesWithAggregation_withfilter_all = async (district, zone, ward, street, pincode) => {
   let districtMatch = { active: true };
   let zoneMatch = { active: true };
   let wardMatch = { active: true };
   let streetMatch = { active: true };
+  let pincodeMatch = { active: true };
   if (district != 'null') {
     districtMatch = { ...districtMatch, ...{ district: district } };
   }
@@ -1056,12 +1057,15 @@ const getshopWardStreetNamesWithAggregation_withfilter_all = async (district, zo
   if (street != 'null') {
     streetMatch = { Strid: { $eq: street } };
   }
+  if (pincode != 'null') {
+    pincodeMatch = { Pincode: { $eq: parseInt(pincode) } };
+  }
   //console.log(districtMatch);
 
   let values = await Shop.aggregate([
     {
       $match: {
-        $and: [wardMatch, streetMatch],
+        $and: [wardMatch, streetMatch, pincodeMatch],
       },
     },
     {
@@ -1163,13 +1167,17 @@ const getshopWardStreetNamesWithAggregation_withfilter_all = async (district, zo
   return values;
 };
 
-const getshopWardStreetNamesWithAggregation_withfilter = async (district, zone, ward, street, status, page) => {
+const getshopWardStreetNamesWithAggregation_withfilter = async (district, zone, ward, street, status, page, pincode) => {
   // await Shop.updateMany({ active: true }, { $set: { status: 'Pending' } });
   let districtMatch = { active: true };
   let zoneMatch = { active: true };
   let wardMatch = { active: true };
   let streetMatch = { active: true };
   let statusMatch = { active: true };
+  let pincodeMatch = { active: true };
+  if (pincode != 'null') {
+    pincodeMatch = { Pincode: parseInt(pincode) };
+  }
   if (status != 'null') {
     streetMatch = { status: status };
   }
@@ -1190,7 +1198,7 @@ const getshopWardStreetNamesWithAggregation_withfilter = async (district, zone, 
   let values = await Shop.aggregate([
     {
       $match: {
-        $and: [wardMatch, streetMatch, statusMatch],
+        $and: [wardMatch, streetMatch, statusMatch, pincodeMatch],
       },
     },
     {
@@ -1308,7 +1316,7 @@ const getshopWardStreetNamesWithAggregation_withfilter = async (district, zone, 
   let total = await Shop.aggregate([
     {
       $match: {
-        $and: [wardMatch, streetMatch, statusMatch],
+        $and: [wardMatch, streetMatch, statusMatch, pincodeMatch],
       },
     },
     {
@@ -1387,14 +1395,27 @@ const getshopWardStreetNamesWithAggregation_withfilter = async (district, zone, 
   };
 };
 
-const getshopWardStreetNamesWithAggregation_withfilter_daily_all = async (user, startdata, enddate, starttime, endtime) => {
+const getshopWardStreetNamesWithAggregation_withfilter_daily_all = async (
+  user,
+  startdata,
+  enddate,
+  starttime,
+  endtime,
+  pincode
+) => {
   ///:user/:startdata/:enddate/:starttime/:endtime/:page
   let userMatch = { active: true };
   let dateMatch = { active: true };
   let timeMatch = { active: true };
   let streetMatch = { active: true };
+  let pincodeMatch = { active: true };
   let startTime = 0;
   let endTime = 2400;
+
+  if (pincode != 'null') {
+    pincodeMatch = { Pincode: parseInt(pincode) };
+  }
+
   if (user != 'null') {
     userMatch = { Uid: user };
   }
@@ -1415,7 +1436,7 @@ const getshopWardStreetNamesWithAggregation_withfilter_daily_all = async (user, 
     },
     {
       $match: {
-        $and: [userMatch, dateMatch, timeMatch],
+        $and: [userMatch, dateMatch, timeMatch, pincodeMatch],
       },
     },
     {
@@ -1522,13 +1543,15 @@ const getshopWardStreetNamesWithAggregation_withfilter_daily = async (
   starttime,
   endtime,
   status,
-  page
+  page,
+  pincode
 ) => {
   ///:user/:startdata/:enddate/:starttime/:endtime/:page
   let userMatch = { active: true };
   let dateMatch = { active: true };
   let timeMatch = { active: true };
   let streetMatch = { active: true };
+  let pincodeMatch = { active: true };
   let startTime = 0;
   let endTime = 2400;
   let sortTime = { filterDate: -1 };
@@ -1564,6 +1587,9 @@ const getshopWardStreetNamesWithAggregation_withfilter_daily = async (
       DA_TIME: { $gte: startTime, $lte: endTime },
     };
   }
+  if (pincode != 'null') {
+    pincodeMatch = { Pincode: { $eq: parseInt(pincode) } };
+  }
 
   let values = await Shop.aggregate([
     {
@@ -1571,7 +1597,7 @@ const getshopWardStreetNamesWithAggregation_withfilter_daily = async (
     },
     {
       $match: {
-        $and: [userMatch, dateMatch, timeMatch, streetMatch],
+        $and: [userMatch, dateMatch, timeMatch, streetMatch, pincodeMatch],
       },
     },
     {
@@ -1705,7 +1731,7 @@ const getshopWardStreetNamesWithAggregation_withfilter_daily = async (
     },
     {
       $match: {
-        $and: [userMatch, dateMatch, timeMatch, streetMatch],
+        $and: [userMatch, dateMatch, timeMatch, streetMatch, pincodeMatch],
       },
     },
     {
@@ -5706,6 +5732,65 @@ const getSalesExecutives = async () => {
   return values;
 };
 
+const getPincodeByUser = async (id) => {
+  let userMatch = { active: true };
+  if (id && id != 'null') {
+    userMatch = { Uid: id };
+  }
+  let Pincode = await Shop.aggregate([
+    {
+      $match: {
+        $and: [userMatch],
+      },
+    },
+    {
+      $group: {
+        _id: '$Pincode',
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        pincodes: { $addToSet: '$_id' },
+      },
+    },
+    { $unwind: { preserveNullAndEmptyArrays: true, path: '$pincodes' } },
+    { $match: { pincodes: { $ne: null } } },
+    {
+      $project: {
+        _id: 0,
+        pincodes: 1,
+      },
+    },
+  ]);
+  return Pincode;
+};
+
+const Pincodes_For_All = async () => {
+  const data = await Shop.aggregate([
+    {
+      $group: {
+        _id: '$Pincode',
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        pincodes: { $addToSet: '$_id' },
+      },
+    },
+    { $unwind: { preserveNullAndEmptyArrays: true, path: '$pincodes' } },
+    { $match: { pincodes: { $ne: null } } },
+    {
+      $project: {
+        _id: 0,
+        pincodes: 1,
+      },
+    },
+  ]);
+  return data;
+};
+
 module.exports = {
   createShopClone,
   getAllShopClone,
@@ -5779,4 +5864,6 @@ module.exports = {
   update_reverification_custmer,
   get_final_customer_shops,
   getSalesExecutives,
+  getPincodeByUser,
+  Pincodes_For_All,
 };

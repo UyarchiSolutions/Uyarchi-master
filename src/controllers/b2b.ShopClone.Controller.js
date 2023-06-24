@@ -73,7 +73,8 @@ const getshopWardStreetNamesWithAggregation_withfilter = catchAsync(async (req, 
     req.params.ward,
     req.params.street,
     req.params.status,
-    req.params.page
+    req.params.page,
+    req.params.pincode
   );
   res.send(shop);
 });
@@ -88,9 +89,14 @@ const getshopWardStreetNamesWithAggregation_withfilter_daily = catchAsync(async 
     req.params.starttime,
     req.params.endtime,
     req.params.status,
-    req.params.page
+    req.params.page,
+    req.params.pincode
   );
   res.send(shop);
+});
+const getPincodeByUser = catchAsync(async (req, res) => {
+  const data = await b2bCloneService.getPincodeByUser(req.params.id);
+  res.send(data);
 });
 
 const getAllB2BshopClone = catchAsync(async (req, res) => {
@@ -369,7 +375,8 @@ const getshopWardStreetNamesWithAggregation_withfilter_all = catchAsync(async (r
     req.params.district,
     req.params.zone,
     req.params.ward,
-    req.params.street
+    req.params.street,
+    req.params.pincode
   );
   res.send(shops);
 });
@@ -380,7 +387,8 @@ const getshopWardStreetNamesWithAggregation_withfilter_daily_all = catchAsync(as
     req.params.startdata,
     req.params.enddate,
     req.params.starttime,
-    req.params.endtime
+    req.params.endtime,
+    req.params.pincode
   );
   res.send(shops);
 });
@@ -592,6 +600,11 @@ const getSalesExecutives = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const Pincodes_For_All = catchAsync(async (req, res) => {
+  const data = await b2bCloneService.Pincodes_For_All();
+  res.send(data);
+});
+
 module.exports = {
   createB2bShopClone,
   getAllB2BshopClone,
@@ -666,4 +679,6 @@ module.exports = {
   update_reverification_custmer,
   get_final_customer_shops,
   getSalesExecutives,
+  getPincodeByUser,
+  Pincodes_For_All,
 };

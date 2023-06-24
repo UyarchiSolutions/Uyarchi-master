@@ -46,6 +46,7 @@ router.route('/download/video/aws').get(generateToken.videoConverter);
 
 
 router.route('/cloud/recording/start').get(generateToken.cloud_recording_start);
+router.route('/push/notification/send').get(generateToken.push_notification);
 
 
 module.exports = router;

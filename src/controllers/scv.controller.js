@@ -273,6 +273,10 @@ const Remove__ScvFrom_Cart = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const getNearByCartBy_CurrrentLocation = catchAsync(async (req, res) => {
+  const data = await ScvPartnerService.getNearByCartBy_CurrrentLocation(req.body);
+  res.send(data);
+});
 module.exports = {
   createSCV,
   getSCVById,
@@ -309,4 +313,5 @@ module.exports = {
   cartOn,
   getCartBy_Allocated_Scv,
   Remove__ScvFrom_Cart,
+  getNearByCartBy_CurrrentLocation,
 };

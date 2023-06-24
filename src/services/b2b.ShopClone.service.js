@@ -1176,7 +1176,7 @@ const getshopWardStreetNamesWithAggregation_withfilter = async (district, zone, 
   let statusMatch = { active: true };
   let pincodeMatch = { active: true };
   if (pincode != 'null') {
-    pincodeMatch = { Pincode: pincode };
+    pincodeMatch = { Pincode: parseInt(pincode) };
   }
   if (status != 'null') {
     streetMatch = { status: status };

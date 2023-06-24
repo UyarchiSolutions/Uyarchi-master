@@ -1387,14 +1387,27 @@ const getshopWardStreetNamesWithAggregation_withfilter = async (district, zone, 
   };
 };
 
-const getshopWardStreetNamesWithAggregation_withfilter_daily_all = async (user, startdata, enddate, starttime, endtime) => {
+const getshopWardStreetNamesWithAggregation_withfilter_daily_all = async (
+  user,
+  startdata,
+  enddate,
+  starttime,
+  endtime,
+  pincode
+) => {
   ///:user/:startdata/:enddate/:starttime/:endtime/:page
   let userMatch = { active: true };
   let dateMatch = { active: true };
   let timeMatch = { active: true };
   let streetMatch = { active: true };
+  let pincodeMatch = { active: true };
   let startTime = 0;
   let endTime = 2400;
+
+  if (pincode != 'null') {
+    pincodeMatch = { Pincode: pincode };
+  }
+
   if (user != 'null') {
     userMatch = { Uid: user };
   }
@@ -1415,7 +1428,7 @@ const getshopWardStreetNamesWithAggregation_withfilter_daily_all = async (user, 
     },
     {
       $match: {
-        $and: [userMatch, dateMatch, timeMatch],
+        $and: [userMatch, dateMatch, timeMatch, pincodeMatch],
       },
     },
     {

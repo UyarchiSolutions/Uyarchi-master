@@ -152,6 +152,11 @@ const cloud_recording_start= catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).send(tokens);
 });
 
+const push_notification= catchAsync(async (req, res) => {
+  let tokens = await generateTokenService.push_notification(req);
+  res.status(httpStatus.CREATED).send(tokens);
+});
+
 
 module.exports = {
   generateToken,
@@ -181,5 +186,6 @@ module.exports = {
   get_stream_complete_videos,
   videoConverter,
   get_current_live_stream,
-  cloud_recording_start
+  cloud_recording_start,
+  push_notification,
 };

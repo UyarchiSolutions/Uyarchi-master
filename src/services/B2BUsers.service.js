@@ -10,7 +10,7 @@ const TextlocalChat = require('../config/chat-bot.OTP');
 const Verfy = require('../config/OtpVerify');
 const WardAssign = require('../models/wardAssign.model');
 const { MarketClone } = require('../models/market.model');
-const {OTP} = require('../models/saveOtp.model');
+const { OTP } = require('../models/saveOtp.model');
 const ChatBotOTP = require('../models/chatBot.OTP.model');
 
 const moment = require('moment');
@@ -125,7 +125,7 @@ const UsersLogin = async (userBody) => {
   return userName;
 };
 const B2bUsersAdminLogin = async (userBody) => {
-  const { phoneNumber, password } = userBody;
+  const { phoneNumber, password, fcmToken } = userBody;
   //console.log(password);
   const salt = await bcrypt.genSalt(7);
   let passwor = { password: await bcrypt.hash(password.toString(), salt) };
@@ -152,6 +152,34 @@ const B2bUsersAdminLogin = async (userBody) => {
       //console.log('Password Macthed');
     } else {
       throw new ApiError(httpStatus.UNAUTHORIZED, "Passwoed Doesn't Match");
+    }
+  }
+  console.log(fcmToken)
+  if (fcmToken != null) {
+    let token = userName.fcmToken;
+    if (token != null) {
+      if (token.indexOf(fcmToken) == -1) {
+        token.push(fcmToken);
+        userName.fcmToken = token;
+      }
+    } else {
+      userName.fcmToken = [fcmToken];
+    }
+    userName.save();
+  }
+  return userName;
+};
+const B2bUsersAdminlogout = async (req) => {
+  let userName = await Users.findById(req.userId);
+  console.log(req.body.fcmToken)
+  if (userName != null) {
+    let token = userName.fcmToken;
+    if (token != null) {
+      if (token.indexOf(req.body.fcmToken) != -1) {
+        token.splice(token.indexOf(req.body.fcmToken), 1);
+        userName.fcmToken = token;
+        userName.save();
+      }
     }
   }
   return userName;
@@ -192,6 +220,10 @@ const chatBotOtpVerify = async (body) => {
   }
   findOtp = await ChatBotOTP.findByIdAndUpdate({ _id: findOtp._id }, { used: true }, { new: true });
   return findOtp;
+};
+const get_b2buser_eligible = async (body) => {
+  let userss = await Users.aggregate({ $match: { $and: [{ fcmToken: { $ne: null } }] } })
+  return userss;
 };
 
 const otpVerfiy = async (body) => {
@@ -680,4 +712,6 @@ module.exports = {
   getFines_Details,
   chatBotOtp,
   chatBotOtpVerify,
+  B2bUsersAdminlogout,
+  get_b2buser_eligible
 };

@@ -310,7 +310,7 @@ const agora_acquire = async (req, id) => {
 
 const recording_start = async (req, id) => {
   // let temtoken = id;
-  let token = await tempTokenModel.findOne({ chennel: id, type: 'CloudRecording', recoredStart: { $eq: "acquire" } });
+  let token = await tempTokenModel.findOne({ chennel: id, type: 'CloudRecording', recoredStart: { $eq: 'acquire' } });
   // let temtoken=req.body.id;
   // let token = await tempTokenModel.findById(temtoken);
   if (token) {
@@ -363,12 +363,10 @@ const recording_start = async (req, id) => {
         await recording_query(req, token._id);
       }, 3000);
       return start.data;
-    }
-    else {
+    } else {
       return { message: 'Already Started' };
     }
-  }
-  else {
+  } else {
     return { message: 'Already Started' };
   }
 };
@@ -1083,7 +1081,11 @@ const production_supplier_token_cloudrecording = async (req, id) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
   }
   console.log(stream);
-  value = await tempTokenModel.findOne({ chennel: streamId, type: 'CloudRecording', recoredStart: { $in: ["query", 'start'] } });
+  value = await tempTokenModel.findOne({
+    chennel: streamId,
+    type: 'CloudRecording',
+    recoredStart: { $in: ['query', 'start'] },
+  });
   if (!value) {
     const uid = await generateUid();
     const role = Agora.RtcRole.SUBSCRIBER;
@@ -1113,41 +1115,41 @@ const production_supplier_token_cloudrecording = async (req, id) => {
     let token = value;
     const resource = token.resourceId;
     const sid = token.sid;
-    console.log(1234567890123456, resource)
+    console.log(1234567890123456, resource);
     const mode = 'mix';
     // //console.log(`https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/query`);
-    await axios.get(
-      `https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/query`,
-      { headers: { Authorization } }
-    ).then((res) => {
+    await axios
+      .get(`https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/query`, {
+        headers: { Authorization },
+      })
+      .then((res) => { })
+      .catch(async (error) => {
+        await tempTokenModel.findByIdAndUpdate({ _id: value._id }, { recoredStart: 'stop' }, { new: true });
+        const uid = await generateUid();
+        const role = Agora.RtcRole.SUBSCRIBER;
+        const expirationTimestamp = stream.endTime / 1000;
+        value = await tempTokenModel.create({
+          ...req.body,
+          ...{
+            date: moment().format('YYYY-MM-DD'),
+            time: moment().format('HHMMSS'),
+            created: moment(),
+            Uid: uid,
+            chennel: stream._id,
+            created_num: new Date(new Date(moment().format('YYYY-MM-DD') + ' ' + moment().format('HH:mm:ss'))).getTime(),
+            expDate: expirationTimestamp * 1000,
+            type: 'CloudRecording',
+          },
+        });
+        const token = await geenerate_rtc_token(stream._id, uid, role, expirationTimestamp);
+        value.token = token;
+        value.store = value._id.replace(/[^a-zA-Z0-9]/g, '');
+        value.save();
 
-    }).catch(async (error) => {
-      await tempTokenModel.findByIdAndUpdate({ _id: value._id }, { recoredStart: "stop" }, { new: true });
-      const uid = await generateUid();
-      const role = Agora.RtcRole.SUBSCRIBER;
-      const expirationTimestamp = stream.endTime / 1000;
-      value = await tempTokenModel.create({
-        ...req.body,
-        ...{
-          date: moment().format('YYYY-MM-DD'),
-          time: moment().format('HHMMSS'),
-          created: moment(),
-          Uid: uid,
-          chennel: stream._id,
-          created_num: new Date(new Date(moment().format('YYYY-MM-DD') + ' ' + moment().format('HH:mm:ss'))).getTime(),
-          expDate: expirationTimestamp * 1000,
-          type: 'CloudRecording',
-        },
+        if (value.videoLink == '' || value.videoLink == null) {
+          await agora_acquire(req, value._id);
+        }
       });
-      const token = await geenerate_rtc_token(stream._id, uid, role, expirationTimestamp);
-      value.token = token;
-      value.store = value._id.replace(/[^a-zA-Z0-9]/g, '');
-      value.save();
-
-      if (value.videoLink == '' || value.videoLink == null) {
-        await agora_acquire(req, value._id);
-      }
-    });
   }
   return value;
 };
@@ -1259,24 +1261,59 @@ const videoConverter = async () => {
 };
 
 const cloud_recording_start = async (req) => {
+  AWS.config.update({
+    accessKeyId: 'AKIA3323XNN7Y2RU77UG',
+    secretAccessKey: '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',
+    region: 'ap-south-1',
+  });
+  const mediaConvert = new AWS.MediaConvert();
 
-  // let recording=await tempTokenModel.findById(req.query.id);
+  // Specify the input M3U8 file and output MP4 file locations
+  const inputBucket = 'streamingupload';
+  const inputKey = '00360565530b44c49a7cb766068be648/18555/e22eb99a93459ec3e5294aba591afc92_6972d8ef-e89d-4101-821a-e7e71ebd8178.m3u8';
+  const outputBucket = 'streamingupload';
+  const outputKey = 'converted/upload/91afc92_6972d8ef-e89d-4101-821a-e7e71ebd8178.mp4';
 
-  let token = await tempTokenModel.findById(req.query.id);
-  console.log(token)
-  const resource = token.resourceId;
-  const sid = token.sid;
-  const mode = 'mix';
-  // //console.log(`https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/query`);
-  const query = await axios.get(
-    `https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/query`,
-    { headers: { Authorization } }
-  );
+  // streamingupload
 
-  return query.data;
-  // return recording;
 
 };
+const { Users } = require('../../models/B2Busers.model');
+
+const push_notification = async (req) => {
+  const { text, title, image, user } = req.body
+
+  let userss = await Users.findById(user);
+  if (userss) {
+    if (userss.fcmToken.length != 0) {
+      const admin = require('../firebase.service');
+      const token = userss.fcmToken;
+      const message = {
+        tokens: token,
+        notification: {
+          title: text,
+          body: title,
+          image: image
+        },
+        // topic: 'your-topic', // Replace with the topic or device token you want to send the notification to
+      };
+      let messages = await admin
+        .messaging()
+        .sendEachForMulticast(message)
+        .then((response) => {
+          return response;
+        })
+        .catch((error) => console.log(error));
+
+      return messages;
+    }
+    else {
+      return { message: "device Not found" }
+    }
+  }
+  return { message: "user Not found" }
+};
+
 
 module.exports = {
   generateToken,
@@ -1306,5 +1343,6 @@ module.exports = {
   get_stream_complete_videos,
   videoConverter,
   get_current_live_stream,
-  cloud_recording_start
+  cloud_recording_start,
+  push_notification,
 };

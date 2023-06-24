@@ -1409,7 +1409,7 @@ const getshopWardStreetNamesWithAggregation_withfilter_daily_all = async (
   let endTime = 2400;
 
   if (pincode != 'null') {
-    pincodeMatch = { Pincode: pincode };
+    pincodeMatch = { Pincode: parseInt(pincode) };
   }
 
   if (user != 'null') {

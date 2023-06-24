@@ -18,7 +18,7 @@ router
   .route('/aggregation/filter/:district/:zone/:ward/:street/:status/:page')
   .get(b2bShopCloneController.getshopWardStreetNamesWithAggregation_withfilter);
 router
-  .route('/aggregation/filter/daily/:user/:startdata/:enddate/:starttime/:endtime/:status/:page')
+  .route('/aggregation/filter/daily/:user/:startdata/:enddate/:starttime/:endtime/:status/:page/:pincode')
   .get(b2bShopCloneController.getshopWardStreetNamesWithAggregation_withfilter_daily);
 
 // clone
@@ -125,4 +125,5 @@ router.route('/get/final/map/view').get(b2bShopCloneController.finalmap_view);
 router.route('/get/final/map/view/pincode').get(b2bShopCloneController.finalmap_view_picode);
 router.route('/get/final/customer/final').get(b2bShopCloneController.get_final_customer_shops);
 router.route('/getSales/Executives').get(b2bShopCloneController.getSalesExecutives);
+router.route('/sorting/bysaleman/pincode/:id').get(b2bShopCloneController.getPincodeByUser);
 module.exports = router;

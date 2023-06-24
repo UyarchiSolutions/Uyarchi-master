@@ -88,9 +88,14 @@ const getshopWardStreetNamesWithAggregation_withfilter_daily = catchAsync(async 
     req.params.starttime,
     req.params.endtime,
     req.params.status,
-    req.params.page
+    req.params.page,
+    req.params.pincode
   );
   res.send(shop);
+});
+const getPincodeByUser = catchAsync(async (req, res) => {
+  const data = await b2bCloneService.getPincodeByUser(req.params.id);
+  res.send(data);
 });
 
 const getAllB2BshopClone = catchAsync(async (req, res) => {
@@ -666,4 +671,5 @@ module.exports = {
   update_reverification_custmer,
   get_final_customer_shops,
   getSalesExecutives,
+  getPincodeByUser,
 };

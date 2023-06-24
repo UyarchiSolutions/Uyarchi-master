@@ -1522,13 +1522,15 @@ const getshopWardStreetNamesWithAggregation_withfilter_daily = async (
   starttime,
   endtime,
   status,
-  page
+  page,
+  pincode
 ) => {
   ///:user/:startdata/:enddate/:starttime/:endtime/:page
   let userMatch = { active: true };
   let dateMatch = { active: true };
   let timeMatch = { active: true };
   let streetMatch = { active: true };
+  let pincodeMatch = { active: true };
   let startTime = 0;
   let endTime = 2400;
   let sortTime = { filterDate: -1 };
@@ -1564,6 +1566,9 @@ const getshopWardStreetNamesWithAggregation_withfilter_daily = async (
       DA_TIME: { $gte: startTime, $lte: endTime },
     };
   }
+  if (pincode != 'null') {
+    pincodeMatch = { Pincode: { $eq: parseInt(pincode) } };
+  }
 
   let values = await Shop.aggregate([
     {
@@ -1571,7 +1576,7 @@ const getshopWardStreetNamesWithAggregation_withfilter_daily = async (
     },
     {
       $match: {
-        $and: [userMatch, dateMatch, timeMatch, streetMatch],
+        $and: [userMatch, dateMatch, timeMatch, streetMatch, pincodeMatch],
       },
     },
     {
@@ -1705,7 +1710,7 @@ const getshopWardStreetNamesWithAggregation_withfilter_daily = async (
     },
     {
       $match: {
-        $and: [userMatch, dateMatch, timeMatch, streetMatch],
+        $and: [userMatch, dateMatch, timeMatch, streetMatch, pincodeMatch],
       },
     },
     {
@@ -5706,6 +5711,40 @@ const getSalesExecutives = async () => {
   return values;
 };
 
+const getPincodeByUser = async (id) => {
+  let userMatch = { active: true };
+  if (id && id != 'null') {
+    userMatch = { Uid: id };
+  }
+  let Pincode = await Shop.aggregate([
+    {
+      $match: {
+        $and: [userMatch],
+      },
+    },
+    {
+      $group: {
+        _id: '$Pincode',
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        pincodes: { $addToSet: '$_id' },
+      },
+    },
+    { $unwind: { preserveNullAndEmptyArrays: true, path: '$pincodes' } },
+    { $match: { pincodes: { $ne: null } } },
+    {
+      $project: {
+        _id: 0,
+        pincodes: 1,
+      },
+    },
+  ]);
+  return Pincode;
+};
+
 module.exports = {
   createShopClone,
   getAllShopClone,
@@ -5779,4 +5818,5 @@ module.exports = {
   update_reverification_custmer,
   get_final_customer_shops,
   getSalesExecutives,
+  getPincodeByUser,
 };

@@ -50,7 +50,10 @@ const B2bUsersAdminLogin = catchAsync(async (req, res) => {
   // res.cookie('tokens', tokens.access.token, options).send({ users, tokens });
   res.send({ users, tokens });
 });
-
+const B2bUsersAdminlogout = catchAsync(async (req, res) => {
+  const users = await b2bUsersService.B2bUsersAdminlogout(req);
+  res.send(users);
+});
 const B2bUsersLogout = catchAsync(async (req, res) => {
   res.clearCookie('tokens');
   res.clearCookie('login');
@@ -248,4 +251,6 @@ module.exports = {
   getFines_Details,
   chatBotOtp,
   chatBotOtpVerify,
+  B2bUsersAdminlogout,
+  
 };

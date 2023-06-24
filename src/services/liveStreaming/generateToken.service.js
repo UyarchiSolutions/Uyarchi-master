@@ -310,7 +310,7 @@ const agora_acquire = async (req, id) => {
 
 const recording_start = async (req, id) => {
   // let temtoken = id;
-  let token = await tempTokenModel.findOne({ chennel: id, type: 'CloudRecording', recoredStart: { $eq: "acquire" } });
+  let token = await tempTokenModel.findOne({ chennel: id, type: 'CloudRecording', recoredStart: { $eq: 'acquire' } });
   // let temtoken=req.body.id;
   // let token = await tempTokenModel.findById(temtoken);
   if (token) {
@@ -363,12 +363,10 @@ const recording_start = async (req, id) => {
         await recording_query(req, token._id);
       }, 3000);
       return start.data;
-    }
-    else {
+    } else {
       return { message: 'Already Started' };
     }
-  }
-  else {
+  } else {
     return { message: 'Already Started' };
   }
 };
@@ -1083,7 +1081,11 @@ const production_supplier_token_cloudrecording = async (req, id) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'Stream not found');
   }
   console.log(stream);
-  value = await tempTokenModel.findOne({ chennel: streamId, type: 'CloudRecording', recoredStart: { $in: ["query", 'start'] } });
+  value = await tempTokenModel.findOne({
+    chennel: streamId,
+    type: 'CloudRecording',
+    recoredStart: { $in: ['query', 'start'] },
+  });
   if (!value) {
     const uid = await generateUid();
     const role = Agora.RtcRole.SUBSCRIBER;
@@ -1113,41 +1115,41 @@ const production_supplier_token_cloudrecording = async (req, id) => {
     let token = value;
     const resource = token.resourceId;
     const sid = token.sid;
-    console.log(1234567890123456, resource)
+    console.log(1234567890123456, resource);
     const mode = 'mix';
     // //console.log(`https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/query`);
-    await axios.get(
-      `https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/query`,
-      { headers: { Authorization } }
-    ).then((res) => {
+    await axios
+      .get(`https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/query`, {
+        headers: { Authorization },
+      })
+      .then((res) => {})
+      .catch(async (error) => {
+        await tempTokenModel.findByIdAndUpdate({ _id: value._id }, { recoredStart: 'stop' }, { new: true });
+        const uid = await generateUid();
+        const role = Agora.RtcRole.SUBSCRIBER;
+        const expirationTimestamp = stream.endTime / 1000;
+        value = await tempTokenModel.create({
+          ...req.body,
+          ...{
+            date: moment().format('YYYY-MM-DD'),
+            time: moment().format('HHMMSS'),
+            created: moment(),
+            Uid: uid,
+            chennel: stream._id,
+            created_num: new Date(new Date(moment().format('YYYY-MM-DD') + ' ' + moment().format('HH:mm:ss'))).getTime(),
+            expDate: expirationTimestamp * 1000,
+            type: 'CloudRecording',
+          },
+        });
+        const token = await geenerate_rtc_token(stream._id, uid, role, expirationTimestamp);
+        value.token = token;
+        value.store = value._id.replace(/[^a-zA-Z0-9]/g, '');
+        value.save();
 
-    }).catch(async (error) => {
-      await tempTokenModel.findByIdAndUpdate({ _id: value._id }, { recoredStart: "stop" }, { new: true });
-      const uid = await generateUid();
-      const role = Agora.RtcRole.SUBSCRIBER;
-      const expirationTimestamp = stream.endTime / 1000;
-      value = await tempTokenModel.create({
-        ...req.body,
-        ...{
-          date: moment().format('YYYY-MM-DD'),
-          time: moment().format('HHMMSS'),
-          created: moment(),
-          Uid: uid,
-          chennel: stream._id,
-          created_num: new Date(new Date(moment().format('YYYY-MM-DD') + ' ' + moment().format('HH:mm:ss'))).getTime(),
-          expDate: expirationTimestamp * 1000,
-          type: 'CloudRecording',
-        },
+        if (value.videoLink == '' || value.videoLink == null) {
+          await agora_acquire(req, value._id);
+        }
       });
-      const token = await geenerate_rtc_token(stream._id, uid, role, expirationTimestamp);
-      value.token = token;
-      value.store = value._id.replace(/[^a-zA-Z0-9]/g, '');
-      value.save();
-
-      if (value.videoLink == '' || value.videoLink == null) {
-        await agora_acquire(req, value._id);
-      }
-    });
   }
   return value;
 };
@@ -1259,11 +1261,10 @@ const videoConverter = async () => {
 };
 
 const cloud_recording_start = async (req) => {
-
   // let recording=await tempTokenModel.findById(req.query.id);
 
   let token = await tempTokenModel.findById(req.query.id);
-  console.log(token)
+  console.log(token);
   const resource = token.resourceId;
   const sid = token.sid;
   const mode = 'mix';
@@ -1275,9 +1276,30 @@ const cloud_recording_start = async (req) => {
 
   return query.data;
   // return recording;
-
 };
 
+const push_notification = async (req) => {
+  const admin = require('../firebase.service');
+const token=['fV14fUCtTsiuByJoV0b5sv:APA91bGDmqm7XZhVbiz5Pl7sBSATQZlf3fF1RRQqIVJFwwlzuPLO9kKKUWd4gLidxOnd8gTUVO8z1SypxnvfUUcuWeaKQmpHWDA4K-kDeZBAH-UyKKFknvJF6RsW8NnT5TJMrc_1FfuC','eopV857mRIeqUihxdHPpGz:APA91bEyYLY1NKs6lpqomEyNYOGRYTr89UCpOICJX0RENUNYNokqz3eaIezLqRA1TfMVgzIyKwNGu7ayx4DDGzD875E9aPmkJgI8agIeozGeL_PH5WPBR1Y0qrK2NguolWGxHW4mFU2w','f8fGsVgvTlKrN307hL4fAX:APA91bHd7uGVxPDHAVTh3Uv-dBuxAKVBvgk_2eVmqg7b9Vxu_bMjpotlr9QG7AsKTKHnyK5gkur6mXYA4yhtSkVszvpJxr-akEPd-Btds1eZpEBXumdjqZYkg8iBf3_yJItNdJ5w7ECK','c887tUnkTVyENoJLlvcJPz:APA91bG58QTaNk-gtxJwNIxOP-tbPKvKF04HaLFpvYR4lx5GFvlBsCqf_KpzNrZn0j4BjLrtgJU8OLRTYzerTOsTitdCk9suM6p53SrbrBIjXNfGq0aw538nYRi-yDiIUDP3NVmJcmTx',]
+  const message = {
+    tokens:token,
+    notification: {
+      title: 'Warmy !',
+      body: 'This is a test notification.',
+      image:"https://warmy.co.in/wp-content/uploads/2023/06/Warmy.png"
+    },
+    // topic: 'your-topic', // Replace with the topic or device token you want to send the notification to
+  };
+
+  await admin
+    .messaging()
+    .sendEachForMulticast(message)
+    .then((response) => {
+      console.log(response);
+      return 'Notification sent successfully:', response;
+    })
+    .catch((error) => console.log(error));
+};
 module.exports = {
   generateToken,
   getHostTokens,
@@ -1306,5 +1328,6 @@ module.exports = {
   get_stream_complete_videos,
   videoConverter,
   get_current_live_stream,
-  cloud_recording_start
+  cloud_recording_start,
+  push_notification,
 };

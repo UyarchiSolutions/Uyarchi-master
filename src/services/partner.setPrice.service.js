@@ -795,7 +795,7 @@ const update_Partnwe_Order = async (id, body) => {
     getvehicle = await ManageVehicle.findByIdAndUpdate({ _id: vehicleId }, { status: 'OnWorking' }, { new: true });
     values = await PartnerOrder.findByIdAndUpdate(
       { _id: id },
-      { vehicleId: vehicleId, vehicleType: vehicletype },
+      { vehicleId: vehicleId, vehicleType: vehicletype, status: 'Loaded' },
       { new: true }
     );
   } else {

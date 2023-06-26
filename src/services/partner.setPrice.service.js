@@ -686,7 +686,7 @@ const orderChange_Status = async (id, body) => {
 
 const getAck_Orders = async () => {
   let values = await PartnerOrder.aggregate([
-    { $match: { status: 'Acknowledged' } },
+    { $match: { status: { $in: ['Acknowledged', 'Loaded', 'billed', 'OnTransit', 'Delivered'] } } },
     {
       $sort: { createdAt: -1 },
     },

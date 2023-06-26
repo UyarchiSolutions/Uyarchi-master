@@ -33,6 +33,9 @@ const agoraAppIdschema = mongoose.Schema({
     },
     cloud_secret: {
         type: String,
+    },
+    appCertificate:{
+        type: String, 
     }
 
 

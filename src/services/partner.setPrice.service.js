@@ -779,17 +779,28 @@ const UpdateVehicleById = async (id, body) => {
 };
 
 const update_Partnwe_Order = async (id, body) => {
-  const { data, arr } = body;
+  const { data, arr, vehicletype, vehicleId } = body;
   let values = await PartnerOrder.findById(id);
   if (!values) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Order Not Availabale');
   }
-
   arr.forEach(async (e) => {
     await PartnerOrderedProductsSeperate.findByIdAndUpdate({ _id: e._id }, e, { new: true });
   });
-
-  values = await PartnerOrder.findByIdAndUpdate({ _id: id }, data, { new: true });
+  if (vehicletype == 'own') {
+    let getvehicle = await ManageVehicle.findOne({ _id: vehicleId, status: { $ne: 'OnWorking' } });
+    if (!getvehicle) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'Vehicle Not Found');
+    }
+    getvehicle = await ManageVehicle.findByIdAndUpdate({ _id: vehicleId }, { status: 'OnWorking' }, { new: true });
+    values = await PartnerOrder.findByIdAndUpdate(
+      { _id: id },
+      { vehicleId: vehicleId, vehicleType: vehicletype },
+      { new: true }
+    );
+  } else {
+    values = await PartnerOrder.findByIdAndUpdate({ _id: id }, data, { new: true });
+  }
   return values;
 };
 

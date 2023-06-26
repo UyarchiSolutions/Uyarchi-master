@@ -282,6 +282,9 @@ const PartnerOrderSchema = new mongoose.Schema(
     BillNo: {
       type: String,
     },
+    VihicleId: {
+      type: String,
+    },
     BillingDate: String,
     BillingTime: String,
     BillingAmt: Number,
@@ -362,6 +365,10 @@ const VehicleSchema = new mongoose.Schema(
     },
     extendable: {
       type: String,
+    },
+    status: {
+      type: String,
+      default: 'Pending',
     },
   },
   { timestamps: true }

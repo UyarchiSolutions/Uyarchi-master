@@ -694,6 +694,18 @@ const getNearByCartBy_CurrrentLocation = async (body) => {
         spherical: true,
       },
     },
+    {
+      $lookup: {
+        from: 'partnerorderproducts',
+        localField: '_id',
+        foreignField: 'cartId',
+        pipeline: [
+          { $lookup: { from: 'products', localField: 'productId', foreignField: '_id', as: 'product' } },
+          { $unwind: '$product' },
+        ],
+        as: 'cartProducts',
+      },
+    },
   ]);
   return data;
 };

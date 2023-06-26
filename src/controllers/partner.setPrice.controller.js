@@ -160,6 +160,11 @@ const getCartOrderByProduct = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const getAvailable_Vehicle = catchAsync(async (req, res) => {
+  const data = await partnersetpriceService.getAvailable_Vehicle();
+  res.send(data);
+});
+
 module.exports = {
   SetPartnerPrice,
   AddProductByPartner,
@@ -191,4 +196,5 @@ module.exports = {
   stockUpdateByCart,
   getCartReports,
   getCartOrderByProduct,
+  getAvailable_Vehicle,
 };

@@ -1185,6 +1185,11 @@ const getCartOrderByProduct = async (query, userId) => {
   return { values: values, product: product };
 };
 
+const getAvailable_Vehicle = async () => {
+  let vehicles = await ManageVehicle.aggregate([{ $match: { status: { $ne: 'OnWorking' } } }]);
+  return vehicles;
+};
+
 module.exports = {
   SetPartnerPrice,
   AddProductByPartner,
@@ -1216,4 +1221,5 @@ module.exports = {
   stockUpdateByCart,
   getCartReports,
   getCartOrderByProduct,
+  getAvailable_Vehicle,
 };

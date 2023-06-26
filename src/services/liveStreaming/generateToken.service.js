@@ -10,7 +10,7 @@ const appCertificate = '8ae85f97802448c2a47b98715ff90ffb';
 const Authorization = `Basic ${Buffer.from(`61b817e750214d58ba9d8148e7c89a1b:88401de254b2436a9da15b2f872937de`).toString(
   'base64'
 )}`;
-const { AgoraAppId} = require('../../models/liveStreaming/AgoraAppId.model');
+const { AgoraAppId } = require('../../models/liveStreaming/AgoraAppId.model');
 
 const Dates = require('../Date.serive');
 const {
@@ -27,9 +27,20 @@ const ffmpeg = require('fluent-ffmpeg');
 ffmpeg.setFfmpegPath(ffmpegPath);
 const path = require('path');
 const AWS = require('aws-sdk');
-const get_agora_details =async(key)=>{
-  let agora=await AgoraAppId.findById("012b3713-c597-4a9b-9b09-0cbd813deafa");
-  return agora[key];
+const get_agora_details = async (key) => {
+  let agora = await AgoraAppId.findById("012b3713-c597-4a9b-9b09-0cbd813deafa");
+  if (key == 'appID') {
+    return agora.appID;
+  }
+  if (key == 'appCertificate') {
+    return agora.appCertificate;
+  }
+  if (key == 'Authorization') {
+    return agora.Authorization;
+  }
+  else {
+    return "";
+  }
 
 }
 const generateUid = async (req) => {
@@ -85,8 +96,8 @@ const generateToken = async (req) => {
   return { uid, token, value, cloud_recording, stream };
 };
 const geenerate_rtc_token = async (chennel, uid, role, expirationTimestamp) => {
-  let newAppid=await get_agora_details("appID")
-  let newappCertificate=await get_agora_details("appCertificate")
+  let newAppid = await get_agora_details("appID")
+  let newappCertificate = await get_agora_details("appCertificate")
   return Agora.RtcTokenBuilder.buildTokenWithUid(newAppid, newappCertificate, chennel, uid, role, expirationTimestamp);
 };
 const generateToken_sub_record = async (channel, isPublisher, req, hostIdss, expire) => {
@@ -294,8 +305,8 @@ const agora_acquire = async (req, id) => {
   let temtoken = id;
   // let temtoken=req.body.id;
   let token = await tempTokenModel.findById(temtoken);
-  let newAppid=await get_agora_details("appID")
-  let cloud_Token=await get_agora_details("Authorization")
+  let newAppid = await get_agora_details("appID")
+  let cloud_Token = await get_agora_details("Authorization")
   const newAuthorization = `Basic ${Buffer.from(cloud_Token).toString(
     'base64'
   )}`;
@@ -329,11 +340,11 @@ const recording_start = async (req, id) => {
   if (token) {
     if (token.recoredStart == 'acquire') {
       const resource = token.resourceId;
-      let newAppid=await get_agora_details("appID")
+      let newAppid = await get_agora_details("appID")
       //console.log(resource)
       //console.log(token)
       const mode = 'mix';
-      let cloud_Token=await get_agora_details("Authorization")
+      let cloud_Token = await get_agora_details("Authorization")
       const newAuthorization = `Basic ${Buffer.from(cloud_Token).toString(
         'base64'
       )}`;
@@ -396,8 +407,8 @@ const recording_query = async (req, id) => {
   const resource = token.resourceId;
   const sid = token.sid;
   const mode = 'mix';
-  let newAppid=await get_agora_details("appID")
-  let cloud_Token=await get_agora_details("Authorization")
+  let newAppid = await get_agora_details("appID")
+  let cloud_Token = await get_agora_details("Authorization")
   const newAuthorization = `Basic ${Buffer.from(cloud_Token).toString(
     'base64'
   )}`;
@@ -438,11 +449,11 @@ const recording_stop = async (req) => {
   return { message: 'asdhajs' };
 };
 const recording_updateLayout = async (req) => {
-  let cloud_Token=await get_agora_details("Authorization")
+  let cloud_Token = await get_agora_details("Authorization")
   const newAuthorization = `Basic ${Buffer.from(cloud_Token).toString(
     'base64'
   )}`;
-  let newAppid=await get_agora_details("appID")
+  let newAppid = await get_agora_details("appID")
   const acquire = await axios.post(
     `https://api.agora.io/v1/apps/${newAppid}/cloud_recording/acquire`,
     {
@@ -1145,8 +1156,8 @@ const production_supplier_token_cloudrecording = async (req, id) => {
     const sid = token.sid;
     console.log(1234567890123456, resource);
     const mode = 'mix';
-    let newAppid=await get_agora_details("appID")
-    let cloud_Token=await get_agora_details("Authorization")
+    let newAppid = await get_agora_details("appID")
+    let cloud_Token = await get_agora_details("Authorization")
     const newAuthorization = `Basic ${Buffer.from(cloud_Token).toString(
       'base64'
     )}`;

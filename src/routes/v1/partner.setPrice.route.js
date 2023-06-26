@@ -34,4 +34,5 @@ router.route('/Bill/GenerateById').post(PartnerSetPriceController.Bill_GenerateB
 router.route('/stockUpdateByCart').post(PartnerSetPriceController.stockUpdateByCart);
 router.route('/getCartReports/:id').get(PartnerSetPriceController.getCartReports);
 router.route('/getAvailable/Vehicle').get(PartnerSetPriceController.getAvailable_Vehicle);
+router.route('/getOrderDetails/ByOrderId/:id').get(PartnerSetPriceController.getOrderDetailsByOrderId);
 module.exports = router;

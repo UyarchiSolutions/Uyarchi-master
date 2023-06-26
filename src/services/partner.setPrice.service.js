@@ -1227,6 +1227,45 @@ const getAvailable_Vehicle = async () => {
   return vehicles;
 };
 
+const getOrderDetailsByOrderId = async (id) => {
+  const data = await PartnerOrderedProductsSeperate.aggregate([
+    {
+      $match: { partnerOrderId: id },
+    },
+    {
+      $lookup: {
+        from: 'products',
+        localField: 'productId',
+        foreignField: '_id',
+        as: 'products',
+      },
+    },
+    {
+      $unwind: '$products',
+    },
+    {
+      $project: {
+        _id: 1,
+        productId: 1,
+        scvOrders: 1,
+        totalQty: 1,
+        agreedPrice: 1,
+        revisedPrice: 1,
+        Posted_date: 1,
+        OrderedTo: 1,
+        partnerOrderId: 1,
+        partnerId: 1,
+        createdAt: 1,
+        updatedAt: 1,
+        givenStock: { $toInt: '$givenStock' },
+        products: '$products',
+      },
+    },
+  ]);
+  const orders = await PartnerOrder.findById(id);
+  return { data: data, order: orders };
+};
+
 module.exports = {
   SetPartnerPrice,
   AddProductByPartner,
@@ -1259,4 +1298,5 @@ module.exports = {
   getCartReports,
   getCartOrderByProduct,
   getAvailable_Vehicle,
+  getOrderDetailsByOrderId,
 };

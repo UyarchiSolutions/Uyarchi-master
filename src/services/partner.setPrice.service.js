@@ -1267,6 +1267,24 @@ const getOrderDetailsByOrderId = async (id) => {
   return { data: data, order: orders };
 };
 
+const ReceivedDetails_Update = async (body) => {
+  const { arr, vehicleId, orderId } = body;
+  let order = await PartnerOrder.findById(orderId);
+  if (!order) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Order Not Found ');
+  }
+  let vehicle = await ManageVehicle.findById(vehicleId);
+  if (!vehicle) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Vehicle Not Available');
+  }
+  vehicle = await ManageVehicle.findByIdAndUpdate({ _id: id }, { status: 'Pending' }, { new: true });
+  arr.forEach(async (e) => {
+    await PartnerOrderedProductsSeperate.findByIdAndUpdate({ _id: e._id }, { receivedQTY: e.receivedQTY }, { new: true });
+  });
+  order = await PartnerOrder.findByIdAndUpdate({ _id: orderId }, { status: 'Received' }, { new: true });
+  return vehicle;
+};
+
 module.exports = {
   SetPartnerPrice,
   AddProductByPartner,
@@ -1300,4 +1318,5 @@ module.exports = {
   getCartOrderByProduct,
   getAvailable_Vehicle,
   getOrderDetailsByOrderId,
+  ReceivedDetails_Update,
 };

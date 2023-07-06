@@ -339,6 +339,9 @@ const PartnerOrderSeperationSchema = new mongoose.Schema(
     givenStock: {
       type: String,
     },
+    receivedQTY: {
+      type: Number,
+    },
   },
   { timestamps: true }
 );

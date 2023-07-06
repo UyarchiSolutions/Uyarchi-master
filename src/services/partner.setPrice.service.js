@@ -1277,7 +1277,7 @@ const ReceivedDetails_Update = async (body) => {
   if (!vehicle) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Vehicle Not Available');
   }
-  vehicle = await ManageVehicle.findByIdAndUpdate({ _id: id }, { status: 'Pending' }, { new: true });
+  vehicle = await ManageVehicle.findByIdAndUpdate({ _id: vehicleId }, { status: 'Pending' }, { new: true });
   arr.forEach(async (e) => {
     await PartnerOrderedProductsSeperate.findByIdAndUpdate({ _id: e._id }, { receivedQTY: e.receivedQTY }, { new: true });
   });

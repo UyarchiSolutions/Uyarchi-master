@@ -481,7 +481,6 @@ const getOrdersByPartner = async (id) => {
               partnerId: 1,
               createdAt: 1,
               updatedAt: 1,
-              vehicleId: 1,
               givenStock: { $toInt: '$givenStock' },
               products: '$products',
             },
@@ -507,6 +506,7 @@ const getOrdersByPartner = async (id) => {
         BillingDate: 1,
         BillingTime: 1,
         orderProducts: 1,
+        vehicleId: 1,
       },
     },
   ]);

@@ -282,7 +282,7 @@ const PartnerOrderSchema = new mongoose.Schema(
     BillNo: {
       type: String,
     },
-    VihicleId: {
+    vehicleId: {
       type: String,
     },
     BillingDate: String,

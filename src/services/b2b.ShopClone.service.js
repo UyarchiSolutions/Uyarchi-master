@@ -5551,10 +5551,11 @@ const finalmap_view_picode = async (req) => {
 const get_final_customer_shops = async (req) => {
   let page = req.query.page == '' || req.query.page == null ? 0 : parseInt(req.query.page);
   // match for filters
-
   let salesMatch = { active: true };
   let dateMatch = { active: true };
   let statusMatch = { active: true };
+  let pinMatch = { active: true };
+
   if (req.query.sales && req.query.sales != 'null') {
     salesMatch = { customer_final_USER: req.query.sales };
   }
@@ -5585,11 +5586,19 @@ const get_final_customer_shops = async (req) => {
     }
   }
 
+  let Pin = [];
+  if (req.query.Pincode != 'null') {
+    req.query.Pincode.split(',').forEach((e) => {
+      Pin.push(parseInt(e));
+    });
+    pinMatch = { Pincode: { $in: Pin } };
+  }
+
   let shop = await Shop.aggregate([
     { $sort: { customer_final_CREATED: -1 } },
     {
       $match: {
-        $and: [{ new_re_approve: { $ne: null } }, salesMatch, dateMatch, statusMatch],
+        $and: [{ new_re_approve: { $ne: null } }, salesMatch, dateMatch, statusMatch, pinMatch],
       },
     },
     {

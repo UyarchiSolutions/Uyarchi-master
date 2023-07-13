@@ -5587,7 +5587,7 @@ const get_final_customer_shops = async (req) => {
   }
 
   let Pin = [];
-  if (req.query.Pincode != 'null') {
+  if (req.query.Pincode && req.query.Pincode != 'null') {
     req.query.Pincode.split(',').forEach((e) => {
       Pin.push(parseInt(e));
     });
@@ -5713,6 +5713,7 @@ const get_final_customer_shops = async (req) => {
         customer_final_approved_user: '$b2busers.name',
         da_long: 1,
         da_lot: 1,
+        purchaseQTy:1,
       },
     },
 

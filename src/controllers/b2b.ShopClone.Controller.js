@@ -606,7 +606,7 @@ const Pincodes_For_All = catchAsync(async (req, res) => {
 });
 
 const getFinal_CUstomer_Pincodes = catchAsync(async (req, res) => {
-  const data = await b2bCloneService.getFinal_CUstomer_Pincodes();
+  const data = await b2bCloneService.getFinal_CUstomer_Pincodes(req);
   res.send(data);
 });
 

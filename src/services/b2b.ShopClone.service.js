@@ -5731,7 +5731,7 @@ const get_final_customer_shops = async (req) => {
   return { shop, next: next.length != 0 };
 };
 
-const getFinal_CUstomer_Pincodes = async () => {
+const getFinal_CUstomer_Pincodes = async (req) => {
 
   let salesMatch = { active: true };
   let dateMatch = { active: true };
@@ -5785,7 +5785,7 @@ const getFinal_CUstomer_Pincodes = async () => {
       $project: {
         Pincode: '$_id',
         shopsCount: { $size: '$documents' },
-        // shops:'$documents',
+        shops:'$documents',
         _id: 0,
       },
     },

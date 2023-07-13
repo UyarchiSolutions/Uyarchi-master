@@ -5744,8 +5744,10 @@ const getFinal_CUstomer_Pincodes = async () => {
     },
     {
       $project: {
-        Pincode:'$_id',
-        _id:0
+        Pincode: '$_id',
+        shopsCount: { $size: '$documents' },
+        // shops:'$documents',
+        _id: 0,
       },
     },
     { $match: { Pincode: { $ne: null } } },

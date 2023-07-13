@@ -5730,6 +5730,29 @@ const get_final_customer_shops = async (req) => {
   return { shop, next: next.length != 0 };
 };
 
+const getFinal_CUstomer_Pincodes = async () => {
+  let val = await Shop.aggregate([
+    {
+      $match: { $and: [{ new_re_approve: { $ne: null } }] },
+    },
+    {
+      $group: {
+        _id: '$Pincode',
+        count: { $sum: 1 },
+        documents: { $push: '$$ROOT' },
+      },
+    },
+    {
+      $project: {
+        Pincode:'$_id',
+        _id:0
+      },
+    },
+    { $match: { Pincode: { $ne: null } } },
+  ]);
+  return val;
+};
+
 const getSalesExecutives = async () => {
   let values = await Users.aggregate([
     {
@@ -5875,4 +5898,5 @@ module.exports = {
   getSalesExecutives,
   getPincodeByUser,
   Pincodes_For_All,
+  getFinal_CUstomer_Pincodes,
 };

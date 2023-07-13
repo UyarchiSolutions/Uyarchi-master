@@ -5732,9 +5732,47 @@ const get_final_customer_shops = async (req) => {
 };
 
 const getFinal_CUstomer_Pincodes = async () => {
+
+  let salesMatch = { active: true };
+  let dateMatch = { active: true };
+  let statusMatch = { active: true };
+
+  if (req.query.sales && req.query.sales != 'null') {
+    salesMatch = { customer_final_USER: req.query.sales };
+  }
+
+  if (req.query.date1 && req.query.date2) {
+    if (req.query.date1 == 'null' || req.query.date2 == 'null') {
+      statusMatch;
+    } else {
+      //console.log(req.query.date1, req.query.date2);
+      dateMatch = { customer_final_date: { $gte: req.query.date1, $lte: req.query.date2 } };
+    }
+  }
+  if (req.query.status && req.query.status != 'null') {
+    if (req.query.status == '1') {
+      statusMatch = { new_re_approve: 'Recognised & Fence Sitter' };
+    } else if (req.query.status == '2') {
+      statusMatch = { new_re_approve: 'Recognised & Interested' };
+    } else if (req.query.status == '3') {
+      statusMatch = { new_re_approve: 'Shop Closed/ Shifted' };
+    } else if (req.query.status == '4') {
+      statusMatch = { new_re_approve: 'Cannot Spot the shop' };
+    } else if (req.query.status == '5') {
+      statusMatch = { new_re_approve: 'Not interested' };
+    } else if (req.query.status == '6') {
+      statusMatch = { new_re_approve: 'Irrelevant Shop' };
+    } else {
+      statusMatch;
+    }
+  }
+
   let val = await Shop.aggregate([
+    { $sort: { customer_final_CREATED: -1 } },
     {
-      $match: { $and: [{ new_re_approve: { $ne: null } }] },
+      $match: {
+        $and: [{ new_re_approve: { $ne: null } }, salesMatch, dateMatch, statusMatch],
+      },
     },
     {
       $group: {
@@ -5801,41 +5839,7 @@ const getPincodeByUser = async (id) => {
   return Pincode;
 };
 
-const Pincodes_For_All = async (req) => {
-  let salesMatch = { active: true };
-  let dateMatch = { active: true };
-  let statusMatch = { active: true };
-
-  if (req.query.sales && req.query.sales != 'null') {
-    salesMatch = { customer_final_USER: req.query.sales };
-  }
-
-  if (req.query.date1 && req.query.date2) {
-    if (req.query.date1 == 'null' || req.query.date2 == 'null') {
-      statusMatch;
-    } else {
-      //console.log(req.query.date1, req.query.date2);
-      dateMatch = { customer_final_date: { $gte: req.query.date1, $lte: req.query.date2 } };
-    }
-  }
-
-  if (req.query.status && req.query.status != 'null') {
-    if (req.query.status == '1') {
-      statusMatch = { new_re_approve: 'Recognised & Fence Sitter' };
-    } else if (req.query.status == '2') {
-      statusMatch = { new_re_approve: 'Recognised & Interested' };
-    } else if (req.query.status == '3') {
-      statusMatch = { new_re_approve: 'Shop Closed/ Shifted' };
-    } else if (req.query.status == '4') {
-      statusMatch = { new_re_approve: 'Cannot Spot the shop' };
-    } else if (req.query.status == '5') {
-      statusMatch = { new_re_approve: 'Not interested' };
-    } else if (req.query.status == '6') {
-      statusMatch = { new_re_approve: 'Irrelevant Shop' };
-    } else {
-      statusMatch;
-    }
-  }
+const Pincodes_For_All = async () => {
   
   const data = await Shop.aggregate([
     {

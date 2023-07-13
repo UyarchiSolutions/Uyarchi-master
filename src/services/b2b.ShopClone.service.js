@@ -5728,7 +5728,130 @@ const get_final_customer_shops = async (req) => {
     { $skip: 10 * (page + 1) },
     { $limit: 10 },
   ]);
-  return { shop, next: next.length != 0 };
+
+  let total = await Shop.aggregate([{ $sort: { customer_final_CREATED: -1 } },
+    {
+      $match: {
+        $and: [{ new_re_approve: { $ne: null } }, salesMatch, dateMatch, statusMatch, pinMatch],
+      },
+    },
+    {
+      $lookup: {
+        from: 'b2busers',
+        localField: 'Uid',
+        foreignField: '_id',
+        pipeline: [
+          {
+            $project: {
+              name: 1,
+            },
+          },
+        ],
+        as: 'UsersData',
+      },
+    },
+    {
+      $unwind: '$UsersData',
+    },
+    {
+      $lookup: {
+        from: 'wards',
+        localField: 'Wardid',
+        foreignField: '_id',
+        pipeline: [
+          {
+            $project: {
+              ward: 1,
+            },
+          },
+        ],
+        as: 'WardData',
+      },
+    },
+    {
+      $unwind: '$WardData',
+    },
+    {
+      $lookup: {
+        from: 'streets',
+        localField: 'Strid',
+        foreignField: '_id',
+        pipeline: [
+          {
+            $project: {
+              street: 1,
+              area: 1,
+              locality: 1,
+            },
+          },
+        ],
+        as: 'StreetData',
+      },
+    },
+    {
+      $unwind: '$StreetData',
+    },
+    // shoplists
+    {
+      $lookup: {
+        from: 'shoplists',
+        localField: 'SType',
+        foreignField: '_id',
+        as: 'shoptype',
+      },
+    },
+    {
+      $unwind: '$shoptype',
+    },
+    {
+      $lookup: {
+        from: 'b2busers',
+        localField: 'customer_final_USER',
+        foreignField: '_id',
+        as: 'b2busers',
+      },
+    },
+    {
+      $unwind: '$b2busers',
+    },
+    {
+      $project: {
+        // _id:1,
+        // created:1,
+        street: '$StreetData.street',
+        Area: '$StreetData.area',
+        Locality: '$StreetData.locality',
+        ward: '$WardData.ward',
+        username: '$UsersData.name',
+        shoptype: '$shoptype.shopList',
+        photoCapture: 1,
+        SName: 1,
+        address: 1,
+        Slat: 1,
+        Slong: 1,
+        status: 1,
+        created: 1,
+        SOwner: 1,
+        kyc_status: 1,
+        active: 1,
+        mobile: 1,
+        date: 1,
+        customer_final_date: 1,
+        customer_final_USER: 1,
+        customer_final_CREATED: 1,
+        customer_final_TIME: 1,
+        new_re_long: 1,
+        new_re_lat: 1,
+        new_re_approve: 1,
+        Pincode: 1,
+        customer_final_approved_user: '$b2busers.name',
+        da_long: 1,
+        da_lot: 1,
+        purchaseQTy:1,
+      },
+    }])
+
+  return { shop, next: next.length != 0,total:total.length };
 };
 
 const getFinal_CUstomer_Pincodes = async (req) => {

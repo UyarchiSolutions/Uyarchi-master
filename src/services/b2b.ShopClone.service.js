@@ -5551,10 +5551,11 @@ const finalmap_view_picode = async (req) => {
 const get_final_customer_shops = async (req) => {
   let page = req.query.page == '' || req.query.page == null ? 0 : parseInt(req.query.page);
   // match for filters
-
   let salesMatch = { active: true };
   let dateMatch = { active: true };
   let statusMatch = { active: true };
+  let pinMatch = { active: true };
+
   if (req.query.sales && req.query.sales != 'null') {
     salesMatch = { customer_final_USER: req.query.sales };
   }
@@ -5585,11 +5586,19 @@ const get_final_customer_shops = async (req) => {
     }
   }
 
+  let Pin = [];
+  if (req.query.Pincode && req.query.Pincode != 'null') {
+    req.query.Pincode.split(',').forEach((e) => {
+      Pin.push(parseInt(e));
+    });
+    pinMatch = { Pincode: { $in: Pin } };
+  }
+
   let shop = await Shop.aggregate([
     { $sort: { customer_final_CREATED: -1 } },
     {
       $match: {
-        $and: [{ new_re_approve: { $ne: null } }, salesMatch, dateMatch, statusMatch],
+        $and: [{ new_re_approve: { $ne: null } }, salesMatch, dateMatch, statusMatch, pinMatch],
       },
     },
     {
@@ -5704,6 +5713,7 @@ const get_final_customer_shops = async (req) => {
         customer_final_approved_user: '$b2busers.name',
         da_long: 1,
         da_lot: 1,
+        purchaseQTy: 1,
       },
     },
 
@@ -5718,7 +5728,364 @@ const get_final_customer_shops = async (req) => {
     { $skip: 10 * (page + 1) },
     { $limit: 10 },
   ]);
-  return { shop, next: next.length != 0 };
+
+  let total = await Shop.aggregate([
+    { $sort: { customer_final_CREATED: -1 } },
+    {
+      $match: {
+        $and: [{ new_re_approve: { $ne: null } }, salesMatch, dateMatch, statusMatch, pinMatch],
+      },
+    },
+    {
+      $lookup: {
+        from: 'b2busers',
+        localField: 'Uid',
+        foreignField: '_id',
+        pipeline: [
+          {
+            $project: {
+              name: 1,
+            },
+          },
+        ],
+        as: 'UsersData',
+      },
+    },
+    {
+      $unwind: '$UsersData',
+    },
+    {
+      $lookup: {
+        from: 'wards',
+        localField: 'Wardid',
+        foreignField: '_id',
+        pipeline: [
+          {
+            $project: {
+              ward: 1,
+            },
+          },
+        ],
+        as: 'WardData',
+      },
+    },
+    {
+      $unwind: '$WardData',
+    },
+    {
+      $lookup: {
+        from: 'streets',
+        localField: 'Strid',
+        foreignField: '_id',
+        pipeline: [
+          {
+            $project: {
+              street: 1,
+              area: 1,
+              locality: 1,
+            },
+          },
+        ],
+        as: 'StreetData',
+      },
+    },
+    {
+      $unwind: '$StreetData',
+    },
+    // shoplists
+    {
+      $lookup: {
+        from: 'shoplists',
+        localField: 'SType',
+        foreignField: '_id',
+        as: 'shoptype',
+      },
+    },
+    {
+      $unwind: '$shoptype',
+    },
+    {
+      $lookup: {
+        from: 'b2busers',
+        localField: 'customer_final_USER',
+        foreignField: '_id',
+        as: 'b2busers',
+      },
+    },
+    {
+      $unwind: '$b2busers',
+    },
+    {
+      $project: {
+        // _id:1,
+        // created:1,
+        street: '$StreetData.street',
+        Area: '$StreetData.area',
+        Locality: '$StreetData.locality',
+        ward: '$WardData.ward',
+        username: '$UsersData.name',
+        shoptype: '$shoptype.shopList',
+        photoCapture: 1,
+        SName: 1,
+        address: 1,
+        Slat: 1,
+        Slong: 1,
+        status: 1,
+        created: 1,
+        SOwner: 1,
+        kyc_status: 1,
+        active: 1,
+        mobile: 1,
+        date: 1,
+        customer_final_date: 1,
+        customer_final_USER: 1,
+        customer_final_CREATED: 1,
+        customer_final_TIME: 1,
+        new_re_long: 1,
+        new_re_lat: 1,
+        new_re_approve: 1,
+        Pincode: 1,
+        customer_final_approved_user: '$b2busers.name',
+        da_long: 1,
+        da_lot: 1,
+        purchaseQTy: 1,
+      },
+    },
+  ]);
+
+  return { shop, next: next.length != 0, total: total.length };
+};
+
+const get_final_customer_shops_Maps = async (req) => {
+  let salesMatch = { active: true };
+  let dateMatch = { active: true };
+  let statusMatch = { active: true };
+  let pinMatch = { active: true };
+
+  if (req.query.sales && req.query.sales != 'null') {
+    salesMatch = { customer_final_USER: req.query.sales };
+  }
+
+  if (req.query.date1 && req.query.date2) {
+    if (req.query.date1 == 'null' || req.query.date2 == 'null') {
+      statusMatch;
+    } else {
+      //console.log(req.query.date1, req.query.date2);
+      dateMatch = { customer_final_date: { $gte: req.query.date1, $lte: req.query.date2 } };
+    }
+  }
+  if (req.query.status && req.query.status != 'null') {
+    if (req.query.status == '1') {
+      statusMatch = { new_re_approve: 'Recognised & Fence Sitter' };
+    } else if (req.query.status == '2') {
+      statusMatch = { new_re_approve: 'Recognised & Interested' };
+    } else if (req.query.status == '3') {
+      statusMatch = { new_re_approve: 'Shop Closed/ Shifted' };
+    } else if (req.query.status == '4') {
+      statusMatch = { new_re_approve: 'Cannot Spot the shop' };
+    } else if (req.query.status == '5') {
+      statusMatch = { new_re_approve: 'Not interested' };
+    } else if (req.query.status == '6') {
+      statusMatch = { new_re_approve: 'Irrelevant Shop' };
+    } else {
+      statusMatch;
+    }
+  }
+
+  let Pin = [];
+  if (req.query.Pincode && req.query.Pincode != 'null') {
+    req.query.Pincode.split(',').forEach((e) => {
+      Pin.push(parseInt(e));
+    });
+    pinMatch = { Pincode: { $in: Pin } };
+  }
+
+  let total = await Shop.aggregate([
+    { $sort: { customer_final_CREATED: -1 } },
+    {
+      $match: {
+        $and: [{ new_re_approve: { $ne: null } }, salesMatch, dateMatch, statusMatch, pinMatch],
+      },
+    },
+    {
+      $lookup: {
+        from: 'b2busers',
+        localField: 'Uid',
+        foreignField: '_id',
+        pipeline: [
+          {
+            $project: {
+              name: 1,
+            },
+          },
+        ],
+        as: 'UsersData',
+      },
+    },
+    {
+      $unwind: '$UsersData',
+    },
+    {
+      $lookup: {
+        from: 'wards',
+        localField: 'Wardid',
+        foreignField: '_id',
+        pipeline: [
+          {
+            $project: {
+              ward: 1,
+            },
+          },
+        ],
+        as: 'WardData',
+      },
+    },
+    {
+      $unwind: '$WardData',
+    },
+    {
+      $lookup: {
+        from: 'streets',
+        localField: 'Strid',
+        foreignField: '_id',
+        pipeline: [
+          {
+            $project: {
+              street: 1,
+              area: 1,
+              locality: 1,
+            },
+          },
+        ],
+        as: 'StreetData',
+      },
+    },
+    {
+      $unwind: '$StreetData',
+    },
+    // shoplists
+    {
+      $lookup: {
+        from: 'shoplists',
+        localField: 'SType',
+        foreignField: '_id',
+        as: 'shoptype',
+      },
+    },
+    {
+      $unwind: '$shoptype',
+    },
+    {
+      $lookup: {
+        from: 'b2busers',
+        localField: 'customer_final_USER',
+        foreignField: '_id',
+        as: 'b2busers',
+      },
+    },
+    {
+      $unwind: '$b2busers',
+    },
+    {
+      $project: {
+        // _id:1,
+        // created:1,
+        street: '$StreetData.street',
+        Area: '$StreetData.area',
+        Locality: '$StreetData.locality',
+        ward: '$WardData.ward',
+        username: '$UsersData.name',
+        shoptype: '$shoptype.shopList',
+        photoCapture: 1,
+        SName: 1,
+        address: 1,
+        Slat: 1,
+        Slong: 1,
+        status: 1,
+        created: 1,
+        SOwner: 1,
+        kyc_status: 1,
+        active: 1,
+        mobile: 1,
+        date: 1,
+        customer_final_date: 1,
+        customer_final_USER: 1,
+        customer_final_CREATED: 1,
+        customer_final_TIME: 1,
+        new_re_long: 1,
+        new_re_lat: 1,
+        new_re_approve: 1,
+        Pincode: 1,
+        customer_final_approved_user: '$b2busers.name',
+        da_long: 1,
+        da_lot: 1,
+        purchaseQTy: 1,
+      },
+    },
+  ]);
+  return total
+};
+
+const getFinal_CUstomer_Pincodes = async (req) => {
+  let salesMatch = { active: true };
+  let dateMatch = { active: true };
+  let statusMatch = { active: true };
+
+  if (req.query.sales && req.query.sales != 'null') {
+    salesMatch = { customer_final_USER: req.query.sales };
+  }
+
+  if (req.query.date1 && req.query.date2) {
+    if (req.query.date1 == 'null' || req.query.date2 == 'null') {
+      statusMatch;
+    } else {
+      //console.log(req.query.date1, req.query.date2);
+      dateMatch = { customer_final_date: { $gte: req.query.date1, $lte: req.query.date2 } };
+    }
+  }
+  if (req.query.status && req.query.status != 'null') {
+    if (req.query.status == '1') {
+      statusMatch = { new_re_approve: 'Recognised & Fence Sitter' };
+    } else if (req.query.status == '2') {
+      statusMatch = { new_re_approve: 'Recognised & Interested' };
+    } else if (req.query.status == '3') {
+      statusMatch = { new_re_approve: 'Shop Closed/ Shifted' };
+    } else if (req.query.status == '4') {
+      statusMatch = { new_re_approve: 'Cannot Spot the shop' };
+    } else if (req.query.status == '5') {
+      statusMatch = { new_re_approve: 'Not interested' };
+    } else if (req.query.status == '6') {
+      statusMatch = { new_re_approve: 'Irrelevant Shop' };
+    } else {
+      statusMatch;
+    }
+  }
+
+  let val = await Shop.aggregate([
+    { $sort: { customer_final_CREATED: -1 } },
+    {
+      $match: {
+        $and: [{ new_re_approve: { $ne: null } }, salesMatch, dateMatch, statusMatch],
+      },
+    },
+    {
+      $group: {
+        _id: '$Pincode',
+        count: { $sum: 1 },
+        documents: { $push: '$$ROOT' },
+      },
+    },
+    {
+      $project: {
+        Pincode: '$_id',
+        shopsCount: { $size: '$documents' },
+        shops: '$documents',
+        _id: 0,
+      },
+    },
+    { $match: { Pincode: { $ne: null } } },
+  ]);
+  return val;
 };
 
 const getSalesExecutives = async () => {
@@ -5866,4 +6233,6 @@ module.exports = {
   getSalesExecutives,
   getPincodeByUser,
   Pincodes_For_All,
+  getFinal_CUstomer_Pincodes,
+  get_final_customer_shops_Maps,
 };

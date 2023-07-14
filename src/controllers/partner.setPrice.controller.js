@@ -165,6 +165,16 @@ const getAvailable_Vehicle = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const getOrderDetailsByOrderId = catchAsync(async (req, res) => {
+  const data = await partnersetpriceService.getOrderDetailsByOrderId(req.params.id);
+  res.send(data);
+});
+
+const ReceivedDetails_Update = catchAsync(async (req, res) => {
+  const data = await partnersetpriceService.ReceivedDetails_Update(req.body);
+  res.send(data);
+});
+
 module.exports = {
   SetPartnerPrice,
   AddProductByPartner,
@@ -197,4 +207,6 @@ module.exports = {
   getCartReports,
   getCartOrderByProduct,
   getAvailable_Vehicle,
+  getOrderDetailsByOrderId,
+  ReceivedDetails_Update,
 };

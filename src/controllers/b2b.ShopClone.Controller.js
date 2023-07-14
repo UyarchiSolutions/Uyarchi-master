@@ -595,6 +595,11 @@ const get_final_customer_shops = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const get_final_customer_shops_Maps = catchAsync(async (req, res) => {
+  const data = await b2bCloneService.get_final_customer_shops_Maps(req);
+  res.send(data);
+});
+
 const getSalesExecutives = catchAsync(async (req, res) => {
   const data = await b2bCloneService.getSalesExecutives();
   res.send(data);
@@ -602,6 +607,11 @@ const getSalesExecutives = catchAsync(async (req, res) => {
 
 const Pincodes_For_All = catchAsync(async (req, res) => {
   const data = await b2bCloneService.Pincodes_For_All();
+  res.send(data);
+});
+
+const getFinal_CUstomer_Pincodes = catchAsync(async (req, res) => {
+  const data = await b2bCloneService.getFinal_CUstomer_Pincodes(req);
   res.send(data);
 });
 
@@ -681,4 +691,6 @@ module.exports = {
   getSalesExecutives,
   getPincodeByUser,
   Pincodes_For_All,
+  getFinal_CUstomer_Pincodes,
+  get_final_customer_shops_Maps,
 };

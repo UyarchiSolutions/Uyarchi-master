@@ -681,14 +681,16 @@ const Remove__ScvFrom_Cart = async (body) => {
 };
 
 const getNearByCartBy_CurrrentLocation = async (body) => {
-  const { lat, long } = body;
+  const { latitude, longitude } = body;
+  const date = moment().format('DD/MM/YYYY');
+  console.log(date);
   const data = await ScvCart.aggregate([
     {
       $geoNear: {
         includeLocs: 'location',
         near: {
           type: 'Point',
-          coordinates: [parseFloat(long), parseFloat(lat)],
+          coordinates: [parseFloat(longitude), parseFloat(latitude)],
         },
         distanceField: 'distance',
         spherical: true,
@@ -699,13 +701,29 @@ const getNearByCartBy_CurrrentLocation = async (body) => {
         from: 'partnerorderproducts',
         localField: '_id',
         foreignField: 'cartId',
+
         pipeline: [
+          { $match: { date: date } },
           { $lookup: { from: 'products', localField: 'productId', foreignField: '_id', as: 'product' } },
           { $unwind: '$product' },
         ],
         as: 'cartProducts',
       },
     },
+    {
+      $project: {
+        _id: 1,
+        vehicleName: 1,
+        vehicleNumber: 1,
+        cartName: 1,
+        cartLocation: 1,
+        distance: 1,
+        convertedDistance: { $round: [{ $divide: ['$distance', 1000] }, 1] },
+        cartProducts: 1,
+        count: { $size: '$cartProducts' },
+      },
+    },
+    { $match: { count: { $gt: 0 } } },
   ]);
   return data;
 };

@@ -8,6 +8,7 @@ const router = express.Router();
 const AgoraAppId = require('../../../controllers/liveStreaming/AgoraAppId.controller');
 
 router.post('/insert/app/id', AgoraAppId.InsertAppId);
+router.get('/get/app/id', AgoraAppId.InsertAget_app_id);
 
 
 module.exports = router;

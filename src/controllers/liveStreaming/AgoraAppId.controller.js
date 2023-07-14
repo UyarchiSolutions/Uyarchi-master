@@ -8,8 +8,14 @@ const InsertAppId= catchAsync(async (req, res) => {
     res.status(httpStatus.CREATED).send(data);
   });
 
+  const InsertAget_app_id= catchAsync(async (req, res) => {
+    const data = await AgoraAppId.InsertAget_app_id(req);
+    res.status(httpStatus.CREATED).send(data);
+  });
+
 
 module.exports = {
-  InsertAppId
+  InsertAppId,
+  InsertAget_app_id
   };
   

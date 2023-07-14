@@ -28,7 +28,7 @@ ffmpeg.setFfmpegPath(ffmpegPath);
 const path = require('path');
 const AWS = require('aws-sdk');
 const get_agora_details = async (key) => {
-  let agora = await AgoraAppId.findById("012b3713-c597-4a9b-9b09-0cbd813deafa");
+  let agora = await AgoraAppId.findById("c00dd030-20dc-4617-ab57-61311234078e");
   console.log(agora)
   if (key == 'appID') {
     return agora.appID;

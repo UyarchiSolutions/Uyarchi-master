@@ -15,6 +15,14 @@ const InsertAppId = async (req) => {
   return appId;
 
 }
+const InsertAget_app_id = async (req) => {
+  let id = req.query.id;
+  let appId = await AgoraAppId.findById(id)
+
+  return appId;
+
+}
 module.exports = {
   InsertAppId,
+  InsertAget_app_id
 };

@@ -28,7 +28,7 @@ ffmpeg.setFfmpegPath(ffmpegPath);
 const path = require('path');
 const AWS = require('aws-sdk');
 const get_agora_details = async (key) => {
-  let agora = await AgoraAppId.findById("c00dd030-20dc-4617-ab57-61311234078e");
+  let agora = await AgoraAppId.findById("1ba2592b16b74f3497e232e1b01f66b0");
   console.log(agora)
   if (key == 'appID') {
     return agora.appID;
@@ -97,11 +97,11 @@ const generateToken = async (req) => {
   return { uid, token, value, cloud_recording, stream };
 };
 const geenerate_rtc_token = async (chennel, uid, role, expirationTimestamp) => {
-  let newAppid = await get_agora_details("appID")
-  let newappCertificate = await get_agora_details("appCertificate")
-  console.log(newAppid)
-  console.log(newappCertificate)
-  return Agora.RtcTokenBuilder.buildTokenWithUid(newAppid, newappCertificate, chennel, uid, role, expirationTimestamp);
+  // let newAppid = await get_agora_details("appID")
+  // let newappCertificate = await get_agora_details("appCertificate")
+  // console.log(newAppid)
+  // console.log(newappCertificate)
+  return Agora.RtcTokenBuilder.buildTokenWithUid(appID, appCertificate, chennel, uid, role, expirationTimestamp);
 };
 const generateToken_sub_record = async (channel, isPublisher, req, hostIdss, expire) => {
   const expirationTimeInSeconds = 3600;
@@ -308,27 +308,27 @@ const agora_acquire = async (req, id) => {
   let temtoken = id;
   // let temtoken=req.body.id;
   let token = await tempTokenModel.findById(temtoken);
-  let newAppid = await get_agora_details("appID")
-  let cloud_Token = await get_agora_details("Authorization")
-  let newAuthorization = `Basic ${Buffer.from(cloud_Token).toString('base64')}`;
-  console.log(cloud_Token,newAppid)
-  console.log(newAuthorization)
+  // let newAppid = await get_agora_details("appID")
+  // let cloud_Token = await get_agora_details("Authorization")
+  // let newAuthorization = `Basic ${Buffer.from(cloud_Token).toString('base64')}`;
+  // console.log(cloud_Token,newAppid)
+  // console.log(newAuthorization)
   console.log(Authorization)
-    const acquire = await axios.post(
-      `https://api.agora.io/v1/apps/${newAppid}/cloud_recording/acquire`,
-      {
-        cname: token.chennel,
-        uid: token.Uid.toString(),
-        clientRequest: {
-          resourceExpiredHour: 24,
-          scene: 0,
-        },
+  const acquire = await axios.post(
+    `https://api.agora.io/v1/apps/${appID}/cloud_recording/acquire`,
+    {
+      cname: token.chennel,
+      uid: token.Uid.toString(),
+      clientRequest: {
+        resourceExpiredHour: 24,
+        scene: 0,
       },
-      { headers: { Authorization:newAuthorization } }
-    );
-    token.resourceId = acquire.data.resourceId;
-    token.recoredStart = 'acquire';
-    token.save();
+    },
+    { headers: { Authorization } }
+  );
+  token.resourceId = acquire.data.resourceId;
+  token.recoredStart = 'acquire';
+  token.save();
   // setTimeout(async () => {
   //   console.log(2, 3);
   //   await recording_start(req, temtoken);
@@ -344,16 +344,16 @@ const recording_start = async (req, id) => {
   if (token) {
     if (token.recoredStart == 'acquire') {
       const resource = token.resourceId;
-      let newAppid = await get_agora_details("appID")
+      // let newAppid = await get_agora_details("appID")
       //console.log(resource)
       //console.log(token)
       const mode = 'mix';
-      let cloud_Token = await get_agora_details("Authorization")
-      const newAuthorization = `Basic ${Buffer.from(cloud_Token).toString(
-        'base64'
-      )}`;
+      // let cloud_Token = await get_agora_details("Authorization")
+      // const newAuthorization = `Basic ${Buffer.from(cloud_Token).toString(
+      //   'base64'
+      // )}`;
       const start = await axios.post(
-        `https://api.agora.io/v1/apps/${newAppid}/cloud_recording/resourceid/${resource}/mode/${mode}/start`,
+        `https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/mode/${mode}/start`,
         {
           cname: token.chennel,
           uid: token.Uid.toString(),
@@ -386,7 +386,7 @@ const recording_start = async (req, id) => {
             },
           },
         },
-        { headers: { Authorization:newAuthorization } }
+        { headers: { Authorization } }
       );
       token.resourceId = start.data.resourceId;
       token.sid = start.data.sid;
@@ -411,15 +411,15 @@ const recording_query = async (req, id) => {
   const resource = token.resourceId;
   const sid = token.sid;
   const mode = 'mix';
-  let newAppid = await get_agora_details("appID")
-  let cloud_Token = await get_agora_details("Authorization")
-  const newAuthorization = `Basic ${Buffer.from(cloud_Token).toString(
-    'base64'
-  )}`;
+  // let newAppid = await get_agora_details("appID")
+  // let cloud_Token = await get_agora_details("Authorization")
+  // const newAuthorization = `Basic ${Buffer.from(cloud_Token).toString(
+  //   'base64'
+  // )}`;
   // //console.log(`https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/query`);
   const query = await axios.get(
-    `https://api.agora.io/v1/apps/${newAppid}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/query`,
-    { headers: { Authorization:newAuthorization } }
+    `https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/query`,
+    { headers: { Authorization } }
   );
   token.videoLink = query.data.serverResponse.fileList;
   token.recoredStart = 'query';
@@ -453,13 +453,13 @@ const recording_stop = async (req) => {
   return { message: 'asdhajs' };
 };
 const recording_updateLayout = async (req) => {
-  let cloud_Token = await get_agora_details("Authorization")
-  const newAuthorization = `Basic ${Buffer.from(cloud_Token).toString(
-    'base64'
-  )}`;
-  let newAppid = await get_agora_details("appID")
+  // let cloud_Token = await get_agora_details("Authorization")
+  // const newAuthorization = `Basic ${Buffer.from(cloud_Token).toString(
+  //   'base64'
+  // )}`;
+  // let newAppid = await get_agora_details("appID")
   const acquire = await axios.post(
-    `https://api.agora.io/v1/apps/${newAppid}/cloud_recording/acquire`,
+    `https://api.agora.io/v1/apps/${appID}/cloud_recording/acquire`,
     {
       cname: 'test',
       uid: '16261',
@@ -467,7 +467,7 @@ const recording_updateLayout = async (req) => {
         resourceExpiredHour: 24,
       },
     },
-    { headers: { Authorization:newAuthorization } }
+    { headers: { Authorization } }
   );
 
   return acquire.data;
@@ -1160,15 +1160,15 @@ const production_supplier_token_cloudrecording = async (req, id) => {
     const sid = token.sid;
     console.log(1234567890123456, resource);
     const mode = 'mix';
-    let newAppid = await get_agora_details("appID")
-    let cloud_Token = await get_agora_details("Authorization")
-    const newAuthorization = `Basic ${Buffer.from(cloud_Token).toString(
-      'base64'
-    )}`;
+    // let newAppid = await get_agora_details("appID")
+    // let cloud_Token = await get_agora_details("Authorization")
+    // const newAuthorization = `Basic ${Buffer.from(cloud_Token).toString(
+    //   'base64'
+    // )}`;
     // //console.log(`https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/query`);
     await axios
-      .get(`https://api.agora.io/v1/apps/${newAppid}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/query`, {
-        headers: { Authorization:newAuthorization },
+      .get(`https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/query`, {
+        headers: { Authorization },
       })
       .then((res) => { })
       .catch(async (error) => {

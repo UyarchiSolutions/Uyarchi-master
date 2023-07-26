@@ -8372,10 +8372,10 @@ const get_completed_stream_upcommming = async (req) => {
         from: 'sellers',
         localField: 'suppierId',
         foreignField: '_id',
-        as: 'suppliers',
+        as: 'sellers',
       },
     },
-    { $unwind: '$suppliers' },
+    { $unwind: '$sellers' },
     {
       $lookup: {
         from: 'streampreregisters',
@@ -8520,7 +8520,7 @@ const get_completed_stream_upcommming = async (req) => {
     {
       $project: {
         _id: 1,
-        supplierName: '$suppliers.contactName',
+        supplierName: '$sellers.contactName',
         active: 1,
         archive: 1,
         post: 1,
@@ -8657,13 +8657,13 @@ const get_completed_stream_live = async (req) => {
     },
     {
       $lookup: {
-        from: 'suppliers',
+        from: 'sellers',
         localField: 'suppierId',
         foreignField: '_id',
-        as: 'suppliers',
+        as: 'sellers',
       },
     },
-    { $unwind: '$suppliers' },
+    { $unwind: '$sellers' },
     {
       $lookup: {
         from: 'streampreregisters',
@@ -8808,7 +8808,7 @@ const get_completed_stream_live = async (req) => {
     {
       $project: {
         _id: 1,
-        supplierName: '$suppliers.contactName',
+        supplierName: '$sellers.contactName',
         active: 1,
         archive: 1,
         post: 1,
@@ -8945,13 +8945,13 @@ const get_completed_stream_completed = async (req) => {
     },
     {
       $lookup: {
-        from: 'suppliers',
+        from: 'sellers',
         localField: 'suppierId',
         foreignField: '_id',
-        as: 'suppliers',
+        as: 'sellers',
       },
     },
-    { $unwind: '$suppliers' },
+    { $unwind: '$sellers' },
     {
       $lookup: {
         from: 'streampreregisters',
@@ -9096,7 +9096,7 @@ const get_completed_stream_completed = async (req) => {
     {
       $project: {
         _id: 1,
-        supplierName: '$suppliers.contactName',
+        supplierName: '$sellers.contactName',
         active: 1,
         archive: 1,
         post: 1,
@@ -9226,13 +9226,13 @@ const get_completed_stream_expired = async (req) => {
     },
     {
       $lookup: {
-        from: 'suppliers',
+        from: 'sellers',
         localField: 'suppierId',
         foreignField: '_id',
-        as: 'suppliers',
+        as: 'sellers',
       },
     },
-    { $unwind: '$suppliers' },
+    { $unwind: '$sellers' },
     {
       $lookup: {
         from: 'streampreregisters',
@@ -9377,7 +9377,7 @@ const get_completed_stream_expired = async (req) => {
     {
       $project: {
         _id: 1,
-        supplierName: '$suppliers.contactName',
+        supplierName: '$sellers.contactName',
         active: 1,
         archive: 1,
         post: 1,
@@ -9512,13 +9512,13 @@ const get_completed_stream_cancelled = async (req) => {
     },
     {
       $lookup: {
-        from: 'suppliers',
+        from: 'sellers',
         localField: 'suppierId',
         foreignField: '_id',
-        as: 'suppliers',
+        as: 'sellers',
       },
     },
-    { $unwind: '$suppliers' },
+    { $unwind: '$sellers' },
     {
       $lookup: {
         from: 'streampreregisters',
@@ -9663,7 +9663,7 @@ const get_completed_stream_cancelled = async (req) => {
     {
       $project: {
         _id: 1,
-        supplierName: '$suppliers.contactName',
+        supplierName: '$sellers.contactName',
         active: 1,
         archive: 1,
         post: 1,

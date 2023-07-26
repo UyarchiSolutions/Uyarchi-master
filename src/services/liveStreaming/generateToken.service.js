@@ -1498,7 +1498,7 @@ const production_supplier_token_watchamin = async (req) => {
   ])
 
 
-  return { value, stream };
+  return { value, stream:stream[0] };
 };
 
 const get_stream_complete_videos = async (req) => {

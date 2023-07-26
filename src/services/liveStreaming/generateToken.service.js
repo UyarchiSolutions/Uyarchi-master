@@ -994,6 +994,14 @@ const find_userLimt = async (channel) => {
 };
 
 const remove_host_live = async (req) => {
+  let stream = await Streamrequest.findById(req.query.id);
+  if (stream) {
+    stream = await Streamrequest.findByIdAndUpdate(
+      { _id: req.query.id },
+      { status: 'Completed', streamEnd_Time: moment(), end_Status: 'Terminated' },
+      { new: true }
+    );
+  }
   req.io.emit(req.query.id + 'admin_action', { remove: true });
   return { removed: 'success' };
 };

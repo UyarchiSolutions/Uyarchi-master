@@ -17,6 +17,19 @@ const storage = multer.memoryStorage({
 });
 const upload = multer({ storage }).single('teaser');
 const changeVideo = multer({ storage }).single('video');
+const storage_s3 = multer.diskStorage({
+  destination(req, file, cb) {
+    cb(null, 'uploads')
+  },
+  filename(req, file, cb) {
+    cb(null, `${file.fieldname}-${Date.now()}`)
+  }
+})
+
+const upload_s3 = multer({ storage: storage_s3 });
+
+
+
 // plan APIS
 router.route('/create/plan').post(Ecomcontroller.create_Plans);
 router.route('/create/plan/addon').post(Ecomcontroller.create_Plans_addon);
@@ -161,9 +174,9 @@ const changeVideoupload = multer({ storage: multer.memoryStorage() });
 router.route('/get/post/after/complete/stream').get(Ecomcontroller.get_stream_post_after_live_stream);
 router.route('/update/start/end/time').put(Ecomcontroller.update_start_end_time);
 
-router.route('/update/video/post').put(changeVideo, Ecomcontroller.video_upload_post);
+router.route('/update/video/post').put(upload_s3.single("video"), Ecomcontroller.video_upload_post);
 
-router.route('/get/video/link').get(changeVideo, Ecomcontroller.get_video_link);
+router.route('/get/video/link').get(upload_s3.single("video"), Ecomcontroller.get_video_link);
 
 // Loading manager
 

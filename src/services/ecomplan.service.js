@@ -21,6 +21,8 @@ const generateLink = require('./liveStreaming/generatelink.service');
 const moment = require('moment');
 const { findById } = require('../models/token.model');
 
+const S3video = require("./S3video.service")
+
 const create_Plans = async (req) => {
   //console.log(req.body);
   const value = await Streamplan.create({ ...req.body, ...{ planType: 'normal' } });
@@ -3121,7 +3123,7 @@ const get_watch_live_steams_admin_watch = async (req) => {
         foreignField: 'streamId',
         pipeline: [
           { $match: { $and: [{ type: { $eq: 'CloudRecording' } }] } },
-          {$limit:1}
+          { $limit: 1 }
         ],
         as: 'temptokens',
       },
@@ -7280,8 +7282,8 @@ const regisetr_strean_instrest = async (req) => {
       participents.noOfParticipants > count
         ? 'Confirmed'
         : participents.noOfParticipants + participents.noOfParticipants / 2 > count
-        ? 'RAC'
-        : 'Waiting';
+          ? 'RAC'
+          : 'Waiting';
     await Dates.create_date(findresult);
   } else {
     if (findresult.status != 'Registered') {
@@ -7290,8 +7292,8 @@ const regisetr_strean_instrest = async (req) => {
         participents.noOfParticipants > count
           ? 'Confirmed'
           : participents.noOfParticipants + participents.noOfParticipants / 2 > count
-          ? 'RAC'
-          : 'Waiting';
+            ? 'RAC'
+            : 'Waiting';
       findresult.eligible = participents.noOfParticipants > count;
       findresult.status = 'Registered';
       await Dates.create_date(findresult);
@@ -11722,7 +11724,7 @@ const get_stream_post_after_live_stream = async (req) => {
       ffmpeg(inputFilePath)
         .outputOptions('-c', 'copy')
         .output(outputFilePath)
-        .on('end', (e) => {})
+        .on('end', (e) => { })
         .on('error', (err) => {
           console.error('Error while converting:', err);
         })
@@ -11779,43 +11781,17 @@ const update_start_end_time = async (req) => {
 
   return;
 };
-
+const fileupload = require('fs')
 const video_upload_post = async (req) => {
-  let streamPostId = req.query.id;
-  let streamPost = await StreamPost.findById(streamPostId);
-  if (!streamPost) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Not Found post');
-  }
-  let store = streamPost._id.replace(/[^a-zA-Z0-9]/g, '');
-  const s3 = new AWS.S3({
-    accessKeyId: 'AKIA3323XNN7Y2RU77UG',
-    secretAccessKey: 'NW7jfKJoom+Cu/Ys4ISrBvCU4n4bg9NsvzAbY07c',
-    region: 'ap-south-1',
-  });
-  const fileBuffer = req.file.buffer;
-  let params = {
-    Bucket: 'streamingupload',
-    Key: store + '/uploaded/' + req.file.originalname,
-    Body: fileBuffer,
-  };
-  return new Promise((resolve) => {
-    const s3Upload = s3.upload(params);
-
-    s3Upload.on('httpUploadProgress', function (progress) {
-      //console.log('Progress:', progress.loaded, '/', progress.total);
-    });
-    s3Upload.send(function (err, data) {
-      if (err) {
-        // //console.log('Error uploading file:', err);
-      } else {
-        //console.log('File uploaded successfully:', data.Location);
-        streamPost.uploadStreamVideo = data.Location;
-        streamPost.newVideoUpload = 'video';
-        streamPost.save();
-        resolve({ video: 'success', streamPost });
-      }
-    });
-  });
+  console.log(req.file)
+  let up = await S3video.videoupload(req.file, 'upload/video', 'mp4');
+  fileupload.unlink(req.file.path, (err) => {
+    if (err) {
+      console.error(err)
+      return
+    }
+  })
+  return up;
 };
 
 const get_video_link = async (req) => {

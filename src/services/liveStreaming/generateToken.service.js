@@ -1638,6 +1638,13 @@ const push_notification = async (req) => {
 };
 
 
+const get_cloude_recording = async (req) => {
+  let streamid = req.query.id;
+  let stream = await tempTokenModel.find({ streamId: streamid, type: 'CloudRecording', recoredStart: { $nq: "Pending" } });
+  return stream;
+
+}
+
 module.exports = {
   generateToken,
   getHostTokens,
@@ -1668,4 +1675,5 @@ module.exports = {
   get_current_live_stream,
   cloud_recording_start,
   push_notification,
+  get_cloude_recording
 };

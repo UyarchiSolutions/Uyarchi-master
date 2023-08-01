@@ -7,6 +7,7 @@ const supplierAuth = require('../../../controllers/supplier.authorizations');
 const shopverify = require('../../../controllers/shoptokenverify.controller');
 const subhostVerify = require('../../../controllers/subhostVefify.controller');
 const { SetPass, SellerAuth } = require('../../../controllers/sellerAuth.controller');
+const authorization = require('../../../controllers/tokenVerify.controller');
 
 const router = express.Router();
 const generateToken = require('../../../controllers/liveStreaming/generateToken.controller');
@@ -47,6 +48,7 @@ router.route('/download/video/aws').get(generateToken.videoConverter);
 
 router.route('/cloud/recording/start').get(generateToken.cloud_recording_start);
 router.route('/push/notification/send').post(generateToken.push_notification);
+router.route('/get/cloud/recording').get(authorization,generateToken.get_cloude_recording);
 
 
 

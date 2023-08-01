@@ -158,6 +158,11 @@ const push_notification= catchAsync(async (req, res) => {
 });
 
 
+const get_cloude_recording= catchAsync(async (req, res) => {
+  let tokens = await generateTokenService.get_cloude_recording(req);
+  res.status(httpStatus.CREATED).send(tokens);
+});
+
 module.exports = {
   generateToken,
   getHostTokens,
@@ -188,4 +193,5 @@ module.exports = {
   get_current_live_stream,
   cloud_recording_start,
   push_notification,
+  get_cloude_recording
 };

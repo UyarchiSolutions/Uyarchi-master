@@ -1501,6 +1501,9 @@ const production_supplier_token_watchamin = async (req) => {
         allot_host_3: 1,
         allot_chat: 1,
         temptokens: '$temptokens',
+        uploadLink: 1,
+        uploadDate: 1,
+        uploadStatus: 1
       },
     },
   ])
@@ -1640,7 +1643,7 @@ const push_notification = async (req) => {
 
 const get_cloude_recording = async (req) => {
   let streamid = req.query.id;
-  let stream = await tempTokenModel.find({ streamId: streamid, type: 'CloudRecording', recoredStart: { $nq: "Pending" } });
+  let stream = await tempTokenModel.find({ streamId: streamid, type: 'CloudRecording', recoredStart: { $ne: "Pending" } });
   return stream;
 
 }

@@ -532,6 +532,12 @@ const video_upload_post = catchAsync(async (req, res) => {
   res.send(data);
 });
 
+const upload_s3_stream_video = catchAsync(async (req, res) => {
+  const data = await Ecomserive.upload_s3_stream_video(req);
+  res.send(data);
+});
+
+
 const get_video_link = catchAsync(async (req, res) => {
   const data = await Ecomserive.get_video_link(req);
   res.send(data);
@@ -655,5 +661,6 @@ module.exports = {
   get_watch_live_steams_upcoming_byid,
   getall_homeage_streams,
   get_watch_live_steams_current,
-  on_going_stream
+  on_going_stream,
+  upload_s3_stream_video
 };

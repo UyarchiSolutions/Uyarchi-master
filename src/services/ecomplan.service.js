@@ -11798,6 +11798,38 @@ const video_upload_post = async (req) => {
   return up;
 };
 
+const upload_s3_stream_video = async (req) => {
+  console.log(req.file)
+  let streamId = req.query.id;
+  let stream = await Streamrequest.findById(streamId);
+
+  if (!stream) {
+    fileupload.unlink(req.file.path, (err) => {
+      if (err) {
+        console.error(err)
+        return
+      }
+    })
+    throw new ApiError(httpStatus.NOT_FOUND, 'Not Found stream');
+  }
+  let up = await S3video.videoupload(req.file, 'upload/admin/upload', 'mp4');
+  console.log(up)
+  if (up) {
+    stream.uploadLink = up.Location;
+    stream.uploadDate = moment();
+    stream.uploadStatus = "upload";
+    stream.save();
+  }
+  fileupload.unlink(req.file.path, (err) => {
+    if (err) {
+      console.error(err)
+      return
+    }
+  })
+  return stream;
+};
+
+
 const get_video_link = async (req) => {
   let streamId = req.query.id;
   let streamnotification = await Streamrequest.findById(streamId);
@@ -12112,4 +12144,5 @@ module.exports = {
   get_watch_live_steams_current,
   get_post_view,
   on_going_stream,
+  upload_s3_stream_video
 };

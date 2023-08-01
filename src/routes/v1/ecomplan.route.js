@@ -9,6 +9,7 @@ const shopverify = require('../../controllers/shoptokenverify.controller');
 const subhostVerify = require('../../controllers/subhostVefify.controller');
 const uploadimage = require('../../middlewares/upload');
 const { SetPass, SellerAuth } = require('../../controllers/sellerAuth.controller');
+const authorization = require('../../controllers/tokenVerify.controller');
 
 const storage = multer.memoryStorage({
   destination: function (req, res, callback) {
@@ -175,6 +176,7 @@ router.route('/get/post/after/complete/stream').get(Ecomcontroller.get_stream_po
 router.route('/update/start/end/time').put(Ecomcontroller.update_start_end_time);
 
 router.route('/update/video/post').put(upload_s3.single("video"), Ecomcontroller.video_upload_post);
+router.route('/upload/stream/video').post(authorization, upload_s3.single("video"), Ecomcontroller.upload_s3_stream_video);
 
 router.route('/get/video/link').get(upload_s3.single("video"), Ecomcontroller.get_video_link);
 

@@ -1872,7 +1872,7 @@ const end_stream = async (req) => {
         },
       }
     );
-    token.recording_stop_res = stop.data;
+    token.recording_stop_res = stop.data.serverResponse.fileList
     token.save();
   }
 

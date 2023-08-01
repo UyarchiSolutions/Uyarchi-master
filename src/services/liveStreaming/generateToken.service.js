@@ -437,27 +437,27 @@ const recording_query = async (req, id) => {
 };
 
 const recording_stop = async (req) => {
-  const mode = 'mix';
-  let token = await tempTokenModel.findById(req.body.id);
-  token.recoredStart = "stop";
-  token.save();
-  const resource = token.resourceId;
-  const sid = token.sid;
-  const stop = await axios.post(
-    `https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/stop`,
-    {
-      cname: token.chennel,
-      uid: token.Uid.toString(),
-      clientRequest: {},
-    },
-    {
-      headers: {
-        Authorization,
-      },
-    }
-  );
-  console.log(stop.data);
-  return stop.data;
+  // const mode = 'mix';
+  // let token = await tempTokenModel.findById(req.body.id);
+  // token.recoredStart = "stop";
+  // token.save();
+  // const resource = token.resourceId;
+  // const sid = token.sid;
+  // const stop = await axios.post(
+  //   `https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/stop`,
+  //   {
+  //     cname: token.chennel,
+  //     uid: token.Uid.toString(),
+  //     clientRequest: {},
+  //   },
+  //   {
+  //     headers: {
+  //       Authorization,
+  //     },
+  //   }
+  // );
+  // console.log(stop.data);
+  // return stop.data;
   return { message: 'asdhajs' };
 };
 const recording_updateLayout = async (req) => {

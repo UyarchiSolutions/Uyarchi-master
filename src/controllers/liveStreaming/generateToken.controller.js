@@ -57,7 +57,7 @@ const recording_start = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).send(tokens);
 });
 const recording_query = catchAsync(async (req, res) => {
-  const tokens = await generateTokenService.recording_query(req);
+  const tokens = await generateTokenService.recording_query(req,req.query.id);
   res.status(httpStatus.CREATED).send(tokens);
 });
 const recording_stop = catchAsync(async (req, res) => {

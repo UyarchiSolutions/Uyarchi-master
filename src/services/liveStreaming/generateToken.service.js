@@ -395,7 +395,7 @@ const recording_start = async (req, id) => {
       // setTimeout(async () => {
       //   await recording_query(req, token._id);
       // }, 3000);
-      return start.data;
+      return start.data;  
     } else {
       return { message: 'Already Started' };
     }

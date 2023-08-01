@@ -383,7 +383,6 @@ const recording_start = async (req, id) => {
               accessKey: 'AKIA3323XNN7Y2RU77UG',
               secretKey: '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',
               fileNamePrefix: [token.store, token.Uid.toString()],
-              
             },
           },
         },
@@ -393,10 +392,10 @@ const recording_start = async (req, id) => {
       token.sid = start.data.sid;
       token.recoredStart = 'start';
       token.save();
-      // setTimeout(async () => {
-      //   await recording_query(req, token._id);
-      // }, 3000);
-      return start.data;  
+      setTimeout(async () => {
+        await recording_query(req, token._id);
+      }, 3000);
+      return start.data;
     } else {
       return { message: 'Already Started' };
     }
@@ -405,33 +404,36 @@ const recording_start = async (req, id) => {
   }
 };
 const recording_query = async (req, id) => {
-
-  let token = await tempTokenModel.findOne({ chennel: id, type: 'CloudRecording', recoredStart: { $eq: 'start' } });
-
-  if (token) {
-    const resource = token.resourceId;
-    const sid = token.sid;
-    const mode = 'mix';
-    const query = await axios.get(
-      `https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/query`,
-      { headers: { Authorization } }
-    );
-    token.videoLink = query.data.serverResponse.fileList[0].fileName;
-    token.videoLink_array = query.data.serverResponse.fileList;
-    let m3u8 = query.data.serverResponse.fileList[0].fileName;
-    if (m3u8 != null) {
-      let mp4 = m3u8.replace('.m3u8', '_0.mp4')
-      token.videoLink_mp4 = mp4;
-    }
-    // videoLink_mp4
-    token.recoredStart = 'query';
-    token.save();
-    console.log(4, 5);
-    return query.data;
+  let temtoken = id;
+  // let temtoken=req.body.id;
+  // //console.log(req.body);
+  let token = await tempTokenModel.findById(temtoken);
+  const resource = token.resourceId;
+  const sid = token.sid;
+  const mode = 'mix';
+  // let newAppid = await get_agora_details("appID")
+  // let cloud_Token = await get_agora_details("Authorization")
+  // const newAuthorization = `Basic ${Buffer.from(cloud_Token).toString(
+  //   'base64'
+  // )}`;
+  // //console.log(`https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/query`);
+  const query = await axios.get(
+    `https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/query`,
+    { headers: { Authorization } }
+  );
+  console.log(query.data.serverResponse.fileList)
+  token.videoLink = query.data.serverResponse.fileList[0].fileName;
+  token.videoLink_array = query.data.serverResponse.fileList;
+  let m3u8 = query.data.serverResponse.fileList[0].fileName;
+  if (m3u8 != null) {
+    let mp4 = m3u8.replace('.m3u8', '_0.mp4')
+    token.videoLink_mp4 = mp4;
   }
-  else {
-    return { message: "no Query Found" }
-  }
+  // videoLink_mp4
+  token.recoredStart = 'query';
+  token.save();
+  console.log(4, 5);
+  return query.data;
 };
 
 const recording_stop = async (req) => {

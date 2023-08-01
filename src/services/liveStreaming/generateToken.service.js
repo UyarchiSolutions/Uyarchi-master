@@ -422,16 +422,18 @@ const recording_query = async (req, id) => {
     { headers: { Authorization } }
   );
   console.log(query.data.serverResponse.fileList)
-  token.videoLink = query.data.serverResponse.fileList[0].fileName;
-  token.videoLink_array = query.data.serverResponse.fileList;
-  let m3u8 = query.data.serverResponse.fileList[0].fileName;
-  if (m3u8 != null) {
-    let mp4 = m3u8.replace('.m3u8', '_0.mp4')
-    token.videoLink_mp4 = mp4;
+  if (token.recoredStart == 'start') {
+    token.videoLink = query.data.serverResponse.fileList[0].fileName;
+    token.videoLink_array = query.data.serverResponse.fileList;
+    let m3u8 = query.data.serverResponse.fileList[0].fileName;
+    if (m3u8 != null) {
+      let mp4 = m3u8.replace('.m3u8', '_0.mp4')
+      token.videoLink_mp4 = mp4;
+    }
+    // videoLink_mp4
+    token.recoredStart = 'query';
+    token.save();
   }
-  // videoLink_mp4
-  token.recoredStart = 'query';
-  token.save();
   console.log(4, 5);
   return query.data;
 };

@@ -92,6 +92,12 @@ const tempToken = mongoose.Schema({
   videoLink: {
     type: String,
   },
+  videoLink_mp4: {
+    type: String,
+  },
+  videoLink_array: {
+    type: Array,
+  },
   recoredStart: {
     type: String,
     default: 'Pending',
@@ -127,6 +133,9 @@ const tempToken = mongoose.Schema({
   convertStatus: {
     type: String,
     default: 'Pending',
+  },
+  recording_stop_res:{
+    type: Array,
   }
 });
 

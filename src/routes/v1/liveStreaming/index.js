@@ -3,6 +3,7 @@ const generateAuthTokens = require('./generateToken.route');
 const chatModel = require('./chat.route');
 const checkout = require('./checkout.route');
 const agora = require('./AgoraAppId.route');
+const video = require('./videoconvert.route');
 const docsRoute = require('../docs.route');
 const config = require('../../../config/config');
 
@@ -24,6 +25,10 @@ const defaultRoutes = [
   {
     path: '/agora',
     route: agora,
+  },
+  {
+    path: '/convert',
+    route: video,
   },
 ];
 

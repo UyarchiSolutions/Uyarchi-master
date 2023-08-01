@@ -83,7 +83,7 @@ const generateToken = async (req) => {
   const token = await geenerate_rtc_token(streamId, uid, role, expirationTimestamp);
   value.token = token;
   value.chennel = streamId;
-  value.store = value._id.replace(/[^a-zA-Z0-9]/g, '');
+  value.store = stream._id.replace(/[^a-zA-Z0-9]/g, '');
   let cloud_recording = await generateToken_sub_record(streamId, false, req, value, expirationTimestamp);
   value.cloud_recording = cloud_recording.value.token;
   value.uid_cloud = cloud_recording.value.Uid;
@@ -374,7 +374,7 @@ const recording_start = async (req, id) => {
               },
             },
             recordingFileConfig: {
-              avFileType: ['hls'],
+              avFileType: ['hls', 'mp4'],
             },
             storageConfig: {
               vendor: 1,
@@ -421,7 +421,10 @@ const recording_query = async (req, id) => {
     `https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/query`,
     { headers: { Authorization } }
   );
-  token.videoLink = query.data.serverResponse.fileList;
+  console.log(query.data.serverResponse.fileList)
+  // token.videoLink = query.data.serverResponse.fileList;
+  token.videoLink_array = query.data.serverResponse.fileList;
+  // videoLink_mp4
   token.recoredStart = 'query';
   token.save();
   console.log(4, 5);
@@ -429,27 +432,27 @@ const recording_query = async (req, id) => {
 };
 
 const recording_stop = async (req) => {
-  // const mode = 'mix';
-  // let token = await tempTokenModel.findById(req.body.id);
-  // token.recoredStart = "stop";
-  // token.save();
-  // const resource = token.resourceId;
-  // const sid = token.sid;
-  // const stop = await axios.post(
-  //   `https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/stop`,
-  //   {
-  //     cname: token.chennel,
-  //     uid: token.Uid.toString(),
-  //     clientRequest: {},
-  //   },
-  //   {
-  //     headers: {
-  //       Authorization,
-  //     },
-  //   }
-  // );
-
-  // return stop.data;
+  const mode = 'mix';
+  let token = await tempTokenModel.findById(req.body.id);
+  token.recoredStart = "stop";
+  token.save();
+  const resource = token.resourceId;
+  const sid = token.sid;
+  const stop = await axios.post(
+    `https://api.agora.io/v1/apps/${appID}/cloud_recording/resourceid/${resource}/sid/${sid}/mode/${mode}/stop`,
+    {
+      cname: token.chennel,
+      uid: token.Uid.toString(),
+      clientRequest: {},
+    },
+    {
+      headers: {
+        Authorization,
+      },
+    }
+  );
+  console.log(stop.data);
+  return stop.data;
   return { message: 'asdhajs' };
 };
 const recording_updateLayout = async (req) => {
@@ -1074,7 +1077,7 @@ const create_raice_token = async (req) => {
     const token = await geenerate_rtc_token(streamId, uid, Agora.RtcRole.PUBLISHER, expirationTimestamp);
     value.token = token;
     value.chennel = streamId;
-    value.store = value._id.replace(/[^a-zA-Z0-9]/g, '');
+    value.store = stream._id.replace(/[^a-zA-Z0-9]/g, '');
     value.save();
   }
 
@@ -1156,7 +1159,7 @@ const production_supplier_token_cloudrecording = async (req, id) => {
     });
     const token = await geenerate_rtc_token(stream._id, uid, role, expirationTimestamp);
     value.token = token;
-    value.store = value._id.replace(/[^a-zA-Z0-9]/g, '');
+    value.store = stream._id.replace(/[^a-zA-Z0-9]/g, '');
     value.save();
     if (value.videoLink == '' || value.videoLink == null) {
       await agora_acquire(req, value._id);
@@ -1199,7 +1202,7 @@ const production_supplier_token_cloudrecording = async (req, id) => {
         });
         const token = await geenerate_rtc_token(stream._id, uid, role, expirationTimestamp);
         value.token = token;
-        value.store = value._id.replace(/[^a-zA-Z0-9]/g, '');
+        value.store = stream._id.replace(/[^a-zA-Z0-9]/g, '');
         value.save();
 
         if (value.videoLink == '' || value.videoLink == null) {
@@ -1498,7 +1501,7 @@ const production_supplier_token_watchamin = async (req) => {
   ])
 
 
-  return { value, stream:stream[0] };
+  return { value, stream: stream[0] };
 };
 
 const get_stream_complete_videos = async (req) => {

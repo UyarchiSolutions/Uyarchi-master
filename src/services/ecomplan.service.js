@@ -1872,7 +1872,10 @@ const end_stream = async (req) => {
         },
       }
     );
+    token.recording_stop_res = stop.data;
+    token.save();
   }
+
   return { value: true };
 };
 

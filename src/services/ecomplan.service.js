@@ -8885,7 +8885,7 @@ const get_completed_stream_completed = async (req) => {
     // //console.log(date, dateMatch)
   }
   const value = await Streamrequest.aggregate([
-    { $match: { $and: [dateMatch, { endTime: { $lte: date_now } }, { status: { $ne: 'Cancelled' } }] } },
+    { $match: { $and: [dateMatch, { streamEnd_Time: { $lte: date_now } }, { status: { $ne: 'Cancelled' } }] } },
     { $sort: { DateIso: 1 } },
     {
       $lookup: {

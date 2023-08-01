@@ -1872,8 +1872,8 @@ const end_stream = async (req) => {
         },
       }
     );
-    if(stop){
-    token.recording_stop_res = stop.data.serverResponse.fileList
+    if (stop) {
+      token.recording_stop_res = stop.data.serverResponse.fileList
     }
     token.save();
   }
@@ -8586,7 +8586,6 @@ const get_completed_stream_live = async (req) => {
     if (date.length == 2) {
       dateMatch = { $and: [{ streamingDate: { $gte: date[0] } }, { streamingDate: { $lte: date[1] } }] };
     }
-    // //console.log(date, dateMatch)
   }
   const value = await Streamrequest.aggregate([
     { $sort: { DateIso: 1 } },
@@ -8595,7 +8594,7 @@ const get_completed_stream_live = async (req) => {
         $and: [
           dateMatch,
           { startTime: { $lt: date_now } },
-          { endTime: { $gt: date_now } },
+          { streamEnd_Time: { $gt: date_now } },
           { status: { $ne: 'Cancelled' } },
         ],
       },

@@ -80,7 +80,6 @@ const generateAuthTokens = async (user) => {
   const refreshTokenExpires = moment().add(config.jwt.refreshExpirationDays, 'days');
   const refreshToken = generateToken(user.id, user.userRole, refreshTokenExpires, tokenTypes.REFRESH);
   await saveToken(refreshToken, user.id, user.userRole, refreshTokenExpires, tokenTypes.REFRESH);
-
   return {
     access: {
       token: accessToken,
@@ -188,11 +187,34 @@ const generateAuthTokens_verifedOTP = async (user) => {
     },
   };
 };
+
 const generateAuthTokens_sellerApp = async (user) => {
   const accessTokenExpires = moment().add(config.jwt.accessExpirationMinutes, 'days');
   const accessToken = generateToken(user._id, user, accessTokenExpires, verifyOTP.ACCESS);
   const refreshTokenExpires = moment().add(config.jwt.refreshExpirationDays, 'days');
   const refreshToken = generateToken(user._id, user, refreshTokenExpires, verifyOTP.REFRESH);
+
+  return {
+    access: {
+      token: accessToken,
+      expires: accessTokenExpires.toDate(),
+    },
+    refresh: {
+      token: refreshToken,
+      expires: refreshTokenExpires.toDate(),
+    },
+  };
+};
+
+const generateAuthTokens_ScvApp = async (shop) => {
+  let role = 'admin';
+  console.log(shop);
+  const accessTokenExpires = moment().add(config.jwt.accessExpirationMinutes, 'days');
+  const accessToken = generateToken(shop._id, role, accessTokenExpires, tokenTypes.ACCESS);
+  const refreshTokenExpires = moment().add(config.jwt.refreshExpirationDays, 'days');
+  const refreshToken = generateToken(shop._id, role, refreshTokenExpires, tokenTypes.REFRESH);
+  await saveToken(refreshToken, shop.id, shop.userRole, refreshTokenExpires, tokenTypes.REFRESH);
+  console.log(refreshToken);
   return {
     access: {
       token: accessToken,
@@ -215,5 +237,6 @@ module.exports = {
   generateAuthTokens_forget,
   generateAuthTokens_shop,
   generateAuthTokens_verifedOTP,
-  generateAuthTokens_sellerApp
+  generateAuthTokens_sellerApp,
+  generateAuthTokens_ScvApp,
 };

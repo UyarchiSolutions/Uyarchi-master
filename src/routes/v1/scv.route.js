@@ -50,5 +50,8 @@ router.route('/getAllscv/Admin').get(scvController.getAllscv_Admin);
 router.route('/scv/attendance').post(scvController.scv_attendance);
 router.route('/getScv/Attendance/Reports').post(scvController.getScv_Attendance_Reports);
 router.route('/getNearByCartBy/CurrrentLocation').post(scvController.getNearByCartBy_CurrrentLocation);
-
+router.route('/Verify/Account').post(scvController.VerifyYourAccount);
+router.route('/verifyCartOTP').post(scvController.verifyCartOTP);
+router.route('/setCartPassword').post(scvController.setCartPassword);
+router.route('/CartLogin').post(scvController.CartLogin);
 module.exports = router;

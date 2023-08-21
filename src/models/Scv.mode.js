@@ -115,6 +115,9 @@ const SCVSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    password: {
+      type: String,
+    },
   },
   { timestamps: true }
 );
@@ -214,9 +217,32 @@ const SCVAttendanceSchema = new mongoose.Schema(
 
 const ScvAttendance = mongoose.model('scvattendance', SCVAttendanceSchema);
 
+const cartOtpSchema = mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
+    },
+    OTP: {
+      type: Number,
+    },
+    mobileNumber: {
+      type: Number,
+    },
+    used: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  { timestamps: true }
+);
+
+const CartOTP = mongoose.model('cartotp', cartOtpSchema);
+
 module.exports = {
   ScvCart,
   Scv,
   Customer,
   ScvAttendance,
+  CartOTP,
 };

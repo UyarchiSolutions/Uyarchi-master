@@ -2,11 +2,11 @@ const httpStatus = require('http-status');
 const { SCVPurchase } = require('../models');
 const ApiError = require('../utils/ApiError');
 const moment = require('moment');
-const { ScvCart, Scv, Customer, ScvAttendance } = require('../models/Scv.mode');
+const { ScvCart, Scv, Customer, ScvAttendance, CartOTP } = require('../models/Scv.mode');
 const CustomerOTP = require('../models/customer.otp.model');
 const { Otp } = require('../config/customer.OTP');
 const bcrypt = require('bcrypt');
-const { start } = require('pm2');
+const { CartOtp } = require('../config/cartOTP');
 
 const createSCV = async (scvBody) => {
   return SCVPurchase.create(scvBody);
@@ -728,6 +728,52 @@ const getNearByCartBy_CurrrentLocation = async (body) => {
   return data;
 };
 
+const VerifyYourAccount = async (body) => {
+  const { mobileNumber } = body;
+  let findMobileNumber = await Scv.findOne({ phoneNumber: mobileNumber });
+  if (!findMobileNumber) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Mobile Number Not Registered');
+  }
+  return CartOtp(mobileNumber);
+};
+
+const verifyCartOTP = async (body) => {
+  const { OTP } = body;
+  let findOTP = await CartOTP.findOne({ OTP: OTP, used: false }).sort({ createdAt: -1 });
+  if (!findOTP) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Incorrect OTP');
+  }
+  findOTP = await CartOTP.findOneAndUpdate({ _id: findOTP._id }, { used: true }, { new: true });
+  return { message: 'OTP Verification Success' };
+};
+
+const setCartPassword = async (body) => {
+  const { Password, mobileNumber } = body;
+  let finByMobile = await Scv.findOne({ phoneNumber: mobileNumber });
+  if (!finByMobile) {
+    throw new ApiError('Cannot find Mobile Number');
+  }
+  const numSaltRounds = 8;
+  let hash = (await bcrypt.hash(Password, numSaltRounds)).toString();
+  let setPasswordHash = await Scv.findOneAndUpdate({ _id: finByMobile._id }, { password: hash }, { new: true });
+  return setPasswordHash;
+};
+
+const CartLogin = async (body) => {
+  const { mobileNumber, Password } = body;
+  let findByMobile = await Scv.findOne({ phoneNumber: mobileNumber });
+  if (!findByMobile) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Incorrect Mobile Number');
+  }
+  let passwordMatch = bcrypt.compare(Password, findByMobile.password);
+  return passwordMatch;
+};
+
+const findByMobile = async (mobileNumber) => {
+  let data = await Scv.findOne({ phoneNumber: mobileNumber });
+  return data;
+};
+
 module.exports = {
   createSCV,
   getAllSCV,
@@ -765,4 +811,9 @@ module.exports = {
   getCartBy_Allocated_Scv,
   Remove__ScvFrom_Cart,
   getNearByCartBy_CurrrentLocation,
+  VerifyYourAccount,
+  verifyCartOTP,
+  setCartPassword,
+  CartLogin,
+  findByMobile,
 };

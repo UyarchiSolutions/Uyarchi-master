@@ -277,6 +277,35 @@ const getNearByCartBy_CurrrentLocation = catchAsync(async (req, res) => {
   const data = await ScvPartnerService.getNearByCartBy_CurrrentLocation(req.body);
   res.send(data);
 });
+
+const VerifyYourAccount = catchAsync(async (req, res) => {
+  const data = await ScvPartnerService.VerifyYourAccount(req.body);
+  res.send(data);
+});
+
+const verifyCartOTP = catchAsync(async (req, res) => {
+  const data = await ScvPartnerService.verifyCartOTP(req.body);
+  res.send(data);
+});
+
+const setCartPassword = catchAsync(async (req, res) => {
+  const data = await ScvPartnerService.setCartPassword(req.body);
+  res.send(data);
+});
+
+const CartLogin = catchAsync(async (req, res) => {
+  const data = await ScvPartnerService.CartLogin(req.body);
+  let userData;
+  if (data == true) {
+    userData = await ScvPartnerService.findByMobile(req.body.mobileNumber);
+  }
+  if (!userData) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid Password');
+  }
+  let token = await tokenService.generateAuthTokens(userData);
+  res.send({ userData, token });
+});
+
 module.exports = {
   createSCV,
   getSCVById,
@@ -314,4 +343,8 @@ module.exports = {
   getCartBy_Allocated_Scv,
   Remove__ScvFrom_Cart,
   getNearByCartBy_CurrrentLocation,
+  VerifyYourAccount,
+  verifyCartOTP,
+  setCartPassword,
+  CartLogin,
 };

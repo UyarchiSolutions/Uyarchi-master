@@ -2,11 +2,12 @@ const httpStatus = require('http-status');
 const { SCVPurchase } = require('../models');
 const ApiError = require('../utils/ApiError');
 const moment = require('moment');
-const { ScvCart, Scv, Customer, ScvAttendance, CartOTP } = require('../models/Scv.mode');
+const { ScvCart, Scv, Customer, ScvAttendance, CartOTP, AgoraAuthToken } = require('../models/Scv.mode');
 const CustomerOTP = require('../models/customer.otp.model');
 const { Otp } = require('../config/customer.OTP');
 const bcrypt = require('bcrypt');
 const { CartOtp } = require('../config/cartOTP');
+const agora = require('agora-access-token');
 
 const createSCV = async (scvBody) => {
   return SCVPurchase.create(scvBody);
@@ -774,6 +775,44 @@ const findByMobile = async (mobileNumber) => {
   return data;
 };
 
+// Video Call FLow
+
+const AuthTokenGenerate = async (userId) => {
+  let findScv = await Scv.findById(userId);
+  if (!findScv) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid user');
+  }
+  let findCartBySCV = await ScvCart.findOne({ allocatedScv: findScv._id });
+  if (!findCartBySCV) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Cart not Available yet');
+  }
+
+  const appId = 'ccae3f62564c46809c950dbf4f8488d0';
+  const appCertificate = 'd3b6b55cddc745699cfe335c50bf4df6';
+  const channelName = findCartBySCV.cartName;
+  const uid = userId;
+  const expirationTimeInSeconds = 3600;
+
+  const token = agora.RtcTokenBuilder.buildTokenWithUid(
+    appId,
+    appCertificate,
+    channelName,
+    uid,
+    agora.RtcRole.PUBLISHER,
+    expirationTimeInSeconds
+  );
+
+  let token_creation = await AgoraAuthToken.create({
+    scvId: uid,
+    cartId: findCartBySCV._id,
+    channel: channelName,
+    AppId: appId,
+    AppCertificates: appCertificate,
+    Token: token,
+  });
+  return token_creation;
+};
+
 module.exports = {
   createSCV,
   getAllSCV,
@@ -816,4 +855,5 @@ module.exports = {
   setCartPassword,
   CartLogin,
   findByMobile,
+  AuthTokenGenerate,
 };

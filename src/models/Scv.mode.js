@@ -239,10 +239,45 @@ const cartOtpSchema = mongoose.Schema(
 
 const CartOTP = mongoose.model('cartotp', cartOtpSchema);
 
+const AgoraAuthTokenSchema = new mongoose.Schema(
+  {
+    _id: {
+      type: String,
+      default: v4,
+    },
+    scvId: {
+      type: String,
+    },
+    cartId: {
+      type: String,
+    },
+    channel: {
+      type: String,
+    },
+    AppId: {
+      type: String,
+    },
+    AppCertificates: {
+      type: String,
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
+    Token: {
+      type: String,
+    },
+  },
+  { timestamps: true }
+);
+
+const AgoraAuthToken = mongoose.model('agoratokenscv', AgoraAuthTokenSchema);
+
 module.exports = {
   ScvCart,
   Scv,
   Customer,
   ScvAttendance,
   CartOTP,
+  AgoraAuthToken,
 };

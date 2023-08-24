@@ -306,6 +306,13 @@ const CartLogin = catchAsync(async (req, res) => {
   res.send({ userData, token });
 });
 
+const AuthTokenGenerate = catchAsync(async (req, res) => {
+  const UserId = req.userId;
+  console.log(UserId, 'askdjfh');
+  const data = await ScvPartnerService.AuthTokenGenerate(UserId);
+  res.send(data);
+});
+
 module.exports = {
   createSCV,
   getSCVById,
@@ -347,4 +354,5 @@ module.exports = {
   verifyCartOTP,
   setCartPassword,
   CartLogin,
+  AuthTokenGenerate,
 };

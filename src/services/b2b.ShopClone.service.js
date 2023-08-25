@@ -12,6 +12,7 @@ const { ShopList } = require('../models/product.model');
 const Ward = require('../models/ward.model');
 // Shop Clone Serive
 const axios = require('axios');
+let mapKey = process.env.MapKey;
 
 const createShopClone = async (shopBody) => {
   let servertime = moment().format('HHmm');
@@ -3833,7 +3834,7 @@ const get_userbased_dataapproved = async (query) => {
       let response = await axios.get(
         `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${
           shops[i].Slat + ',' + shops[i].Slong
-        }&destinations=${shops[i].da_lot + ',' + shops[i].da_long}&key=AIzaSyC4f71KgUy-ocpdfmadcNPy-wrVks4YSdY`
+        }&destinations=${shops[i].da_lot + ',' + shops[i].da_long}&key=${mapKey}`
       );
       if (i == 0) {
         lat = shops[i].Slat;
@@ -3842,7 +3843,7 @@ const get_userbased_dataapproved = async (query) => {
       let dis = await axios.get(
         `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${lat + ',' + long}&destinations=${
           shops[i].Slat + ',' + shops[i].Slong
-        }&key=AIzaSyC4f71KgUy-ocpdfmadcNPy-wrVks4YSdY`
+        }&key=${mapKey}`
       );
       // //console.log(dis.data.rows[0].elements[0].distance.text);
       // //console.log(dis.data.rows[0].elements[0].duration.text);
@@ -6023,7 +6024,7 @@ const get_final_customer_shops_Maps = async (req) => {
       },
     },
   ]);
-  return total
+  return total;
 };
 
 const getFinal_CUstomer_Pincodes = async (req) => {

@@ -7,6 +7,8 @@ const { Market } = require('../models/market.model');
 const street = require('../models/street.model');
 const axios = require('axios');
 
+let mapKey = process.env.MapKey;
+
 const createApartment = async (apartmentBody) => {
   const { Uid } = apartmentBody;
   //console.log(apartmentBody);

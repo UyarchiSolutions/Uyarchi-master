@@ -5603,7 +5603,7 @@ const get_final_customer_shops = async (req) => {
     { $sort: { customer_final_CREATED: -1 } },
     {
       $match: {
-        $and: [{ new_re_approve: { $ne: null } }, salesMatch, dateMatch, statusMatch, pinMatch],
+        $and: [{ new_re_approve: { $ne: null } }, salesMatch, dateMatch, statusMatch, pinMatch,typeMatch],
       },
     },
     {

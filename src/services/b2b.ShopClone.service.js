@@ -5588,8 +5588,9 @@ const get_final_customer_shops = async (req) => {
     }
   }
 
-  if (req.query.type && req.query.type != 'null') {
+  if (req.query.type) {
     typeMatch = { SType: { $eq: req.query.type } };
+    console.log('working');
   }
   let Pin = [];
   if (req.query.Pincode && req.query.Pincode != 'null') {
@@ -5603,7 +5604,7 @@ const get_final_customer_shops = async (req) => {
     { $sort: { customer_final_CREATED: -1 } },
     {
       $match: {
-        $and: [{ new_re_approve: { $ne: null } }, salesMatch, dateMatch, statusMatch, pinMatch,typeMatch],
+        $and: [{ new_re_approve: { $ne: null } }, salesMatch, dateMatch, statusMatch, pinMatch],
       },
     },
     {
@@ -6048,6 +6049,7 @@ const getFinal_CUstomer_Pincodes = async (req) => {
   let salesMatch = { active: true };
   let dateMatch = { active: true };
   let statusMatch = { active: true };
+  let typeMatch = { active: true };
 
   if (req.query.sales && req.query.sales != 'null') {
     salesMatch = { customer_final_USER: req.query.sales };
@@ -6079,11 +6081,15 @@ const getFinal_CUstomer_Pincodes = async (req) => {
     }
   }
 
+  if (req.query.type && req.query.type != 'null') {
+    typeMatch = { SType: { $eq: req.query.type } };
+  }
+
   let val = await Shop.aggregate([
     { $sort: { customer_final_CREATED: -1 } },
     {
       $match: {
-        $and: [{ new_re_approve: { $ne: null } }, salesMatch, dateMatch, statusMatch],
+        $and: [{ new_re_approve: { $ne: null } }, salesMatch, dateMatch, statusMatch,typeMatch],
       },
     },
     {

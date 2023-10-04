@@ -5556,6 +5556,7 @@ const get_final_customer_shops = async (req) => {
   let dateMatch = { active: true };
   let statusMatch = { active: true };
   let pinMatch = { active: true };
+  let typeMatch = { active: true };
 
   if (req.query.sales && req.query.sales != 'null') {
     salesMatch = { customer_final_USER: req.query.sales };
@@ -5587,6 +5588,9 @@ const get_final_customer_shops = async (req) => {
     }
   }
 
+  if (req.query.type && req.query.type != 'null') {
+    typeMatch = { SType: { $eq: req.query.type } };
+  }
   let Pin = [];
   if (req.query.Pincode && req.query.Pincode != 'null') {
     req.query.Pincode.split(',').forEach((e) => {

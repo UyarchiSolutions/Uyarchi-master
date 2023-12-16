@@ -221,6 +221,7 @@ const chatBotOtpVerify = async (body) => {
   findOtp = await ChatBotOTP.findByIdAndUpdate({ _id: findOtp._id }, { used: true }, { new: true });
   return findOtp;
 };
+
 const get_b2buser_eligible = async (body) => {
   let userss = await Users.aggregate([{ $match: { $and: [{ fcmToken: { $ne: null } }] } }])
   return userss;
